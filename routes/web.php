@@ -114,6 +114,14 @@ Route::get('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class
 Route::post('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class, 'update'])->name('business.update');
 Route::get('/api-interne/villes/{regionId}', [BusinessWebController::class, 'citiesForRegion'])->name('business.cities-for-region');
 
+use App\Http\Controllers\ProductWebController;
+
+Route::get('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'create'])->name('products.web-create');
+Route::post('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'store'])->name('products.web-store');
+Route::get('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'edit'])->name('products.web-edit');
+Route::post('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'update'])->name('products.web-update');
+Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/supprimer', [ProductWebController::class, 'destroyImage'])->name('products.web-delete-image');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────

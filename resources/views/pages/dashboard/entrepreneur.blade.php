@@ -119,14 +119,14 @@
                     <i data-lucide="package" class="w-4 h-4 text-gray-400"></i>
                     {{ $lang === 'fr' ? 'Mes produits' : 'My Products' }}
                 </h2>
-                <a href="/api/v1/my/products" target="_blank" class="text-xs text-forest-500 font-medium">
-                    {{ $lang === 'fr' ? 'Gérer (API)' : 'Manage (API)' }}
+                <a href="{{ route('products.web-create') }}" class="text-xs text-forest-500 font-medium">
+                    {{ $lang === 'fr' ? '+ Ajouter' : '+ Add' }}
                 </a>
             </div>
             @if($products->count())
             <div class="divide-y divide-gray-50">
                 @foreach($products as $product)
-                <div class="flex items-center gap-3 px-4 py-3">
+                <a href="{{ route('products.web-edit', ['slug' => $product->slug]) }}" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
                     <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
                         <i data-lucide="package" class="w-4 h-4 text-green-500"></i>
                     </div>
@@ -137,14 +137,15 @@
                     <span @class(['px-2 py-0.5 rounded-full text-xs font-medium shrink-0', 'bg-green-100 text-green-700' => $product->status === 'published', 'bg-gray-100 text-gray-500' => $product->status !== 'published'])>
                         {{ $product->status }}
                     </span>
-                </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 shrink-0"></i>
+                </a>
                 @endforeach
             </div>
             @else
             <div class="text-center py-10 px-4">
                 <i data-lucide="package" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i>
                 <p class="text-sm text-gray-400 mb-3">{{ $lang === 'fr' ? 'Aucun produit encore.' : 'No products yet.' }}</p>
-                <a href="/api/v1/my/products" target="_blank"
+                <a href="{{ route('products.web-create') }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2 bg-forest-500 text-white text-sm font-semibold rounded-lg hover:bg-forest-600 transition-colors">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Ajouter un produit' : 'Add product' }}
@@ -174,15 +175,15 @@
                     <i data-lucide="edit-3" class="w-4 h-4 text-amber-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Modifier mon profil' : 'Edit my profile' }}
                 </a>
-                <a href="/api/v1/my/products" target="_blank"
+                <a href="{{ route('products.web-create') }}"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <i data-lucide="plus-circle" class="w-4 h-4 text-green-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Ajouter un produit' : 'Add product' }}
                 </a>
-                <a href="/api/v1/my/business/gallery" target="_blank"
+                <a href="{{ route('business.edit') }}"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <i data-lucide="image" class="w-4 h-4 text-purple-500 shrink-0"></i>
-                    {{ $lang === 'fr' ? 'Galerie photos' : 'Photo gallery' }}
+                    {{ $lang === 'fr' ? 'Logo & couverture' : 'Logo & cover' }}
                 </a>
                 <a href="/api/v1/my/business/verification/apply" target="_blank"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">

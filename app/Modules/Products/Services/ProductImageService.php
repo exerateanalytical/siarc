@@ -7,15 +7,16 @@ use App\Modules\Products\Models\ProductImage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Laravel\Facades\Image;
 
 class ProductImageService
 {
     public function upload(UploadedFile $file, Product $product, string $category = 'main'): ProductImage
     {
-        $image = Image::read($file)->scaleDown(1200, 1200)->toWebp(85);
+        $image = Image::decode($file)->scaleDown(1200, 1200)->encode(new WebpEncoder(quality: 85));
         $path  = "products/{$product->slug}/images/" . Str::uuid() . '.webp';
-        Storage::disk(config('filesystems.default'))->put($path, $image->toString());
+        Storage::disk(config('filesystems.default') === 's3' ? 's3' : 'public')->put($path, $image->toString());
 
         $maxOrder = $product->images()->max('sort_order') ?? 0;
 
@@ -30,7 +31,7 @@ class ProductImageService
 
     public function delete(ProductImage $image): void
     {
-        Storage::disk(config('filesystems.default'))->delete($image->file_path);
+        Storage::disk(config('filesystems.default') === 's3' ? 's3' : 'public')->delete($image->file_path);
         $image->delete();
     }
 }
