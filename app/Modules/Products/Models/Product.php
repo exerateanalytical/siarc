@@ -4,6 +4,7 @@ namespace App\Modules\Products\Models;
 
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Taxonomy\Models\ProductCategory;
+use App\Modules\Taxonomy\Models\Region;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,6 +21,7 @@ class Product extends Model
         'description_fr', 'description_en',
         'quantity_available', 'quantity_unit',
         'moq', 'moq_unit',
+        'price_type', 'price_amount', 'price_currency', 'price_unit',
         'is_available', 'is_export_ready', 'is_custom_order',
         'is_wholesale', 'is_retail', 'is_organic', 'is_certified',
         'status', 'views_count', 'sort_order',
@@ -35,6 +37,7 @@ class Product extends Model
             'is_retail'       => 'boolean',
             'is_organic'      => 'boolean',
             'is_certified'    => 'boolean',
+            'price_amount'    => 'decimal:2',
         ];
     }
 
@@ -71,6 +74,11 @@ class Product extends Model
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');
+    }
+
+    public function originRegion(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Region::class, 'origin_region_id');
     }
 
     public function images(): \Illuminate\Database\Eloquent\Relations\HasMany

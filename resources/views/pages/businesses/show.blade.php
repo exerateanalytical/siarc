@@ -108,10 +108,14 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     @foreach($business->products as $product)
-                    <div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:shadow-sm transition-all">
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="bg-white border border-gray-200 rounded-xl p-4 hover:border-brand-300 hover:shadow-sm transition-all block">
                         <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 shrink-0 bg-brand-50 rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 shrink-0 bg-brand-50 rounded-lg flex items-center justify-center overflow-hidden">
+                                @if($product->primaryImage)
+                                <img src="{{ $product->primaryImage->url }}" alt="" class="w-full h-full object-cover">
+                                @else
                                 <i data-lucide="package" class="w-5 h-5 text-brand-500"></i>
+                                @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-sm font-medium text-gray-900 mb-1">
@@ -135,12 +139,16 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                                     </span>
                                     @endif
                                     <span class="text-xs font-medium text-brand-600">
-                                        {{ $lang === 'fr' ? 'Prix sur demande' : 'Price on request' }}
+                                        @if($product->price_type !== 'contact' && $product->price_amount)
+                                            {{ number_format($product->price_amount, 0, ',', ' ') }} {{ $product->price_currency }}
+                                        @else
+                                            {{ $lang === 'fr' ? 'Prix sur demande' : 'Price on request' }}
+                                        @endif
                                     </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                     @endforeach
                 </div>
             </div>

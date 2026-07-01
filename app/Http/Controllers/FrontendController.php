@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Modules\Businesses\Models\Business;
+use App\Modules\Products\Models\Product;
 use App\Modules\Taxonomy\Models\Industry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,7 +106,7 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
-        $business = Business::with(['industry', 'city', 'region', 'products'])
+        $business = Business::with(['industry', 'city', 'region', 'products.primaryImage'])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
@@ -114,6 +115,31 @@ class FrontendController extends Controller
 
         return response(
             view('pages.businesses.show', compact('lang', 'business'))
+        )->cookie('lang', $lang, 60 * 24 * 30);
+    }
+
+    public function productShow(Request $request, string $slug)
+    {
+        $lang = $this->lang($request);
+
+        $product = Product::with(['images', 'documents', 'videos', 'attributes.template', 'category.sector.industry', 'originRegion', 'business.industry', 'business.region', 'business.city'])
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->whereHas('business', fn ($q) => $q->where('status', 'published'))
+            ->firstOrFail();
+
+        $product->increment('views_count');
+
+        $otherProducts = Product::where('business_id', $product->business_id)
+            ->where('id', '!=', $product->id)
+            ->where('status', 'published')
+            ->with('primaryImage')
+            ->orderBy('sort_order')
+            ->limit(4)
+            ->get();
+
+        return response(
+            view('pages.products.show', compact('lang', 'product', 'otherProducts'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 

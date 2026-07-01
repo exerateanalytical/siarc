@@ -62,7 +62,7 @@ class PublicProductController extends Controller
     public function show(string $slug): JsonResponse
     {
         $product = Product::where('slug', $slug)
-            ->with(['images', 'attributes', 'videos', 'category', 'business.region'])
+            ->with(['images', 'attributes.template', 'documents', 'videos', 'category', 'business.region'])
             ->published()
             ->whereHas('business', fn ($q) => $q->published())
             ->firstOrFail();

@@ -15,6 +15,10 @@ class ProductImage extends Model
 
     public function getUrlAttribute(): string
     {
-        return \Storage::disk('s3')->temporaryUrl($this->image_path, now()->addHours(24));
+        $disk = config('filesystems.default');
+
+        return $disk === 's3'
+            ? \Storage::disk('s3')->temporaryUrl($this->image_path, now()->addHours(24))
+            : \Storage::disk($disk)->url($this->image_path);
     }
 }
