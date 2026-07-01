@@ -138,6 +138,10 @@ Route::post('/tableau-de-bord/admin/verifications/{id}/rejeter', [AdminWebContro
 Route::get('/tableau-de-bord/admin/utilisateurs', [AdminWebController::class, 'users'])->name('admin.users');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
 
+use App\Http\Controllers\NotificationWebController;
+
+Route::get('/tableau-de-bord/notifications', [NotificationWebController::class, 'index'])->name('notifications.index');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────

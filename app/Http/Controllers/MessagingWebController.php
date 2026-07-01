@@ -142,32 +142,52 @@ class MessagingWebController extends Controller
     private function notifySeller(Conversation $conversation, User $sender, string $body): void
     {
         $business = $conversation->business ?? $conversation->business()->first();
-        if (! $business || ! $business->email) {
+        if (! $business) {
             return;
         }
 
-        Mail::raw(
-            "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIAC.",
-            function ($message) use ($business, $conversation) {
-                $message->to($business->email)
-                    ->subject('[SIAC] Nouveau message — ' . $conversation->subject);
-            }
+        \App\Modules\Notifications\Models\UserNotification::notify(
+            $business->user_id,
+            'new_message',
+            'Nouveau message — ' . $conversation->subject,
+            mb_substr($body, 0, 140),
+            route('messages.thread', ['id' => $conversation->id])
         );
+
+        if ($business->email) {
+            Mail::raw(
+                "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIAC.",
+                function ($message) use ($business, $conversation) {
+                    $message->to($business->email)
+                        ->subject('[SIAC] Nouveau message — ' . $conversation->subject);
+                }
+            );
+        }
     }
 
     private function notifyBuyer(Conversation $conversation, User $sender, string $body): void
     {
         $buyer = $conversation->buyer ?? $conversation->buyer()->first();
-        if (! $buyer || ! $buyer->email) {
+        if (! $buyer) {
             return;
         }
 
-        Mail::raw(
-            "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIAC.",
-            function ($message) use ($buyer, $conversation) {
-                $message->to($buyer->email)
-                    ->subject('[SIAC] Nouvelle réponse — ' . $conversation->subject);
-            }
+        \App\Modules\Notifications\Models\UserNotification::notify(
+            $buyer->id,
+            'new_message',
+            'Nouvelle réponse — ' . $conversation->subject,
+            mb_substr($body, 0, 140),
+            route('messages.thread', ['id' => $conversation->id])
         );
+
+        if ($buyer->email) {
+            Mail::raw(
+                "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIAC.",
+                function ($message) use ($buyer, $conversation) {
+                    $message->to($buyer->email)
+                        ->subject('[SIAC] Nouvelle réponse — ' . $conversation->subject);
+                }
+            );
+        }
     }
 }

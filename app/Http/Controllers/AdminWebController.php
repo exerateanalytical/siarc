@@ -56,6 +56,16 @@ class AdminWebController extends Controller
         $business = Business::findOrFail($id);
         $business->update(['status' => $data['status']]);
 
+        if (in_array($data['status'], ['suspended', 'rejected'])) {
+            \App\Modules\Notifications\Models\UserNotification::notify(
+                $business->user_id,
+                'business_' . $data['status'],
+                $data['status'] === 'suspended' ? 'Entreprise suspendue' : 'Entreprise rejetée',
+                'Votre entreprise "' . $business->name_fr . '" a été ' . ($data['status'] === 'suspended' ? 'suspendue' : 'rejetée') . '.',
+                route('business.edit')
+            );
+        }
+
         return back()->with('success', $this->lang($request) === 'fr' ? 'Statut mis à jour.' : 'Status updated.');
     }
 

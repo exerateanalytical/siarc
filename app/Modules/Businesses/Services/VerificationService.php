@@ -5,6 +5,7 @@ namespace App\Modules\Businesses\Services;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Businesses\Models\VerificationApplication;
 use App\Modules\Businesses\Models\VerificationDocument;
+use App\Modules\Notifications\Models\UserNotification;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -50,6 +51,14 @@ class VerificationService
         ]);
 
         $application->business->update(['verification_tier' => $application->tier_requested]);
+
+        UserNotification::notify(
+            $application->business->user_id,
+            'verification_approved',
+            'Vérification approuvée',
+            "Votre demande de niveau {$application->tier_requested} a été approuvée.",
+            route('verification.show')
+        );
     }
 
     public function reject(VerificationApplication $application, \App\Modules\Auth\Models\User $admin, string $notes): void
@@ -60,5 +69,13 @@ class VerificationService
             'reviewer_id'    => $admin->id,
             'reviewed_at'    => now(),
         ]);
+
+        UserNotification::notify(
+            $application->business->user_id,
+            'verification_rejected',
+            'Vérification rejetée',
+            $notes,
+            route('verification.show')
+        );
     }
 }

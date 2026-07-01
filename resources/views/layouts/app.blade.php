@@ -116,9 +116,20 @@
                         class="pl-8 pr-3 py-1.5 text-sm bg-gray-100 border border-transparent rounded-lg focus:outline-none focus:border-forest-400 focus:bg-white w-44 transition-all">
                 </form>
 
-                @php $siacUser = session('siac_user'); @endphp
+                @php
+                    $siacUser = session('siac_user');
+                    $unreadNotifications = $siacUser
+                        ? \App\Modules\Notifications\Models\UserNotification::where('user_id', $siacUser['id'])->unread()->count()
+                        : 0;
+                @endphp
                 @if($siacUser)
                     {{-- Logged in --}}
+                    <a href="{{ route('notifications.index') }}" class="relative hidden sm:flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        @if($unreadNotifications > 0)
+                        <span class="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}</span>
+                        @endif
+                    </a>
                     <a href="/tableau-de-bord" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'Tableau de bord' : 'Dashboard' }}
