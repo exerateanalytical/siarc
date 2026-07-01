@@ -36,7 +36,7 @@ class BusinessService
             'gps_lng'          => $data['gps_lng'] ?? null,
             'year_established' => $data['year_established'] ?? null,
             'employee_count'   => $data['employee_count'] ?? null,
-            'ownership_type'   => $data['ownership_type'] ?? null,
+            'ownership_type'   => $data['ownership_type'] ?? 'private',
             'export_countries' => $data['export_countries'] ?? null,
             'languages_spoken' => $data['languages_spoken'] ?? null,
             'verification_tier' => 'unverified',

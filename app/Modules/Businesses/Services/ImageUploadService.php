@@ -13,7 +13,7 @@ class ImageUploadService
     {
         $image = Image::read($file)->scaleDown(400, 400)->toWebp(85);
         $path  = "businesses/{$businessSlug}/logo/" . Str::uuid() . '.webp';
-        Storage::disk('s3')->put($path, $image->toString(), 'public');
+        Storage::disk(config('filesystems.default'))->put($path, $image->toString());
         return $path;
     }
 
@@ -21,7 +21,7 @@ class ImageUploadService
     {
         $image = Image::read($file)->scaleDown(1200, 600)->toWebp(85);
         $path  = "businesses/{$businessSlug}/cover/" . Str::uuid() . '.webp';
-        Storage::disk('s3')->put($path, $image->toString(), 'public');
+        Storage::disk(config('filesystems.default'))->put($path, $image->toString());
         return $path;
     }
 
@@ -29,12 +29,12 @@ class ImageUploadService
     {
         $image = Image::read($file)->scaleDown(1200, 900)->toWebp(82);
         $path  = "businesses/{$businessSlug}/gallery/" . Str::uuid() . '.webp';
-        Storage::disk('s3')->put($path, $image->toString(), 'public');
+        Storage::disk(config('filesystems.default'))->put($path, $image->toString());
         return $path;
     }
 
     public function delete(string $path): void
     {
-        Storage::disk('s3')->delete($path);
+        Storage::disk(config('filesystems.default'))->delete($path);
     }
 }

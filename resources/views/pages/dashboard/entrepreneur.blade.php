@@ -69,10 +69,10 @@
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     {{ $lang === 'fr' ? 'Voir ma vitrine' : 'View storefront' }}
                 </a>
-                <a href="/api/v1/my/business" target="_blank"
+                <a href="{{ route('business.edit') }}"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors">
                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                    {{ $lang === 'fr' ? 'Modifier (API)' : 'Edit (API)' }}
+                    {{ $lang === 'fr' ? 'Modifier' : 'Edit' }}
                 </a>
             </div>
         </div>
@@ -169,7 +169,7 @@
                     <i data-lucide="eye" class="w-4 h-4 text-blue-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Voir ma vitrine' : 'My storefront' }}
                 </a>
-                <a href="/api/v1/my/business" target="_blank"
+                <a href="{{ route('business.edit') }}"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <i data-lucide="edit-3" class="w-4 h-4 text-amber-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Modifier mon profil' : 'Edit my profile' }}
@@ -213,7 +213,7 @@
         <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
             {{ $lang === 'fr' ? 'Présentez vos produits à des acheteurs du monde entier. Gratuit, rapide, efficace.' : 'Showcase your products to buyers worldwide. Free, fast, effective.' }}
         </p>
-        <a href="/api/v1/my/business" target="_blank"
+        <a href="{{ route('business.create') }}"
             class="inline-flex items-center gap-2 px-5 py-2.5 bg-forest-500 text-white font-semibold rounded-lg hover:bg-forest-600 transition-colors text-sm">
             <i data-lucide="plus" class="w-4 h-4"></i>
             {{ $lang === 'fr' ? 'Créer mon entreprise' : 'Create my business' }}
