@@ -127,6 +127,16 @@ use App\Http\Controllers\VerificationWebController;
 Route::get('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'show'])->name('verification.show');
 Route::post('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'apply'])->name('verification.apply');
 
+use App\Http\Controllers\AdminWebController;
+
+Route::get('/tableau-de-bord/admin/entreprises', [AdminWebController::class, 'businesses'])->name('admin.businesses');
+Route::post('/tableau-de-bord/admin/entreprises/{id}/statut', [AdminWebController::class, 'updateBusinessStatus'])->name('admin.businesses.update-status');
+Route::get('/tableau-de-bord/admin/verifications', [AdminWebController::class, 'verifications'])->name('admin.verifications');
+Route::post('/tableau-de-bord/admin/verifications/{id}/approuver', [AdminWebController::class, 'approveVerification'])->name('admin.verifications.approve');
+Route::post('/tableau-de-bord/admin/verifications/{id}/rejeter', [AdminWebController::class, 'rejectVerification'])->name('admin.verifications.reject');
+Route::get('/tableau-de-bord/admin/utilisateurs', [AdminWebController::class, 'users'])->name('admin.users');
+Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────

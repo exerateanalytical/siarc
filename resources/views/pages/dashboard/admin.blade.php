@@ -100,7 +100,7 @@
                 <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"></i>
                 <div>
                     <p class="text-sm font-semibold text-amber-900">{{ $pendingVerifications }} {{ $lang === 'fr' ? 'vérification(s) en attente' : 'pending verification(s)' }}</p>
-                    <a href="/api/v1/admin/verifications" target="_blank" class="text-xs text-amber-700 underline mt-1 inline-block">{{ $lang === 'fr' ? 'Traiter' : 'Review' }}</a>
+                    <a href="{{ route('admin.verifications') }}" class="text-xs text-amber-700 underline mt-1 inline-block">{{ $lang === 'fr' ? 'Traiter' : 'Review' }}</a>
                 </div>
             </div>
             @endif
@@ -114,15 +114,15 @@
                         <i data-lucide="building-2" class="w-4 h-4 text-amber-500 shrink-0"></i>
                         {{ $lang === 'fr' ? 'Galerie publique' : 'Public gallery' }}
                     </a>
-                    <a href="/api/v1/admin/verifications" target="_blank" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <a href="{{ route('admin.verifications') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <i data-lucide="badge-check" class="w-4 h-4 text-purple-500 shrink-0"></i>
                         {{ $lang === 'fr' ? 'File de vérification' : 'Verification queue' }}
                     </a>
-                    <a href="/api/v1/admin/businesses" target="_blank" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <a href="{{ route('admin.businesses') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <i data-lucide="list" class="w-4 h-4 text-blue-500 shrink-0"></i>
                         {{ $lang === 'fr' ? 'API — Entreprises' : 'API — Businesses' }}
                     </a>
-                    <a href="/api/v1/admin/users" target="_blank" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                         <i data-lucide="users" class="w-4 h-4 text-green-500 shrink-0"></i>
                         {{ $lang === 'fr' ? 'API — Utilisateurs' : 'API — Users' }}
                     </a>
