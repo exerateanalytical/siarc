@@ -216,7 +216,7 @@
 </nav>
 
 <!-- Main content -->
-<main>
+<main class="pb-16 sm:pb-0">
     @yield('content')
 </main>
 
@@ -265,6 +265,52 @@
         </div>
     </div>
 </footer>
+
+<!-- Mobile bottom navigation -->
+@php
+    $siacUser = session('siac_user');
+    $bottomNavLang = $lang ?? 'fr';
+    $bottomTabs = [
+        [
+            'href'   => route('home', ['lang' => $bottomNavLang]),
+            'icon'   => 'home',
+            'label'  => $bottomNavLang === 'fr' ? 'Accueil' : 'Home',
+            'active' => request()->is('/'),
+        ],
+        [
+            'href'   => route('businesses.index', ['lang' => $bottomNavLang]),
+            'icon'   => 'compass',
+            'label'  => $bottomNavLang === 'fr' ? 'Explorer' : 'Explore',
+            'active' => request()->is('galerie/entreprises*') || request()->is('galerie/secteurs*'),
+        ],
+        [
+            'href'   => $siacUser ? '/tableau-de-bord/acheteur' : '/login',
+            'icon'   => 'bookmark',
+            'label'  => $bottomNavLang === 'fr' ? 'Favoris' : 'Saved',
+            'active' => request()->is('tableau-de-bord/acheteur'),
+        ],
+        [
+            'href'   => $siacUser ? route('messages.inbox') : '/login',
+            'icon'   => 'message-circle',
+            'label'  => $bottomNavLang === 'fr' ? 'Messages' : 'Messages',
+            'active' => request()->is('tableau-de-bord/messages*'),
+        ],
+        [
+            'href'   => $siacUser ? '/tableau-de-bord' : '/login',
+            'icon'   => 'user',
+            'label'  => $bottomNavLang === 'fr' ? 'Profil' : 'Profile',
+            'active' => request()->is('tableau-de-bord') || request()->is('tableau-de-bord/entrepreneur') || request()->is('tableau-de-bord/admin*') || request()->is('login') || request()->is('inscription'),
+        ],
+    ];
+@endphp
+<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
+    @foreach($bottomTabs as $tab)
+    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-forest-600' : 'text-gray-400' }}">
+        <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5 {{ $tab['active'] ? 'fill-forest-100' : '' }}"></i>
+        <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
+    </a>
+    @endforeach
+</nav>
 
 <script>
     // Init Lucide icons
