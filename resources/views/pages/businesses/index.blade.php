@@ -111,7 +111,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                 <p class="text-sm mt-1">{{ $lang === 'fr' ? 'Essayez avec d\'autres filtres.' : 'Try different filters.' }}</p>
             </div>
             @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 mb-6">
                 @foreach($businesses as $business)
                 @include('components.business-card', ['business' => $business, 'lang' => $lang])
                 @endforeach

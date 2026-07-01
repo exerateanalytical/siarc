@@ -110,7 +110,7 @@ $title = $lang === 'fr'
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             @foreach($featured as $business)
             @include('components.business-card', ['business' => $business, 'lang' => $lang])
             @endforeach
@@ -131,7 +131,7 @@ $title = $lang === 'fr'
             {{ $lang === 'fr' ? 'Producteurs aquacoles du Cameroun' : 'Cameroonian Aquaculture Producers' }}
         </h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
             @foreach($aquaculture as $business)
             @include('components.business-card', ['business' => $business, 'lang' => $lang])
             @endforeach

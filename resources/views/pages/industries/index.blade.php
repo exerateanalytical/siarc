@@ -17,19 +17,19 @@
         </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         @foreach($industries as $industry)
         <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $industry->slug]) }}"
-            class="group bg-white border border-gray-200 rounded-xl p-5 hover:border-brand-300 hover:shadow-md transition-all">
+            class="group bg-white border border-gray-200 rounded-xl p-4 sm:p-5 hover:border-brand-300 hover:shadow-md transition-all">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center group-hover:bg-brand-100 transition-colors shrink-0">
                     <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-5 h-5 text-brand-600"></i>
                 </div>
-                <div>
-                    <h2 class="font-semibold text-gray-900 text-sm group-hover:text-brand-600 transition-colors">
+                <div class="min-w-0">
+                    <h2 class="font-semibold text-gray-900 text-sm line-clamp-1 group-hover:text-brand-600 transition-colors">
                         {{ $lang === 'fr' ? $industry->name_fr : $industry->name_en }}
                     </h2>
-                    <p class="text-xs text-gray-400">{{ $industry->businesses_count }} {{ $lang === 'fr' ? 'entreprises' : 'businesses' }}</p>
+                    <p class="text-xs text-gray-400 truncate">{{ $industry->businesses_count }} {{ $lang === 'fr' ? 'entreprises' : 'businesses' }}</p>
                 </div>
             </div>
             @if($industry->description_fr)

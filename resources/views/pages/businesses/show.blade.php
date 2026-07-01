@@ -106,44 +106,31 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                     {{ $lang === 'fr' ? 'Produits & Services' : 'Products & Services' }}
                     <span class="text-sm font-normal text-gray-400">({{ $business->products->count() }})</span>
                 </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     @foreach($business->products as $product)
-                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="bg-white border border-gray-200 rounded-xl p-4 hover:border-brand-300 hover:shadow-sm transition-all block">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 shrink-0 bg-brand-50 rounded-lg flex items-center justify-center overflow-hidden">
-                                @if($product->primaryImage)
-                                <img src="{{ $product->primaryImage->url }}" alt="" class="w-full h-full object-cover">
-                                @else
-                                <i data-lucide="package" class="w-5 h-5 text-brand-500"></i>
-                                @endif
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-brand-300 hover:shadow-sm transition-all block">
+                        <div class="relative aspect-square bg-brand-50">
+                            @if($product->primaryImage)
+                            <img src="{{ $product->primaryImage->url }}" alt="" class="w-full h-full object-cover">
+                            @else
+                            <div class="w-full h-full flex items-center justify-center">
+                                <i data-lucide="package" class="w-7 h-7 text-brand-300"></i>
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-sm font-medium text-gray-900 mb-1">
-                                    {{ $lang === 'fr' ? $product->name_fr : ($product->name_en ?? $product->name_fr) }}
-                                </h3>
-                                @if($product->description_fr)
-                                <p class="text-xs text-gray-500 line-clamp-2">
-                                    {{ $lang === 'fr' ? $product->description_fr : ($product->description_en ?? $product->description_fr) }}
-                                </p>
-                                @endif
-                                <div class="flex flex-wrap gap-2 mt-2">
-                                    @if($product->moq)
-                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                                        MOQ: {{ $product->moq }} {{ $product->quantity_unit ?? '' }}
-                                    </span>
-                                    @endif
-                                    @if($product->is_export_ready)
-                                    <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                        <i data-lucide="globe" class="w-2.5 h-2.5"></i>
-                                        {{ $lang === 'fr' ? 'Export prêt' : 'Export ready' }}
-                                    </span>
-                                    @endif
-                                    <span class="text-xs font-medium text-brand-600 flex items-center gap-1">
-                                        <i data-lucide="message-circle-question" class="w-3 h-3"></i>
-                                        {{ $lang === 'fr' ? 'Demander le prix' : 'Request price' }}
-                                    </span>
-                                </div>
-                            </div>
+                            @endif
+                            @if($product->is_export_ready)
+                            <span class="absolute top-1.5 right-1.5 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center" title="{{ $lang === 'fr' ? 'Export prêt' : 'Export ready' }}">
+                                <i data-lucide="globe" class="w-2.5 h-2.5 text-white"></i>
+                            </span>
+                            @endif
+                        </div>
+                        <div class="p-2.5">
+                            <h3 class="text-xs font-medium text-gray-900 line-clamp-2 leading-snug mb-1">
+                                {{ $lang === 'fr' ? $product->name_fr : ($product->name_en ?? $product->name_fr) }}
+                            </h3>
+                            <span class="text-[11px] font-medium text-brand-600 flex items-center gap-1">
+                                <i data-lucide="message-circle-question" class="w-3 h-3 shrink-0"></i>
+                                <span class="truncate">{{ $lang === 'fr' ? 'Demander le prix' : 'Request price' }}</span>
+                            </span>
                         </div>
                     </a>
                     @endforeach
