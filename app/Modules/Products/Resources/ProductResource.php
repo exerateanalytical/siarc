@@ -39,9 +39,10 @@ class ProductResource extends JsonResource
             'status'             => $this->status,
             'views_count'        => $this->views_count,
             'images'             => $this->whenLoaded('images', fn () => $this->images->map(fn ($img) => [
-                'id'  => $img->id,
-                'url' => $img->url,
-                'alt' => $pick($img->alt_fr, $img->alt_en),
+                'id'       => $img->id,
+                'url'      => $img->url,
+                'category' => $img->category,
+                'caption'  => $pick($img->caption_fr, $img->caption_en),
             ])),
             'attributes'         => $this->whenLoaded('attributes', fn () => $this->attributes->map(fn ($a) => [
                 'label' => $a->relationLoaded('template') && $a->template ? $pick($a->template->name_fr, $a->template->name_en) : $pick($a->key_fr, $a->key_en),
@@ -49,15 +50,16 @@ class ProductResource extends JsonResource
                 'unit'  => $a->unit,
             ])),
             'documents'          => $this->whenLoaded('documents', fn () => $this->documents->map(fn ($d) => [
-                'id'       => $d->id,
-                'type'     => $d->document_type,
-                'filename' => $d->original_filename,
-                'url'      => \Storage::url($d->file_path),
+                'id'   => $d->id,
+                'type' => $d->type,
+                'name' => $pick($d->name_fr, $d->name_en),
+                'url'  => $d->url,
             ])),
             'videos'             => $this->whenLoaded('videos', fn () => $this->videos->map(fn ($v) => [
-                'platform'  => $v->platform,
+                'type'      => $v->type,
+                'category'  => $v->category,
                 'embed_url' => $v->embed_url,
-                'title'     => $pick($v->title_fr, $v->title_en),
+                'caption'   => $pick($v->caption_fr, $v->caption_en),
             ])),
             'category'           => $this->whenLoaded('category', fn () => [
                 'id'   => $this->category->id,

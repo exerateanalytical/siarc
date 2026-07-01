@@ -10,8 +10,8 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
 
 <!-- Cover -->
 <div class="relative bg-gradient-to-br from-gray-800 to-gray-900 h-40 sm:h-56 overflow-hidden">
-    @if($business->cover_path)
-    <img src="{{ Storage::url($business->cover_path) }}" alt="" class="w-full h-full object-cover opacity-80">
+    @if($business->cover_image)
+    <img src="{{ $business->cover_url }}" alt="" class="w-full h-full object-cover opacity-80">
     @else
     <div class="w-full h-full flex items-center justify-center">
         <i data-lucide="{{ $business->industry->icon ?? 'building-2' }}" class="w-20 h-20 text-white/20"></i>
@@ -38,8 +38,8 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                 <div class="flex items-start gap-4">
                     <!-- Logo -->
                     <div class="w-16 h-16 shrink-0 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
-                        @if($business->logo_path)
-                        <img src="{{ Storage::url($business->logo_path) }}" alt="{{ $name }}" class="w-full h-full object-cover">
+                        @if($business->logo)
+                        <img src="{{ $business->logo_url }}" alt="{{ $name }}" class="w-full h-full object-cover">
                         @else
                         <i data-lucide="{{ $business->industry->icon ?? 'building-2' }}" class="w-8 h-8 text-gray-400"></i>
                         @endif

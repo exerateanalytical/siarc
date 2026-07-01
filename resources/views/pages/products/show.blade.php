@@ -17,23 +17,56 @@ $priceLabels = [
 ];
 
 $gradeLabels = [
-    'premium' => $lang === 'fr' ? 'Premium' : 'Premium',
-    'a'       => $lang === 'fr' ? 'Grade A' : 'Grade A',
-    'b'       => $lang === 'fr' ? 'Grade B' : 'Grade B',
-    'c'       => $lang === 'fr' ? 'Grade C' : 'Grade C',
+    'premium' => 'Premium',
+    'a'       => 'Grade A',
+    'b'       => 'Grade B',
+    'c'       => 'Grade C',
 ];
+
+$inspectionLabels = [
+    'not_inspected' => $lang === 'fr' ? 'Non inspecté' : 'Not inspected',
+    'pending'       => $lang === 'fr' ? 'Inspection en cours' : 'Inspection pending',
+    'passed'        => $lang === 'fr' ? 'Inspection réussie' : 'Inspection passed',
+    'failed'        => $lang === 'fr' ? 'Inspection échouée' : 'Inspection failed',
+];
+
+$imageCategoryLabels = [
+    'main' => $lang === 'fr' ? 'Principal' : 'Main', 'farm' => $lang === 'fr' ? 'Ferme' : 'Farm',
+    'production' => $lang === 'fr' ? 'Production' : 'Production', 'processing' => $lang === 'fr' ? 'Transformation' : 'Processing',
+    'packaging' => $lang === 'fr' ? 'Emballage' : 'Packaging', 'warehouse' => $lang === 'fr' ? 'Entrepôt' : 'Warehouse',
+    'workers' => $lang === 'fr' ? 'Équipe' : 'Workers', 'transport' => $lang === 'fr' ? 'Transport' : 'Transport',
+    'closeup' => $lang === 'fr' ? 'Gros plan' : 'Close-up', 'harvest' => $lang === 'fr' ? 'Récolte' : 'Harvest', 'other' => $lang === 'fr' ? 'Autre' : 'Other',
+];
+$videoCategoryLabels = [
+    'overview' => $lang === 'fr' ? 'Présentation' : 'Overview', 'production' => $lang === 'fr' ? 'Production' : 'Production',
+    'harvest' => $lang === 'fr' ? 'Récolte' : 'Harvest', 'packaging' => $lang === 'fr' ? 'Emballage' : 'Packaging',
+    'inspection' => $lang === 'fr' ? 'Inspection qualité' : 'Quality inspection', 'tour' => $lang === 'fr' ? 'Visite' : 'Tour', 'other' => $lang === 'fr' ? 'Autre' : 'Other',
+];
+
+$formatAttrValue = function ($attr) use ($lang) {
+    $raw = $lang === 'fr' ? $attr->value_fr : ($attr->value_en ?? $attr->value_fr);
+    if ($attr->template?->field_type === 'boolean') {
+        return $raw == '1' ? ($lang === 'fr' ? 'Oui' : 'Yes') : ($lang === 'fr' ? 'Non' : 'No');
+    }
+    return $raw;
+};
 
 // Split dynamic attributes: farming/production-related field keys go to the Production tab, everything else to Specifications.
 $productionFieldKeys = ['methode_elevage', 'type_alimentation', 'marque_aliment', 'taux_conversion', 'temperature_eau', 'ph_eau', 'oxygene_dissous', 'sans_maladie', 'vaccination', 'taux_survie', 'type_transformation'];
 $specAttributes = $product->attributes->filter(fn ($a) => ! in_array($a->template?->field_key, $productionFieldKeys));
 $productionAttributes = $product->attributes->filter(fn ($a) => in_array($a->template?->field_key, $productionFieldKeys));
 
-$hasProductionTab = $productionAttributes->isNotEmpty() || $product->harvest_method || $product->next_harvest_at;
-$hasQualityTab = $product->grade || $product->quality_notes || $product->is_certified || $business->certifications->isNotEmpty() || $product->documents->where('document_type', 'certificate')->isNotEmpty() || $product->documents->where('document_type', 'lab_report')->isNotEmpty();
-$hasAvailabilityTab = true; // always relevant
+$hasTraceability = $product->pond_number || $product->stocking_date || $product->feed_history || $product->treatments_administered || $product->packaging_date || $product->delivery_route;
+$hasHealth = $product->veterinary_inspection_at || $product->mortality_rate;
+$hasProductionTab = $productionAttributes->isNotEmpty() || $product->harvest_method || $product->next_harvest_at || $hasHealth;
+$hasQualityTab = $product->grade || $product->quality_notes || $product->is_certified || $product->inspection_status !== 'not_inspected' || $business->certifications->isNotEmpty() || $product->documents->whereIn('type', ['certificate', 'lab_report', 'health_certificate'])->isNotEmpty();
 $hasDocumentsTab = $product->documents->isNotEmpty();
+$hasSustainabilityTab = $product->water_usage || $product->energy_source || $product->carbon_footprint || $product->waste_management || $product->environmental_certifications;
+$hasPackagingDetails = $product->package_sizes || $product->is_custom_packaging || $product->is_ice_packed || $product->is_vacuum_packed || $product->is_live_transport || $product->is_bulk_packaging;
 
 $avgRating = $sellerStats['avg_rating'];
+$imagesByCategory = $product->images->groupBy('category');
+$videosByCategory = $product->videos->groupBy('category');
 @endphp
 
 @section('content')
@@ -58,14 +91,18 @@ $avgRating = $sellerStats['avg_rating'];
             <!-- Gallery -->
             <div class="bg-white border border-gray-200 rounded-xl overflow-hidden mb-5">
                 @if($product->images->isNotEmpty())
-                <div class="aspect-[4/3] sm:aspect-[16/9] bg-gray-100">
+                <div class="aspect-[4/3] sm:aspect-[16/9] bg-gray-100 relative">
                     <img src="{{ $product->images->first()->url }}" alt="{{ $name }}" class="w-full h-full object-cover">
+                    @if($product->images->first()->category !== 'main')
+                    <span class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">{{ $imageCategoryLabels[$product->images->first()->category] ?? '' }}</span>
+                    @endif
                 </div>
                 @if($product->images->count() > 1)
                 <div class="grid grid-cols-4 gap-1 p-1">
-                    @foreach($product->images->skip(1)->take(4) as $img)
-                    <div class="aspect-square bg-gray-100 rounded overflow-hidden">
+                    @foreach($product->images->skip(1)->take(8) as $img)
+                    <div class="aspect-square bg-gray-100 rounded overflow-hidden relative group">
                         <img src="{{ $img->url }}" alt="" class="w-full h-full object-cover">
+                        <span class="absolute bottom-0.5 left-0.5 right-0.5 bg-black/60 text-white text-[9px] px-1 py-0.5 rounded text-center truncate opacity-0 group-hover:opacity-100 transition-opacity">{{ $imageCategoryLabels[$img->category] ?? '' }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -78,8 +115,13 @@ $avgRating = $sellerStats['avg_rating'];
                 @if($product->videos->isNotEmpty())
                 <div class="grid grid-cols-2 gap-1 p-1">
                     @foreach($product->videos as $video)
-                    <div class="aspect-video bg-gray-900 rounded overflow-hidden">
-                        <iframe src="{{ $video->embed_url }}" class="w-full h-full" frameborder="0" allowfullscreen title="{{ $video->title_fr }}"></iframe>
+                    <div class="aspect-video bg-gray-900 rounded overflow-hidden relative">
+                        @if($video->type === 'upload')
+                        <video src="{{ $video->url }}" controls class="w-full h-full" title="{{ $lang === 'fr' ? $video->caption_fr : ($video->caption_en ?? $video->caption_fr) }}"></video>
+                        @else
+                        <iframe src="{{ $video->embed_url }}" class="w-full h-full" frameborder="0" allowfullscreen title="{{ $lang === 'fr' ? $video->caption_fr : ($video->caption_en ?? $video->caption_fr) }}"></iframe>
+                        @endif
+                        <span class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full pointer-events-none">{{ $videoCategoryLabels[$video->category] ?? '' }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -91,14 +133,50 @@ $avgRating = $sellerStats['avg_rating'];
                 <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
                     <div class="min-w-0">
                         @if($categoryName)
-                        <p class="text-xs font-medium text-forest-600 uppercase tracking-wide mb-1">{{ $categoryName }}</p>
+                        <p class="text-xs font-medium text-forest-600 uppercase tracking-wide mb-1">{{ $categoryName }}{{ $product->product_type ? ' · ' . $product->product_type : '' }}</p>
                         @endif
                         <h1 class="text-xl font-bold text-gray-900">{{ $name }}</h1>
                     </div>
-                    <button data-save-product="{{ $product->id }}" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
-                        <i data-lucide="bookmark" class="w-4 h-4"></i>
-                        {{ $lang === 'fr' ? 'Sauvegarder' : 'Save' }}
-                    </button>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <form method="POST" action="{{ route('products.toggle-save', ['slug' => $product->slug]) }}">
+                            @csrf
+                            <input type="hidden" name="return_to" value="{{ url()->current() }}">
+                            <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border {{ $isSaved ? 'border-forest-300 bg-forest-50 text-forest-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50' }} text-sm">
+                                <i data-lucide="bookmark" class="w-4 h-4 {{ $isSaved ? 'fill-forest-600' : '' }}"></i>
+                                {{ $isSaved ? ($lang === 'fr' ? 'Sauvegardé' : 'Saved') : ($lang === 'fr' ? 'Sauvegarder' : 'Save') }}
+                            </button>
+                        </form>
+                        <button type="button" id="share-btn" data-url="{{ url()->current() }}" data-title="{{ $name }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
+                            <i data-lucide="share-2" class="w-4 h-4"></i>
+                            {{ $lang === 'fr' ? 'Partager' : 'Share' }}
+                        </button>
+                        <button type="button" id="report-toggle" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50">
+                            <i data-lucide="flag" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report form (hidden by default) -->
+                <div id="report-form-wrap" class="hidden mb-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                    @if(session('siac_user'))
+                    <form method="POST" action="{{ route('products.report', ['slug' => $product->slug]) }}">
+                        @csrf
+                        <input type="hidden" name="return_to" value="{{ url()->current() }}">
+                        <p class="text-xs font-medium text-red-700 mb-2">{{ $lang === 'fr' ? 'Signaler cette annonce' : 'Report this listing' }}</p>
+                        <select name="reason" required class="w-full text-sm border border-red-200 rounded-lg px-2 py-1.5 mb-2">
+                            <option value="">{{ $lang === 'fr' ? 'Choisir une raison...' : 'Choose a reason...' }}</option>
+                            <option value="spam">{{ $lang === 'fr' ? 'Spam' : 'Spam' }}</option>
+                            <option value="misleading">{{ $lang === 'fr' ? 'Information trompeuse' : 'Misleading information' }}</option>
+                            <option value="inappropriate">{{ $lang === 'fr' ? 'Contenu inapproprié' : 'Inappropriate content' }}</option>
+                            <option value="duplicate">{{ $lang === 'fr' ? 'Doublon' : 'Duplicate' }}</option>
+                            <option value="other">{{ $lang === 'fr' ? 'Autre' : 'Other' }}</option>
+                        </select>
+                        <textarea name="details" rows="2" maxlength="1000" placeholder="{{ $lang === 'fr' ? 'Détails (optionnel)' : 'Details (optional)' }}" class="w-full text-sm border border-red-200 rounded-lg px-2 py-1.5 mb-2 resize-none"></textarea>
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">{{ $lang === 'fr' ? 'Envoyer le signalement' : 'Submit report' }}</button>
+                    </form>
+                    @else
+                    <p class="text-xs text-red-700">{{ $lang === 'fr' ? 'Connectez-vous pour signaler cette annonce.' : 'Log in to report this listing.' }}</p>
+                    @endif
                 </div>
 
                 <!-- Feature badges -->
@@ -200,6 +278,7 @@ $avgRating = $sellerStats['avg_rating'];
                 if ($hasProductionTab) $tabs['production'] = $lang === 'fr' ? 'Production' : 'Production';
                 if ($hasQualityTab) $tabs['quality'] = $lang === 'fr' ? 'Qualité & Certifications' : 'Quality & Certifications';
                 $tabs['availability'] = $lang === 'fr' ? 'Disponibilité' : 'Availability';
+                if ($hasSustainabilityTab) $tabs['sustainability'] = $lang === 'fr' ? 'Durabilité' : 'Sustainability';
                 if ($hasDocumentsTab) $tabs['documents'] = $lang === 'fr' ? 'Documents' : 'Documents';
             @endphp
 
@@ -224,8 +303,14 @@ $avgRating = $sellerStats['avg_rating'];
                             @if($product->sku)
                             <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">SKU</dt><dd class="font-medium text-gray-900">{{ $product->sku }}</dd></div>
                             @endif
+                            @if($product->product_type)
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Type de produit' : 'Product type' }}</dt><dd class="font-medium text-gray-900">{{ $product->product_type }}</dd></div>
+                            @endif
                             @if($product->brand)
                             <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Marque' : 'Brand' }}</dt><dd class="font-medium text-gray-900">{{ $product->brand }}</dd></div>
+                            @endif
+                            @if($product->species)
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Espèce' : 'Species' }}</dt><dd class="font-medium text-gray-900">{{ $product->species }}</dd></div>
                             @endif
                             @if($product->scientific_name)
                             <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Nom scientifique' : 'Scientific name' }}</dt><dd class="font-medium italic text-gray-900">{{ $product->scientific_name }}</dd></div>
@@ -251,6 +336,35 @@ $avgRating = $sellerStats['avg_rating'];
                             <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Lot de traçabilité' : 'Traceability batch' }}</dt><dd class="font-medium text-gray-900">{{ $product->batch_number }}</dd></div>
                             @endif
                         </dl>
+
+                        @if($hasTraceability)
+                        <div class="mt-5 pt-4 border-t border-gray-100">
+                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                                <i data-lucide="route" class="w-3.5 h-3.5"></i>
+                                {{ $lang === 'fr' ? 'Traçabilité' : 'Traceability' }}
+                            </h3>
+                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                @if($product->pond_number)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'N° de bassin' : 'Pond number' }}</dt><dd class="font-medium text-gray-900">{{ $product->pond_number }}</dd></div>
+                                @endif
+                                @if($product->stocking_date)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Date d\'empoissonnement' : 'Stocking date' }}</dt><dd class="font-medium text-gray-900">{{ $product->stocking_date->format('d/m/Y') }}</dd></div>
+                                @endif
+                                @if($product->packaging_date)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Date d\'emballage' : 'Packaging date' }}</dt><dd class="font-medium text-gray-900">{{ $product->packaging_date->format('d/m/Y') }}</dd></div>
+                                @endif
+                                @if($product->delivery_route)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Itinéraire de livraison' : 'Delivery route' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->delivery_route }}</dd></div>
+                                @endif
+                                @if($product->feed_history)
+                                <div class="sm:col-span-2 border-b border-gray-100 pb-2"><dt class="text-gray-500 mb-1">{{ $lang === 'fr' ? 'Historique d\'alimentation' : 'Feed history' }}</dt><dd class="font-medium text-gray-900">{{ $product->feed_history }}</dd></div>
+                                @endif
+                                @if($product->treatments_administered)
+                                <div class="sm:col-span-2 pb-2"><dt class="text-gray-500 mb-1">{{ $lang === 'fr' ? 'Traitements administrés' : 'Treatments administered' }}</dt><dd class="font-medium text-gray-900">{{ $product->treatments_administered }}</dd></div>
+                                @endif
+                            </dl>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- Specifications -->
@@ -261,7 +375,7 @@ $avgRating = $sellerStats['avg_rating'];
                             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
                                 <dt class="text-gray-500">{{ $lang === 'fr' ? ($attr->template->name_fr ?? $attr->key_fr) : ($attr->template->name_en ?? $attr->key_en ?? $attr->key_fr) }}</dt>
                                 <dd class="font-medium text-gray-900 text-right">
-                                    {{ $lang === 'fr' ? $attr->value_fr : ($attr->value_en ?? $attr->value_fr) }}
+                                    {{ $formatAttrValue($attr) }}
                                     @if($attr->unit) <span class="text-gray-400 font-normal">{{ $attr->unit }}</span> @endif
                                 </dd>
                             </div>
@@ -286,18 +400,46 @@ $avgRating = $sellerStats['avg_rating'];
                             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
                                 <dt class="text-gray-500">{{ $lang === 'fr' ? ($attr->template->name_fr ?? '') : ($attr->template->name_en ?? '') }}</dt>
                                 <dd class="font-medium text-gray-900 text-right">
-                                    {{ $lang === 'fr' ? $attr->value_fr : ($attr->value_en ?? $attr->value_fr) }}
+                                    {{ $formatAttrValue($attr) }}
                                     @if($attr->unit) <span class="text-gray-400 font-normal">{{ $attr->unit }}</span> @endif
                                 </dd>
                             </div>
                             @endforeach
                         </dl>
+
+                        @if($hasHealth)
+                        <div class="pt-3 border-t border-gray-100">
+                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                                <i data-lucide="heart-pulse" class="w-3.5 h-3.5"></i>
+                                {{ $lang === 'fr' ? 'État sanitaire' : 'Health status' }}
+                            </h3>
+                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                @if($product->veterinary_inspection_at)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Inspection vétérinaire' : 'Veterinary inspection' }}</dt><dd class="font-medium text-gray-900">{{ $product->veterinary_inspection_at->format('d/m/Y') }}</dd></div>
+                                @endif
+                                @if($product->mortality_rate !== null)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Taux de mortalité' : 'Mortality rate' }}</dt><dd class="font-medium text-gray-900">{{ $product->mortality_rate }}%</dd></div>
+                                @endif
+                            </dl>
+                        </div>
+                        @endif
                     </div>
                     @endif
 
                     <!-- Quality & Certifications -->
                     @if($hasQualityTab)
                     <div data-tab-panel="quality" class="tab-panel hidden">
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-gray-50 rounded-lg p-3 text-center">
+                                <p class="text-lg font-bold text-forest-600">{{ $qualityScore }}<span class="text-xs text-gray-400 font-normal">/100</span></p>
+                                <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Score qualité' : 'Quality score' }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-3 text-center">
+                                <p class="text-lg font-bold text-gray-800">{{ $inspectionLabels[$product->inspection_status] }}</p>
+                                <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Statut d\'inspection' : 'Inspection status' }}</p>
+                            </div>
+                        </div>
+
                         @if($product->grade || $product->quality_notes)
                         <div class="mb-4">
                             @if($product->grade)
@@ -325,15 +467,23 @@ $avgRating = $sellerStats['avg_rating'];
                         </div>
                         @endif
 
-                        @php $labDocs = $product->documents->whereIn('document_type', ['certificate', 'lab_report']); @endphp
+                        @if($product->environmental_certifications)
+                        <div class="mb-4">
+                            <span class="inline-flex items-center gap-1.5 text-xs bg-forest-50 text-forest-700 px-2.5 py-1.5 rounded-lg font-medium">
+                                <i data-lucide="sprout" class="w-3.5 h-3.5"></i>{{ $product->environmental_certifications }}
+                            </span>
+                        </div>
+                        @endif
+
+                        @php $labDocs = $product->documents->whereIn('type', ['certificate', 'lab_report', 'health_certificate', 'phytosanitary_certificate']); @endphp
                         @if($labDocs->isNotEmpty())
                         <div class="mb-5">
                             <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{{ $lang === 'fr' ? 'Rapports & certificats' : 'Reports & certificates' }}</h3>
                             <div class="space-y-2">
                                 @foreach($labDocs as $doc)
-                                <a href="{{ \Storage::url($doc->file_path) }}" target="_blank" rel="noopener" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                     <i data-lucide="file-check-2" class="w-4 h-4 text-forest-500 shrink-0"></i>
-                                    <span class="text-sm text-gray-700 truncate flex-1">{{ $doc->original_filename ?? ucfirst(str_replace('_', ' ', $doc->document_type)) }}</span>
+                                    <span class="text-sm text-gray-700 truncate flex-1">{{ ($lang === 'fr' ? $doc->name_fr : ($doc->name_en ?? $doc->name_fr)) ?? ucfirst(str_replace('_', ' ', $doc->type)) }}</span>
                                     <i data-lucide="download" class="w-3.5 h-3.5 text-gray-400 shrink-0"></i>
                                 </a>
                                 @endforeach
@@ -354,7 +504,7 @@ $avgRating = $sellerStats['avg_rating'];
                                 @endif
                             </div>
 
-                            <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                            <div class="grid grid-cols-4 gap-2 mb-4 text-center">
                                 <div class="bg-gray-50 rounded-lg p-2.5">
                                     <p class="text-sm font-bold text-gray-900">{{ $sellerStats['reviews_count'] }}</p>
                                     <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Avis' : 'Reviews' }}</p>
@@ -366,6 +516,10 @@ $avgRating = $sellerStats['avg_rating'];
                                 <div class="bg-gray-50 rounded-lg p-2.5">
                                     <p class="text-sm font-bold text-gray-900">{{ $sellerStats['deals_reported'] }}</p>
                                     <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Affaires déclarées*' : 'Deals reported*' }}</p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-2.5">
+                                    <p class="text-sm font-bold text-gray-900">{{ $complaintRate }}%</p>
+                                    <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Taux de plainte' : 'Complaint rate' }}</p>
                                 </div>
                             </div>
                             <p class="text-[10px] text-gray-400 mb-4">* {{ $lang === 'fr' ? 'Déclaré par le vendeur, non vérifié par la plateforme (aucune transaction n\'a lieu sur SIAC).' : 'Self-reported by the seller, not platform-verified (no transactions take place on SIAC).' }}</p>
@@ -433,29 +587,92 @@ $avgRating = $sellerStats['avg_rating'];
                             @if($product->annual_production)
                             <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Production annuelle' : 'Annual production' }}</dt><dd class="font-medium text-gray-900">{{ number_format($product->annual_production) }} {{ $product->production_unit }}</dd></div>
                             @endif
-                            @if($product->packaging_type)
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Emballage' : 'Packaging' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->packaging_type }}</dd></div>
-                            @endif
-                            @if($product->shelf_life_days)
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Durée de conservation' : 'Shelf life' }}</dt><dd class="font-medium text-gray-900">{{ $product->shelf_life_days }} {{ $lang === 'fr' ? 'jours' : 'days' }}</dd></div>
-                            @endif
-                            @if($product->storage_conditions)
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Conditions de stockage' : 'Storage conditions' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->storage_conditions }}</dd></div>
-                            @endif
-                            @if($product->delivery_radius_km)
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Rayon de livraison' : 'Delivery radius' }}</dt><dd class="font-medium text-gray-900">{{ $product->delivery_radius_km }} km</dd></div>
-                            @endif
-                            @if($product->lead_time_days)
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Délai de préparation' : 'Lead time' }}</dt><dd class="font-medium text-gray-900">{{ $product->lead_time_days }} {{ $lang === 'fr' ? 'jours' : 'days' }}</dd></div>
-                            @endif
-                            @if($product->payment_terms)
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Conditions de paiement' : 'Payment terms' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->payment_terms }}</dd></div>
-                            @endif
                             <div class="flex justify-between border-b border-gray-100 pb-2">
                                 <dt class="text-gray-500">{{ $lang === 'fr' ? 'Type de prix' : 'Price type' }}</dt>
                                 <dd class="font-medium text-gray-900">{{ $priceLabels[$product->price_type] ?? $priceLabels['contact'] }}</dd>
                             </div>
                         </dl>
+
+                        <!-- Packaging -->
+                        <div class="mb-5">
+                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                                <i data-lucide="package-2" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Emballage & Stockage' : 'Packaging & Storage' }}
+                            </h3>
+                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-2">
+                                @if($product->packaging_type)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Type d\'emballage' : 'Packaging type' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->packaging_type }}</dd></div>
+                                @endif
+                                @if($product->package_sizes)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Tailles disponibles' : 'Package sizes' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->package_sizes }}</dd></div>
+                                @endif
+                                @if($product->shelf_life_days)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Durée de conservation' : 'Shelf life' }}</dt><dd class="font-medium text-gray-900">{{ $product->shelf_life_days }} {{ $lang === 'fr' ? 'jours' : 'days' }}</dd></div>
+                                @endif
+                                @if($product->storage_conditions)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Conditions de stockage' : 'Storage conditions' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->storage_conditions }}</dd></div>
+                                @endif
+                            </dl>
+                            @if($hasPackagingDetails)
+                            <div class="flex flex-wrap gap-2">
+                                @if($product->is_custom_packaging)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Emballage personnalisé' : 'Custom packaging' }}</span>@endif
+                                @if($product->is_ice_packed)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Emballé sous glace' : 'Ice packed' }}</span>@endif
+                                @if($product->is_vacuum_packed)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Sous vide' : 'Vacuum packed' }}</span>@endif
+                                @if($product->is_live_transport)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Transport vivant' : 'Live transport' }}</span>@endif
+                                @if($product->is_bulk_packaging)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Vrac' : 'Bulk' }}</span>@endif
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Logistics -->
+                        <div class="mb-5">
+                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                                <i data-lucide="truck" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Logistique' : 'Logistics' }}
+                            </h3>
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                <span class="text-xs px-2 py-1 rounded-full flex items-center gap-1 {{ $product->pickup_available ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-400' }}"><i data-lucide="{{ $product->pickup_available ? 'check' : 'x' }}" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Retrait sur place' : 'Pickup' }}</span>
+                                <span class="text-xs px-2 py-1 rounded-full flex items-center gap-1 {{ $product->delivery_available ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-400' }}"><i data-lucide="{{ $product->delivery_available ? 'check' : 'x' }}" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Livraison' : 'Delivery' }}</span>
+                                @if($product->is_cold_chain)<span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 flex items-center gap-1"><i data-lucide="snowflake" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Chaîne du froid' : 'Cold chain' }}</span>@endif
+                                <span class="text-xs px-2 py-1 rounded-full flex items-center gap-1 {{ $product->ready_for_shipment ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-400' }}"><i data-lucide="{{ $product->ready_for_shipment ? 'check' : 'x' }}" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Prêt à expédier' : 'Ready for shipment' }}</span>
+                                @if($product->container_loading)<span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 flex items-center gap-1"><i data-lucide="container" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Chargement conteneur' : 'Container loading' }}</span>@endif
+                            </div>
+                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                @if($product->delivery_radius_km)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Rayon de livraison' : 'Delivery radius' }}</dt><dd class="font-medium text-gray-900">{{ $product->delivery_radius_km }} km</dd></div>
+                                @endif
+                                @if($product->lead_time_days)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Délai de préparation' : 'Lead time' }}</dt><dd class="font-medium text-gray-900">{{ $product->lead_time_days }} {{ $lang === 'fr' ? 'jours' : 'days' }}</dd></div>
+                                @endif
+                                @if($product->shipping_company)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Transporteur' : 'Shipping company' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->shipping_company }}</dd></div>
+                                @endif
+                                @if($product->warehouse_location)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Localisation entrepôt' : 'Warehouse location' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->warehouse_location }}</dd></div>
+                                @endif
+                                @if($product->shipping_methods)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Modes d\'expédition' : 'Shipping methods' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->shipping_methods }}</dd></div>
+                                @endif
+                            </dl>
+                        </div>
+
+                        <!-- Payment -->
+                        <div class="mb-5">
+                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                                <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Paiement' : 'Payment' }}
+                            </h3>
+                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-2">
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Devises acceptées' : 'Accepted currencies' }}</dt><dd class="font-medium text-gray-900">{{ $product->accepted_currencies }}</dd></div>
+                                @if($product->payment_methods)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Moyens de paiement' : 'Payment methods' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->payment_methods }}</dd></div>
+                                @endif
+                                @if($product->payment_terms)
+                                <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500">{{ $lang === 'fr' ? 'Conditions de paiement' : 'Payment terms' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->payment_terms }}</dd></div>
+                                @endif
+                            </dl>
+                            <div class="flex flex-wrap gap-2">
+                                @if($product->deposit_required)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Acompte requis' : 'Deposit required' }}</span>@endif
+                                @if($product->trade_finance_support)<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{{ $lang === 'fr' ? 'Financement commercial' : 'Trade finance support' }}</span>@endif
+                            </div>
+                        </div>
 
                         @if($product->harvestDates->isNotEmpty())
                         <div>
@@ -481,18 +698,38 @@ $avgRating = $sellerStats['avg_rating'];
                         @endif
                     </div>
 
+                    <!-- Sustainability -->
+                    @if($hasSustainabilityTab)
+                    <div data-tab-panel="sustainability" class="tab-panel hidden">
+                        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                            @if($product->water_usage)
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500 flex items-center gap-1.5"><i data-lucide="droplets" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Consommation d\'eau' : 'Water usage' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->water_usage }}</dd></div>
+                            @endif
+                            @if($product->energy_source)
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500 flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Source d\'énergie' : 'Energy source' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->energy_source }}</dd></div>
+                            @endif
+                            @if($product->carbon_footprint)
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500 flex items-center gap-1.5"><i data-lucide="cloud" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Empreinte carbone' : 'Carbon footprint' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->carbon_footprint }}</dd></div>
+                            @endif
+                            @if($product->waste_management)
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><dt class="text-gray-500 flex items-center gap-1.5"><i data-lucide="recycle" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Gestion des déchets' : 'Waste management' }}</dt><dd class="font-medium text-gray-900 text-right">{{ $product->waste_management }}</dd></div>
+                            @endif
+                        </dl>
+                    </div>
+                    @endif
+
                     <!-- Documents -->
                     @if($hasDocumentsTab)
                     <div data-tab-panel="documents" class="tab-panel hidden">
                         <div class="space-y-2">
                             @foreach($product->documents as $doc)
-                            <a href="{{ \Storage::url($doc->file_path) }}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                            <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                 <div class="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center shrink-0">
                                     <i data-lucide="file-text" class="w-4 h-4 text-gray-400"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate">{{ $doc->original_filename ?? ucfirst(str_replace('_', ' ', $doc->document_type)) }}</p>
-                                    <p class="text-xs text-gray-400">{{ ucfirst(str_replace('_', ' ', $doc->document_type)) }}</p>
+                                    <p class="text-sm font-medium text-gray-900 truncate">{{ ($lang === 'fr' ? $doc->name_fr : ($doc->name_en ?? $doc->name_fr)) ?? ucfirst(str_replace('_', ' ', $doc->type)) }}</p>
+                                    <p class="text-xs text-gray-400">{{ ucfirst(str_replace('_', ' ', $doc->type)) }}</p>
                                 </div>
                                 <i data-lucide="download" class="w-4 h-4 text-gray-400 shrink-0"></i>
                             </a>
@@ -528,6 +765,30 @@ $avgRating = $sellerStats['avg_rating'];
             </div>
             @endif
 
+            <!-- Similar products from other businesses -->
+            @if($similarProducts->isNotEmpty())
+            <div class="mb-5">
+                <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-forest-500"></i>
+                    {{ $lang === 'fr' ? 'Produits similaires' : 'Similar products' }}
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    @foreach($similarProducts as $sp)
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $sp->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-forest-300 hover:shadow-sm transition-all">
+                        <div class="aspect-square bg-gray-100 flex items-center justify-center">
+                            @if($sp->primaryImage)
+                            <img src="{{ $sp->primaryImage->url }}" alt="" class="w-full h-full object-cover">
+                            @else
+                            <i data-lucide="package" class="w-6 h-6 text-gray-300"></i>
+                            @endif
+                        </div>
+                        <p class="text-xs font-medium text-gray-800 p-2 truncate">{{ $lang === 'fr' ? $sp->name_fr : ($sp->name_en ?? $sp->name_fr) }}</p>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
         </div>
 
         <!-- Sidebar -->
@@ -554,8 +815,8 @@ $avgRating = $sellerStats['avg_rating'];
             <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm sticky top-20">
                 <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $business->slug]) }}" class="flex items-center gap-3 mb-2 group">
                     <div class="w-11 h-11 shrink-0 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
-                        @if($business->logo_path)
-                        <img src="{{ Storage::url($business->logo_path) }}" alt="" class="w-full h-full object-cover">
+                        @if($business->logo)
+                        <img src="{{ $business->logo_url }}" alt="" class="w-full h-full object-cover">
                         @else
                         <i data-lucide="{{ $business->industry->icon ?? 'building-2' }}" class="w-5 h-5 text-gray-400"></i>
                         @endif
@@ -569,14 +830,40 @@ $avgRating = $sellerStats['avg_rating'];
                     </div>
                 </a>
                 @if($avgRating > 0)
-                <div class="flex items-center gap-1 mb-4 text-xs">
+                <div class="flex items-center gap-1 mb-3 text-xs">
                     <i data-lucide="star" class="w-3.5 h-3.5 text-brand-500 fill-brand-500"></i>
                     <span class="font-semibold text-gray-800">{{ $avgRating }}</span>
                     <span class="text-gray-400">({{ $sellerStats['reviews_count'] }} {{ $lang === 'fr' ? 'avis' : 'reviews' }})</span>
                 </div>
-                @else
-                <div class="mb-4"></div>
                 @endif
+
+                <!-- Seller quick facts -->
+                <div class="grid grid-cols-2 gap-2 mb-4 text-center">
+                    @if($business->year_established)
+                    <div class="bg-gray-50 rounded-lg py-2">
+                        <p class="text-sm font-bold text-gray-900">{{ $business->year_established }}</p>
+                        <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Depuis' : 'Since' }}</p>
+                    </div>
+                    @endif
+                    @if($business->employee_count)
+                    <div class="bg-gray-50 rounded-lg py-2">
+                        <p class="text-sm font-bold text-gray-900">{{ $business->employee_count }}</p>
+                        <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Employés' : 'Employees' }}</p>
+                    </div>
+                    @endif
+                    @if($business->response_time_hours)
+                    <div class="bg-gray-50 rounded-lg py-2">
+                        <p class="text-sm font-bold text-gray-900">{{ $business->response_time_hours }}h</p>
+                        <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Temps de réponse' : 'Response time' }}</p>
+                    </div>
+                    @endif
+                    @if($business->verification_tier)
+                    <div class="bg-gray-50 rounded-lg py-2">
+                        <p class="text-sm font-bold text-gray-900 capitalize">{{ $business->verification_tier }}</p>
+                        <p class="text-[10px] text-gray-400">{{ $lang === 'fr' ? 'Niveau' : 'Tier' }}</p>
+                    </div>
+                    @endif
+                </div>
 
                 <h3 class="font-semibold text-gray-900 mb-3 text-sm flex items-center gap-2">
                     <i data-lucide="message-circle" class="w-4 h-4 text-forest-500"></i>
@@ -624,6 +911,12 @@ $avgRating = $sellerStats['avg_rating'];
                             {{ $lang === 'fr' ? 'Message' : 'Message' }}
                         </button>
                     </div>
+                    <button type="button" id="book-meeting-btn"
+                        onclick="document.getElementById('msg-body').value = {{ Js::from($lang === 'fr' ? 'Bonjour, je souhaiterais organiser un rendez-vous (visite, appel ou rencontre au salon) pour discuter de ce produit. Quelles sont vos disponibilités ?' : 'Hello, I would like to arrange a meeting (visit, call, or meet at the fair) to discuss this product. What are your availabilities?') }}"
+                        class="w-full flex items-center justify-center gap-1.5 px-2 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-2">
+                        <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-forest-600"></i>
+                        {{ $lang === 'fr' ? 'Réserver un rendez-vous' : 'Book a meeting' }}
+                    </button>
                     <form method="POST" action="{{ route('messages.send') }}">
                         @csrf
                         <input type="hidden" name="business_slug" value="{{ $business->slug }}">
@@ -694,6 +987,33 @@ if (ratingGroup) {
         if (e.target.matches('input[type=radio]')) paintStars();
     });
     setTimeout(paintStars, 0);
+}
+
+// Report toggle
+var reportToggle = document.getElementById('report-toggle');
+var reportWrap = document.getElementById('report-form-wrap');
+if (reportToggle && reportWrap) {
+    reportToggle.addEventListener('click', function () {
+        reportWrap.classList.toggle('hidden');
+    });
+}
+
+// Share button
+var shareBtn = document.getElementById('share-btn');
+if (shareBtn) {
+    shareBtn.addEventListener('click', function () {
+        var url = shareBtn.getAttribute('data-url');
+        var title = shareBtn.getAttribute('data-title');
+        if (navigator.share) {
+            navigator.share({ title: title, url: url }).catch(function () {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(function () {
+                var original = shareBtn.innerHTML;
+                shareBtn.innerHTML = '<span class="text-forest-600">{{ $lang === "fr" ? "Lien copié !" : "Link copied!" }}</span>';
+                setTimeout(function () { shareBtn.innerHTML = original; if (window.lucide) lucide.createIcons(); }, 2000);
+            });
+        }
+    });
 }
 </script>
 

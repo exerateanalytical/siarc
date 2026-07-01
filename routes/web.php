@@ -101,6 +101,11 @@ use App\Http\Controllers\ReviewWebController;
 Route::post('/galerie/avis', [ReviewWebController::class, 'store'])->name('reviews.store');
 Route::post('/tableau-de-bord/messages/{id}/conclure', [ReviewWebController::class, 'markDeal'])->name('messages.mark-deal');
 
+use App\Http\Controllers\ProductActionsWebController;
+
+Route::post('/galerie/produits/{slug}/sauvegarder', [ProductActionsWebController::class, 'toggleSave'])->name('products.toggle-save');
+Route::post('/galerie/produits/{slug}/signaler', [ProductActionsWebController::class, 'report'])->name('products.report');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────

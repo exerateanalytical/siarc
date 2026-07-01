@@ -143,6 +143,17 @@ class FrontendController extends Controller
             ->limit(4)
             ->get();
 
+        $similarProducts = Product::where('category_id', $product->category_id)
+            ->where('business_id', '!=', $product->business_id)
+            ->where('id', '!=', $product->id)
+            ->where('status', 'published')
+            ->whereNotNull('category_id')
+            ->whereHas('business', fn ($q) => $q->where('status', 'published'))
+            ->with('primaryImage')
+            ->orderByDesc('views_count')
+            ->limit(4)
+            ->get();
+
         $business = $product->business;
         $sellerStats = [
             'avg_rating'       => $business->averageRating(),
@@ -151,13 +162,22 @@ class FrontendController extends Controller
             'deals_reported'   => $business->dealsReportedCount(),
         ];
 
+        $qualityScore = $product->computeQualityScore();
+        $complaintRate = $product->complaintRate();
+
         $siacUser  = session('siac_user');
         $myReview  = $siacUser
             ? \App\Modules\Businesses\Models\BusinessReview::where('business_id', $business->id)->where('reviewer_id', $siacUser['id'])->first()
             : null;
+        $isSaved = $siacUser
+            ? DB::table('saved_products')->where('user_id', $siacUser['id'])->where('product_id', $product->id)->exists()
+            : false;
 
         return response(
-            view('pages.products.show', compact('lang', 'product', 'otherProducts', 'sellerStats', 'myReview'))
+            view('pages.products.show', compact(
+                'lang', 'product', 'otherProducts', 'similarProducts', 'sellerStats',
+                'myReview', 'isSaved', 'qualityScore', 'complaintRate'
+            ))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 

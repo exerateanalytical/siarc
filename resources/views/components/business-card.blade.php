@@ -3,8 +3,8 @@
 
     <!-- Cover / header area -->
     <div class="relative bg-gradient-to-br from-gray-100 to-gray-200 h-32 overflow-hidden">
-        @if($business->cover_path)
-        <img src="{{ Storage::url($business->cover_path) }}" alt="" class="w-full h-full object-cover">
+        @if($business->cover_image)
+        <img src="{{ $business->cover_url }}" alt="" class="w-full h-full object-cover">
         @else
         <div class="w-full h-full flex items-center justify-center">
             <i data-lucide="{{ $business->industry->icon ?? 'building-2' }}" class="w-12 h-12 text-gray-300"></i>
@@ -29,8 +29,8 @@
         <!-- Logo -->
         <div class="absolute -bottom-5 left-4">
             <div class="w-12 h-12 rounded-xl bg-white shadow border border-gray-200 flex items-center justify-center overflow-hidden">
-                @if($business->logo_path)
-                <img src="{{ Storage::url($business->logo_path) }}" alt="{{ $business->name_fr }}" class="w-full h-full object-cover">
+                @if($business->logo)
+                <img src="{{ $business->logo_url }}" alt="{{ $business->name_fr }}" class="w-full h-full object-cover">
                 @else
                 <i data-lucide="{{ $business->industry->icon ?? 'building-2' }}" class="w-6 h-6 text-gray-400"></i>
                 @endif
