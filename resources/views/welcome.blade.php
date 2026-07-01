@@ -1,39 +1,45 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Welcome — Galerie virtuelle de l'artisanat du Cameroun</title></head>
-<body>
-@include('partials.nav')
-<style>
-.ob-wrap{max-width:800px;margin:3rem auto;padding:0 1.5rem 4rem;}
-.ob-header{text-align:center;margin-bottom:2.5rem;}
-.ob-header h1{font-size:1.6rem;font-weight:900;color:var(--text);margin-bottom:.4rem;}
-.ob-header p{font-size:.93rem;color:var(--muted);}
-.ob-name{color:var(--green);}
-.type-section{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem;}
-.type-section h2{font-size:1rem;font-weight:800;margin-bottom:1rem;}
-.type-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
-.type-tab{padding:.45rem 1.1rem;border-radius:99px;font-size:.82rem;font-weight:700;border:2px solid var(--border);cursor:pointer;color:var(--muted);background:#fff;transition:.15s;}
-.type-tab:hover{border-color:var(--green);color:var(--green);}
-.type-tab.active{border-color:var(--green);color:var(--green);background:#e8f5e9;}
-.ob-path{display:none;}
-.ob-path.active{display:block;}
-.highlight-box{background:linear-gradient(135deg,var(--dark),var(--mid));border-radius:var(--radius);padding:1.2rem 1.4rem;color:#fff;margin-bottom:1.2rem;}
-.highlight-box h3{font-size:.95rem;font-weight:800;margin-bottom:.3rem;}
-.highlight-box p{font-size:.8rem;color:#aab;line-height:1.5;}
-.highlight-box a{color:var(--yellow);font-weight:600;}
-.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:.5rem;}
-.step-card{background:var(--light-bg);border-radius:var(--radius);padding:1.1rem;display:flex;flex-direction:column;gap:.4rem;border:1px solid var(--border);}
-.step-num{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.step-title{font-size:.86rem;font-weight:700;}
-.step-desc{font-size:.77rem;color:var(--muted);line-height:1.5;flex:1;}
-.step-action{display:inline-block;margin-top:.3rem;font-size:.79rem;font-weight:700;color:var(--green);}
-.step-action:hover{text-decoration:underline;}
-.dismiss-form{text-align:center;margin-top:2rem;}
-.dismiss-btn{padding:.7rem 2.2rem;background:var(--green);color:#fff;border:none;border-radius:9px;font-weight:700;font-size:.92rem;cursor:pointer;}
-.dismiss-btn:hover{background:#00962e;}
-.skip-link{display:block;margin-top:.8rem;font-size:.8rem;color:var(--muted);}
-.skip-link:hover{color:var(--text);}
-</style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Welcome — Galerie virtuelle de l'artisanat du Cameroun</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: { 50:'#fef9ee',100:'#fdf0d3',200:'#fada9a',300:'#f7c062',400:'#f4a32a',500:'#e8880e',600:'#cc6a09',700:'#a84e0b',800:'#873d10',900:'#6e3311' },
+                    forest: { 50:'#f0f9f4',100:'#dbf0e3',200:'#b8e0c9',300:'#8cc9a8',400:'#5ba883',500:'#2d6a4f',600:'#1b4332',700:'#0d2b1e',800:'#082018',900:'#03130e' },
+                },
+                fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+            }
+        }
+    }
+</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',system-ui,sans-serif;}</style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+
+{{-- Minimal header --}}
+<header class="bg-white border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2.5">
+            <div class="w-7 h-7 bg-forest-500 rounded flex items-center justify-center">
+                <i data-lucide="store" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="font-bold text-gray-900 text-sm">Galerie Artisanat <span class="font-normal text-gray-400">— SIAC Cameroun</span></span>
+        </a>
+        <a href="/dashboard" class="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            Dashboard
+        </a>
+    </div>
+</header>
 
 @php
     $authUser = session('auth_user');
@@ -42,7 +48,6 @@
     $paths = [
         'investor' => [
             'label'    => 'Investor',
-            'icon'     => 'Investor',
             'headline' => "Start investing in Cameroon's top companies",
             'sub'      => 'Follow these steps to make your first investment.',
             'steps'    => [
@@ -54,7 +59,6 @@
         ],
         'job_seeker' => [
             'label'    => 'Job Seeker',
-            'icon'     => 'Job Seeker',
             'headline' => 'Land your next role at a top Cameroon company',
             'sub'      => 'Build your profile, create a CV, and apply to open positions.',
             'steps'    => [
@@ -66,7 +70,6 @@
         ],
         'company_owner' => [
             'label'    => 'Company Owner',
-            'icon'     => 'Company Owner',
             'headline' => 'Get your company visible to investors and talent',
             'sub'      => 'Claim your listing and start attracting investment and great hires.',
             'steps'    => [
@@ -78,7 +81,6 @@
         ],
         'developer' => [
             'label'    => 'Developer',
-            'icon'     => 'Developer',
             'headline' => 'Integrate Cameroon company data into your app',
             'sub'      => '77 REST endpoints, OpenAPI 3.1 docs, webhook events.',
             'steps'    => [
@@ -91,35 +93,38 @@
     ];
 @endphp
 
-<div class="ob-wrap">
-    <div class="ob-header">
-        <h1>Welcome, <span class="ob-name">{{ $firstName }}</span>!</h1>
-        <p>Your account is ready. Tell us what you are here for and we will guide you through it.</p>
+<div class="max-w-3xl mx-auto px-4 py-12">
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Welcome, <span class="text-forest-500">{{ $firstName }}</span>!</h1>
+        <p class="text-gray-500 text-sm mt-1">Your account is ready. Tell us what you are here for and we will guide you through it.</p>
     </div>
 
-    <div class="type-section">
-        <h2>I am here to&hellip;</h2>
-        <div class="type-tabs">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-4">I am here to&hellip;</h2>
+        <div class="flex flex-wrap gap-2 mb-6">
             @foreach($paths as $key => $path)
-            <button class="type-tab {{ $key === $userType ? 'active' : '' }}" onclick="switchType('{{ $key }}', this)">{{ $path['label'] }}</button>
+            <button type="button" onclick="switchType('{{ $key }}', this)"
+                class="type-tab px-4 py-1.5 rounded-full text-sm font-semibold border-2 {{ $key === $userType ? 'border-forest-500 text-forest-600 bg-forest-50' : 'border-gray-200 text-gray-500' }} transition-colors">
+                {{ $path['label'] }}
+            </button>
             @endforeach
         </div>
 
         @foreach($paths as $key => $path)
-        <div class="ob-path {{ $key === $userType ? 'active' : '' }}" id="path-{{ $key }}">
-            <div class="highlight-box">
-                <h3>{{ $path['headline'] }}</h3>
-                <p>{{ $path['sub'] }} You can revisit this guide anytime at <a href="/welcome">/welcome</a>.</p>
+        <div class="ob-path {{ $key === $userType ? '' : 'hidden' }}" id="path-{{ $key }}">
+            <div class="bg-gradient-to-br from-forest-700 to-forest-900 rounded-xl p-5 text-white mb-5">
+                <h3 class="font-bold text-sm mb-1">{{ $path['headline'] }}</h3>
+                <p class="text-xs text-gray-300 leading-relaxed">{{ $path['sub'] }} You can revisit this guide anytime at <a href="/welcome" class="text-brand-300 font-semibold">/welcome</a>.</p>
             </div>
-            <div class="steps-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 @foreach($path['steps'] as $i => $step)
-                <div class="step-card">
-                    <div style="display:flex;gap:.6rem;align-items:center;">
-                        <div class="step-num">{{ $i + 1 }}</div>
-                        <div class="step-title">{{ $step['title'] }}</div>
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col gap-1.5">
+                    <div class="flex gap-2 items-center">
+                        <div class="w-6 h-6 rounded-full bg-forest-500 text-white text-xs font-bold flex items-center justify-center shrink-0">{{ $i + 1 }}</div>
+                        <div class="text-sm font-semibold text-gray-900">{{ $step['title'] }}</div>
                     </div>
-                    <div class="step-desc">{{ $step['desc'] }}</div>
-                    <a class="step-action" href="{{ $step['url'] }}">{{ $step['cta'] }} &rarr;</a>
+                    <div class="text-xs text-gray-500 leading-relaxed flex-1">{{ $step['desc'] }}</div>
+                    <a class="text-xs font-semibold text-forest-600 hover:underline mt-1" href="{{ $step['url'] }}">{{ $step['cta'] }} &rarr;</a>
                 </div>
                 @endforeach
             </div>
@@ -127,25 +132,31 @@
         @endforeach
     </div>
 
-    <div class="dismiss-form">
+    <div class="text-center">
         <form method="POST" action="/welcome">
             @csrf
             <input type="hidden" name="user_type" id="selected-type" value="{{ $userType }}">
-            <button type="submit" class="dismiss-btn">Got it &mdash; take me to my dashboard &rarr;</button>
+            <button type="submit" class="bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 px-8 rounded-lg text-sm transition-colors">
+                Got it &mdash; take me to my dashboard &rarr;
+            </button>
         </form>
-        <a class="skip-link" href="/dashboard">Skip for now</a>
+        <a class="block mt-3 text-xs text-gray-400 hover:text-gray-600" href="/dashboard">Skip for now</a>
     </div>
 </div>
 
 <script>
+lucide.createIcons();
 function switchType(key, btn) {
-    document.querySelectorAll('.type-tab').forEach(function(t){t.classList.remove('active');});
-    document.querySelectorAll('.ob-path').forEach(function(p){p.classList.remove('active');});
-    btn.classList.add('active');
-    document.getElementById('path-' + key).classList.add('active');
+    document.querySelectorAll('.type-tab').forEach(function(t){
+        t.classList.remove('border-forest-500','text-forest-600','bg-forest-50');
+        t.classList.add('border-gray-200','text-gray-500');
+    });
+    document.querySelectorAll('.ob-path').forEach(function(p){p.classList.add('hidden');});
+    btn.classList.remove('border-gray-200','text-gray-500');
+    btn.classList.add('border-forest-500','text-forest-600','bg-forest-50');
+    document.getElementById('path-' + key).classList.remove('hidden');
     document.getElementById('selected-type').value = key;
 }
 </script>
-@include('partials.footer')
 </body>
 </html>

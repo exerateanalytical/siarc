@@ -162,9 +162,10 @@ Route::get('/lang/{locale}', function (string $locale, Request $request) {
 // ─────────────────────────────────────────────
 // Forgot / Reset password
 // ─────────────────────────────────────────────
-Route::get('/forgot-password', function () {
+Route::get('/forgot-password', function (Request $request) {
     if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
-    return view('auth.forgot-password');
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : (in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr');
+    return view('auth.forgot-password', compact('lang'));
 })->name('password.request');
 
 Route::post('/forgot-password', function (Request $request) {
@@ -222,7 +223,9 @@ Route::get('/reset-password/{token}', function (Request $request, string $token)
         && Hash::check($token, $row->token)
         && now()->diffInMinutes($row->created_at) <= 60;
 
-    return view('auth.reset-password', compact('token', 'email', 'tokenValid'));
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : (in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr');
+
+    return view('auth.reset-password', compact('token', 'email', 'tokenValid', 'lang'));
 })->name('password.reset');
 
 Route::post('/reset-password', function (Request $request) {

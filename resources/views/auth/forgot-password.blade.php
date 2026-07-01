@@ -1,71 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Forgot Password — Galerie virtuelle de l'artisanat du Cameroun</title></head>
-<body>
-@php $activeTab = ''; @endphp
-@include('partials.nav')
-<style>
-.auth-wrap{min-height:calc(100vh - 60px);display:flex;align-items:center;justify-content:center;padding:2rem 1rem;}
-.auth-card{background:var(--white);border-radius:14px;box-shadow:0 4px 32px rgba(0,0,0,.1);padding:2.5rem;width:100%;max-width:420px;}
-.auth-logo{text-align:center;margin-bottom:1.5rem;}
-.auth-logo .flag{display:inline-flex;height:28px;border-radius:4px;overflow:hidden;}
-.auth-logo .flag span{display:block;width:12px;height:28px;}
-.auth-title{font-size:1.2rem;font-weight:800;text-align:center;margin-bottom:.25rem;}
-.auth-sub{text-align:center;font-size:.84rem;color:var(--muted);margin-bottom:1.8rem;line-height:1.5;}
-.form-group{margin-bottom:1.1rem;}
-.form-label{display:block;font-size:.83rem;font-weight:600;margin-bottom:.35rem;color:var(--text);}
-.form-input{width:100%;padding:.65rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;outline:none;transition:border-color .15s;}
-.form-input:focus{border-color:var(--green);}
-.form-input.is-error{border-color:var(--red);}
-.btn-primary{width:100%;padding:.8rem;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .15s;margin-top:.5rem;}
-.btn-primary:hover{background:#00962e;}
-.auth-link{text-align:center;font-size:.84rem;color:var(--muted);margin-top:1rem;}
-.auth-link a{color:var(--green);font-weight:600;}
-.alert{padding:.75rem 1rem;border-radius:8px;font-size:.83rem;margin-bottom:1rem;}
-.alert-success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
-.alert-error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;}
-.alert-dev{background:#fff3cd;color:#856404;border:1px solid #ffc107;word-break:break-all;}
-</style>
+@extends('layouts.app')
 
-<div class="auth-wrap">
-    <div class="auth-card">
-        <div class="auth-logo">
-            <div class="flag"><span style="background:var(--green)"></span><span style="background:var(--red)"></span><span style="background:var(--yellow)"></span></div>
+@section('content')
+<div class="min-h-[calc(100vh-140px)] flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-md">
+
+        {{-- Logo / Brand --}}
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-forest-500 rounded-2xl mb-4 shadow-lg">
+                <i data-lucide="key-round" class="w-7 h-7 text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900">
+                {{ $lang === 'fr' ? 'Mot de passe oublié' : 'Forgot Password' }}
+            </h1>
+            <p class="text-gray-500 text-sm mt-1">
+                {{ $lang === 'fr' ? 'Nous vous enverrons un lien de réinitialisation.' : 'We will send you a link to reset your password.' }}
+            </p>
         </div>
-        <div class="auth-title">Reset your password</div>
-        <div class="auth-sub">Enter your email and we will send you a link to reset your password.</div>
 
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+        {{-- Card --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
 
-        @if(session('dev_reset_url'))
-            <div class="alert alert-dev">
-                <strong>Dev mode — reset link:</strong><br>
-                <a href="{{ session('dev_reset_url') }}" style="color:#856404;word-break:break-all;">{{ session('dev_reset_url') }}</a>
+            @if(session('status'))
+                <div class="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+                    <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if(session('dev_reset_url'))
+                <div class="mb-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800 break-all">
+                    <i data-lucide="flask-conical" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    <div>
+                        <strong class="block mb-1">{{ $lang === 'fr' ? 'Mode développement — lien de réinitialisation :' : 'Dev mode — reset link:' }}</strong>
+                        <a href="{{ session('dev_reset_url') }}" class="text-amber-900 underline break-all">{{ session('dev_reset_url') }}</a>
+                    </div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            @if(!session('status'))
+            <form method="POST" action="/forgot-password">
+                @csrf
+                <input type="hidden" name="lang" value="{{ $lang }}">
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="email">
+                        {{ $lang === 'fr' ? 'Adresse email' : 'Email address' }}
+                    </label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                        <input id="email" name="email" type="email" autocomplete="email"
+                            value="{{ old('email') }}"
+                            placeholder="{{ $lang === 'fr' ? 'votre@email.cm' : 'your@email.com' }}"
+                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
+                            required autofocus>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    {{ $lang === 'fr' ? 'Envoyer le lien' : 'Send Reset Link' }}
+                </button>
+            </form>
+            @endif
+
+            <div class="mt-6 pt-5 border-t border-gray-100 text-center">
+                <a href="/login?lang={{ $lang }}" class="inline-flex items-center gap-1 text-sm text-forest-500 font-semibold hover:text-forest-600 transition-colors">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    {{ $lang === 'fr' ? 'Retour à la connexion' : 'Back to login' }}
+                </a>
             </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-error">{{ $errors->first() }}</div>
-        @endif
-
-        @if(!session('status'))
-        <form method="POST" action="/forgot-password">
-            @csrf
-            <div class="form-group">
-                <label class="form-label" for="email">Email Address</label>
-                <input class="form-input {{ $errors->has('email') ? 'is-error' : '' }}"
-                    type="email" id="email" name="email"
-                    value="{{ old('email') }}" placeholder="you@example.com" required autofocus>
-            </div>
-            <button class="btn-primary" type="submit">Send Reset Link</button>
-        </form>
-        @endif
-
-        <div class="auth-link"><a href="/login">&larr; Back to login</a></div>
+        </div>
     </div>
 </div>
-@include('partials.footer')
-</body>
-</html>
+@endsection
