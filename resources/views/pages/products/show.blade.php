@@ -7,13 +7,6 @@ $description = $lang === 'fr' ? $product->description_fr : ($product->descriptio
 $business = $product->business;
 $businessName = $lang === 'fr' ? $business->name_fr : ($business->name_en ?? $business->name_fr);
 $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_fr : ($product->category->name_en ?? $product->category->name_fr)) : null;
-
-$priceLabels = [
-    'retail'     => $lang === 'fr' ? 'Détail' : 'Retail',
-    'wholesale'  => $lang === 'fr' ? 'Gros' : 'Wholesale',
-    'negotiable' => $lang === 'fr' ? 'Négociable' : 'Negotiable',
-    'contact'    => $lang === 'fr' ? 'Prix sur demande' : 'Price on request',
-];
 @endphp
 
 @section('content')
@@ -238,23 +231,21 @@ $priceLabels = [
         <!-- Sidebar -->
         <aside class="lg:w-72 shrink-0 space-y-5">
 
-            <!-- Price -->
-            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                @if($product->price_type !== 'contact' && $product->price_amount)
-                <p class="text-xs text-gray-400 mb-1">{{ $priceLabels[$product->price_type] ?? '' }}</p>
-                <p class="text-2xl font-bold text-gray-900 mb-1">
-                    {{ number_format($product->price_amount, 0, ',', ' ') }} <span class="text-sm font-normal text-gray-500">{{ $product->price_currency }}</span>
+            @if(session('success'))
+            <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 flex items-start gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                {{ session('success') }}
+            </div>
+            @endif
+
+            <!-- No price shown: request price / message only -->
+            <div class="bg-brand-50 border border-brand-100 rounded-xl p-4 flex items-start gap-2.5">
+                <i data-lucide="message-circle-question" class="w-4 h-4 shrink-0 mt-0.5 text-brand-700"></i>
+                <p class="text-xs text-brand-700 leading-relaxed">
+                    {{ $lang === 'fr'
+                        ? 'Les prix ne sont pas affichés. Demandez le prix ou envoyez un message directement au vendeur.'
+                        : 'Prices are not displayed. Request the price or message the seller directly.' }}
                 </p>
-                @if($product->price_unit)
-                <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'par' : 'per' }} {{ $product->price_unit }}</p>
-                @endif
-                @else
-                <div class="flex items-center gap-2 text-brand-700">
-                    <i data-lucide="message-circle-question" class="w-5 h-5"></i>
-                    <p class="text-sm font-semibold">{{ $priceLabels['contact'] }}</p>
-                </div>
-                <p class="text-xs text-gray-400 mt-1">{{ $lang === 'fr' ? 'Contactez le vendeur pour les tarifs et conditions.' : 'Contact the seller for pricing and terms.' }}</p>
-                @endif
             </div>
 
             <!-- Business card -->
@@ -308,10 +299,41 @@ $priceLabels = [
                     @endif
                 </div>
 
-                <button class="w-full mt-3 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i>
-                    {{ $lang === 'fr' ? 'Demander un devis' : 'Request a quote' }}
-                </button>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    @if(session('siac_user'))
+                    <div class="flex gap-2 mb-2">
+                        <button type="button" onclick="document.getElementById('msg-body').value = {{ Js::from($lang === 'fr' ? 'Bonjour, pourriez-vous me communiquer le prix et les conditions pour ce produit ?' : 'Hello, could you share the price and terms for this product?') }}"
+                            class="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="message-circle-question" class="w-3.5 h-3.5 text-brand-600"></i>
+                            {{ $lang === 'fr' ? 'Demander le prix' : 'Request price' }}
+                        </button>
+                        <button type="button" onclick="document.getElementById('msg-body').value=''; document.getElementById('msg-body').focus()"
+                            class="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-brand-600"></i>
+                            {{ $lang === 'fr' ? 'Message' : 'Message' }}
+                        </button>
+                    </div>
+                    <form method="POST" action="{{ route('messages.send') }}">
+                        @csrf
+                        <input type="hidden" name="business_slug" value="{{ $business->slug }}">
+                        <input type="hidden" name="product_slug" value="{{ $product->slug }}">
+                        <input type="hidden" name="return_to" value="{{ url()->current() }}">
+                        <textarea id="msg-body" name="body" rows="3" required maxlength="2000"
+                            placeholder="{{ $lang === 'fr' ? 'Écrivez votre message au vendeur...' : 'Write your message to the seller...' }}"
+                            class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 mb-2 focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400 resize-none">{{ old('body') }}</textarea>
+                        @error('body')<p class="text-xs text-red-600 mb-2">{{ $message }}</p>@enderror
+                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            {{ $lang === 'fr' ? 'Envoyer au vendeur' : 'Send to seller' }}
+                        </button>
+                    </form>
+                    @else
+                    <a href="/login?next={{ urlencode(url()->current()) }}" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i>
+                        {{ $lang === 'fr' ? 'Se connecter pour contacter' : 'Log in to contact seller' }}
+                    </a>
+                    @endif
+                </div>
 
                 <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
                     <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>{{ number_format($product->views_count) }} {{ $lang === 'fr' ? 'vues' : 'views' }}</span>

@@ -138,12 +138,9 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                                         {{ $lang === 'fr' ? 'Export prêt' : 'Export ready' }}
                                     </span>
                                     @endif
-                                    <span class="text-xs font-medium text-brand-600">
-                                        @if($product->price_type !== 'contact' && $product->price_amount)
-                                            {{ number_format($product->price_amount, 0, ',', ' ') }} {{ $product->price_currency }}
-                                        @else
-                                            {{ $lang === 'fr' ? 'Prix sur demande' : 'Price on request' }}
-                                        @endif
+                                    <span class="text-xs font-medium text-brand-600 flex items-center gap-1">
+                                        <i data-lucide="message-circle-question" class="w-3 h-3"></i>
+                                        {{ $lang === 'fr' ? 'Demander le prix' : 'Request price' }}
                                     </span>
                                 </div>
                             </div>
@@ -203,14 +200,42 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                     @endif
                 </div>
 
-                <!-- "Contact for price" notice -->
-                <div class="bg-brand-50 border border-brand-100 rounded-lg p-3 text-xs text-brand-700 flex items-start gap-2">
+                @if(session('success'))
+                <div class="bg-green-50 border border-green-200 text-green-700 text-xs rounded-lg p-3 mb-3 flex items-start gap-2">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
+                    {{ session('success') }}
+                </div>
+                @endif
+
+                <!-- "No price" notice + in-platform message form -->
+                <div class="bg-brand-50 border border-brand-100 rounded-lg p-3 text-xs text-brand-700 flex items-start gap-2 mb-3">
                     <i data-lucide="info" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
                     {{ $lang === 'fr'
-                        ? 'Les prix ne sont pas affichés — contactez l\'entreprise directement pour connaître les tarifs et conditions.'
-                        : 'Prices are not displayed — contact the business directly for pricing and conditions.'
+                        ? 'Les prix ne sont pas affichés — demandez le prix ou envoyez un message directement à l\'entreprise.'
+                        : 'Prices are not displayed — request the price or send a message directly to the business.'
                     }}
                 </div>
+
+                @if(session('siac_user'))
+                <form method="POST" action="{{ route('messages.send') }}">
+                    @csrf
+                    <input type="hidden" name="business_slug" value="{{ $business->slug }}">
+                    <input type="hidden" name="return_to" value="{{ url()->current() }}">
+                    <textarea id="biz-msg-body" name="body" rows="3" required maxlength="2000"
+                        placeholder="{{ $lang === 'fr' ? 'Écrivez votre message...' : 'Write your message...' }}"
+                        class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 mb-2 focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400 resize-none">{{ old('body') }}</textarea>
+                    @error('body')<p class="text-xs text-red-600 mb-2">{{ $message }}</p>@enderror
+                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        {{ $lang === 'fr' ? 'Envoyer un message' : 'Send message' }}
+                    </button>
+                </form>
+                @else
+                <a href="/login?next={{ urlencode(url()->current()) }}" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    {{ $lang === 'fr' ? 'Se connecter pour contacter' : 'Log in to contact' }}
+                </a>
+                @endif
 
                 @if($business->address_fr)
                 <div class="mt-4 pt-4 border-t border-gray-100">

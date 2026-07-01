@@ -94,13 +94,13 @@
                 {{ $lang === 'fr' ? 'Vues' : 'Views' }}
             </p>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+        <a href="{{ route('messages.inbox') }}" class="bg-white rounded-xl border border-gray-200 p-4 text-center hover:border-brand-300 transition-colors">
             <p class="text-2xl font-bold text-gray-900">{{ $messageCount }}</p>
             <p class="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                 {{ $lang === 'fr' ? 'Messages' : 'Messages' }}
             </p>
-        </div>
+        </a>
         <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
             <p class="text-2xl font-bold text-gray-900 capitalize">{{ $business->verification_tier ?? 'basic' }}</p>
             <p class="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
@@ -159,6 +159,11 @@
                 <h2 class="text-sm font-semibold text-gray-900">{{ $lang === 'fr' ? 'Actions rapides' : 'Quick Actions' }}</h2>
             </div>
             <div class="divide-y divide-gray-50">
+                <a href="{{ route('messages.inbox') }}"
+                    class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-blue-500 shrink-0"></i>
+                    {{ $lang === 'fr' ? 'Mes messages' : 'My messages' }}
+                </a>
                 <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <i data-lucide="eye" class="w-4 h-4 text-blue-500 shrink-0"></i>

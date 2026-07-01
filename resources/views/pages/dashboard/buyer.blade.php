@@ -119,12 +119,12 @@
                         {{ $lang === 'fr' ? 'Mes conversations' : 'My Conversations' }}
                         <span class="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">{{ $conversations->count() }}</span>
                     </h2>
-                    <a href="/api/v1/conversations" target="_blank" class="text-xs text-brand-500 font-medium">API</a>
+                    <a href="{{ route('messages.inbox') }}" class="text-xs text-brand-500 font-medium">{{ $lang === 'fr' ? 'Tout voir' : 'View all' }}</a>
                 </div>
                 @if($conversations->count())
                 <div class="divide-y divide-gray-50">
                     @foreach($conversations as $conv)
-                    <div class="flex items-center gap-3 px-4 py-3">
+                    <a href="{{ route('messages.thread', ['id' => $conv->id]) }}" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
                         <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                             <i data-lucide="message-circle" class="w-4 h-4 text-blue-500"></i>
                         </div>
@@ -133,7 +133,7 @@
                             <p class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($conv->updated_at)->diffForHumans() }}</p>
                         </div>
                         <span @class(['w-2 h-2 rounded-full shrink-0', 'bg-blue-500' => $conv->status === 'active', 'bg-gray-300' => $conv->status !== 'active'])></span>
-                    </div>
+                    </a>
                     @endforeach
                 </div>
                 @else

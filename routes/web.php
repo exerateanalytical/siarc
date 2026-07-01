@@ -89,6 +89,13 @@ Route::get('/galerie/entreprises/{slug}', [FrontendController::class, 'businessS
 Route::get('/galerie/secteurs', [FrontendController::class, 'industriesIndex'])->name('industries.index');
 Route::get('/galerie/produits/{slug}', [FrontendController::class, 'productShow'])->name('products.show');
 
+use App\Http\Controllers\MessagingWebController;
+
+Route::post('/galerie/messages', [MessagingWebController::class, 'send'])->name('messages.send');
+Route::get('/tableau-de-bord/messages', [MessagingWebController::class, 'inbox'])->name('messages.inbox');
+Route::get('/tableau-de-bord/messages/{id}', [MessagingWebController::class, 'thread'])->name('messages.thread');
+Route::post('/tableau-de-bord/messages/{id}/repondre', [MessagingWebController::class, 'reply'])->name('messages.reply');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────
