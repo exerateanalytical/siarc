@@ -34,7 +34,7 @@ $title = $lang === 'fr'
             </p>
 
             <!-- Search bar -->
-            <form action="{{ route('businesses.index', ['lang' => $lang]) }}" method="GET" class="flex gap-2">
+            <form action="{{ route('gallery.search', ['lang' => $lang]) }}" method="GET" class="flex gap-2">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <div class="flex-1 relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>

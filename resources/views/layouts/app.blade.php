@@ -108,7 +108,7 @@
 
             <!-- Search + auth + mobile menu -->
             <div class="flex items-center gap-2">
-                <form action="{{ route('businesses.index', ['lang' => $lang]) }}" method="GET" class="relative hidden sm:block">
+                <form action="{{ route('gallery.search', ['lang' => $lang]) }}" method="GET" class="relative hidden sm:block">
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
                     <input name="q" value="{{ request('q') }}" type="search"
@@ -167,7 +167,7 @@
 
         <!-- Mobile menu -->
         <div id="mobile-menu" class="hidden md:hidden pb-3 border-t border-gray-100 pt-2">
-            <form action="{{ route('businesses.index', ['lang' => $lang]) }}" method="GET" class="mb-2">
+            <form action="{{ route('gallery.search', ['lang' => $lang]) }}" method="GET" class="mb-2">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <div class="relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>

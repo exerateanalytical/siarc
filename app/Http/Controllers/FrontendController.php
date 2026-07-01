@@ -194,4 +194,47 @@ class FrontendController extends Controller
             view('pages.industries.index', compact('lang', 'industries'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
+
+    public function search(Request $request)
+    {
+        $lang = $this->lang($request);
+        $q = trim((string) $request->query('q', ''));
+
+        $businesses = collect();
+        $products = collect();
+
+        if (mb_strlen($q) >= 2) {
+            $like = "%{$q}%";
+
+            $businesses = Business::with(['industry', 'city', 'region'])
+                ->where('status', 'published')
+                ->where(fn ($qb) => $qb->where('name_fr', 'like', $like)
+                    ->orWhere('name_en', 'like', $like)
+                    ->orWhere('tagline_fr', 'like', $like)
+                    ->orWhere('description_fr', 'like', $like))
+                ->orderByDesc('is_featured')
+                ->limit(12)
+                ->get();
+
+            $products = Product::published()
+                ->with(['primaryImage', 'category', 'business'])
+                ->whereHas('business', fn ($qb) => $qb->where('status', 'published'))
+                ->where(fn ($qb) => $qb->where('name_fr', 'like', $like)
+                    ->orWhere('name_en', 'like', $like)
+                    ->orWhere('description_fr', 'like', $like))
+                ->limit(12)
+                ->get();
+
+            DB::table('search_queries')->insert([
+                'query'         => $q,
+                'results_count' => $businesses->count() + $products->count(),
+                'ip'            => $request->ip(),
+                'searched_at'   => now(),
+            ]);
+        }
+
+        return response(
+            view('pages.search', compact('lang', 'q', 'businesses', 'products'))
+        )->cookie('lang', $lang, 60 * 24 * 30);
+    }
 }
