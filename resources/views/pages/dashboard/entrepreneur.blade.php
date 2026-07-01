@@ -185,7 +185,7 @@
                     <i data-lucide="image" class="w-4 h-4 text-purple-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Logo & couverture' : 'Logo & cover' }}
                 </a>
-                <a href="/api/v1/my/business/verification/apply" target="_blank"
+                <a href="{{ route('verification.show') }}"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <i data-lucide="badge-check" class="w-4 h-4 text-indigo-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Demander vérification' : 'Request verification' }}

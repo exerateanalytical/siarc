@@ -122,6 +122,11 @@ Route::get('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::c
 Route::post('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'update'])->name('products.web-update');
 Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/supprimer', [ProductWebController::class, 'destroyImage'])->name('products.web-delete-image');
 
+use App\Http\Controllers\VerificationWebController;
+
+Route::get('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'show'])->name('verification.show');
+Route::post('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'apply'])->name('verification.apply');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────

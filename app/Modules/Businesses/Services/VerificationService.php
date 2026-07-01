@@ -13,15 +13,10 @@ class VerificationService
 {
     public function apply(Business $business, string $requestedTier, array $documents): VerificationApplication
     {
-        // Cancel any pending application
-        $business->verificationApplications()
-                 ->where('status', 'pending')
-                 ->update(['status' => 'cancelled']);
-
         $application = VerificationApplication::create([
             'business_id'    => $business->id,
             'tier_requested' => $requestedTier,
-            'status'         => 'pending',
+            'status'         => 'submitted',
             'submitted_at'   => now(),
         ]);
 
