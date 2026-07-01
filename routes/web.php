@@ -163,12 +163,12 @@ Route::get('/lang/{locale}', function (string $locale, Request $request) {
 // Forgot / Reset password
 // ─────────────────────────────────────────────
 Route::get('/forgot-password', function () {
-    if (session('auth_user')) return redirect('/dashboard');
+    if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
     return view('auth.forgot-password');
 })->name('password.request');
 
 Route::post('/forgot-password', function (Request $request) {
-    if (session('auth_user')) return redirect('/dashboard');
+    if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
 
     $request->validate(['email' => ['required', 'email']]);
     $email = strtolower(trim($request->input('email')));
@@ -213,7 +213,7 @@ Route::post('/forgot-password', function (Request $request) {
 })->name('password.email');
 
 Route::get('/reset-password/{token}', function (Request $request, string $token) {
-    if (session('auth_user')) return redirect('/dashboard');
+    if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
 
     $email = $request->query('email', '');
     $row   = DB::table('password_reset_tokens')->where('email', strtolower($email))->first();
@@ -328,7 +328,7 @@ Route::post('/login', function (Request $request) {
         return redirect('/tableau-de-bord');
     }
 
-    $next = $request->get('next', '/dashboard');
+    $next = $request->get('next', '/tableau-de-bord');
     return redirect($next);
 })->name('login.post');
 
@@ -642,13 +642,11 @@ Route::post('/welcome', function (Request $request) {
     session(['auth_user' => $sessionUser]);
 
     $destinations = [
-        'investor'      => '/investor-profile',
-        'job_seeker'    => '/my-profile',
-        'company_owner' => '/',
+        'company_owner' => '/tableau-de-bord',
         'developer'     => '/developer',
     ];
 
-    return redirect($destinations[$userType] ?? '/dashboard')
+    return redirect($destinations[$userType] ?? '/tableau-de-bord')
         ->with('success', 'Welcome aboard! Here\'s where to start.');
 })->name('welcome.post');
 
