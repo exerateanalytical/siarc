@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class VerificationApplication extends Model
 {
     protected $fillable = [
-        'business_id', 'requested_tier', 'current_tier',
-        'status', 'admin_notes', 'reviewed_by', 'reviewed_at', 'submitted_at',
+        'business_id', 'tier_requested',
+        'status', 'reviewer_notes', 'reviewer_id', 'reviewed_at', 'submitted_at',
     ];
 
     protected function casts(): array
@@ -26,11 +26,11 @@ class VerificationApplication extends Model
 
     public function documents(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(VerificationDocument::class);
+        return $this->hasMany(VerificationDocument::class, 'application_id');
     }
 
     public function reviewer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Auth\Models\User::class, 'reviewed_by');
+        return $this->belongsTo(\App\Modules\Auth\Models\User::class, 'reviewer_id');
     }
 }

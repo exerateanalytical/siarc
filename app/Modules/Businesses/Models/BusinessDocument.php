@@ -7,22 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 class BusinessDocument extends Model
 {
     protected $fillable = [
-        'business_id', 'document_type', 'file_path', 'original_filename',
-        'file_size', 'mime_type', 'is_verified', 'verified_at', 'verified_by',
-        'expires_at', 'notes',
+        'business_id', 'type', 'name_fr', 'name_en', 'file_path',
+        'issued_by', 'issued_at', 'expires_at', 'is_public',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_verified' => 'boolean',
-            'verified_at' => 'datetime',
-            'expires_at'  => 'datetime',
+            'is_public'  => 'boolean',
+            'issued_at'  => 'date',
+            'expires_at' => 'date',
         ];
     }
 
     public function business(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return config('filesystems.default') === 's3'
+            ? \Storage::disk('s3')->temporaryUrl($this->file_path, now()->addHours(24))
+            : \Storage::disk('public')->url($this->file_path);
     }
 }

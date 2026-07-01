@@ -31,7 +31,7 @@ class MessageSent implements ShouldBroadcastNow
             'body'            => $this->message->body,
             'created_at'      => $this->message->created_at?->toIso8601String(),
             'attachments'     => $this->message->attachments->map(fn ($a) => [
-                'original_filename' => $a->original_filename,
+                'original_filename' => $a->original_name,
                 'url'               => $a->url,
             ])->toArray(),
         ];

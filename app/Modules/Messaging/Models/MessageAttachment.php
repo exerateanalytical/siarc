@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MessageAttachment extends Model
 {
-    protected $fillable = ['message_id', 'file_path', 'original_filename', 'file_size', 'mime_type'];
+    protected $fillable = ['message_id', 'file_path', 'original_name', 'file_size', 'mime_type'];
 
     public function message(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -15,6 +15,8 @@ class MessageAttachment extends Model
 
     public function getUrlAttribute(): string
     {
-        return \Storage::disk('s3')->temporaryUrl($this->file_path, now()->addMinutes(60));
+        return config('filesystems.default') === 's3'
+            ? \Storage::disk('s3')->temporaryUrl($this->file_path, now()->addMinutes(60))
+            : \Storage::disk('public')->url($this->file_path);
     }
 }

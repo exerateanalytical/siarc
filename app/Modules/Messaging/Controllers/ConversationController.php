@@ -126,7 +126,7 @@ class ConversationController extends Controller
                     'read_at'     => $m->read_at?->toIso8601String(),
                     'created_at'  => $m->created_at?->toIso8601String(),
                     'attachments' => $m->attachments->map(fn ($a) => [
-                        'original_filename' => $a->original_filename,
+                        'original_filename' => $a->original_name,
                         'url'               => $a->url,
                     ]),
                 ]),

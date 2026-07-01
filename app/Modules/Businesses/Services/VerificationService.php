@@ -20,24 +20,25 @@ class VerificationService
 
         $application = VerificationApplication::create([
             'business_id'    => $business->id,
-            'requested_tier' => $requestedTier,
-            'current_tier'   => $business->verification_tier,
+            'tier_requested' => $requestedTier,
             'status'         => 'pending',
             'submitted_at'   => now(),
         ]);
+
+        $disk = config('filesystems.default') === 's3' ? 's3' : 'public';
 
         foreach ($documents as $docData) {
             /** @var UploadedFile $file */
             $file = $docData['file'];
             $path = "businesses/{$business->slug}/verification/" . Str::uuid() . '.' . $file->getClientOriginalExtension();
-            Storage::disk('s3')->put($path, $file->getContent(), 'private');
+            Storage::disk($disk)->put($path, $file->getContent());
 
             VerificationDocument::create([
-                'verification_application_id' => $application->id,
-                'document_type'               => $docData['document_type'],
-                'file_path'                   => $path,
-                'original_filename'           => $file->getClientOriginalName(),
-                'file_size'                   => $file->getSize(),
+                'application_id' => $application->id,
+                'type'           => $docData['document_type'],
+                'file_path'      => $path,
+                'original_name'  => $file->getClientOriginalName(),
+                'status'         => 'pending',
             ]);
         }
 
@@ -47,22 +48,22 @@ class VerificationService
     public function approve(VerificationApplication $application, \App\Modules\Auth\Models\User $admin, ?string $notes = null): void
     {
         $application->update([
-            'status'      => 'approved',
-            'admin_notes' => $notes,
-            'reviewed_by' => $admin->id,
-            'reviewed_at' => now(),
+            'status'         => 'approved',
+            'reviewer_notes' => $notes,
+            'reviewer_id'    => $admin->id,
+            'reviewed_at'    => now(),
         ]);
 
-        $application->business->update(['verification_tier' => $application->requested_tier]);
+        $application->business->update(['verification_tier' => $application->tier_requested]);
     }
 
     public function reject(VerificationApplication $application, \App\Modules\Auth\Models\User $admin, string $notes): void
     {
         $application->update([
-            'status'      => 'rejected',
-            'admin_notes' => $notes,
-            'reviewed_by' => $admin->id,
-            'reviewed_at' => now(),
+            'status'         => 'rejected',
+            'reviewer_notes' => $notes,
+            'reviewer_id'    => $admin->id,
+            'reviewed_at'    => now(),
         ]);
     }
 }

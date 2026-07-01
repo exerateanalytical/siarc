@@ -41,14 +41,14 @@ class ConversationService
         foreach ($attachmentFiles as $file) {
             /** @var UploadedFile $file */
             $path = "messaging/{$conversation->id}/" . Str::uuid() . '.' . $file->getClientOriginalExtension();
-            Storage::disk('s3')->put($path, $file->getContent(), 'private');
+            Storage::disk(config('filesystems.default') === 's3' ? 's3' : 'public')->put($path, $file->getContent());
 
             MessageAttachment::create([
-                'message_id'        => $message->id,
-                'file_path'         => $path,
-                'original_filename' => $file->getClientOriginalName(),
-                'file_size'         => $file->getSize(),
-                'mime_type'         => $file->getMimeType(),
+                'message_id'    => $message->id,
+                'file_path'     => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'file_size'     => $file->getSize(),
+                'mime_type'     => $file->getMimeType(),
             ]);
         }
 
