@@ -102,19 +102,19 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
             @if($business->products->isNotEmpty())
             <div class="mb-5">
                 <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="package" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="package" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Produits & Services' : 'Products & Services' }}
                     <span class="text-sm font-normal text-gray-400">({{ $business->products->count() }})</span>
                 </h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     @foreach($business->products as $product)
-                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-brand-300 hover:shadow-sm transition-all block">
-                        <div class="relative aspect-square bg-brand-50">
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-forest-300 hover:shadow-sm transition-all block">
+                        <div class="relative aspect-square bg-forest-50">
                             @if($product->primaryImage)
                             <img src="{{ $product->primaryImage->url }}" alt="" class="w-full h-full object-cover">
                             @else
                             <div class="w-full h-full flex items-center justify-center">
-                                <i data-lucide="package" class="w-7 h-7 text-brand-300"></i>
+                                <i data-lucide="package" class="w-7 h-7 text-forest-300"></i>
                             </div>
                             @endif
                             @if($product->is_export_ready)
@@ -127,7 +127,7 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                             <h3 class="text-xs font-medium text-gray-900 line-clamp-2 leading-snug mb-1">
                                 {{ $lang === 'fr' ? $product->name_fr : ($product->name_en ?? $product->name_fr) }}
                             </h3>
-                            <span class="text-[11px] font-medium text-brand-600 flex items-center gap-1">
+                            <span class="text-[11px] font-medium text-forest-600 flex items-center gap-1">
                                 <i data-lucide="message-circle-question" class="w-3 h-3 shrink-0"></i>
                                 <span class="truncate">{{ $lang === 'fr' ? 'Demander le prix' : 'Request price' }}</span>
                             </span>
@@ -144,15 +144,15 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
         <aside class="lg:w-72 shrink-0">
             <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm sticky top-20">
                 <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="message-circle" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="message-circle" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Contacter cette entreprise' : 'Contact this business' }}
                 </h3>
 
                 <div class="space-y-3 mb-4">
                     @if($business->phone)
                     <a href="tel:{{ $business->phone }}" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center shrink-0">
-                            <i data-lucide="phone" class="w-4 h-4 text-brand-600"></i>
+                        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center shrink-0">
+                            <i data-lucide="phone" class="w-4 h-4 text-forest-600"></i>
                         </div>
                         <div>
                             <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'Téléphone' : 'Phone' }}</p>
@@ -176,8 +176,8 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
 
                     @if($business->email)
                     <a href="mailto:{{ $business->email }}" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center shrink-0">
-                            <i data-lucide="mail" class="w-4 h-4 text-brand-600"></i>
+                        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center shrink-0">
+                            <i data-lucide="mail" class="w-4 h-4 text-forest-600"></i>
                         </div>
                         <div>
                             <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'Email' : 'Email' }}</p>
@@ -195,7 +195,7 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                 @endif
 
                 <!-- "No price" notice + in-platform message form -->
-                <div class="bg-brand-50 border border-brand-100 rounded-lg p-3 text-xs text-brand-700 flex items-start gap-2 mb-3">
+                <div class="bg-forest-50 border border-forest-100 rounded-lg p-3 text-xs text-forest-700 flex items-start gap-2 mb-3">
                     <i data-lucide="info" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
                     {{ $lang === 'fr'
                         ? 'Les prix ne sont pas affichés — demandez le prix ou envoyez un message directement à l\'entreprise.'
@@ -210,15 +210,15 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
                     <input type="hidden" name="return_to" value="{{ url()->current() }}">
                     <textarea id="biz-msg-body" name="body" rows="3" required maxlength="2000"
                         placeholder="{{ $lang === 'fr' ? 'Écrivez votre message...' : 'Write your message...' }}"
-                        class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 mb-2 focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400 resize-none">{{ old('body') }}</textarea>
+                        class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 mb-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none">{{ old('body') }}</textarea>
                     @error('body')<p class="text-xs text-red-600 mb-2">{{ $message }}</p>@enderror
-                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full bg-forest-500 hover:bg-forest-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="send" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'Envoyer un message' : 'Send message' }}
                     </button>
                 </form>
                 @else
-                <a href="/login?next={{ urlencode(url()->current()) }}" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <a href="/login?next={{ urlencode(url()->current()) }}" class="w-full bg-forest-500 hover:bg-forest-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Se connecter pour contacter' : 'Log in to contact' }}
                 </a>

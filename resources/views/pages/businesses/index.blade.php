@@ -10,7 +10,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
     <!-- Page header -->
     <div class="mb-6">
         <h1 class="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
-            <i data-lucide="building-2" class="w-5 h-5 text-brand-500"></i>
+            <i data-lucide="building-2" class="w-5 h-5 text-forest-500"></i>
             {{ $lang === 'fr' ? 'Annuaire des entreprises' : 'Business Directory' }}
         </h1>
         <p class="text-sm text-gray-500">
@@ -34,7 +34,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                         <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"></i>
                         <input name="q" type="search" value="{{ request('q') }}"
                             placeholder="{{ $lang === 'fr' ? 'Nom, produit...' : 'Name, product...' }}"
-                            class="w-full pl-8 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-brand-400">
+                            class="w-full pl-8 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-forest-400">
                     </div>
                 </div>
 
@@ -45,14 +45,14 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                     </label>
                     <div class="space-y-1">
                         <label class="flex items-center gap-2 text-sm cursor-pointer py-1">
-                            <input type="radio" name="industry" value="" {{ !request('industry') ? 'checked' : '' }} onchange="this.form.submit()" class="text-brand-500">
+                            <input type="radio" name="industry" value="" {{ !request('industry') ? 'checked' : '' }} onchange="this.form.submit()" class="text-forest-500">
                             <span class="{{ !request('industry') ? 'font-medium text-gray-900' : 'text-gray-600' }}">
                                 {{ $lang === 'fr' ? 'Tous les secteurs' : 'All sectors' }}
                             </span>
                         </label>
                         @foreach($industries as $ind)
                         <label class="flex items-center gap-2 text-sm cursor-pointer py-1">
-                            <input type="radio" name="industry" value="{{ $ind->slug }}" {{ request('industry') === $ind->slug ? 'checked' : '' }} onchange="this.form.submit()" class="text-brand-500">
+                            <input type="radio" name="industry" value="{{ $ind->slug }}" {{ request('industry') === $ind->slug ? 'checked' : '' }} onchange="this.form.submit()" class="text-forest-500">
                             <span class="{{ request('industry') === $ind->slug ? 'font-medium text-gray-900' : 'text-gray-600' }}">
                                 {{ $lang === 'fr' ? $ind->name_fr : $ind->name_en }}
                             </span>
@@ -70,7 +70,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                     <div class="space-y-1">
                         @foreach(['' => ($lang === 'fr' ? 'Tous' : 'All'), 'certified' => ($lang === 'fr' ? 'Certifiés' : 'Certified'), 'verified' => ($lang === 'fr' ? 'Vérifiés' : 'Verified'), 'basic' => 'Basic'] as $val => $label)
                         <label class="flex items-center gap-2 text-sm cursor-pointer py-1">
-                            <input type="radio" name="tier" value="{{ $val }}" {{ request('tier', '') === $val ? 'checked' : '' }} onchange="this.form.submit()" class="text-brand-500">
+                            <input type="radio" name="tier" value="{{ $val }}" {{ request('tier', '') === $val ? 'checked' : '' }} onchange="this.form.submit()" class="text-forest-500">
                             <span class="{{ request('tier', '') === $val ? 'font-medium text-gray-900' : 'text-gray-600' }}">{{ $label }}</span>
                         </label>
                         @endforeach
@@ -83,7 +83,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                         {{ $lang === 'fr' ? 'Région' : 'Region' }}
                     </label>
                     <select name="region" onchange="this.form.submit()"
-                        class="w-full text-sm bg-white border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-brand-400">
+                        class="w-full text-sm bg-white border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-forest-400">
                         <option value="">{{ $lang === 'fr' ? 'Toutes les régions' : 'All regions' }}</option>
                         @foreach($regions as $region)
                         <option value="{{ $region->code }}" {{ request('region') === $region->code ? 'selected' : '' }}>
@@ -94,7 +94,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                 </div>
 
                 @if(request()->hasAny(['q','industry','tier','region']))
-                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1 mt-2">
+                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-xs text-forest-600 hover:text-forest-700 flex items-center gap-1 mt-2">
                     <i data-lucide="x" class="w-3 h-3"></i>
                     {{ $lang === 'fr' ? 'Effacer les filtres' : 'Clear filters' }}
                 </a>
@@ -123,7 +123,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                 @if($businesses->onFirstPage())
                 <span class="px-3 py-1.5 text-sm text-gray-300 cursor-not-allowed"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                 @else
-                <a href="{{ $businesses->previousPageUrl() }}&{{ http_build_query(request()->except('page')) }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                <a href="{{ $businesses->previousPageUrl() }}&{{ http_build_query(request()->except('page')) }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-forest-600 hover:bg-forest-50 rounded-lg transition-colors">
                     <i data-lucide="chevron-left" class="w-4 h-4"></i>
                 </a>
                 @endif
@@ -133,7 +133,7 @@ $title = ($lang === 'fr' ? 'Entreprises — ' : 'Businesses — ') . 'SIAC Galer
                 </span>
 
                 @if($businesses->hasMorePages())
-                <a href="{{ $businesses->nextPageUrl() }}&{{ http_build_query(request()->except('page')) }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                <a href="{{ $businesses->nextPageUrl() }}&{{ http_build_query(request()->except('page')) }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-forest-600 hover:bg-forest-50 rounded-lg transition-colors">
                     <i data-lucide="chevron-right" class="w-4 h-4"></i>
                 </a>
                 @else

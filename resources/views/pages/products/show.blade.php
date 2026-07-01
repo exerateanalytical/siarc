@@ -14,11 +14,11 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
 <div class="max-w-6xl mx-auto px-4 py-4">
     <!-- Breadcrumb -->
     <div class="text-xs text-gray-500 flex items-center gap-1.5 mb-4 flex-wrap">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-brand-600">{{ $lang === 'fr' ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-forest-600">{{ $lang === 'fr' ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3 h-3"></i>
-        <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="hover:text-brand-600">{{ $lang === 'fr' ? 'Entreprises' : 'Businesses' }}</a>
+        <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="hover:text-forest-600">{{ $lang === 'fr' ? 'Entreprises' : 'Businesses' }}</a>
         <i data-lucide="chevron-right" class="w-3 h-3"></i>
-        <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $business->slug]) }}" class="hover:text-brand-600 truncate max-w-[140px]">{{ $businessName }}</a>
+        <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $business->slug]) }}" class="hover:text-forest-600 truncate max-w-[140px]">{{ $businessName }}</a>
         <i data-lucide="chevron-right" class="w-3 h-3"></i>
         <span class="text-gray-800 truncate max-w-[160px]">{{ $name }}</span>
     </div>
@@ -55,7 +55,7 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
                 <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
                     <div class="min-w-0">
                         @if($categoryName)
-                        <p class="text-xs font-medium text-brand-600 uppercase tracking-wide mb-1">{{ $categoryName }}</p>
+                        <p class="text-xs font-medium text-forest-600 uppercase tracking-wide mb-1">{{ $categoryName }}</p>
                         @endif
                         <h1 class="text-xl font-bold text-gray-900">{{ $name }}</h1>
                     </div>
@@ -112,28 +112,28 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
                 @if($product->quantity_available)
                 <div class="bg-white border border-gray-200 rounded-xl p-3.5 text-center">
-                    <i data-lucide="warehouse" class="w-4 h-4 text-brand-500 mx-auto mb-1.5"></i>
+                    <i data-lucide="warehouse" class="w-4 h-4 text-forest-500 mx-auto mb-1.5"></i>
                     <p class="text-sm font-bold text-gray-900">{{ number_format($product->quantity_available) }}</p>
                     <p class="text-[11px] text-gray-400">{{ $product->quantity_unit }} {{ $lang === 'fr' ? 'disponibles' : 'available' }}</p>
                 </div>
                 @endif
                 @if($product->moq)
                 <div class="bg-white border border-gray-200 rounded-xl p-3.5 text-center">
-                    <i data-lucide="layers-3" class="w-4 h-4 text-brand-500 mx-auto mb-1.5"></i>
+                    <i data-lucide="layers-3" class="w-4 h-4 text-forest-500 mx-auto mb-1.5"></i>
                     <p class="text-sm font-bold text-gray-900">{{ number_format($product->moq) }} {{ $product->moq_unit }}</p>
                     <p class="text-[11px] text-gray-400">{{ $lang === 'fr' ? 'Qté. minimum' : 'Min. order (MOQ)' }}</p>
                 </div>
                 @endif
                 @if($product->category)
                 <div class="bg-white border border-gray-200 rounded-xl p-3.5 text-center">
-                    <i data-lucide="tag" class="w-4 h-4 text-brand-500 mx-auto mb-1.5"></i>
+                    <i data-lucide="tag" class="w-4 h-4 text-forest-500 mx-auto mb-1.5"></i>
                     <p class="text-sm font-bold text-gray-900 truncate">{{ $categoryName }}</p>
                     <p class="text-[11px] text-gray-400">{{ $lang === 'fr' ? 'Catégorie' : 'Category' }}</p>
                 </div>
                 @endif
                 @if($product->originRegion)
                 <div class="bg-white border border-gray-200 rounded-xl p-3.5 text-center">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-brand-500 mx-auto mb-1.5"></i>
+                    <i data-lucide="map-pin" class="w-4 h-4 text-forest-500 mx-auto mb-1.5"></i>
                     <p class="text-sm font-bold text-gray-900">{{ $lang === 'fr' ? $product->originRegion->name_fr : $product->originRegion->name_en }}</p>
                     <p class="text-[11px] text-gray-400">{{ $lang === 'fr' ? 'Origine' : 'Origin' }}</p>
                 </div>
@@ -144,7 +144,7 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
             @if($product->attributes->isNotEmpty())
             <div class="bg-white border border-gray-200 rounded-xl p-5 mb-5 shadow-sm">
                 <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="list-checks" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="list-checks" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Spécifications' : 'Specifications' }}
                 </h2>
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
@@ -165,7 +165,7 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
             @if($product->documents->isNotEmpty())
             <div class="bg-white border border-gray-200 rounded-xl p-5 mb-5 shadow-sm">
                 <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="file-text" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Documents' : 'Documents' }}
                 </h2>
                 <div class="space-y-2">
@@ -189,7 +189,7 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
             @if($product->videos->isNotEmpty())
             <div class="bg-white border border-gray-200 rounded-xl p-5 mb-5 shadow-sm">
                 <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="video" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="video" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Vidéos' : 'Videos' }}
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -206,12 +206,12 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
             @if($otherProducts->isNotEmpty())
             <div class="mb-5">
                 <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i data-lucide="package-search" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="package-search" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Autres produits de ' . $businessName : 'More from ' . $businessName }}
                 </h2>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     @foreach($otherProducts as $op)
-                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $op->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-brand-300 hover:shadow-sm transition-all">
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $op->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-forest-300 hover:shadow-sm transition-all">
                         <div class="aspect-square bg-gray-100 flex items-center justify-center">
                             @if($op->primaryImage)
                             <img src="{{ $op->primaryImage->url }}" alt="" class="w-full h-full object-cover">
@@ -239,9 +239,9 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
             @endif
 
             <!-- No price shown: request price / message only -->
-            <div class="bg-brand-50 border border-brand-100 rounded-xl p-4 flex items-start gap-2.5">
-                <i data-lucide="message-circle-question" class="w-4 h-4 shrink-0 mt-0.5 text-brand-700"></i>
-                <p class="text-xs text-brand-700 leading-relaxed">
+            <div class="bg-forest-50 border border-forest-100 rounded-xl p-4 flex items-start gap-2.5">
+                <i data-lucide="message-circle-question" class="w-4 h-4 shrink-0 mt-0.5 text-forest-700"></i>
+                <p class="text-xs text-forest-700 leading-relaxed">
                     {{ $lang === 'fr'
                         ? 'Les prix ne sont pas affichés. Demandez le prix ou envoyez un message directement au vendeur.'
                         : 'Prices are not displayed. Request the price or message the seller directly.' }}
@@ -259,7 +259,7 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
                         @endif
                     </div>
                     <div class="min-w-0">
-                        <p class="text-sm font-semibold text-gray-900 group-hover:text-brand-600 truncate">{{ $businessName }}</p>
+                        <p class="text-sm font-semibold text-gray-900 group-hover:text-forest-600 truncate">{{ $businessName }}</p>
                         <p class="text-xs text-gray-400 flex items-center gap-1">
                             <i data-lucide="map-pin" class="w-3 h-3"></i>
                             {{ $business->city->name_fr ?? ($lang === 'fr' ? $business->region->name_fr ?? '' : $business->region->name_en ?? '') }}
@@ -268,15 +268,15 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
                 </a>
 
                 <h3 class="font-semibold text-gray-900 mb-3 text-sm flex items-center gap-2">
-                    <i data-lucide="message-circle" class="w-4 h-4 text-brand-500"></i>
+                    <i data-lucide="message-circle" class="w-4 h-4 text-forest-500"></i>
                     {{ $lang === 'fr' ? 'Contacter le vendeur' : 'Contact the seller' }}
                 </h3>
 
                 <div class="space-y-2.5">
                     @if($business->phone)
                     <a href="tel:{{ $business->phone }}" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div class="w-7 h-7 bg-brand-100 rounded-lg flex items-center justify-center shrink-0">
-                            <i data-lucide="phone" class="w-3.5 h-3.5 text-brand-600"></i>
+                        <div class="w-7 h-7 bg-forest-100 rounded-lg flex items-center justify-center shrink-0">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 text-forest-600"></i>
                         </div>
                         <p class="text-sm font-medium text-gray-900">{{ $business->phone }}</p>
                     </a>
@@ -291,8 +291,8 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
                     @endif
                     @if($business->email)
                     <a href="mailto:{{ $business->email }}?subject={{ urlencode($name) }}" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div class="w-7 h-7 bg-brand-100 rounded-lg flex items-center justify-center shrink-0">
-                            <i data-lucide="mail" class="w-3.5 h-3.5 text-brand-600"></i>
+                        <div class="w-7 h-7 bg-forest-100 rounded-lg flex items-center justify-center shrink-0">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-forest-600"></i>
                         </div>
                         <p class="text-sm font-medium text-gray-900 truncate">{{ $lang === 'fr' ? 'Envoyer un e-mail' : 'Send email' }}</p>
                     </a>
@@ -304,12 +304,12 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
                     <div class="flex gap-2 mb-2">
                         <button type="button" onclick="document.getElementById('msg-body').value = {{ Js::from($lang === 'fr' ? 'Bonjour, pourriez-vous me communiquer le prix et les conditions pour ce produit ?' : 'Hello, could you share the price and terms for this product?') }}"
                             class="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i data-lucide="message-circle-question" class="w-3.5 h-3.5 text-brand-600"></i>
+                            <i data-lucide="message-circle-question" class="w-3.5 h-3.5 text-forest-600"></i>
                             {{ $lang === 'fr' ? 'Demander le prix' : 'Request price' }}
                         </button>
                         <button type="button" onclick="document.getElementById('msg-body').value=''; document.getElementById('msg-body').focus()"
                             class="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-brand-600"></i>
+                            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-forest-600"></i>
                             {{ $lang === 'fr' ? 'Message' : 'Message' }}
                         </button>
                     </div>
@@ -320,15 +320,15 @@ $categoryName = $product->category ? ($lang === 'fr' ? $product->category->name_
                         <input type="hidden" name="return_to" value="{{ url()->current() }}">
                         <textarea id="msg-body" name="body" rows="3" required maxlength="2000"
                             placeholder="{{ $lang === 'fr' ? 'Écrivez votre message au vendeur...' : 'Write your message to the seller...' }}"
-                            class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 mb-2 focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400 resize-none">{{ old('body') }}</textarea>
+                            class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 mb-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none">{{ old('body') }}</textarea>
                         @error('body')<p class="text-xs text-red-600 mb-2">{{ $message }}</p>@enderror
-                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <button type="submit" class="w-full bg-forest-500 hover:bg-forest-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
                             <i data-lucide="send" class="w-4 h-4"></i>
                             {{ $lang === 'fr' ? 'Envoyer au vendeur' : 'Send to seller' }}
                         </button>
                     </form>
                     @else
-                    <a href="/login?next={{ urlencode(url()->current()) }}" class="w-full bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <a href="/login?next={{ urlencode(url()->current()) }}" class="w-full bg-forest-500 hover:bg-forest-600 text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'Se connecter pour contacter' : 'Log in to contact seller' }}
                     </a>

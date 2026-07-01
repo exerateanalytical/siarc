@@ -41,7 +41,7 @@
     <!-- Content -->
     <div class="pt-8 pb-4 px-4 flex-1 flex flex-col">
         <div class="flex items-start justify-between gap-2 mb-1">
-            <h3 class="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-brand-600 transition-colors">
+            <h3 class="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-forest-600 transition-colors">
                 {{ $lang === 'fr' ? $business->name_fr : ($business->name_en ?? $business->name_fr) }}
             </h3>
         </div>
@@ -57,7 +57,7 @@
                 <i data-lucide="map-pin" class="w-3 h-3 shrink-0"></i>
                 <span class="truncate">{{ $business->city->name_fr ?? ($business->region->name_fr ?? '') }}</span>
             </div>
-            <div class="flex items-center gap-1 text-xs text-brand-600 font-medium group-hover:gap-2 transition-all shrink-0">
+            <div class="flex items-center gap-1 text-xs text-forest-600 font-medium group-hover:gap-2 transition-all shrink-0">
                 {{ $lang === 'fr' ? 'Voir' : 'View' }}
                 <i data-lucide="arrow-right" class="w-3 h-3"></i>
             </div>

@@ -73,7 +73,7 @@
                     <i data-lucide="clock" class="w-4 h-4 text-gray-400"></i>
                     {{ $lang === 'fr' ? 'Dernières entreprises' : 'Recent Businesses' }}
                 </h2>
-                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-xs text-brand-500 font-medium">{{ $lang === 'fr' ? 'Voir tout' : 'View all' }}</a>
+                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-xs text-forest-500 font-medium">{{ $lang === 'fr' ? 'Voir tout' : 'View all' }}</a>
             </div>
             <div class="divide-y divide-gray-50">
                 @forelse($recentBusinesses as $biz)

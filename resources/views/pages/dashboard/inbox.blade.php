@@ -23,8 +23,8 @@
                 $unread = $conv->messages()->where('sender_id', '!=', $userId)->whereNull('read_at')->count();
             @endphp
             <a href="{{ route('messages.thread', ['id' => $conv->id]) }}" class="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
-                <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
-                    <i data-lucide="{{ $isBuyer ? 'building-2' : 'user' }}" class="w-4 h-4 text-brand-500"></i>
+                <div class="w-10 h-10 rounded-full bg-forest-50 flex items-center justify-center shrink-0">
+                    <i data-lucide="{{ $isBuyer ? 'building-2' : 'user' }}" class="w-4 h-4 text-forest-500"></i>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">

@@ -11,8 +11,8 @@ $title = $lang === 'fr'
 <!-- Hero -->
 <section class="bg-gradient-to-br from-forest-600 to-forest-700 text-white relative overflow-hidden">
     <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 left-10 w-64 h-64 rounded-full bg-brand-400 blur-3xl"></div>
-        <div class="absolute bottom-0 right-10 w-80 h-80 rounded-full bg-brand-600 blur-3xl"></div>
+        <div class="absolute top-10 left-10 w-64 h-64 rounded-full bg-forest-400 blur-3xl"></div>
+        <div class="absolute bottom-0 right-10 w-80 h-80 rounded-full bg-forest-600 blur-3xl"></div>
     </div>
     <div class="relative max-w-6xl mx-auto px-4 py-12 sm:py-20">
         <div class="max-w-2xl">
@@ -40,9 +40,9 @@ $title = $lang === 'fr'
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
                     <input name="q" type="search"
                         placeholder="{{ $lang === 'fr' ? 'Rechercher une entreprise, un produit...' : 'Search a business, product...' }}"
-                        class="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        class="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-forest-400">
                 </div>
-                <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white px-5 py-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 shrink-0">
+                <button type="submit" class="bg-forest-500 hover:bg-forest-600 text-white px-5 py-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 shrink-0">
                     <i data-lucide="search" class="w-4 h-4"></i>
                     <span class="hidden sm:inline">{{ $lang === 'fr' ? 'Rechercher' : 'Search' }}</span>
                 </button>
@@ -51,15 +51,15 @@ $title = $lang === 'fr'
             <!-- Quick stats -->
             <div class="flex flex-wrap gap-4 mt-8 text-sm">
                 <div class="flex items-center gap-1.5 text-white/70">
-                    <i data-lucide="building-2" class="w-4 h-4 text-brand-300"></i>
+                    <i data-lucide="building-2" class="w-4 h-4 text-forest-300"></i>
                     <strong class="text-white">{{ $stats['businesses'] }}</strong> {{ $lang === 'fr' ? 'entreprises' : 'businesses' }}
                 </div>
                 <div class="flex items-center gap-1.5 text-white/70">
-                    <i data-lucide="package" class="w-4 h-4 text-brand-300"></i>
+                    <i data-lucide="package" class="w-4 h-4 text-forest-300"></i>
                     <strong class="text-white">{{ $stats['products'] }}</strong> {{ $lang === 'fr' ? 'produits' : 'products' }}
                 </div>
                 <div class="flex items-center gap-1.5 text-white/70">
-                    <i data-lucide="layers" class="w-4 h-4 text-brand-300"></i>
+                    <i data-lucide="layers" class="w-4 h-4 text-forest-300"></i>
                     <strong class="text-white">{{ $stats['industries'] }}</strong> {{ $lang === 'fr' ? 'secteurs' : 'sectors' }}
                 </div>
             </div>
@@ -71,10 +71,10 @@ $title = $lang === 'fr'
 <section class="max-w-6xl mx-auto px-4 py-10">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <i data-lucide="layers" class="w-5 h-5 text-brand-500"></i>
+            <i data-lucide="layers" class="w-5 h-5 text-forest-500"></i>
             {{ $lang === 'fr' ? 'Secteurs d\'activité' : 'Industry Sectors' }}
         </h2>
-        <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
+        <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="text-sm text-forest-600 hover:text-forest-700 font-medium flex items-center gap-1">
             {{ $lang === 'fr' ? 'Voir tout' : 'See all' }}
             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </a>
@@ -83,9 +83,9 @@ $title = $lang === 'fr'
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         @foreach($industries as $industry)
         <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $industry->slug]) }}"
-            class="group bg-white border border-gray-200 rounded-xl p-4 hover:border-brand-300 hover:shadow-sm transition-all text-center">
-            <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-100 transition-colors">
-                <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-5 h-5 text-brand-600"></i>
+            class="group bg-white border border-gray-200 rounded-xl p-4 hover:border-forest-300 hover:shadow-sm transition-all text-center">
+            <div class="w-10 h-10 bg-forest-50 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-forest-100 transition-colors">
+                <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-5 h-5 text-forest-600"></i>
             </div>
             <p class="text-sm font-medium text-gray-800 leading-tight mb-1">
                 {{ $lang === 'fr' ? $industry->name_fr : $industry->name_en }}
@@ -104,7 +104,7 @@ $title = $lang === 'fr'
                 <i data-lucide="star" class="w-5 h-5 text-brand-500"></i>
                 {{ $lang === 'fr' ? 'Entreprises en vedette' : 'Featured Businesses' }}
             </h2>
-            <a href="{{ route('businesses.index', ['lang' => $lang, 'featured' => 1]) }}" class="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1">
+            <a href="{{ route('businesses.index', ['lang' => $lang, 'featured' => 1]) }}" class="text-sm text-forest-600 hover:text-forest-700 font-medium flex items-center gap-1">
                 {{ $lang === 'fr' ? 'Voir tout' : 'See all' }}
                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
@@ -119,7 +119,7 @@ $title = $lang === 'fr'
 </section>
 
 <!-- SIAC spotlight -->
-<section class="bg-brand-50 border-y border-brand-100 py-10">
+<section class="bg-forest-50 border-y border-forest-100 py-10">
     <div class="max-w-6xl mx-auto px-4">
         <div class="flex items-center gap-2 mb-2">
             <i data-lucide="fish" class="w-5 h-5 text-forest-600"></i>
@@ -152,8 +152,8 @@ $title = $lang === 'fr'
     <div class="bg-gray-900 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
             <div class="flex items-center gap-2 mb-2">
-                <i data-lucide="code-2" class="w-5 h-5 text-brand-400"></i>
-                <span class="text-brand-400 text-xs font-semibold uppercase tracking-wider">API {{ $lang === 'fr' ? 'Publique' : 'Public' }}</span>
+                <i data-lucide="code-2" class="w-5 h-5 text-forest-400"></i>
+                <span class="text-forest-400 text-xs font-semibold uppercase tracking-wider">API {{ $lang === 'fr' ? 'Publique' : 'Public' }}</span>
             </div>
             <h3 class="text-white text-lg font-semibold mb-1">
                 {{ $lang === 'fr' ? 'Intégrez nos données dans votre app' : 'Integrate our data into your app' }}
@@ -167,7 +167,7 @@ $title = $lang === 'fr'
         </div>
         <div class="flex flex-col sm:flex-row gap-2 shrink-0">
             <a href="{{ url('/docs/api') }}" target="_blank"
-                class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                class="inline-flex items-center gap-2 bg-forest-500 hover:bg-forest-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 <i data-lucide="book-open" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Documentation' : 'Documentation' }}
             </a>

@@ -6,7 +6,7 @@
 
         {{-- Logo / Brand --}}
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-14 h-14 bg-brand-500 rounded-2xl mb-4 shadow-lg">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-forest-500 rounded-2xl mb-4 shadow-lg">
                 <i data-lucide="store" class="w-7 h-7 text-white"></i>
             </div>
             <h1 class="text-2xl font-bold text-gray-900">
@@ -24,7 +24,7 @@
             </p>
             <div class="grid grid-cols-3 gap-2">
                 <button type="button" onclick="fillDemo('admin@artisanatcameroun.cm','Admin@SIAC2026')"
-                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-all cursor-pointer text-center group">
+                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-forest-400 hover:bg-forest-50 transition-all cursor-pointer text-center group">
                     <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
                         <i data-lucide="shield-check" class="w-4 h-4 text-red-600"></i>
                     </div>
@@ -32,7 +32,7 @@
                     <span class="text-[10px] text-gray-400 leading-tight">admin@artisanat<br>cameroun.cm</span>
                 </button>
                 <button type="button" onclick="fillDemo('entrepreneur@siac2026.cm','Demo@SIAC2026')"
-                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-all cursor-pointer text-center group">
+                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-forest-400 hover:bg-forest-50 transition-all cursor-pointer text-center group">
                     <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center group-hover:bg-amber-200 transition-colors">
                         <i data-lucide="briefcase" class="w-4 h-4 text-amber-600"></i>
                     </div>
@@ -40,7 +40,7 @@
                     <span class="text-[10px] text-gray-400 leading-tight">entrepreneur<br>@siac2026.cm</span>
                 </button>
                 <button type="button" onclick="fillDemo('acheteur@siac2026.cm','Demo@SIAC2026')"
-                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-all cursor-pointer text-center group">
+                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-forest-400 hover:bg-forest-50 transition-all cursor-pointer text-center group">
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
                         <i data-lucide="shopping-bag" class="w-4 h-4 text-green-600"></i>
                     </div>
@@ -85,7 +85,7 @@
                         <input id="email" name="email" type="email" autocomplete="email"
                             value="{{ old('email') }}"
                             placeholder="{{ $lang === 'fr' ? 'votre@email.cm' : 'your@email.com' }}"
-                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400 transition"
+                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
                             required autofocus>
                     </div>
                 </div>
@@ -100,13 +100,13 @@
                         <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
                         <input id="password" name="password" type="password" autocomplete="current-password"
                             placeholder="••••••••"
-                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400 transition"
+                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
                             required>
                     </div>
                 </div>
 
                 <button type="submit"
-                    class="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                    class="w-full bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Se connecter' : 'Sign In' }}
                 </button>
@@ -115,7 +115,7 @@
             <div class="mt-6 pt-5 border-t border-gray-100 text-center">
                 <p class="text-sm text-gray-500">
                     {{ $lang === 'fr' ? 'Pas encore de compte ?' : 'No account yet?' }}
-                    <a href="/inscription?lang={{ $lang }}" class="text-brand-500 font-semibold hover:text-brand-600 ml-1">
+                    <a href="/inscription?lang={{ $lang }}" class="text-forest-500 font-semibold hover:text-forest-600 ml-1">
                         {{ $lang === 'fr' ? 'S\'inscrire' : 'Register free' }}
                     </a>
                 </p>
@@ -132,8 +132,8 @@
 function fillDemo(email, password) {
     document.getElementById('email').value = email;
     document.getElementById('password').value = password;
-    document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('border-brand-500', 'bg-brand-50'));
-    event.currentTarget.classList.add('border-brand-500');
+    document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('border-forest-500', 'bg-forest-50'));
+    event.currentTarget.classList.add('border-forest-500');
 }
 </script>
 @endsection

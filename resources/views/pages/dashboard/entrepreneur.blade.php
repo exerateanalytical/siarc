@@ -65,7 +65,7 @@
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-500 text-white text-sm font-semibold rounded-lg hover:bg-brand-600 transition-colors">
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-forest-500 text-white text-sm font-semibold rounded-lg hover:bg-forest-600 transition-colors">
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     {{ $lang === 'fr' ? 'Voir ma vitrine' : 'View storefront' }}
                 </a>
@@ -94,7 +94,7 @@
                 {{ $lang === 'fr' ? 'Vues' : 'Views' }}
             </p>
         </div>
-        <a href="{{ route('messages.inbox') }}" class="bg-white rounded-xl border border-gray-200 p-4 text-center hover:border-brand-300 transition-colors">
+        <a href="{{ route('messages.inbox') }}" class="bg-white rounded-xl border border-gray-200 p-4 text-center hover:border-forest-300 transition-colors">
             <p class="text-2xl font-bold text-gray-900">{{ $messageCount }}</p>
             <p class="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
@@ -119,7 +119,7 @@
                     <i data-lucide="package" class="w-4 h-4 text-gray-400"></i>
                     {{ $lang === 'fr' ? 'Mes produits' : 'My Products' }}
                 </h2>
-                <a href="/api/v1/my/products" target="_blank" class="text-xs text-brand-500 font-medium">
+                <a href="/api/v1/my/products" target="_blank" class="text-xs text-forest-500 font-medium">
                     {{ $lang === 'fr' ? 'Gérer (API)' : 'Manage (API)' }}
                 </a>
             </div>
@@ -145,7 +145,7 @@
                 <i data-lucide="package" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i>
                 <p class="text-sm text-gray-400 mb-3">{{ $lang === 'fr' ? 'Aucun produit encore.' : 'No products yet.' }}</p>
                 <a href="/api/v1/my/products" target="_blank"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-500 text-white text-sm font-semibold rounded-lg hover:bg-brand-600 transition-colors">
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-forest-500 text-white text-sm font-semibold rounded-lg hover:bg-forest-600 transition-colors">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Ajouter un produit' : 'Add product' }}
                 </a>
@@ -214,12 +214,12 @@
             {{ $lang === 'fr' ? 'Présentez vos produits à des acheteurs du monde entier. Gratuit, rapide, efficace.' : 'Showcase your products to buyers worldwide. Free, fast, effective.' }}
         </p>
         <a href="/api/v1/my/business" target="_blank"
-            class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-500 text-white font-semibold rounded-lg hover:bg-brand-600 transition-colors text-sm">
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-forest-500 text-white font-semibold rounded-lg hover:bg-forest-600 transition-colors text-sm">
             <i data-lucide="plus" class="w-4 h-4"></i>
             {{ $lang === 'fr' ? 'Créer mon entreprise' : 'Create my business' }}
         </a>
         <p class="text-xs text-gray-400 mt-4">
-            <a href="/docs/api" target="_blank" class="text-brand-500 underline">{{ $lang === 'fr' ? 'Voir la documentation API' : 'View API docs' }}</a>
+            <a href="/docs/api" target="_blank" class="text-forest-500 underline">{{ $lang === 'fr' ? 'Voir la documentation API' : 'View API docs' }}</a>
         </p>
     </div>
     @endif

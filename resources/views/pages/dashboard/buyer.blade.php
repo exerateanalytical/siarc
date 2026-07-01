@@ -33,8 +33,8 @@
                 <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 <input name="q" type="search"
                     placeholder="{{ $lang === 'fr' ? 'Rechercher tilapia, artisanat, épices...' : 'Search tilapia, crafts, spices...' }}"
-                    class="w-full pl-9 pr-24 py-2.5 bg-white text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-400 placeholder-gray-400">
-                <button type="submit" class="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-brand-500 text-white text-sm font-semibold rounded-md hover:bg-brand-600 transition-colors">
+                    class="w-full pl-9 pr-24 py-2.5 bg-white text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-400 placeholder-gray-400">
+                <button type="submit" class="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-forest-500 text-white text-sm font-semibold rounded-md hover:bg-forest-600 transition-colors">
                     {{ $lang === 'fr' ? 'Chercher' : 'Search' }}
                 </button>
             </div>
@@ -65,7 +65,7 @@
                         {{ $lang === 'fr' ? 'Entreprises sauvegardées' : 'Saved Businesses' }}
                         <span class="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">{{ $savedBusinesses->count() }}</span>
                     </h2>
-                    <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-xs text-brand-500 font-medium">{{ $lang === 'fr' ? 'Explorer' : 'Browse' }}</a>
+                    <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-xs text-forest-500 font-medium">{{ $lang === 'fr' ? 'Explorer' : 'Browse' }}</a>
                 </div>
 
                 @if($savedBusinesses->count())
@@ -90,7 +90,7 @@
                                 <span class="hidden sm:inline px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">{{ $lang === 'fr' ? 'Vérifiée' : 'Verified' }}</span>
                             @endif
                             <a href="{{ route('businesses.show', ['slug' => $row->slug, 'lang' => $lang]) }}"
-                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-brand-500 text-white text-xs font-semibold rounded-lg hover:bg-brand-600 transition-colors">
+                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-forest-500 text-white text-xs font-semibold rounded-lg hover:bg-forest-600 transition-colors">
                                 <i data-lucide="arrow-right" class="w-3 h-3"></i>
                                 {{ $lang === 'fr' ? 'Voir' : 'View' }}
                             </a>
@@ -103,7 +103,7 @@
                     <i data-lucide="heart" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i>
                     <p class="text-sm text-gray-400 mb-3">{{ $lang === 'fr' ? 'Aucune entreprise sauvegardée.' : 'No saved businesses yet.' }}</p>
                     <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-500 text-white text-sm font-semibold rounded-lg hover:bg-brand-600 transition-colors">
+                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-forest-500 text-white text-sm font-semibold rounded-lg hover:bg-forest-600 transition-colors">
                         <i data-lucide="search" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'Parcourir les entreprises' : 'Browse businesses' }}
                     </a>
@@ -119,7 +119,7 @@
                         {{ $lang === 'fr' ? 'Mes conversations' : 'My Conversations' }}
                         <span class="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">{{ $conversations->count() }}</span>
                     </h2>
-                    <a href="{{ route('messages.inbox') }}" class="text-xs text-brand-500 font-medium">{{ $lang === 'fr' ? 'Tout voir' : 'View all' }}</a>
+                    <a href="{{ route('messages.inbox') }}" class="text-xs text-forest-500 font-medium">{{ $lang === 'fr' ? 'Tout voir' : 'View all' }}</a>
                 </div>
                 @if($conversations->count())
                 <div class="divide-y divide-gray-50">

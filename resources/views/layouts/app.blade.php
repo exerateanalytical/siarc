@@ -26,9 +26,16 @@
                             900: '#6e3311',
                         },
                         forest: {
+                            50:  '#f0f9f4',
+                            100: '#dbf0e3',
+                            200: '#b8e0c9',
+                            300: '#8cc9a8',
+                            400: '#5ba883',
                             500: '#2d6a4f',
                             600: '#1b4332',
                             700: '#0d2b1e',
+                            800: '#082018',
+                            900: '#03130e',
                         },
                     },
                     fontFamily: {
@@ -74,7 +81,7 @@
     <div class="max-w-6xl mx-auto px-4">
         <div class="flex items-center justify-between h-14">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 shrink-0">
-                <div class="w-7 h-7 bg-brand-500 rounded flex items-center justify-center">
+                <div class="w-7 h-7 bg-forest-500 rounded flex items-center justify-center">
                     <i data-lucide="store" class="w-4 h-4 text-white"></i>
                 </div>
                 <span class="font-bold text-gray-900 text-sm leading-tight hidden sm:block">
@@ -106,7 +113,7 @@
                     <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none"></i>
                     <input name="q" value="{{ request('q') }}" type="search"
                         placeholder="{{ $lang === 'fr' ? 'Rechercher...' : 'Search...' }}"
-                        class="pl-8 pr-3 py-1.5 text-sm bg-gray-100 border border-transparent rounded-lg focus:outline-none focus:border-brand-400 focus:bg-white w-44 transition-all">
+                        class="pl-8 pr-3 py-1.5 text-sm bg-gray-100 border border-transparent rounded-lg focus:outline-none focus:border-forest-400 focus:bg-white w-44 transition-all">
                 </form>
 
                 @php $siacUser = session('siac_user'); @endphp
@@ -118,7 +125,7 @@
                     </a>
                     <div class="relative group hidden sm:block">
                         <button class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors border border-gray-200">
-                            <div class="w-5 h-5 bg-brand-500 rounded-full flex items-center justify-center">
+                            <div class="w-5 h-5 bg-forest-500 rounded-full flex items-center justify-center">
                                 <span class="text-white text-[10px] font-bold">{{ strtoupper(substr($siacUser['name'] ?? 'U', 0, 1)) }}</span>
                             </div>
                             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400"></i>
@@ -147,7 +154,7 @@
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'Connexion' : 'Sign In' }}
                     </a>
-                    <a href="/inscription?lang={{ $lang }}" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-500 text-white rounded-lg text-sm font-semibold hover:bg-brand-600 transition-colors">
+                    <a href="/inscription?lang={{ $lang }}" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-forest-500 text-white rounded-lg text-sm font-semibold hover:bg-forest-600 transition-colors">
                         {{ $lang === 'fr' ? 'S\'inscrire' : 'Register' }}
                     </a>
                 @endif
@@ -165,7 +172,7 @@
                 <div class="relative">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
                     <input name="q" type="search" placeholder="{{ $lang === 'fr' ? 'Rechercher...' : 'Search...' }}"
-                        class="w-full pl-9 pr-3 py-2 text-sm bg-gray-100 rounded-lg focus:outline-none focus:bg-white border border-transparent focus:border-brand-400">
+                        class="w-full pl-9 pr-3 py-2 text-sm bg-gray-100 rounded-lg focus:outline-none focus:bg-white border border-transparent focus:border-forest-400">
                 </div>
             </form>
             <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="flex items-center gap-2 px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
@@ -198,7 +205,7 @@
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'Connexion' : 'Sign In' }}
                     </a>
-                    <a href="/inscription?lang={{ $lang }}" class="flex items-center gap-2 px-2 py-2 text-sm text-brand-500 font-semibold hover:bg-brand-50 rounded">
+                    <a href="/inscription?lang={{ $lang }}" class="flex items-center gap-2 px-2 py-2 text-sm text-forest-500 font-semibold hover:bg-forest-50 rounded">
                         <i data-lucide="user-plus" class="w-4 h-4"></i>
                         {{ $lang === 'fr' ? 'S\'inscrire' : 'Register' }}
                     </a>
@@ -219,7 +226,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
             <div>
                 <div class="flex items-center gap-2 mb-3">
-                    <div class="w-6 h-6 bg-brand-500 rounded flex items-center justify-center">
+                    <div class="w-6 h-6 bg-forest-500 rounded flex items-center justify-center">
                         <i data-lucide="store" class="w-3.5 h-3.5 text-white"></i>
                     </div>
                     <span class="text-white font-semibold text-sm">{{ $lang === 'fr' ? 'Galerie Artisanat' : 'Craft Gallery' }}</span>
