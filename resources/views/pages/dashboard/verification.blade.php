@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
+$pageTitle = $lang === 'fr' ? 'Vérification de l\'entreprise' : 'Business verification';
 $tierLabels = [
     'unverified' => $lang === 'fr' ? 'Non vérifié' : 'Unverified',
     'basic'      => $lang === 'fr' ? 'Basique' : 'Basic',
@@ -25,17 +26,7 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6">
-
-    <div class="flex items-center gap-2 mb-6">
-        <a href="{{ route('dashboard.entrepreneur') }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="badge-check" class="w-4 h-4 text-forest-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'Vérification de l\'entreprise' : 'Business verification' }}</h1>
-    </div>
+<div class="max-w-2xl mx-auto">
 
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">

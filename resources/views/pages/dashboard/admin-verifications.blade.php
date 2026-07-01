@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
+$pageTitle = $lang === 'fr' ? 'Vérifications' : 'Verifications';
 $tierLabels = ['basic' => $lang === 'fr' ? 'Basique' : 'Basic', 'verified' => $lang === 'fr' ? 'Vérifié' : 'Verified', 'certified' => $lang === 'fr' ? 'Certifié' : 'Certified'];
 $docTypeLabels = [
     'rccm' => 'RCCM', 'niu' => 'NIU', 'anor' => 'ANOR', 'cnps' => 'CNPS', 'cmf' => 'CMF',
@@ -12,17 +13,11 @@ $docTypeLabels = [
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 py-6">
+<div class="max-w-3xl mx-auto">
 
     <div class="flex items-center gap-2 mb-6">
-        <a href="/tableau-de-bord/admin" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="badge-check" class="w-4 h-4 text-forest-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'File d\'attente — Vérifications' : 'Verification queue' }}</h1>
-        <span class="ml-auto text-xs font-medium bg-amber-100 text-amber-700 px-2 py-1 rounded-full">{{ $applications->total() }}</span>
+        <h2 class="text-base font-semibold text-gray-900">{{ $lang === 'fr' ? 'File d\'attente' : 'Queue' }}</h2>
+        <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-1 rounded-full">{{ $applications->total() }}</span>
     </div>
 
     @if(session('success'))

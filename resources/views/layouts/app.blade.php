@@ -100,6 +100,10 @@
                     <i data-lucide="layers" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Secteurs' : 'Sectors' }}
                 </a>
+                <a href="{{ route('events.index') }}" class="px-3 py-1.5 rounded text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-1.5">
+                    <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                    {{ $lang === 'fr' ? 'Événements' : 'Events' }}
+                </a>
                 <a href="{{ url('/docs/api') }}" class="px-3 py-1.5 rounded text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-1.5" target="_blank">
                     <i data-lucide="code-2" class="w-4 h-4"></i>
                     API
@@ -194,6 +198,10 @@
                 <i data-lucide="layers" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Secteurs' : 'Sectors' }}
             </a>
+            <a href="{{ route('events.index') }}" class="flex items-center gap-2 px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+                <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                {{ $lang === 'fr' ? 'Événements' : 'Events' }}
+            </a>
             <a href="{{ url('/docs/api') }}" class="flex items-center gap-2 px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
                 <i data-lucide="code-2" class="w-4 h-4"></i>
                 API
@@ -255,6 +263,7 @@
                     <li><a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Accueil' : 'Home' }}</a></li>
                     <li><a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Entreprises' : 'Businesses' }}</a></li>
                     <li><a href="{{ route('industries.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Secteurs' : 'Sectors' }}</a></li>
+                    <li><a href="{{ route('partners.index') }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Partenaires' : 'Partners' }}</a></li>
                     <li><a href="{{ url('/docs/api') }}" class="hover:text-white transition-colors">API Docs</a></li>
                     <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'À propos' : 'About' }}</a></li>
                     <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Conditions' : 'Terms' }}</a></li>

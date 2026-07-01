@@ -22,7 +22,7 @@ class User extends Authenticatable
         'name', 'email', 'phone', 'password',
         'avatar', 'language_preference', 'status',
         'is_email_verified', 'is_phone_verified',
-        'last_login_at', 'last_login_ip',
+        'last_login_at', 'last_login_ip', 'assigned_region_id',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -40,6 +40,11 @@ class User extends Authenticatable
     public function business(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(\App\Modules\Businesses\Models\Business::class, 'user_id');
+    }
+
+    public function assignedRegion(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Taxonomy\Models\Region::class, 'assigned_region_id');
     }
 
     public function isActive(): bool

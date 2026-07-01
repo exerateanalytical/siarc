@@ -1,25 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
 $isEdit = (bool) $business;
 $action = $isEdit ? route('business.update') : route('business.store');
 $v = fn ($field, $default = '') => old($field, $isEdit ? ($business->{$field} ?? $default) : $default);
+$pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my business') : ($lang === 'fr' ? 'Créer mon entreprise' : 'Create my business');
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6">
-
-    <div class="flex items-center gap-2 mb-6">
-        <a href="{{ $isEdit ? route('dashboard.entrepreneur') : '/tableau-de-bord' }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="building-2" class="w-4 h-4 text-forest-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">
-            {{ $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my business') : ($lang === 'fr' ? 'Créer mon entreprise' : 'Create my business') }}
-        </h1>
-    </div>
+<div class="max-w-2xl mx-auto">
 
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">

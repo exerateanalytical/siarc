@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
+$pageTitle = $lang === 'fr' ? 'Notifications' : 'Notifications';
 $typeIcons = [
     'new_message' => 'message-circle',
     'verification_approved' => 'badge-check',
@@ -11,17 +12,7 @@ $typeIcons = [
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6">
-
-    <div class="flex items-center gap-2 mb-6">
-        <a href="/tableau-de-bord" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="bell" class="w-4 h-4 text-forest-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'Notifications' : 'Notifications' }}</h1>
-    </div>
+<div class="max-w-2xl mx-auto">
 
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
         @forelse($notifications as $n)

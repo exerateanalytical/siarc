@@ -138,6 +138,35 @@ $description = $lang === 'fr' ? $business->description_fr : ($business->descript
             </div>
             @endif
 
+            <!-- Event participation -->
+            @if($business->events->isNotEmpty())
+            <div class="mb-5">
+                <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="calendar-days" class="w-4 h-4 text-forest-500"></i>
+                    {{ $lang === 'fr' ? 'Participation aux événements' : 'Event participation' }}
+                </h2>
+                <div class="space-y-2">
+                    @foreach($business->events as $ev)
+                    @php $evPast = $ev->starts_at->isPast(); @endphp
+                    <a href="{{ route('events.show', ['slug' => $ev->slug]) }}" class="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-3.5 hover:border-forest-300 transition-colors">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-9 h-9 rounded-lg bg-forest-50 flex items-center justify-center shrink-0">
+                                <i data-lucide="calendar" class="w-4 h-4 text-forest-600"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ $lang === 'fr' ? $ev->name_fr : ($ev->name_en ?? $ev->name_fr) }}</p>
+                                <p class="text-xs text-gray-400">{{ $ev->starts_at->format('d/m/Y') }}</p>
+                            </div>
+                        </div>
+                        <span @class(['text-xs font-medium px-2 py-1 rounded-full shrink-0', 'bg-gray-100 text-gray-500' => $evPast, 'bg-forest-50 text-forest-700' => !$evPast])>
+                            {{ $evPast ? ($lang === 'fr' ? 'Participé' : 'Attended') : ($lang === 'fr' ? 'À venir' : 'Upcoming') }}
+                        </span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
         </div>
 
         <!-- Sidebar: Contact -->

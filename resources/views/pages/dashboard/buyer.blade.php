@@ -1,27 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
+
+@php $pageTitle = $lang === 'fr' ? 'Mon espace acheteur' : 'My Buyer Space'; @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 py-6">
-
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <div>
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i data-lucide="shopping-bag" class="w-4 h-4 text-green-600"></i>
-                </div>
-                <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'Mon espace acheteur' : 'My Buyer Space' }}</h1>
-            </div>
-            <p class="text-sm text-gray-500 mt-0.5 ml-10">{{ $siacUser['name'] ?? '' }}</p>
-        </div>
-        <form method="POST" action="/logout">
-            @csrf
-            <button type="submit" class="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors w-full sm:w-auto justify-center">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
-                {{ $lang === 'fr' ? 'Déconnexion' : 'Logout' }}
-            </button>
-        </form>
-    </div>
+<div class="max-w-5xl mx-auto">
 
     {{-- Hero search banner --}}
     <div class="bg-forest-600 rounded-2xl p-5 mb-5 text-white">

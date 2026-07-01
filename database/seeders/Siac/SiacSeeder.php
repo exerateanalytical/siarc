@@ -17,14 +17,18 @@ class SiacSeeder extends Seeder
         $this->command->info('[2/5] Regions & Cities...');
         $this->call(SiacRegionsSeeder::class);
 
-        $this->command->info('[3/5] Taxonomy (Industries, Sectors, Categories)...');
+        $this->command->info('[3/6] Taxonomy (Industries, Sectors, Categories)...');
         $this->call(SiacTaxonomySeeder::class);
 
-        $this->command->info('[4/5] Businesses & Products...');
+        $this->command->info('[4/6] Attribute templates (industry-specific specs)...');
+        $this->call(SiacAttributeTemplatesExpansionSeeder::class);
+
+        $this->command->info('[5/6] Businesses & Products...');
         $this->call(SiacBusinessesSeeder::class);
 
-        $this->command->info('[5/5] Admin Users & Settings...');
+        $this->command->info('[6/6] Admin & Demo Users, Settings...');
         $this->call(SiacAdminSeeder::class);
+        $this->call(SiacDemoSeeder::class);
 
         $this->command->info('');
         $this->command->info('=== Seeding complete! ===');

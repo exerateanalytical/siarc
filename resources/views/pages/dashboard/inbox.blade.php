@@ -1,17 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
+
+@php $pageTitle = $lang === 'fr' ? 'Messagerie' : 'Messages'; @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 py-6">
-
-    <div class="flex items-center gap-2 mb-6">
-        <a href="/tableau-de-bord" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="message-circle" class="w-4 h-4 text-blue-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'Messagerie' : 'Messages' }}</h1>
-    </div>
+<div class="max-w-3xl mx-auto">
 
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         @forelse($conversations as $conv)

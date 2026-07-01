@@ -8,16 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class BusinessCertification extends Model
 {
     protected $fillable = [
-        'business_id', 'certification_id', 'certificate_number',
-        'issued_at', 'expires_at', 'document_path', 'is_verified',
+        'business_id', 'certification_id',
+        'issued_at', 'expires_at', 'certificate_file', 'status',
     ];
 
     protected function casts(): array
     {
         return [
-            'issued_at'   => 'date',
-            'expires_at'  => 'date',
-            'is_verified' => 'boolean',
+            'issued_at'  => 'date',
+            'expires_at' => 'date',
         ];
     }
 
@@ -29,5 +28,10 @@ class BusinessCertification extends Model
     public function certification(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Certification::class);
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
     }
 }

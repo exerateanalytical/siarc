@@ -1,17 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
 $isBuyer = $conversation->buyer_id === $user->id;
 $otherName = $isBuyer
     ? ($lang === 'fr' ? $conversation->business?->name_fr : ($conversation->business?->name_en ?? $conversation->business?->name_fr))
     : $conversation->buyer?->name;
+$pageTitle = $lang === 'fr' ? 'Messagerie' : 'Messages';
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6">
+<div class="max-w-2xl mx-auto">
 
     <div class="flex items-center gap-2 mb-4">
-        <a href="{{ route('messages.inbox') }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
+        <a href="{{ route('messages.inbox') }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100 lg:hidden">
             <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
         </a>
         <div class="w-9 h-9 rounded-full bg-forest-50 flex items-center justify-center shrink-0">

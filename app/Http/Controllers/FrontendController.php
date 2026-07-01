@@ -48,8 +48,10 @@ class FrontendController extends Controller
             'industries' => Industry::where('is_active', true)->count(),
         ];
 
+        $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->limit(6)->get();
+
         return response(
-            view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats'))
+            view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats', 'partners'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
@@ -106,7 +108,7 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
-        $business = Business::with(['industry', 'city', 'region', 'products.primaryImage'])
+        $business = Business::with(['industry', 'city', 'region', 'products.primaryImage', 'events' => fn ($q) => $q->orderByDesc('starts_at')])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();

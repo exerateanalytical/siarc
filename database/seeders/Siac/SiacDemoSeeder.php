@@ -39,9 +39,43 @@ class SiacDemoSeeder extends Seeder
             lang: 'fr',
         );
 
+        // Demo Regional Representative — assigned to the Centre region
+        $regionalRepId = $this->upsertUser(
+            email: 'regional@siac2026.cm',
+            name: 'Rep Centre',
+            password: 'Demo@SIAC2026',
+            lang: 'fr',
+        );
+        $this->assignRole($regionalRepId, 'regional_rep');
+        $centreRegion = DB::table('regions')->where('name_fr', 'like', '%Centre%')->first();
+        if ($centreRegion) {
+            DB::table('users')->where('id', $regionalRepId)->update(['assigned_region_id' => $centreRegion->id]);
+        }
+
+        // Demo Ministry account
+        $ministryId = $this->upsertUser(
+            email: 'ministry@siac2026.cm',
+            name: 'Ministry User',
+            password: 'Demo@SIAC2026',
+            lang: 'fr',
+        );
+        $this->assignRole($ministryId, 'ministry');
+
+        // Demo Technical Reviewer
+        $technicalId = $this->upsertUser(
+            email: 'technique@siac2026.cm',
+            name: 'Tech Reviewer',
+            password: 'Demo@SIAC2026',
+            lang: 'fr',
+        );
+        $this->assignRole($technicalId, 'technical_reviewer');
+
         $this->command->info('Demo accounts created:');
-        $this->command->line('  entrepreneur@siac2026.cm / Demo@SIAC2026  (business_owner)');
-        $this->command->line('  acheteur@siac2026.cm    / Demo@SIAC2026  (buyer)');
+        $this->command->line('  entrepreneur@siac2026.cm   / Demo@SIAC2026  (business_owner)');
+        $this->command->line('  acheteur@siac2026.cm       / Demo@SIAC2026  (buyer)');
+        $this->command->line('  regional@siac2026.cm       / Demo@SIAC2026  (regional_rep)');
+        $this->command->line('  ministry@siac2026.cm       / Demo@SIAC2026  (ministry)');
+        $this->command->line('  technique@siac2026.cm      / Demo@SIAC2026  (technical_reviewer)');
         $this->command->line('  admin@artisanatcameroun.cm / Admin@SIAC2026  (super_admin)');
     }
 

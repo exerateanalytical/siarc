@@ -1,27 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
+
+@php $pageTitle = $lang === 'fr' ? 'Mon espace entrepreneur' : 'My Business Space'; @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 py-6">
-
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-        <div>
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <i data-lucide="briefcase" class="w-4 h-4 text-amber-600"></i>
-                </div>
-                <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'Mon espace entrepreneur' : 'My Business Space' }}</h1>
-            </div>
-            <p class="text-sm text-gray-500 mt-0.5 ml-10">{{ $siacUser['name'] ?? '' }}</p>
-        </div>
-        <form method="POST" action="/logout">
-            @csrf
-            <button type="submit" class="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors w-full sm:w-auto justify-center">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
-                {{ $lang === 'fr' ? 'Déconnexion' : 'Logout' }}
-            </button>
-        </form>
-    </div>
+<div class="max-w-5xl mx-auto">
 
     @if($business)
 
@@ -110,6 +92,46 @@
         </div>
     </div>
 
+    {{-- Verification progress --}}
+    @if($business->verification_tier !== 'certified')
+    <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+        <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                <i data-lucide="badge-check" class="w-4 h-4 text-indigo-500"></i>
+                {{ $lang === 'fr' ? 'Progression de vérification' : 'Verification progress' }}
+            </h2>
+            @if(!$latestVerification || in_array($latestVerification->status, ['draft', 'rejected']))
+            <a href="{{ route('verification.show') }}" class="text-xs text-forest-600 font-medium hover:underline">{{ $lang === 'fr' ? 'Demander' : 'Apply' }}</a>
+            @endif
+        </div>
+        @php
+            $tierSteps = ['unverified', 'basic', 'verified', 'certified'];
+            $currentStep = array_search($business->verification_tier ?? 'basic', $tierSteps);
+            $currentStep = $currentStep === false ? 0 : $currentStep;
+        @endphp
+        <div class="flex items-center gap-2">
+            @foreach($tierSteps as $i => $step)
+            <div class="flex-1 flex items-center gap-2">
+                <div @class([
+                    'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0',
+                    'bg-forest-500 text-white' => $i <= $currentStep,
+                    'bg-gray-100 text-gray-400' => $i > $currentStep,
+                ])>
+                    @if($i < $currentStep)<i data-lucide="check" class="w-3 h-3"></i>@else {{ $i + 1 }} @endif
+                </div>
+                <span @class(['text-xs capitalize', 'text-gray-800 font-medium' => $i <= $currentStep, 'text-gray-400' => $i > $currentStep])>{{ $step }}</span>
+                @if($i < count($tierSteps) - 1)<div @class(['flex-1 h-0.5', 'bg-forest-500' => $i < $currentStep, 'bg-gray-100' => $i >= $currentStep])></div>@endif
+            </div>
+            @endforeach
+        </div>
+        @if($latestVerification && in_array($latestVerification->status, ['submitted', 'under_review']))
+        <p class="text-xs text-amber-600 mt-3 flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Demande en cours d\'examen.' : 'Application under review.' }}</p>
+        @elseif($latestVerification && $latestVerification->status === 'rejected')
+        <p class="text-xs text-red-600 mt-3 flex items-center gap-1"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Dernière demande rejetée. Vous pouvez soumettre une nouvelle demande.' : 'Last application rejected. You may submit a new one.' }}</p>
+        @endif
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {{-- My Products --}}
@@ -190,6 +212,11 @@
                     <i data-lucide="badge-check" class="w-4 h-4 text-indigo-500 shrink-0"></i>
                     {{ $lang === 'fr' ? 'Demander vérification' : 'Request verification' }}
                 </a>
+                <a href="{{ route('events.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i data-lucide="calendar-days" class="w-4 h-4 text-teal-500 shrink-0"></i>
+                    {{ $lang === 'fr' ? 'S\'inscrire à un événement' : 'Register for an event' }}
+                </a>
                 <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <i data-lucide="search" class="w-4 h-4 text-gray-400 shrink-0"></i>
@@ -203,6 +230,34 @@
             </div>
         </div>
     </div>
+
+    {{-- Event participation --}}
+    @if($eventParticipations->isNotEmpty())
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden mt-4">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                <i data-lucide="calendar-days" class="w-4 h-4 text-teal-500"></i>
+                {{ $lang === 'fr' ? 'Participation aux événements' : 'Event participation' }}
+            </h2>
+        </div>
+        <div class="divide-y divide-gray-50">
+            @foreach($eventParticipations as $event)
+            <div class="flex items-center gap-3 px-4 py-3">
+                <div class="w-9 h-9 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
+                    <i data-lucide="calendar" class="w-4 h-4 text-teal-600"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ $lang === 'fr' ? $event->name_fr : $event->name_en }}</p>
+                    <p class="text-xs text-gray-400">{{ \Illuminate\Support\Carbon::parse($event->starts_at)->format('d/m/Y') }}</p>
+                </div>
+                <span @class(['text-xs font-medium px-2 py-1 rounded-full shrink-0', 'bg-green-100 text-green-700' => $event->status === 'confirmed', 'bg-amber-100 text-amber-700' => $event->status === 'pending', 'bg-red-100 text-red-700' => $event->status === 'cancelled'])>
+                    {{ ucfirst($event->status) }}
+                </span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     @else
     {{-- No business yet --}}

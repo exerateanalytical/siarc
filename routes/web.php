@@ -131,12 +131,74 @@ Route::post('/tableau-de-bord/entreprise/verification', [VerificationWebControll
 use App\Http\Controllers\AdminWebController;
 
 Route::get('/tableau-de-bord/admin/entreprises', [AdminWebController::class, 'businesses'])->name('admin.businesses');
+Route::get('/tableau-de-bord/admin/entreprises/{id}', [AdminWebController::class, 'businessDetail'])->name('admin.businesses.detail');
 Route::post('/tableau-de-bord/admin/entreprises/{id}/statut', [AdminWebController::class, 'updateBusinessStatus'])->name('admin.businesses.update-status');
 Route::get('/tableau-de-bord/admin/verifications', [AdminWebController::class, 'verifications'])->name('admin.verifications');
 Route::post('/tableau-de-bord/admin/verifications/{id}/approuver', [AdminWebController::class, 'approveVerification'])->name('admin.verifications.approve');
 Route::post('/tableau-de-bord/admin/verifications/{id}/rejeter', [AdminWebController::class, 'rejectVerification'])->name('admin.verifications.reject');
 Route::get('/tableau-de-bord/admin/utilisateurs', [AdminWebController::class, 'users'])->name('admin.users');
+Route::get('/tableau-de-bord/admin/utilisateurs/{id}', [AdminWebController::class, 'userDetail'])->name('admin.users.detail');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
+Route::post('/tableau-de-bord/admin/utilisateurs/{id}/role', [AdminWebController::class, 'updateUserRole'])->name('admin.users.update-role');
+Route::get('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 'partners'])->name('admin.partners');
+Route::post('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 'storePartner'])->name('admin.partners.store');
+Route::post('/tableau-de-bord/admin/partenaires/{id}', [AdminWebController::class, 'updatePartner'])->name('admin.partners.update');
+Route::post('/tableau-de-bord/admin/partenaires/{id}/supprimer', [AdminWebController::class, 'destroyPartner'])->name('admin.partners.destroy');
+Route::get('/tableau-de-bord/admin/rapports', [AdminWebController::class, 'reports'])->name('admin.reports');
+Route::get('/tableau-de-bord/admin/evenements', [AdminWebController::class, 'events'])->name('admin.events');
+Route::post('/tableau-de-bord/admin/evenements', [AdminWebController::class, 'storeEvent'])->name('admin.events.store');
+Route::post('/tableau-de-bord/admin/evenements/{id}', [AdminWebController::class, 'updateEvent'])->name('admin.events.update');
+Route::post('/tableau-de-bord/admin/evenements/{id}/supprimer', [AdminWebController::class, 'destroyEvent'])->name('admin.events.destroy');
+
+use App\Http\Controllers\EventWebController;
+
+Route::get('/evenements', [EventWebController::class, 'index'])->name('events.index');
+Route::get('/evenements/{slug}', [EventWebController::class, 'show'])->name('events.show');
+Route::post('/evenements/{slug}/participer', [EventWebController::class, 'attend'])->name('events.attend');
+Route::post('/evenements/{slug}/annuler', [EventWebController::class, 'cancelAttend'])->name('events.cancel-attend');
+Route::post('/evenements/{slug}/exposer', [EventWebController::class, 'exhibit'])->name('events.exhibit');
+
+use App\Http\Controllers\RegionalRepWebController;
+
+Route::get('/tableau-de-bord/representant-regional', [RegionalRepWebController::class, 'dashboard'])->name('dashboard.regional-rep');
+
+use App\Http\Controllers\MinistryWebController;
+
+Route::get('/tableau-de-bord/ministere', [MinistryWebController::class, 'dashboard'])->name('dashboard.ministry');
+
+use App\Http\Controllers\TechnicalReviewerWebController;
+
+Route::get('/tableau-de-bord/technique', [TechnicalReviewerWebController::class, 'dashboard'])->name('dashboard.technical-reviewer');
+Route::post('/tableau-de-bord/technique/verifications/{id}/approuver', [TechnicalReviewerWebController::class, 'approveVerification'])->name('technical.verifications.approve');
+Route::post('/tableau-de-bord/technique/verifications/{id}/rejeter', [TechnicalReviewerWebController::class, 'rejectVerification'])->name('technical.verifications.reject');
+Route::post('/tableau-de-bord/technique/certifications/{id}/approuver', [TechnicalReviewerWebController::class, 'approveCertification'])->name('technical.certifications.approve');
+Route::post('/tableau-de-bord/technique/certifications/{id}/rejeter', [TechnicalReviewerWebController::class, 'rejectCertification'])->name('technical.certifications.reject');
+Route::get('/tableau-de-bord/technique/historique', [TechnicalReviewerWebController::class, 'history'])->name('technical.history');
+Route::get('/tableau-de-bord/admin/journal-audit', [AdminWebController::class, 'auditLog'])->name('admin.audit-log');
+
+use App\Http\Controllers\SupportWebController;
+
+Route::get('/tableau-de-bord/support', [SupportWebController::class, 'index'])->name('support.index');
+Route::post('/tableau-de-bord/support', [SupportWebController::class, 'store'])->name('support.store');
+Route::get('/tableau-de-bord/support/{id}', [SupportWebController::class, 'show'])->name('support.show');
+Route::post('/tableau-de-bord/support/{id}/repondre', [SupportWebController::class, 'reply'])->name('support.reply');
+Route::get('/tableau-de-bord/admin/support', [SupportWebController::class, 'adminIndex'])->name('admin.support');
+Route::post('/tableau-de-bord/admin/support/{id}/fermer', [SupportWebController::class, 'close'])->name('admin.support.close');
+
+use App\Http\Controllers\CmsWebController;
+
+Route::get('/tableau-de-bord/admin/cms', [CmsWebController::class, 'index'])->name('admin.cms');
+Route::post('/tableau-de-bord/admin/cms/pages', [CmsWebController::class, 'storePage'])->name('admin.cms.pages.store');
+Route::post('/tableau-de-bord/admin/cms/pages/{id}', [CmsWebController::class, 'updatePage'])->name('admin.cms.pages.update');
+Route::post('/tableau-de-bord/admin/cms/pages/{id}/supprimer', [CmsWebController::class, 'destroyPage'])->name('admin.cms.pages.destroy');
+Route::post('/tableau-de-bord/admin/cms/faqs', [CmsWebController::class, 'storeFaq'])->name('admin.cms.faqs.store');
+Route::post('/tableau-de-bord/admin/cms/faqs/{id}/supprimer', [CmsWebController::class, 'destroyFaq'])->name('admin.cms.faqs.destroy');
+
+Route::get('/partenaires', function (Illuminate\Http\Request $request) {
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->get();
+    return view('pages.partners', compact('lang', 'partners'));
+})->name('partners.index');
 
 use App\Http\Controllers\NotificationWebController;
 
@@ -900,7 +962,7 @@ Route::post('/login', function (Request $request) {
     $siacRole = DB::table('model_has_roles')
         ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
         ->where('model_has_roles.model_id', $user->id)
-        ->orderByRaw("FIELD(roles.name,'super_admin','moderator','business_owner') DESC")
+        ->orderByRaw("FIELD(roles.name,'super_admin','admin','ministry','technical_reviewer','regional_rep','moderator','business_owner') DESC")
         ->value('roles.name');
 
     $displayName = $user->name ?? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
@@ -911,7 +973,7 @@ Route::post('/login', function (Request $request) {
         'name'     => $displayName,
         'email'    => $user->email,
         'role'     => $siacRole,
-        'is_admin' => in_array($siacRole, ['super_admin', 'moderator']),
+        'is_admin' => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
     ]]);
 
     // Also store legacy session for backward compat with other routes
@@ -925,7 +987,7 @@ Route::post('/login', function (Request $request) {
         'avatar_url'           => $user->avatar ?? $user->avatar_url ?? null,
         'user_type'            => $user->user_type ?? 'buyer',
         'onboarding_completed' => (bool) ($user->onboarding_completed ?? true),
-        'is_admin'             => in_array($siacRole, ['super_admin', 'moderator']),
+        'is_admin'             => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
     ]]);
 
     // All SIAC platform users go to SIAC dashboard
@@ -1090,7 +1152,10 @@ Route::get('/tableau-de-bord', function (Request $request) {
     if (!$siacUser) return redirect('/login?lang=' . $request->cookie('lang', 'fr'));
 
     $role = $siacUser['role'] ?? null;
-    if (in_array($role, ['super_admin', 'moderator'])) return redirect('/tableau-de-bord/admin');
+    if (in_array($role, ['super_admin', 'admin', 'moderator'])) return redirect('/tableau-de-bord/admin');
+    if ($role === 'ministry') return redirect('/tableau-de-bord/ministere');
+    if ($role === 'technical_reviewer') return redirect('/tableau-de-bord/technique');
+    if ($role === 'regional_rep') return redirect('/tableau-de-bord/representant-regional');
     if ($role === 'business_owner') return redirect('/tableau-de-bord/entrepreneur');
     return redirect('/tableau-de-bord/acheteur');
 })->name('dashboard.siac');
@@ -1156,7 +1221,20 @@ Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
         ->orWhere('business_id', $business->id ?? 0)
         ->count();
 
-    return view('pages.dashboard.entrepreneur', compact('lang', 'siacUser', 'business', 'productCount', 'products', 'messageCount'));
+    $latestVerification = $business
+        ? DB::table('verification_applications')->where('business_id', $business->id)->orderByDesc('created_at')->first()
+        : null;
+
+    $eventParticipations = $business
+        ? DB::table('event_exhibitors')
+            ->join('events', 'events.id', '=', 'event_exhibitors.event_id')
+            ->where('event_exhibitors.business_id', $business->id)
+            ->orderByDesc('events.starts_at')
+            ->select('events.name_fr', 'events.name_en', 'events.starts_at', 'event_exhibitors.status')
+            ->get()
+        : collect();
+
+    return view('pages.dashboard.entrepreneur', compact('lang', 'siacUser', 'business', 'productCount', 'products', 'messageCount', 'latestVerification', 'eventParticipations'));
 })->name('dashboard.entrepreneur');
 
 Route::get('/tableau-de-bord/acheteur', function (Request $request) {

@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
+$pageTitle = $lang === 'fr' ? 'Entreprises' : 'Businesses';
 $statusLabels = [
     'draft' => $lang === 'fr' ? 'Brouillon' : 'Draft',
     'published' => $lang === 'fr' ? 'Publiée' : 'Published',
@@ -10,17 +11,7 @@ $statusLabels = [
 @endphp
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 py-6">
-
-    <div class="flex items-center gap-2 mb-6">
-        <a href="/tableau-de-bord/admin" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="building-2" class="w-4 h-4 text-forest-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">{{ $lang === 'fr' ? 'Entreprises' : 'Businesses' }}</h1>
-    </div>
+<div class="max-w-4xl mx-auto">
 
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
@@ -46,7 +37,7 @@ $statusLabels = [
                 <i data-lucide="{{ $business->industry->icon ?? 'building-2' }}" class="w-4 h-4 text-gray-400"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">{{ $business->name_fr }}</p>
+                <a href="{{ route('admin.businesses.detail', ['id' => $business->id]) }}" class="text-sm font-medium text-gray-900 truncate hover:text-forest-600 hover:underline">{{ $business->name_fr }}</a>
                 <p class="text-xs text-gray-400 truncate">{{ $business->user?->email }} — {{ $business->industry->name_fr ?? '' }}</p>
             </div>
             <span @class([

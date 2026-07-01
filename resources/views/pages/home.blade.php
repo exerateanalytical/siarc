@@ -180,4 +180,34 @@ $title = $lang === 'fr'
     </div>
 </section>
 
+<!-- Partners -->
+@if($partners->isNotEmpty())
+<section class="max-w-6xl mx-auto px-4 py-10">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <i data-lucide="handshake" class="w-5 h-5 text-forest-500"></i>
+            {{ $lang === 'fr' ? 'Nos partenaires' : 'Our partners' }}
+        </h2>
+        <a href="{{ route('partners.index') }}" class="text-sm text-forest-600 hover:text-forest-700 font-medium flex items-center gap-1">
+            {{ $lang === 'fr' ? 'Voir tout' : 'See all' }}
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+    </div>
+    <div class="flex flex-wrap items-center gap-4">
+        @foreach($partners as $partner)
+        <div class="bg-white border border-gray-200 rounded-xl px-5 py-3 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 overflow-hidden">
+                @if($partner->logo_url)
+                <img src="{{ $partner->logo_url }}" alt="" class="w-full h-full object-contain">
+                @else
+                <i data-lucide="building-2" class="w-4 h-4 text-gray-300"></i>
+                @endif
+            </div>
+            <span class="text-sm font-medium text-gray-800">{{ $lang === 'fr' ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</span>
+        </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
 @endsection

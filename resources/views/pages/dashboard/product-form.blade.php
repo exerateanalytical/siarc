@@ -1,31 +1,23 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @php
 $isEdit = (bool) $product;
 $action = $isEdit ? route('products.web-update', ['slug' => $product->slug]) : route('products.web-store');
 $v = fn ($field, $default = '') => old($field, $isEdit ? ($product->{$field} ?? $default) : $default);
 $vb = fn ($field, $default = false) => old($field, $isEdit ? (bool) ($product->{$field} ?? $default) : $default);
+$pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product') : ($lang === 'fr' ? 'Ajouter un produit' : 'Add a product');
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6">
+<div class="max-w-2xl mx-auto">
 
-    <div class="flex items-center gap-2 mb-6">
-        <a href="{{ route('dashboard.entrepreneur') }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-gray-500"></i>
-        </a>
-        <div class="w-8 h-8 bg-forest-100 rounded-lg flex items-center justify-center">
-            <i data-lucide="package" class="w-4 h-4 text-forest-600"></i>
-        </div>
-        <h1 class="text-lg font-bold text-gray-900">
-            {{ $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product') : ($lang === 'fr' ? 'Ajouter un produit' : 'Add a product') }}
-        </h1>
-        @if($isEdit)
-        <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" target="_blank" class="ml-auto text-xs text-forest-600 hover:underline flex items-center gap-1">
+    @if($isEdit)
+    <div class="flex justify-end mb-3">
+        <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" target="_blank" class="text-xs text-forest-600 hover:underline flex items-center gap-1">
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Voir la fiche' : 'View listing' }}
         </a>
-        @endif
     </div>
+    @endif
 
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">

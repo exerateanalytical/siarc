@@ -18,35 +18,30 @@
         </div>
 
         {{-- Demo Login Cards --}}
+        @php
+        $demoAccounts = [
+            ['email' => 'admin@artisanatcameroun.cm', 'password' => 'Admin@SIAC2026', 'color' => 'slate',  'icon' => 'shield-check',   'label' => ['fr' => 'Admin', 'en' => 'Admin']],
+            ['email' => 'entrepreneur@siac2026.cm',   'password' => 'Demo@SIAC2026',  'color' => 'orange', 'icon' => 'briefcase',      'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
+            ['email' => 'acheteur@siac2026.cm',       'password' => 'Demo@SIAC2026',  'color' => 'sky',    'icon' => 'shopping-bag',   'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
+            ['email' => 'regional@siac2026.cm',       'password' => 'Demo@SIAC2026',  'color' => 'indigo', 'icon' => 'map',            'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
+            ['email' => 'ministry@siac2026.cm',       'password' => 'Demo@SIAC2026',  'color' => 'violet', 'icon' => 'landmark',       'label' => ['fr' => 'Ministère', 'en' => 'Ministry']],
+            ['email' => 'technique@siac2026.cm',      'password' => 'Demo@SIAC2026',  'color' => 'teal',   'icon' => 'microscope',     'label' => ['fr' => 'Technique', 'en' => 'Technical']],
+        ];
+        @endphp
         <div class="mb-6">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide text-center mb-3">
-                {{ $lang === 'fr' ? 'Comptes de démonstration' : 'Demo accounts' }}
+                {{ $lang === 'fr' ? 'Comptes de démonstration — 1 clic pour se connecter' : 'Demo accounts — one click to log in' }}
             </p>
             <div class="grid grid-cols-3 gap-2">
-                <button type="button" onclick="fillDemo('admin@artisanatcameroun.cm','Admin@SIAC2026')"
-                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-forest-400 hover:bg-forest-50 transition-all cursor-pointer text-center group">
-                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-200 transition-colors">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-red-600"></i>
+                @foreach($demoAccounts as $acc)
+                <button type="button" onclick="demoLogin('{{ $acc['email'] }}','{{ $acc['password'] }}')"
+                    class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-{{ $acc['color'] }}-400 hover:bg-{{ $acc['color'] }}-50 transition-all cursor-pointer text-center group">
+                    <div class="w-8 h-8 bg-{{ $acc['color'] }}-100 rounded-full flex items-center justify-center group-hover:bg-{{ $acc['color'] }}-200 transition-colors">
+                        <i data-lucide="{{ $acc['icon'] }}" class="w-4 h-4 text-{{ $acc['color'] }}-600"></i>
                     </div>
-                    <span class="text-xs font-semibold text-gray-700">Admin</span>
-                    <span class="text-[10px] text-gray-400 leading-tight">admin@artisanat<br>cameroun.cm</span>
+                    <span class="text-xs font-semibold text-gray-700">{{ $acc['label'][$lang] }}</span>
                 </button>
-                <button type="button" onclick="fillDemo('entrepreneur@siac2026.cm','Demo@SIAC2026')"
-                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-forest-400 hover:bg-forest-50 transition-all cursor-pointer text-center group">
-                    <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                        <i data-lucide="briefcase" class="w-4 h-4 text-amber-600"></i>
-                    </div>
-                    <span class="text-xs font-semibold text-gray-700">{{ $lang === 'fr' ? 'Entrepreneur' : 'Business' }}</span>
-                    <span class="text-[10px] text-gray-400 leading-tight">entrepreneur<br>@siac2026.cm</span>
-                </button>
-                <button type="button" onclick="fillDemo('acheteur@siac2026.cm','Demo@SIAC2026')"
-                    class="demo-btn flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 hover:border-forest-400 hover:bg-forest-50 transition-all cursor-pointer text-center group">
-                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                        <i data-lucide="shopping-bag" class="w-4 h-4 text-green-600"></i>
-                    </div>
-                    <span class="text-xs font-semibold text-gray-700">{{ $lang === 'fr' ? 'Acheteur' : 'Buyer' }}</span>
-                    <span class="text-[10px] text-gray-400 leading-tight">acheteur<br>@siac2026.cm</span>
-                </button>
+                @endforeach
             </div>
             <p class="text-center text-[10px] text-gray-400 mt-2">
                 {{ $lang === 'fr' ? 'Mot de passe demo :' : 'Demo password:' }}
@@ -129,11 +124,10 @@
 </div>
 
 <script>
-function fillDemo(email, password) {
+function demoLogin(email, password) {
     document.getElementById('email').value = email;
     document.getElementById('password').value = password;
-    document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('border-forest-500', 'bg-forest-50'));
-    event.currentTarget.classList.add('border-forest-500');
+    document.getElementById('login-form').submit();
 }
 </script>
 @endsection

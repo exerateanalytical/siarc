@@ -127,6 +127,13 @@ class Business extends Model
         return $this->hasMany(VerificationApplication::class)->latest();
     }
 
+    public function events(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\App\Modules\Events\Models\Event::class, 'event_exhibitors')
+            ->withPivot(['booth_number', 'status', 'registered_at'])
+            ->withTimestamps();
+    }
+
     public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(BusinessReview::class)->published()->latest();
