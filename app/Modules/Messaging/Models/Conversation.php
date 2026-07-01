@@ -12,7 +12,7 @@ class Conversation extends Model
 {
     protected $fillable = [
         'uuid', 'buyer_id', 'business_id', 'product_id',
-        'subject', 'status', 'last_message_at',
+        'subject', 'status', 'last_message_at', 'deal_marked_at',
         'buyer_archived_at', 'business_archived_at',
     ];
 
@@ -30,6 +30,7 @@ class Conversation extends Model
     {
         return [
             'last_message_at'       => 'datetime',
+            'deal_marked_at'        => 'datetime',
             'buyer_archived_at'     => 'datetime',
             'business_archived_at'  => 'datetime',
         ];

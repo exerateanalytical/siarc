@@ -16,12 +16,18 @@ class Product extends Model
 
     protected $fillable = [
         'business_id', 'category_id', 'origin_region_id',
-        'uuid', 'slug',
+        'uuid', 'slug', 'sku', 'brand', 'scientific_name', 'local_names',
         'name_fr', 'name_en',
         'description_fr', 'description_en',
-        'quantity_available', 'quantity_unit',
-        'moq', 'moq_unit',
+        'gps_lat', 'gps_lng', 'batch_number',
+        'quantity_available', 'quantity_unit', 'quantity_updated_at',
+        'moq', 'moq_unit', 'max_order',
         'price_type', 'price_amount', 'price_currency', 'price_unit',
+        'grade', 'quality_notes',
+        'harvest_method', 'next_harvest_at',
+        'daily_production', 'monthly_production', 'annual_production', 'production_unit',
+        'packaging_type', 'shelf_life_days', 'storage_conditions',
+        'delivery_radius_km', 'lead_time_days', 'payment_terms',
         'is_available', 'is_export_ready', 'is_custom_order',
         'is_wholesale', 'is_retail', 'is_organic', 'is_certified',
         'status', 'views_count', 'sort_order',
@@ -30,14 +36,18 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'is_available'    => 'boolean',
-            'is_export_ready' => 'boolean',
-            'is_custom_order' => 'boolean',
-            'is_wholesale'    => 'boolean',
-            'is_retail'       => 'boolean',
-            'is_organic'      => 'boolean',
-            'is_certified'    => 'boolean',
-            'price_amount'    => 'decimal:2',
+            'is_available'      => 'boolean',
+            'is_export_ready'   => 'boolean',
+            'is_custom_order'   => 'boolean',
+            'is_wholesale'      => 'boolean',
+            'is_retail'         => 'boolean',
+            'is_organic'        => 'boolean',
+            'is_certified'      => 'boolean',
+            'price_amount'      => 'decimal:2',
+            'gps_lat'           => 'decimal:7',
+            'gps_lng'           => 'decimal:7',
+            'quantity_updated_at' => 'datetime',
+            'next_harvest_at'   => 'datetime',
         ];
     }
 
@@ -50,6 +60,14 @@ class Product extends Model
             }
             if (! $product->slug) {
                 $product->slug = static::generateSlug($product->name_fr);
+            }
+            if ($product->quantity_available !== null && ! $product->quantity_updated_at) {
+                $product->quantity_updated_at = now();
+            }
+        });
+        static::updating(function (Product $product) {
+            if ($product->isDirty('quantity_available')) {
+                $product->quantity_updated_at = now();
             }
         });
     }
@@ -109,6 +127,11 @@ class Product extends Model
     public function reports(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ProductReport::class);
+    }
+
+    public function harvestDates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductHarvestDate::class)->orderBy('harvest_date');
     }
 
     public function scopePublished($query)

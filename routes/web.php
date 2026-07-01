@@ -96,6 +96,11 @@ Route::get('/tableau-de-bord/messages', [MessagingWebController::class, 'inbox']
 Route::get('/tableau-de-bord/messages/{id}', [MessagingWebController::class, 'thread'])->name('messages.thread');
 Route::post('/tableau-de-bord/messages/{id}/repondre', [MessagingWebController::class, 'reply'])->name('messages.reply');
 
+use App\Http\Controllers\ReviewWebController;
+
+Route::post('/galerie/avis', [ReviewWebController::class, 'store'])->name('reviews.store');
+Route::post('/tableau-de-bord/messages/{id}/conclure', [ReviewWebController::class, 'markDeal'])->name('messages.mark-deal');
+
 // ─────────────────────────────────────────────
 // Legacy — Company Directory (disabled)
 // ─────────────────────────────────────────────

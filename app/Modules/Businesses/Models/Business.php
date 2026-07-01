@@ -127,6 +127,11 @@ class Business extends Model
         return $this->hasMany(VerificationApplication::class)->latest();
     }
 
+    public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(BusinessReview::class)->published()->latest();
+    }
+
     // Scopes
     public function scopePublished($query)
     {
@@ -147,11 +152,47 @@ class Business extends Model
 
     public function getLogoUrlAttribute(): ?string
     {
-        return $this->logo ? \Storage::disk('s3')->temporaryUrl($this->logo, now()->addHours(24)) : null;
+        return $this->logo ? $this->fileUrl($this->logo) : null;
     }
 
     public function getCoverUrlAttribute(): ?string
     {
-        return $this->cover_image ? \Storage::disk('s3')->temporaryUrl($this->cover_image, now()->addHours(24)) : null;
+        return $this->cover_image ? $this->fileUrl($this->cover_image) : null;
+    }
+
+    private function fileUrl(string $path): string
+    {
+        $disk = config('filesystems.default');
+
+        return $disk === 's3'
+            ? \Storage::disk('s3')->temporaryUrl($path, now()->addHours(24))
+            : \Storage::disk($disk)->url($path);
+    }
+
+    public function averageRating(): float
+    {
+        return round((float) $this->reviews()->avg('rating'), 1);
+    }
+
+    public function reviewsCount(): int
+    {
+        return $this->reviews()->count();
+    }
+
+    public function repeatCustomersCount(): int
+    {
+        return \App\Modules\Messaging\Models\Conversation::where('business_id', $this->id)
+            ->select('buyer_id')
+            ->groupBy('buyer_id')
+            ->havingRaw('COUNT(*) > 1')
+            ->get()
+            ->count();
+    }
+
+    public function dealsReportedCount(): int
+    {
+        return \App\Modules\Messaging\Models\Conversation::where('business_id', $this->id)
+            ->whereNotNull('deal_marked_at')
+            ->count();
     }
 }

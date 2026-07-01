@@ -122,7 +122,12 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
-        $product = Product::with(['images', 'documents', 'videos', 'attributes.template', 'category.sector.industry', 'originRegion', 'business.industry', 'business.region', 'business.city'])
+        $product = Product::with([
+                'images', 'documents', 'videos', 'attributes.template',
+                'category.sector.industry', 'originRegion', 'harvestDates',
+                'business.industry', 'business.region', 'business.city',
+                'business.reviews.reviewer',
+            ])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->whereHas('business', fn ($q) => $q->where('status', 'published'))
@@ -138,8 +143,21 @@ class FrontendController extends Controller
             ->limit(4)
             ->get();
 
+        $business = $product->business;
+        $sellerStats = [
+            'avg_rating'       => $business->averageRating(),
+            'reviews_count'    => $business->reviewsCount(),
+            'repeat_customers' => $business->repeatCustomersCount(),
+            'deals_reported'   => $business->dealsReportedCount(),
+        ];
+
+        $siacUser  = session('siac_user');
+        $myReview  = $siacUser
+            ? \App\Modules\Businesses\Models\BusinessReview::where('business_id', $business->id)->where('reviewer_id', $siacUser['id'])->first()
+            : null;
+
         return response(
-            view('pages.products.show', compact('lang', 'product', 'otherProducts'))
+            view('pages.products.show', compact('lang', 'product', 'otherProducts', 'sellerStats', 'myReview'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
