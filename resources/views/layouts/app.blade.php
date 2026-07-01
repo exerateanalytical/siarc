@@ -256,6 +256,9 @@
                     <li><a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Entreprises' : 'Businesses' }}</a></li>
                     <li><a href="{{ route('industries.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Secteurs' : 'Sectors' }}</a></li>
                     <li><a href="{{ url('/docs/api') }}" class="hover:text-white transition-colors">API Docs</a></li>
+                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'À propos' : 'About' }}</a></li>
+                    <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Conditions' : 'Terms' }}</a></li>
+                    <li><a href="{{ route('privacy') }}" class="hover:text-white transition-colors">{{ $lang === 'fr' ? 'Confidentialité' : 'Privacy' }}</a></li>
                 </ul>
             </div>
             <div>

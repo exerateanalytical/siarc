@@ -1484,9 +1484,18 @@ Route::get('/help/{slug}', function (Request $request, $slug) {
 // ─────────────────────────────────────────────
 // Static Pages
 // ─────────────────────────────────────────────
-Route::get('/about',        fn () => view('about'))->name('about');
-Route::get('/terms',        fn () => view('terms'))->name('terms');
-Route::get('/privacy',      fn () => view('privacy'))->name('privacy');
+Route::get('/about', function (Request $request) {
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    return view('about', compact('lang'));
+})->name('about');
+Route::get('/terms', function (Request $request) {
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    return view('terms', compact('lang'));
+})->name('terms');
+Route::get('/privacy', function (Request $request) {
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    return view('privacy', compact('lang'));
+})->name('privacy');
 Route::get('/how-it-works', fn () => view('how-it-works'))->name('how-it-works');
 
 // ─────────────────────────────────────────────
