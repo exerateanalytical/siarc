@@ -427,4 +427,55 @@ class AdminWebController extends Controller
 
         return view('pages.dashboard.admin-audit-log', compact('lang', 'logs'));
     }
+
+    public function moderation(Request $request)
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $tab = $request->query('tab') === 'reviews' ? 'reviews' : 'reports';
+
+        $reports = \App\Modules\Products\Models\ProductReport::with(['product.business', 'reporter'])
+            ->where('status', 'open')
+            ->latest()
+            ->paginate(20, ['*'], 'reports_page')
+            ->withQueryString();
+
+        $reviews = \App\Modules\Businesses\Models\BusinessReview::with(['business', 'reviewer'])
+            ->latest()
+            ->paginate(20, ['*'], 'reviews_page')
+            ->withQueryString();
+
+        return view('pages.dashboard.admin-moderation', compact('lang', 'tab', 'reports', 'reviews'));
+    }
+
+    public function resolveReport(Request $request, int $id): RedirectResponse
+    {
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $data = $request->validate(['status' => ['required', 'in:resolved,dismissed']]);
+        $report = \App\Modules\Products\Models\ProductReport::findOrFail($id);
+        $oldStatus = $report->status;
+        $report->update(['status' => $data['status']]);
+
+        \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'product_report.' . $data['status'], 'product_report', $report->id, ['status' => $oldStatus], ['status' => $data['status']]);
+
+        return back()->with('success', $this->lang($request) === 'fr' ? 'Signalement traité.' : 'Report handled.');
+    }
+
+    public function deleteReview(Request $request, int $id): RedirectResponse
+    {
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $review = \App\Modules\Businesses\Models\BusinessReview::findOrFail($id);
+        $snapshot = ['business_id' => $review->business_id, 'reviewer_id' => $review->reviewer_id, 'rating' => $review->rating, 'title' => $review->title];
+        $review->delete();
+
+        \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'business_review.deleted', 'business_review', $id, $snapshot, null);
+
+        return back()->with('success', $this->lang($request) === 'fr' ? 'Avis supprimé.' : 'Review deleted.');
+    }
 }

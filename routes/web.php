@@ -126,6 +126,9 @@ Route::post('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 's
 Route::post('/tableau-de-bord/admin/partenaires/{id}', [AdminWebController::class, 'updatePartner'])->name('admin.partners.update');
 Route::post('/tableau-de-bord/admin/partenaires/{id}/supprimer', [AdminWebController::class, 'destroyPartner'])->name('admin.partners.destroy');
 Route::get('/tableau-de-bord/admin/rapports', [AdminWebController::class, 'reports'])->name('admin.reports');
+Route::get('/tableau-de-bord/admin/moderation', [AdminWebController::class, 'moderation'])->name('admin.moderation');
+Route::post('/tableau-de-bord/admin/signalements/{id}/traiter', [AdminWebController::class, 'resolveReport'])->name('admin.reports.resolve');
+Route::post('/tableau-de-bord/admin/avis/{id}/supprimer', [AdminWebController::class, 'deleteReview'])->name('admin.reviews.destroy');
 Route::get('/tableau-de-bord/admin/evenements', [AdminWebController::class, 'events'])->name('admin.events');
 Route::post('/tableau-de-bord/admin/evenements', [AdminWebController::class, 'storeEvent'])->name('admin.events.store');
 Route::post('/tableau-de-bord/admin/evenements/{id}', [AdminWebController::class, 'updateEvent'])->name('admin.events.update');

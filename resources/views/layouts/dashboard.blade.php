@@ -65,6 +65,7 @@
                 'items' => [
                     ['admin.businesses', 'building-2', 'Entreprises', 'Businesses'],
                     ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
+                    ['admin.moderation', 'flag', 'Modération', 'Moderation'],
                     ['admin.users', 'users', 'Utilisateurs', 'Users'],
                 ],
             ],
