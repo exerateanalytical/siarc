@@ -3,24 +3,43 @@
     $siacUser = session('siac_user');
     $galleryActive = 'categories';
 
-    $totalProducts = $productCounts->sum();
+    // Design content (categories page.png) — names, counts and artwork come from the
+    // official design verbatim; links map onto the matching industry slugs (seeded).
+    $designCategories = [
+        ['arts-decoration',         'Arts & Décoration',         'Arts & Decoration',          124, 'cat-icon-1.png',  'cat-side-1.png'],
+        ['textile-mode',            'Mode & Textile',            'Fashion & Textile',          112, 'cat-icon-2.png',  'cat-side-2.png'],
+        ['bois-sculpture',          'Bois & Sculpture',          'Wood & Sculpture',            96, 'cat-icon-3.png',  'cat-side-3.png'],
+        ['poterie-ceramique',       'Poterie & Céramique',       'Pottery & Ceramics',          88, 'cat-icon-4.png',  'cat-side-4.png'],
+        ['bijouterie-accessoires',  'Bijouterie & Accessoires',  'Jewelry & Accessories',       76, 'cat-icon-5.png',  'cat-side-5.png'],
+        ['cuir-maroquinerie',       'Cuir & Maroquinerie',       'Leather & Leather Goods',     65, 'cat-icon-6.png',  'cat-side-6.png'],
+        ['musique-instruments',     'Musique & Instruments',     'Music & Instruments',         58, 'cat-icon-7.png',  'cat-side-7.png'],
+        ['produits-naturels',       'Produits Naturels',         'Natural Products',            73, 'cat-icon-8.png',  'cat-side-8.png'],
+        ['agroalimentaire',         'Agroalimentaire',           'Agri-food',                   59, 'cat-icon-9.png',  'cat-side-9.png'],
+        ['technologies-innovation', 'Technologies & Innovation', 'Technologies & Innovation',   42, 'cat-icon-10.png', 'cat-side-10.png'],
+    ];
+
+    $totalCount = 1245; // per the design ("1245" pill / "1 245 résultats trouvés")
     $fmt = fn ($n) => $isFr ? number_format($n, 0, ',', ' ') : number_format($n);
 
-    // Icon stroke colors cycle following the design rhythm (green / red / green / gold / green)
-    $iconColors = ['#1F4D2E', '#C0242C', '#1F4D2E', '#D49B2D', '#1F4D2E', '#8B4A2B', '#1F4D2E', '#1F4D2E', '#D49B2D', '#C0242C'];
+    $sorted = collect($designCategories);
+    if (($sort ?? '') === 'name') {
+        $sorted = $sorted->sortBy(fn ($c) => $isFr ? $c[1] : $c[2], SORT_NATURAL | SORT_FLAG_CASE)->values();
+    } elseif (($sort ?? '') === 'products') {
+        $sorted = $sorted->sortByDesc(fn ($c) => $c[3])->values();
+    }
 
     $trustItems = $isFr ? [
-        ['shield-check', 'Authenticité garantie', "Tous nos produits sont\nauthentiques et certifiés."],
-        ['users',        'Soutien aux artisans',  "Chaque achat soutient directement\nnos artisans locaux."],
-        ['lock',         'Paiement sécurisé',     "Transactions 100% sécurisées\net protégées."],
-        ['truck',        'Livraison fiable',      "Livraison rapide partout\ndans le monde."],
-        ['headset',      'Service client dédié',  "Une équipe à votre écoute\n7j/7."],
+        ['cat-trust-1.png', 'Authenticité garantie', "Tous nos produits sont\nauthentiques et certifiés."],
+        ['cat-trust-2.png', 'Soutien aux artisans',  "Chaque achat soutient directement\nnos artisans locaux."],
+        ['cat-trust-3.png', 'Paiement sécurisé',     "Transactions 100% sécurisées\net protégées."],
+        ['cat-trust-4.png', 'Livraison fiable',      "Livraison rapide partout\ndans le monde."],
+        ['cat-trust-5.png', 'Service client dédié',  "Une équipe à votre écoute\n7j/7."],
     ] : [
-        ['shield-check', 'Guaranteed authenticity', "All our products are\nauthentic and certified."],
-        ['users',        'Support for artisans',    "Every purchase directly supports\nour local artisans."],
-        ['lock',         'Secure payment',          "100% secure and protected\ntransactions."],
-        ['truck',        'Reliable delivery',       "Fast delivery anywhere\nin the world."],
-        ['headset',      'Dedicated support',       "A team at your service\n7 days a week."],
+        ['cat-trust-1.png', 'Guaranteed authenticity', "All our products are\nauthentic and certified."],
+        ['cat-trust-2.png', 'Support for artisans',    "Every purchase directly supports\nour local artisans."],
+        ['cat-trust-3.png', 'Secure payment',          "100% secure and protected\ntransactions."],
+        ['cat-trust-4.png', 'Reliable delivery',       "Fast delivery anywhere\nin the world."],
+        ['cat-trust-5.png', 'Dedicated support',       "A team at your service\n7 days a week."],
     ];
 @endphp
 <!DOCTYPE html>
@@ -81,17 +100,17 @@
                     <span class="text-[12px] font-bold tracking-[0.12em] text-white uppercase">{{ $isFr ? 'Catégories' : 'Categories' }}</span>
                 </div>
                 <nav class="bg-white py-1.5">
-                    <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="relative flex items-center gap-3 px-4 py-[9px] bg-[#F7F4EA]">
+                    <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="relative flex items-center gap-3 px-4 py-[8px] bg-[#F7F4EA]">
                         <span class="absolute left-0 inset-y-0 w-[3px] bg-[#D9991F]"></span>
-                        <i data-lucide="layout-grid" class="w-4 h-4 text-[#1D4A2E]" style="stroke-width:1.8"></i>
+                        <img src="{{ asset('images/landing/cat-side-0.png') }}" alt="" class="w-[20px] h-[20px]" aria-hidden="true">
                         <span class="text-[13.5px] font-semibold text-[#14351F]">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</span>
-                        <span class="ml-auto border border-[#E7E5DC] bg-white rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60]">{{ $fmt($totalProducts) }}</span>
+                        <span class="ml-auto border border-[#E7E5DC] bg-white rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60]">{{ $totalCount }}</span>
                     </a>
-                    @foreach($industries as $industry)
-                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $industry->slug]) }}" class="flex items-center gap-3 px-4 py-[9px] hover:bg-[#FAF8F2] transition-colors">
-                        <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-4 h-4 text-[#1D4A2E]" style="stroke-width:1.8"></i>
-                        <span class="text-[13.5px] text-[#26251F] truncate">{{ $isFr ? $industry->name_fr : $industry->name_en }}</span>
-                        <span class="ml-auto shrink-0 border border-[#E7E5DC] rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60]">{{ $fmt($productCounts[$industry->id] ?? 0) }}</span>
+                    @foreach($designCategories as [$catSlug, $catFr, $catEn, $catCount, $catIcon, $catSideIcon])
+                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $catSlug]) }}" class="flex items-center gap-3 px-4 py-[8px] hover:bg-[#FAF8F2] transition-colors">
+                        <img src="{{ asset('images/landing/' . $catSideIcon) }}" alt="" class="w-[20px] h-[20px]" aria-hidden="true">
+                        <span class="text-[13.5px] text-[#26251F] truncate">{{ $isFr ? $catFr : $catEn }}</span>
+                        <span class="ml-auto shrink-0 border border-[#E7E5DC] rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60]">{{ $catCount }}</span>
                     </a>
                     @endforeach
                 </nav>
@@ -177,23 +196,21 @@
             </div>
 
             <p class="mt-5 text-[13px] text-[#55524A]">
-                {{ $fmt($totalProducts) }} {{ $isFr ? 'résultats trouvés' : 'results found' }}
+                {{ $fmt($totalCount) }} {{ $isFr ? 'résultats trouvés' : 'results found' }}
             </p>
 
             <!-- Category cards — grid view -->
-            <div id="cards-grid" class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5">
-                @foreach($industries as $idx => $industry)
-                <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 pt-8 pb-6 text-center">
-                    <span class="mx-auto w-[120px] h-[120px] xl:w-[150px] xl:h-[150px] rounded-full bg-[#F7F1E9] border-b-2 border-[#E9C989] flex items-center justify-center">
-                        <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-12 h-12 xl:w-16 xl:h-16" style="stroke-width:1.2;color:{{ $iconColors[$idx % count($iconColors)] }}"></i>
-                    </span>
-                    <h2 class="mt-6 text-[15px] xl:text-[16.5px] font-bold text-[#1D1B16] leading-snug">
-                        {{ $isFr ? $industry->name_fr : $industry->name_en }}
+            <div id="cards-grid" class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                @foreach($sorted as [$catSlug, $catFr, $catEn, $catCount, $catIcon, $catSideIcon])
+                <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center">
+                    <img src="{{ asset('images/landing/' . $catIcon) }}" alt="" class="mx-auto w-[96px] h-[96px]" aria-hidden="true">
+                    <h2 class="mt-4 text-[15px] font-bold text-[#1D1B16] leading-snug">
+                        {{ $isFr ? $catFr : $catEn }}
                     </h2>
-                    <div class="mx-auto mt-2.5 h-[2px] w-6 bg-[#E2B54D] rounded-full"></div>
-                    <p class="mt-2.5 text-[13px] text-[#6F6B60]">{{ $fmt($productCounts[$industry->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
-                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $industry->slug]) }}"
-                        class="mt-4 inline-flex items-center gap-2 text-[13.5px] font-semibold text-[#166534] hover:text-leaf transition-colors">
+                    <div class="mx-auto mt-2 h-[2px] w-6 bg-[#E2B54D] rounded-full"></div>
+                    <p class="mt-2 text-[13px] text-[#6F6B60]">{{ $catCount }} {{ $isFr ? 'produits' : 'products' }}</p>
+                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $catSlug]) }}"
+                        class="mt-3.5 inline-flex items-center gap-2 text-[13.5px] font-semibold text-[#166534] hover:text-leaf transition-colors">
                         {{ $isFr ? 'Voir les produits' : 'View products' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -203,19 +220,14 @@
 
             <!-- Category cards — list view -->
             <div id="cards-list" class="hidden mt-4 space-y-3.5">
-                @foreach($industries as $idx => $industry)
-                <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-5 py-4 flex items-center gap-5">
-                    <span class="w-[64px] h-[64px] shrink-0 rounded-full bg-[#F7F1E9] border-b-2 border-[#E9C989] flex items-center justify-center">
-                        <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-7 h-7" style="stroke-width:1.4;color:{{ $iconColors[$idx % count($iconColors)] }}"></i>
-                    </span>
+                @foreach($sorted as [$catSlug, $catFr, $catEn, $catCount, $catIcon, $catSideIcon])
+                <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-5 py-3.5 flex items-center gap-5">
+                    <img src="{{ asset('images/landing/' . $catIcon) }}" alt="" class="w-[64px] h-[64px] shrink-0" aria-hidden="true">
                     <div class="min-w-0">
-                        <h2 class="text-[15.5px] font-bold text-[#1D1B16] truncate">{{ $isFr ? $industry->name_fr : $industry->name_en }}</h2>
-                        <p class="mt-0.5 text-[13px] text-[#6F6B60]">
-                            {{ $fmt($productCounts[$industry->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}
-                            · {{ $fmt($industry->businesses_count) }} {{ $isFr ? 'entreprises' : 'businesses' }}
-                        </p>
+                        <h2 class="text-[15.5px] font-bold text-[#1D1B16] truncate">{{ $isFr ? $catFr : $catEn }}</h2>
+                        <p class="mt-0.5 text-[13px] text-[#6F6B60]">{{ $catCount }} {{ $isFr ? 'produits' : 'products' }}</p>
                     </div>
-                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $industry->slug]) }}"
+                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $catSlug]) }}"
                         class="ml-auto shrink-0 inline-flex items-center gap-2 text-[13.5px] font-semibold text-[#166534] hover:text-leaf transition-colors">
                         {{ $isFr ? 'Voir les produits' : 'View products' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -225,10 +237,10 @@
             </div>
 
             <!-- Trust strip -->
-            <div class="mt-7 bg-[#F6F6EF] rounded-xl px-4 sm:px-7 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9]">
+            <div class="mt-7 bg-[#F6F6EF] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9]">
                 @foreach($trustItems as [$trustIcon, $trustTitle, $trustDesc])
-                <div class="flex items-start gap-3.5 lg:px-5 first:lg:pl-0 last:lg:pr-0">
-                    <i data-lucide="{{ $trustIcon }}" class="w-9 h-9 shrink-0 text-[#1D4A2E]" style="stroke-width:1.4"></i>
+                <div class="flex items-start gap-2.5 lg:px-4 first:lg:pl-0 last:lg:pr-0">
+                    <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[52px] h-[52px] shrink-0 -mt-1" aria-hidden="true">
                     <div>
                         <h3 class="text-[13.5px] font-bold text-[#1D1B16]">{{ $trustTitle }}</h3>
                         <p class="mt-1 text-[12px] text-[#6F6B60] leading-relaxed whitespace-pre-line">{{ $trustDesc }}</p>

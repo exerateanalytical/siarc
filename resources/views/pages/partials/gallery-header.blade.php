@@ -18,14 +18,14 @@
 <div class="relative flex h-6 overflow-hidden">
     <div class="w-[28%] bg-[#034226]"></div>
     <div class="relative w-[33%] bg-[#B70415]">
-        <svg viewBox="0 0 24 24" class="absolute left-[75%] top-1/2 -translate-y-1/2 w-3 h-3 fill-[#F5C33B]" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="absolute left-[51.4%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 fill-[#F5C33B]" aria-hidden="true">
+            <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
+        </svg>
+        <svg viewBox="0 0 24 24" class="absolute left-[67%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 fill-[#F5C33B]" aria-hidden="true">
             <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
         </svg>
     </div>
     <div class="relative flex-1 bg-gradient-to-r from-[#F2B01C] to-[#E6C89A] flex items-center justify-end pr-6">
-        <svg viewBox="0 0 24 24" class="absolute left-[2px] top-1/2 -translate-y-1/2 w-3 h-3 fill-[#F5C33B]" aria-hidden="true">
-            <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
-        </svg>
         <span class="hidden sm:block text-[12px] font-medium text-[#3A2E10]">
             {{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}
         </span>
