@@ -9,7 +9,19 @@ Claude Code session (or any developer) can continue without prior context.
 |------|--------------------------|------|-------|--------|
 | Landing | `Official landing page.png` (1024×1536) | `resources/views/pages/home.blade.php` | `/` (`home`) | `90c3735`, `1fbf5b8` |
 | About | `about page.png` (884×1779) | `resources/views/about.blade.php` | `/about` (`about`) | `3b446ba` |
-| Auth (login + signup) | `auth page.png` (1536×1024, both mockups side by side) | `resources/views/auth/login.blade.php`, `resources/views/auth/register.blade.php`, shared `resources/views/auth/partials/replica-bottom.blade.php` | `/login` (`login`), `/inscription` (`inscription`) | see git log |
+| Auth (login + signup) | `auth page.png` (1536×1024, both mockups side by side) | `resources/views/auth/login.blade.php`, `resources/views/auth/register.blade.php`, shared `resources/views/auth/partials/replica-bottom.blade.php` | `/login` (`login`), `/inscription` (`inscription`) | `fad3992` |
+| Categories | `categories page.png` (1536×1024) | `resources/views/pages/industries/index.blade.php` + shared `resources/views/pages/partials/gallery-header.blade.php` / `gallery-footer.blade.php` | `/galerie/secteurs` (`industries.index`) | see git log |
+
+Categories-page notes: the design shows 10 mock categories with mock counts (124
+produits, "1 245 résultats"); the page instead renders the REAL industries from the
+DB (5 seeded) with live public product counts (published product + published business,
+computed in `FrontendController::industriesIndex`), per the "links map onto real data"
+guardrail. The controller gained an optional `?sort=` param (name | products; default
+stays sort_order, labelled "Populaires"). Grid/list toggle is client-side
+(localStorage `catView`). The `gallery-header` / `gallery-footer` partials are meant
+to be reused by the upcoming product/vendor directory + detail replica pages
+(`$galleryActive` selects the active nav item). New assets: `cat-*.png` (region map,
+footer kente strips, footer map, sidebar icon).
 
 Auth-page notes: the design canvas holds two page mockups (login left 784px-wide,
 signup right 713px-wide) plus a shared full-width "Pourquoi rejoindre" band and footer;
@@ -28,10 +40,7 @@ is correct — the "phone" login test targets the separate API endpoint `/api/v1
 
 Design files already dropped in the repo root, not yet built. The user has set the order:
 
-1. **`categories page.png` — NEXT.** Categories/sectors listing (nearest existing page:
-   `resources/views/pages/industries/index.blade.php`, route `industries.index`
-   at `/galerie/secteurs`).
-2. **`contact page.png`** — no dedicated contact route exists yet; nearest existing
+1. **`contact page.png` — NEXT.** No dedicated contact route exists yet; nearest existing
    targets are the `support.*` routes and `route('about')`. A new GET route/view will
    likely be needed; keep any form submission wired to an existing endpoint
    (e.g. `support.store`) rather than inventing a dead handler.

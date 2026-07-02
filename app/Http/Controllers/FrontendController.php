@@ -247,8 +247,25 @@ class FrontendController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // Publicly browsable products per industry (published product + published business)
+        $productCounts = DB::table('products')
+            ->join('businesses', 'products.business_id', '=', 'businesses.id')
+            ->where('products.status', 'published')
+            ->whereNull('products.deleted_at')
+            ->where('businesses.status', 'published')
+            ->groupBy('businesses.industry_id')
+            ->selectRaw('businesses.industry_id, count(*) as total')
+            ->pluck('total', 'industry_id');
+
+        $sort = $request->query('sort');
+        if ($sort === 'name') {
+            $industries = $industries->sortBy($lang === 'fr' ? 'name_fr' : 'name_en', SORT_NATURAL | SORT_FLAG_CASE)->values();
+        } elseif ($sort === 'products') {
+            $industries = $industries->sortByDesc(fn ($i) => $productCounts[$i->id] ?? 0)->values();
+        }
+
         return response(
-            view('pages.industries.index', compact('lang', 'industries'))
+            view('pages.industries.index', compact('lang', 'industries', 'productCounts', 'sort'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
