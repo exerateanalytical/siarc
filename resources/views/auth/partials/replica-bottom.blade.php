@@ -99,6 +99,7 @@
                     <li><a href="{{ route('partners.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Partenaires' : 'Partners' }}</a></li>
                     <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Carrières' : 'Careers' }}</a></li>
                     <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Presse' : 'Press' }}</a></li>
+                    <li><a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a></li>
                 </ul>
             </div>
 
