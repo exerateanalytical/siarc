@@ -30,16 +30,17 @@ Design files already dropped in the repo root, not yet built. The user has set t
 
 1. **`categories page.png` — NEXT.** Categories/sectors listing (nearest existing page:
    `resources/views/pages/industries/index.blade.php`, route `industries.index`
-   at `/galerie/secteurs`). The PNG is still untracked in the repo root — commit it
-   with the implementation.
+   at `/galerie/secteurs`).
 2. **`contact page.png`** — no dedicated contact route exists yet; nearest existing
    targets are the `support.*` routes and `route('about')`. A new GET route/view will
    likely be needed; keep any form submission wired to an existing endpoint
    (e.g. `support.store`) rather than inventing a dead handler.
 
-Also in the repo root, untracked: `default product images by ategory.png` [sic] —
-purpose not yet scoped by the user; likely default product imagery per category for
-the categories page. Ask before using.
+More design sources are in the repo root, not yet ordered/scoped by the user:
+`Product diretory.png` [sic], `Product detail page.png`, `vendors directory.png`,
+`vendors detail page.png`, and `default product images by ategory.png` [sic] —
+the last is likely default product imagery per category for the categories page.
+Ask before using them.
 
 ## The replication process used (repeat for each new page)
 
