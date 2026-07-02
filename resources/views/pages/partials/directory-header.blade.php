@@ -1,0 +1,135 @@
+{{-- Directory replica header (product/vendor directory design): thin tricolor with one
+     centered star + white header with search + category select + icon links.
+     Expects: $lang, $isFr, $siacUser, optional $dirSearchCategories (label pairs for the select) --}}
+
+@php
+    $dhCategories = $dirSearchCategories ?? [
+        ['arts-decoration',          $isFr ? 'Arts & Décoration' : 'Arts & Decoration'],
+        ['mode-textile',             $isFr ? 'Mode & Textile' : 'Fashion & Textile'],
+        ['bois-sculpture',           $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture'],
+        ['poterie-ceramique',        $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics'],
+        ['bijouterie-accessoires',   $isFr ? 'Bijouterie & Accessoires' : 'Jewellery & Accessories'],
+        ['cuir-maroquinerie',        $isFr ? 'Cuir & Maroquinerie' : 'Leather & Leatherwork'],
+        ['musique-instruments',      $isFr ? 'Musique & Instruments' : 'Music & Instruments'],
+        ['produits-naturels',        $isFr ? 'Produits Naturels' : 'Natural Products'],
+        ['agroalimentaire',          $isFr ? 'Agroalimentaire' : 'Agri-food'],
+        ['technologies-innovation',  $isFr ? 'Technologies & Innovation' : 'Technology & Innovation'],
+    ];
+@endphp
+
+<!-- Tricolor top bar -->
+<div class="relative flex h-5 overflow-hidden">
+    <div class="w-[37.5%] bg-[#012C1B]"></div>
+    <div class="relative w-[27.6%] bg-[#C0010C]">
+        <svg viewBox="0 0 24 24" class="absolute left-[45.2%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[11px] h-[11px] fill-[#FBB604]" aria-hidden="true">
+            <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
+        </svg>
+    </div>
+    <div class="flex-1 bg-[#FBB604]"></div>
+</div>
+
+<!-- Header -->
+<header class="bg-[#FEFEFE] border-b border-[#EFEDEA]">
+    <div class="max-w-[1472px] mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-between gap-4 xl:gap-6 py-3.5">
+            <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
+                <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] object-contain">
+                <span class="leading-tight">
+                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
+                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                    <span class="block text-[10px] text-[#6F6B60] mt-0.5 whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                </span>
+            </a>
+
+            <!-- Search + category select -->
+            <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:flex items-center gap-2.5 flex-1 max-w-[575px]">
+                <input type="hidden" name="lang" value="{{ $lang }}">
+                <div class="flex items-center flex-1 h-[38px] bg-white border border-[#E3E3E1] rounded-lg overflow-hidden">
+                    <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...' }}"
+                        class="flex-1 min-w-0 h-full px-4 text-[12.5px] text-[#1D1B16] placeholder-[#8A857A] focus:outline-none">
+                    <span class="h-[22px] w-px bg-[#E3E3E1] shrink-0"></span>
+                    <select name="categorie" class="h-full pl-3 pr-7 text-[12.5px] text-[#1D1B16] bg-transparent focus:outline-none cursor-pointer appearance-none bg-no-repeat bg-[right_0.6rem_center]"
+                        style="background-image:url('data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;10&quot; height=&quot;6&quot; viewBox=&quot;0 0 10 6&quot;><path d=&quot;M1 1l4 4 4-4&quot; stroke=&quot;%236F6B60&quot; stroke-width=&quot;1.5&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/></svg>')">
+                        <option value="">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</option>
+                        @foreach($dhCategories as [$dhSlug, $dhLabel])
+                        <option value="{{ $dhSlug }}">{{ $dhLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"
+                    class="w-[38px] h-[38px] shrink-0 bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center transition-colors">
+                    <i data-lucide="search" class="w-[16px] h-[16px]"></i>
+                </button>
+            </form>
+
+            <div class="flex items-center gap-4 xl:gap-6 shrink-0">
+                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
+                    <i data-lucide="heart" class="w-[17px] h-[17px]"></i>
+                    {{ $isFr ? 'Favoris' : 'Saved' }}
+                </a>
+                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
+                    <i data-lucide="shopping-bag" class="w-[17px] h-[17px]"></i>
+                    {{ $isFr ? 'Demandes' : 'Inquiries' }}
+                </a>
+
+                <!-- Language -->
+                <div class="relative group hidden sm:block">
+                    <button class="flex items-center gap-1.5 py-2 text-[13px] font-medium text-[#1D1B16]">
+                        <i data-lucide="globe" class="w-[16px] h-[16px]"></i>
+                        {{ strtoupper($lang) }}
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
+                    </button>
+                    <div class="absolute right-0 top-full w-28 bg-white rounded-lg shadow-lg border border-[#E7E1D4] py-1 hidden group-hover:block z-50">
+                        <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="block px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf' : 'text-[#262521] hover:bg-[#F8F3ED]' }}">FR — Français</a>
+                        <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf' : 'text-[#262521] hover:bg-[#F8F3ED]' }}">EN — English</a>
+                    </div>
+                </div>
+
+                @if($siacUser)
+                <a href="/tableau-de-bord" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
+                    {{ $isFr ? 'Tableau de bord' : 'Dashboard' }}
+                </a>
+                @else
+                <a href="/login?lang={{ $lang }}" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
+                    {{ $isFr ? 'Se connecter' : 'Sign in' }}
+                </a>
+                @endif
+
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4]/50" aria-label="Menu">
+                    <i data-lucide="menu" class="w-5 h-5 text-[#262521]"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden lg:hidden pb-4 border-t border-[#E7E1D4] pt-3">
+            <form action="{{ route('gallery.search') }}" method="GET" class="relative mb-3">
+                <input type="hidden" name="lang" value="{{ $lang }}">
+                <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...' }}"
+                    class="w-full h-[38px] bg-white border border-[#E3E3E1] rounded-lg pl-4 pr-9 text-[13px] placeholder-[#8A857A] focus:outline-none focus:border-gold">
+                <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#55524A]">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+            </form>
+            <div class="flex items-center gap-4 px-1 mb-2">
+                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16]">
+                    <i data-lucide="heart" class="w-4 h-4"></i>{{ $isFr ? 'Favoris' : 'Saved' }}
+                </a>
+                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16]">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>{{ $isFr ? 'Demandes' : 'Inquiries' }}
+                </a>
+            </div>
+            <div class="border-t border-[#E7E1D4] pt-2 flex items-center justify-between px-1">
+                @if($siacUser)
+                <a href="/tableau-de-bord" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
+                @else
+                <a href="/login?lang={{ $lang }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                @endif
+                <span class="flex items-center gap-2 text-[13px] font-semibold">
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">FR</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ !$isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">EN</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</header>

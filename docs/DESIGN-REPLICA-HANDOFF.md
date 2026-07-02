@@ -37,7 +37,8 @@ Concretely, this means:
 | About | `about page.png` (884×1779) | `resources/views/about.blade.php` | `/about` (`about`) | `3b446ba` |
 | Auth (login + signup) | `auth page.png` (1536×1024, both mockups side by side) | `resources/views/auth/login.blade.php`, `resources/views/auth/register.blade.php`, shared `resources/views/auth/partials/replica-bottom.blade.php` | `/login` (`login`), `/inscription` (`inscription`) | `fad3992` |
 | Categories | `categories page.png` (1536×1024) | `resources/views/pages/industries/index.blade.php` + shared `resources/views/pages/partials/gallery-header.blade.php` / `gallery-footer.blade.php` | `/galerie/secteurs` (`industries.index`) | `c1645fc` + fidelity rework (see git log) |
-| Contact | `contact page.png` (1024×1536) | `resources/views/pages/contact.blade.php` (standalone — does NOT use the gallery partials, see notes) | `/contact` (`contact`), POST `/contact` (`contact.store`) | (this session) |
+| Contact | `contact page.png` (1024×1536) | `resources/views/pages/contact.blade.php` (standalone — does NOT use the gallery partials, see notes) | `/contact` (`contact`), POST `/contact` (`contact.store`) | `27e4a92` |
+| Product directory | `Product diretory.png` [sic] (1536×1024) | `resources/views/pages/products/index.blade.php` + NEW shared `pages/partials/directory-header.blade.php` / `directory-footer.blade.php` | `/galerie/produits` (`products.index`) | (this session) |
 
 ### Categories-page notes
 
@@ -110,6 +111,45 @@ Concretely, this means:
 - "Nous contacter" links elsewhere now point at `route('contact')`:
   home footer + categories sidebar help card (were `support.index`).
 
+### Product-directory notes
+
+- The directory design family (product + vendors directories) has ITS OWN header
+  and footer, different again from gallery-header/footer and contact:
+  - `directory-header.blade.php`: thin tricolor (h-5, green 37.5% / red 27.6%
+    with ONE star at 45.2% of the red block = page center / gold `#FBB604`),
+    search input + "Toutes les catégories" select + dark-green search button in
+    one group, Favoris (heart → saved/login), Demandes (bag → messages/login),
+    globe FR dropdown, "Se connecter" `#02301B`. Accepts optional
+    `$dirSearchCategories`; search posts to `gallery.search` with `categorie`.
+  - `directory-footer.blade.php`: deep green `#012B1C`, kente side strips
+    (`product-kente-left/right.png`), WHITE-FILLED social circles (FB IG LI YT X),
+    RESSOURCES = Guide de l'artisan / FAQ / Centre d'aide / Blog / Conditions
+    d'utilisation, map `product-footer-map.png` + caption "Cameroun, terre de
+    créativité et d'innovation", 2-link legal bar (© 2025 hardcoded). À propos
+    includes "Nous contacter" (user request, added on top of the design's 5).
+- Design content verbatim as static view data (`$designSideCats`,
+  `$designProducts` in the view): sidebar counts 5248/642/918/567/487/713/398/
+  296/621/834/172, vendor type counts Artisan 3421 / Entreprise 1642 /
+  Coopérative 185, results line "5 248 produits disponibles", pagination
+  1 2 3 4 5 … 175, badges NOUVEAU (cards 1+5) / BEST-SELLER (card 2).
+- **All 12 design products were SEEDED as real published products**
+  (`database/seeders/DesignProductsSeeder.php`, idempotent, run with
+  `artisan db:seed --class=DesignProductsSeeder`): slugs panier-africain-tresse,
+  sculpture-en-bois-sawa, sac-a-main-traditionnel, vase-en-terre-cuite,
+  collier-perles-africaines, sac-en-cuir-veritable, djembe-traditionnel,
+  miel-naturel-du-cameroun, feves-de-cacao-premium, savon-naturel-artisanal,
+  lampe-solaire-artisanale, beurre-de-karite-pur — attached to existing
+  published businesses, cover images copied from the design crops into
+  `storage/app/public/products/{slug}/images/design.png`. Every card, title
+  and ENQUÉRIR button links to the real `products.show` page.
+- Functional bits: `?categorie=` filters the static grid (sidebar links),
+  `?sort=` (recents = design order, name), region/vendor/dispo filter form
+  round-trips via GET, grid/list toggle persists in localStorage `prodView`.
+- Assets: `product-1..12.png` (card photos, also used as seeded covers),
+  `product-side-0..10.png` (sidebar icons), `product-trust-1..5.png`,
+  `product-stamp.png` (AUTHENTICITÉ GARANTIE circular badge),
+  `product-footer-map.png`, `product-kente-left/right.png`.
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -128,14 +168,12 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-1. Not yet ordered by the user — ask which is next:
-   `Product diretory.png` [sic], `Product detail page.png`, `vendors directory.png`,
-   `vendors detail page.png`, `events page.png`, `events detail page.png`,
-   `events ticket.png`, `default product images by ategory.png` [sic]
-   (the last is likely default product imagery per category).
-   The product/vendor/events pages should reuse `pages/partials/gallery-header` /
-   `gallery-footer` — but VERIFY against each PNG first: the contact page proved
-   the mockups vary header nav items and footers between pages.
+1. **`vendors directory.png` — NEXT (user order 2026-07-02).** Should reuse the
+   new `directory-header` / `directory-footer` partials — but VERIFY against the
+   PNG first; the mockups vary chrome between pages.
+2. Then, not yet ordered: `Product detail page.png`, `vendors detail page.png`,
+   `events page.png`, `events detail page.png`, `events ticket.png`,
+   `default product images by ategory.png` [sic].
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
    `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],
    `seller mobile dashboard.png` — dashboard replicas would extend scope beyond

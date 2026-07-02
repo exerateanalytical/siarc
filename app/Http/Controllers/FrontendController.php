@@ -163,6 +163,27 @@ class FrontendController extends Controller
         return 'desktop';
     }
 
+    public function productsIndex(Request $request)
+    {
+        $lang = $this->lang($request);
+
+        $sort = in_array($request->query('sort'), ['recents', 'name']) ? $request->query('sort') : 'recents';
+        $categorie = (string) $request->query('categorie', '');
+        $region = (string) $request->query('region', '');
+
+        // Live public product count stays available if the display ever switches off design numbers
+        $liveCount = DB::table('products')
+            ->join('businesses', 'products.business_id', '=', 'businesses.id')
+            ->where('products.status', 'published')
+            ->whereNull('products.deleted_at')
+            ->where('businesses.status', 'published')
+            ->count();
+
+        return response(
+            view('pages.products.index', compact('lang', 'sort', 'categorie', 'region', 'liveCount'))
+        )->cookie('lang', $lang, 60 * 24 * 30);
+    }
+
     public function productShow(Request $request, string $slug)
     {
         $lang = $this->lang($request);

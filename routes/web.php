@@ -72,6 +72,7 @@ Route::get('/galerie/entreprises', [FrontendController::class, 'businessIndex'])
 Route::get('/galerie/entreprises/{slug}', [FrontendController::class, 'businessShow'])->name('businesses.show');
 Route::get('/galerie/secteurs', [FrontendController::class, 'industriesIndex'])->name('industries.index');
 Route::get('/galerie/recherche', [FrontendController::class, 'search'])->name('gallery.search');
+Route::get('/galerie/produits', [FrontendController::class, 'productsIndex'])->name('products.index');
 Route::get('/galerie/produits/{slug}', [FrontendController::class, 'productShow'])->name('products.show');
 
 use App\Http\Controllers\MessagingWebController;
