@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Security response headers on every request (web + API)
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         // Force JSON on all API routes
         $middleware->alias([
             'json'               => \App\Http\Middleware\ForceJsonResponse::class,

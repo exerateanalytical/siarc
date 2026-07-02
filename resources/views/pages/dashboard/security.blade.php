@@ -4,7 +4,6 @@
 $pageTitle = $lang === 'fr' ? 'Sécurité du compte' : 'Account Security';
 $channelMeta = [
     'email'    => ['icon' => 'mail',           'fr' => 'Email',    'en' => 'Email'],
-    'sms'      => ['icon' => 'smartphone',     'fr' => 'SMS',      'en' => 'SMS'],
     'whatsapp' => ['icon' => 'message-circle', 'fr' => 'WhatsApp', 'en' => 'WhatsApp'],
 ];
 @endphp
@@ -161,7 +160,7 @@ $channelMeta = [
                 </div>
                 <div>
                     <h2 class="text-sm font-semibold text-gray-900">{{ $lang === 'fr' ? 'Code à usage unique (OTP)' : 'One-time code (OTP)' }}</h2>
-                    <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'Recevez un code par email, SMS ou WhatsApp à chaque connexion' : 'Receive a code by email, SMS or WhatsApp at each login' }}</p>
+                    <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'Recevez un code par email ou WhatsApp à chaque connexion' : 'Receive a code by email or WhatsApp at each login' }}</p>
                 </div>
             </div>
             @if($channel)
@@ -189,8 +188,8 @@ $channelMeta = [
                     {{ $lang === 'fr'
                         ? 'Un code vous a été envoyé via ' . ($channelMeta[$pendingChannel][$lang] ?? $pendingChannel) . '. Saisissez-le pour confirmer.'
                         : 'A code was sent via ' . ($channelMeta[$pendingChannel][$lang] ?? $pendingChannel) . '. Enter it to confirm.' }}
-                    @if(in_array($pendingChannel, ['sms', 'whatsapp']))
-                    <span class="block mt-1 text-amber-600">{{ $lang === 'fr' ? '(Fournisseur non configuré : le code est visible dans storage/logs/laravel.log)' : '(Provider not configured yet: the code is written to storage/logs/laravel.log)' }}</span>
+                    @if($pendingChannel === 'whatsapp' && ! config('services.twilio.sid'))
+                    <span class="block mt-1 text-amber-600">{{ $lang === 'fr' ? '(Twilio non configuré : le code est visible dans storage/logs/laravel.log)' : '(Twilio not configured yet: the code is written to storage/logs/laravel.log)' }}</span>
                     @endif
                 </p>
                 <form method="POST" action="{{ route('security.channel.confirm') }}" class="flex items-center gap-2">
@@ -204,7 +203,7 @@ $channelMeta = [
             @else
                 <form method="POST" action="{{ route('security.channel.start') }}" class="space-y-3">
                     @csrf
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-2 gap-2">
                         @foreach($channels as $ch)
                         <label class="channel-option flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-gray-200 has-[:checked]:border-forest-400 has-[:checked]:bg-forest-50 cursor-pointer transition-all">
                             <input type="radio" name="channel" value="{{ $ch }}" class="sr-only" required>
@@ -263,7 +262,7 @@ $channelMeta = [
 new QRCode(document.getElementById('totp-qr'), { text: @json($pendingTotpUri), width: 160, height: 160 });
 @endif
 
-// Show phone field for sms/whatsapp
+// Show phone field for whatsapp
 document.querySelectorAll('input[name="channel"]').forEach(function (r) {
     r.addEventListener('change', function () {
         document.getElementById('phone-field').classList.toggle('hidden', this.value === 'email');

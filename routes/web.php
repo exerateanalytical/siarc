@@ -422,7 +422,7 @@ Route::post('/login/verification/send', function (Request $request) {
     $sent = app(\App\Modules\Auth\Services\OtpService::class)
         ->send($identifier, 'login', $user->two_factor_channel, $user->id, $lang);
 
-    return back()->with(
+    return redirect()->route('login.challenge')->with(
         $sent ? 'success' : 'error',
         $sent
             ? ($lang === 'fr' ? 'Code envoyé.' : 'Code sent.')
@@ -446,7 +446,7 @@ Route::post('/login/verification', function (Request $request) {
     $limiterKey = '2fa:' . sha1($user->id . '|' . $request->ip());
     if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($limiterKey, 5)) {
         $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($limiterKey);
-        return back()->withErrors(['code' => $lang === 'fr' ? "Trop de tentatives. Réessayez dans {$seconds}s." : "Too many attempts. Try again in {$seconds}s."]);
+        return redirect()->route('login.challenge')->withErrors(['code' => $lang === 'fr' ? "Trop de tentatives. Réessayez dans {$seconds}s." : "Too many attempts. Try again in {$seconds}s."]);
     }
 
     $ok = false;
@@ -476,7 +476,9 @@ Route::post('/login/verification', function (Request $request) {
 
     if (!$ok) {
         \Illuminate\Support\Facades\RateLimiter::hit($limiterKey, 60);
-        return back()->withErrors(['code' => $lang === 'fr' ? 'Code invalide.' : 'Invalid code.']);
+        // Not back(): the previous URL may be a blocked page, which would dump
+        // the user on /login even though the challenge is still pending.
+        return redirect()->route('login.challenge')->withErrors(['code' => $lang === 'fr' ? 'Code invalide.' : 'Invalid code.']);
     }
 
     \Illuminate\Support\Facades\RateLimiter::clear($limiterKey);

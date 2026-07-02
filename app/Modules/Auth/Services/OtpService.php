@@ -3,7 +3,6 @@
 namespace App\Modules\Auth\Services;
 
 use App\Modules\Auth\Models\OtpVerification;
-use App\Modules\Auth\Services\Otp\LogOtpSender;
 use App\Modules\Auth\Services\Otp\OtpSender;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -17,7 +16,7 @@ class OtpService
      * Generate a code, store its hash, and dispatch it over the channel.
      * Returns false when the per-identifier send limit is hit.
      *
-     * @param string $channel email | sms | whatsapp
+     * @param string $channel email | whatsapp
      */
     public function send(string $identifier, string $type, string $channel, ?string $userId = null, string $lang = 'fr'): bool
     {
@@ -86,6 +85,6 @@ class OtpService
         $class = config("otp.senders.{$channel}");
         abort_unless($class && class_exists($class), 500, "No OTP sender configured for channel [{$channel}]");
 
-        return $class === LogOtpSender::class ? new $class($channel) : app($class);
+        return app($class);
     }
 }

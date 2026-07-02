@@ -178,7 +178,7 @@ class SecurityWebController extends Controller
     }
 
     // ─────────────────────────────────────────
-    // OTP channel (email / sms / whatsapp)
+    // OTP channel (email / whatsapp)
     // ─────────────────────────────────────────
     public function startChannel(Request $request): RedirectResponse
     {
@@ -191,7 +191,7 @@ class SecurityWebController extends Controller
             'phone'   => ['nullable', 'string', 'max:30'],
         ]);
 
-        if (in_array($data['channel'], ['sms', 'whatsapp'])) {
+        if ($data['channel'] === 'whatsapp') {
             $phone = trim((string) ($data['phone'] ?? $user->phone));
             if ($phone === '') {
                 return back()->withErrors(['phone' => $lang === 'fr' ? 'Un numéro de téléphone est requis pour ce canal.' : 'A phone number is required for this channel.']);

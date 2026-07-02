@@ -22,7 +22,7 @@ class OtpController extends Controller
             ->orWhere('phone', $request->identifier)
             ->first();
 
-        $channel = str_contains($request->identifier, '@') ? 'email' : 'sms';
+        $channel = str_contains($request->identifier, '@') ? 'email' : 'whatsapp';
 
         $sent = $this->otpService->send(
             $request->identifier,

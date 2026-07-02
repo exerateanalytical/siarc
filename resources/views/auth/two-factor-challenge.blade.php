@@ -60,7 +60,7 @@
             <div class="{{ $hasTotp ? 'pt-5 border-t border-gray-100' : '' }} mb-5">
                 <p class="text-sm text-gray-600 mb-3">
                     {{ $lang === 'fr' ? 'Recevoir un code' : 'Receive a code' }}
-                    <span class="font-semibold">{{ ['email' => 'par email', 'sms' => 'par SMS', 'whatsapp' => 'via WhatsApp'][$channel] ?? $channel }}</span>
+                    <span class="font-semibold">{{ ['email' => 'par email', 'whatsapp' => 'via WhatsApp'][$channel] ?? $channel }}</span>
                     @if($maskedDest)<span class="text-gray-400">({{ $maskedDest }})</span>@endif
                 </p>
                 <form method="POST" action="{{ route('login.challenge.send') }}" class="mb-3">

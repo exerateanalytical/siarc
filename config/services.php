@@ -35,6 +35,13 @@ return [
         ],
     ],
 
+    'twilio' => [
+        'sid'           => env('TWILIO_ACCOUNT_SID'),
+        'token'         => env('TWILIO_AUTH_TOKEN'),
+        // E.164 number of the Twilio WhatsApp sender, e.g. +14155238886
+        'whatsapp_from' => env('TWILIO_WHATSAPP_FROM'),
+    ],
+
     'mtn_momo' => [
         'base_url'         => env('MTN_MOMO_BASE_URL', 'https://sandbox.momodeveloper.mtn.com'),
         'subscription_key' => env('MTN_MOMO_SUBSCRIPTION_KEY', ''),
