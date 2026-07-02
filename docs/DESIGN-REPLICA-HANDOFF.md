@@ -39,7 +39,8 @@ Concretely, this means:
 | Categories | `categories page.png` (1536×1024) | `resources/views/pages/industries/index.blade.php` + shared `resources/views/pages/partials/gallery-header.blade.php` / `gallery-footer.blade.php` | `/galerie/secteurs` (`industries.index`) | `c1645fc` + fidelity rework (see git log) |
 | Contact | `contact page.png` (1024×1536) | `resources/views/pages/contact.blade.php` (standalone — does NOT use the gallery partials, see notes) | `/contact` (`contact`), POST `/contact` (`contact.store`) | `27e4a92` |
 | Product directory | `Product diretory.png` [sic] (1536×1024) | `resources/views/pages/products/index.blade.php` + NEW shared `pages/partials/directory-header.blade.php` / `directory-footer.blade.php` | `/galerie/produits` (`products.index`) | `a71e7d2` |
-| Vendors directory | `vendors directory.png` (1536×1024) | `resources/views/pages/businesses/index.blade.php` (REPLACED the legacy layouts/app listing) using the directory partials with options | `/galerie/entreprises` (`businesses.index`, controller unchanged) | (this session) |
+| Vendors directory | `vendors directory.png` (1536×1024) | `resources/views/pages/businesses/index.blade.php` (REPLACED the legacy layouts/app listing) using the directory partials with options | `/galerie/entreprises` (`businesses.index`, controller unchanged) | `d479146` |
+| Product detail | `Product detail page.png` (1536×1024, canvas cut before footer) | `resources/views/pages/products/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/produits/{slug}` (`products.show`) | (this session) |
 
 ### Categories-page notes
 
@@ -186,6 +187,41 @@ Concretely, this means:
   `vendor-cta-mask.png`, `vendor-cert-icon.png`, `vendor-trust-1..5.png`,
   `vendor-margin.png` (subtle right page-margin kente watermark, repeat-y).
 
+### Product-detail notes
+
+- This is a TEMPLATE page (serves every product), rebuilt so the design's product
+  renders pixel-true while other products get the same layout with their own data.
+  The old 1020-line layouts/app template was replaced.
+- **Seeded (`DesignProductDetailSeeder`)**: the product
+  `vase-en-terre-cuite-grave-a-la-main` (Céramiques du Noun) with the design's
+  exact name/description, a 5-image gallery (`pdetail-main.png` +
+  `pdetail-thumb-2..5.png`, copied into storage), the taxonomy chain the
+  breadcrumb shows (NEW sector `poterie-ceramique-arts` under the
+  arts-decoration industry + NEW category `poterie-ceramique-design` named
+  "Poterie & Céramique"), and NEW attribute templates with the design's exact
+  spec labels (Matière/Technique/Origine/Couleur/Dimensions/Poids, scoped to
+  the business's industry) with verbatim values. Céramiques du Noun also got
+  the circular logo crop (`pdetail-artisan-logo.png`) as its real logo.
+- Spec rows render generically: Catégorie + product attributes in template
+  sort order (icons mapped by label keyword). Breadcrumb = Accueil ›
+  category.sector.industry › category.sector › name.
+- Header = directory-header variant 'detail' (Favoris + Panier badge "2",
+  `$dirCartCount` option). The design canvas CUTS OFF before any footer —
+  directory-footer (product-directory defaults) is used.
+- Design-static template content: "Fait main" chip, rating fallbacks
+  4.8 (23 avis) product / 4.8 (56 avis) artisan (real review data wins when it
+  exists), feature chips, ENQUIRY/message buttons, WhatsApp/Email/Appel/
+  Partager/favoris icon row (wa.me + mailto + tel links, navigator.share),
+  "Vous ne trouvez pas..." note, 7 tabs (client-side; only Description content
+  is specified by the design — other tabs carry sensible real data), artisan
+  card stats 156/98%/2 ans, delivery info card, Besoin d'aide card
+  (→ route('contact')), confidence card with `pdetail-stamp.png`.
+- "Vous pourriez aussi aimer": real related products; `productShow` now fills
+  up to 6 with recent public products when category/business yield too few.
+- IMPORTANT: product image URLs in replica views must use
+  `asset('storage/' . file_path)` — the `ProductImage->url` accessor builds
+  from APP_URL (artisanatcameroun.test), which breaks on the preview ports.
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -204,9 +240,10 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-1. Not yet ordered by the user — ask which is next: `Product detail page.png`,
-   `vendors detail page.png`, `events page.png`, `events detail page.png`,
-   `events ticket.png`, `default product images by ategory.png` [sic].
+1. Working through the remaining PNGs in order (user said "proceed" 2026-07-03):
+   `vendors detail page.png` — NEXT, then `events page.png`,
+   `events detail page.png`, `events ticket.png`,
+   `default product images by ategory.png` [sic].
    Detail pages likely reuse the `directory-header`/`directory-footer` partials
    (verify each PNG's chrome first — every mockup so far varied it).
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):

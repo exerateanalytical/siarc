@@ -232,6 +232,24 @@ class FrontendController extends Controller
             ->limit(4)
             ->get();
 
+        // Fill "You may also like" up to 6 with recent public products when the
+        // category/business yield too few
+        $relatedCount = $otherProducts->count() + $similarProducts->count();
+        if ($relatedCount < 6) {
+            $excluded = $otherProducts->pluck('id')
+                ->concat($similarProducts->pluck('id'))
+                ->push($product->id);
+            $similarProducts = $similarProducts->concat(
+                Product::whereNotIn('id', $excluded)
+                    ->where('status', 'published')
+                    ->whereHas('business', fn ($q) => $q->where('status', 'published'))
+                    ->with('primaryImage')
+                    ->latest()
+                    ->limit(6 - $relatedCount)
+                    ->get()
+            );
+        }
+
         $business = $product->business;
         $sellerStats = [
             'avg_rating'       => $business->averageRating(),
