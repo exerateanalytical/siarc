@@ -115,9 +115,30 @@ class FrontendController extends Controller
 
         $business->increment('views_count');
 
+        // Analytics row — must never break the page
+        try {
+            DB::table('business_views')->insert([
+                'business_id' => $business->id,
+                'viewer_ip'   => $request->ip(),
+                'device_type' => $this->deviceType($request),
+                'referrer'    => substr((string) $request->header('referer'), 0, 255) ?: null,
+                'viewed_at'   => now(),
+            ]);
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
         return response(
             view('pages.businesses.show', compact('lang', 'business'))
         )->cookie('lang', $lang, 60 * 24 * 30);
+    }
+
+    private function deviceType(Request $request): string
+    {
+        $ua = strtolower((string) $request->userAgent());
+        if (str_contains($ua, 'tablet') || str_contains($ua, 'ipad')) return 'tablet';
+        if (str_contains($ua, 'mobi') || str_contains($ua, 'android')) return 'mobile';
+        return 'desktop';
     }
 
     public function productShow(Request $request, string $slug)
@@ -136,6 +157,18 @@ class FrontendController extends Controller
             ->firstOrFail();
 
         $product->increment('views_count');
+
+        // Analytics row — must never break the page
+        try {
+            DB::table('product_views')->insert([
+                'product_id'  => $product->id,
+                'viewer_ip'   => $request->ip(),
+                'device_type' => $this->deviceType($request),
+                'viewed_at'   => now(),
+            ]);
+        } catch (\Throwable $e) {
+            // ignore
+        }
 
         $otherProducts = Product::where('business_id', $product->business_id)
             ->where('id', '!=', $product->id)
