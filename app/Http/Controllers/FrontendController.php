@@ -46,12 +46,26 @@ class FrontendController extends Controller
             'businesses' => Business::where('status', 'published')->count(),
             'products'   => DB::table('products')->where('status', 'published')->count(),
             'industries' => Industry::where('is_active', true)->count(),
+            'regions'    => DB::table('regions')->count(),
         ];
 
-        $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->limit(6)->get();
+        $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->limit(9)->get();
+
+        $currentEvent = \App\Modules\Events\Models\Event::published()
+            ->with('industry')
+            ->where('ends_at', '>=', now())
+            ->orderBy('starts_at')
+            ->first()
+            ?? \App\Modules\Events\Models\Event::published()->with('industry')->orderByDesc('starts_at')->first();
+
+        $upcomingEvents = \App\Modules\Events\Models\Event::published()
+            ->where('ends_at', '>=', now())
+            ->orderBy('starts_at')
+            ->limit(3)
+            ->get();
 
         return response(
-            view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats', 'partners'))
+            view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats', 'partners', 'currentEvent', 'upcomingEvents'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
