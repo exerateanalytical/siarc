@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Developer Portal — Galerie virtuelle de l'artisanat du Cameroun API</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="{{ asset('vendor/tailwindcss.js') }}"></script>
 <script>
     tailwind.config = {
         theme: {
@@ -18,9 +18,8 @@
         }
     }
 </script>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="{{ asset('vendor/lucide.min.js') }}"></script>
+<link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 <style>body{font-family:'Inter',system-ui,sans-serif;}</style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">

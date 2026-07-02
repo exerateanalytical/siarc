@@ -6,8 +6,8 @@
     <meta name="description" content="{{ $description ?? ($lang === 'fr' ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun — Découvrez les artisans et producteurs camerounais.' : 'National Virtual Gallery of Cameroonian Crafts — Discover Cameroonian artisans and producers.') }}">
     <title>{{ $title ?? 'SIAC — Galerie Virtuelle' }}</title>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (local vendor copy — keeps the platform styled offline) -->
+    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -46,12 +46,11 @@
         }
     </script>
 
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <!-- Lucide Icons (local vendor copy) -->
+    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
 
-    <!-- Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Fonts (local vendor copy) -->
+    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }

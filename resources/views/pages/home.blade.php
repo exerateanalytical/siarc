@@ -74,6 +74,34 @@
 
     $siacUser = session('siac_user');
     $bizFallbacks = ['biz-1.png','biz-2.png','biz-3.png','biz-4.png','biz-5.png','biz-6.png'];
+    $eventFallbacks = ['event-1.png','event-2.png','event-3.png'];
+
+    // The 10 categories of the official design, mapped onto real gallery filters
+    $sectorCards = [
+        ['flower',    $isFr ? "Arts &\nDécoration"          : "Arts &\nDecoration",        route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['shirt',     $isFr ? "Mode &\nTextile"             : "Fashion &\nTextile",        route('businesses.index', ['lang' => $lang, 'industry' => 'textile-mode'])],
+        ['trees',     $isFr ? "Bois &\nSculpture"           : "Wood &\nSculpture",         route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['amphora',   $isFr ? "Poterie &\nCéramique"        : "Pottery &\nCeramics",       route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['gem',       $isFr ? "Bijouterie &\nAccessoires"   : "Jewellery &\nAccessories",  route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['guitar',    $isFr ? "Musique &\nInstruments"      : "Music &\nInstruments",      route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['briefcase', $isFr ? "Cuir &\nMaroquinerie"        : "Leather &\nLeatherwork",    route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['sprout',    $isFr ? "Produits\nNaturels"          : "Natural\nProducts",         route('businesses.index', ['lang' => $lang, 'industry' => 'agriculture'])],
+        ['salad',     $isFr ? "Agroalimentaire"             : "Agri-food",                 route('businesses.index', ['lang' => $lang, 'industry' => 'agroalimentaire'])],
+        ['atom',      $isFr ? "Technologies\n& Innovation"  : "Technology &\nInnovation",  route('businesses.index', ['lang' => $lang])],
+    ];
+
+    // Partner logo tiles cropped from the official design, keyed by name_fr
+    $partnerTiles = [
+        'MINCOMMERCE'                       => 'partner-mincommerce.png',
+        'MINAC'                             => 'partner-minac.png',
+        'UNESCO'                            => 'partner-unesco.png',
+        'ITC'                               => 'partner-itc.png',
+        'CEPII Cameroun'                    => 'partner-cepii.png',
+        'OAPI'                              => 'partner-oapi.png',
+        'Banque Africaine de Développement' => 'partner-bad.png',
+        'AFD'                               => 'partner-afd.png',
+        'Union Européenne'                  => 'partner-ue.png',
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -83,7 +111,7 @@
     <meta name="description" content="{{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun — Notre héritage, notre fierté, notre avenir. Découvrez les artisans et producteurs camerounais.' : 'National Virtual Gallery of Cameroonian Crafts — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.' }}">
     <title>{{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -115,11 +143,9 @@
         }
     </script>
 
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
         body { font-family: 'Poppins', system-ui, sans-serif; }
@@ -244,7 +270,8 @@
                     <span id="hero-l2">{{ $heroSlides[0]['l2'] }}</span><br>
                     <span id="hero-gold" class="text-gold italic">{{ $heroSlides[0]['gold'] }}</span>
                 </h1>
-                <p id="hero-sub" class="mt-7 text-[14px] text-white/85 leading-relaxed whitespace-pre-line">{{ $heroSlides[0]['sub'] }}</p>
+                <div class="mt-6 h-px w-full max-w-[600px]" style="background:linear-gradient(90deg,#B0821A 0%,#B0821A 16%,rgba(18,85,39,0.55) 30%,rgba(9,11,9,0) 45%,rgba(9,11,9,0) 55%,rgba(193,9,19,0.45) 72%,#B0821A 84%,#B0821A 100%)"></div>
+                <p id="hero-sub" class="mt-6 text-[14px] text-white/85 leading-relaxed whitespace-pre-line">{{ $heroSlides[0]['sub'] }}</p>
                 <div class="mt-8 flex flex-wrap items-center gap-3.5">
                     <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
                         class="inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[13px] font-medium px-6 py-3 rounded transition-colors">
@@ -305,14 +332,12 @@
         {{ $isFr ? 'Industry Sectors' : 'Industry Sectors' }}
     </h2>
 
-    <div class="mt-8 flex flex-wrap justify-center gap-4">
-        @foreach($industries as $industry)
-        <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $industry->slug]) }}"
-            class="relative w-[140px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-6 pb-5 px-2 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all">
-            <i data-lucide="{{ $industry->icon ?? 'box' }}" class="w-11 h-11 mx-auto text-cocoa" stroke-width="1.5"></i>
-            <p class="mt-3 text-[12.5px] font-medium text-[#1D1B16] leading-tight">
-                {{ $isFr ? $industry->name_fr : ($industry->name_en ?? $industry->name_fr) }}
-            </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-2">
+        @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
+        <a href="{{ $scHref }}"
+            class="relative w-[46%] sm:w-[140px] lg:w-[86px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-5 pb-4 px-1.5 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center">
+            <i data-lucide="{{ $scIcon }}" class="w-9 h-9 text-cocoa" stroke-width="1.5"></i>
+            <p class="mt-2.5 text-[11px] font-medium text-[#1D1B16] leading-[1.35] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
             <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
                 <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
             </span>
@@ -450,7 +475,7 @@
             <div class="mt-2 flex-1 divide-y divide-[#EEE8DB]">
                 @forelse($upcomingEvents as $ev)
                 <a href="{{ route('events.show', $ev->slug) }}" class="flex gap-3 py-3.5 group">
-                    <img src="{{ $ev->cover_url ?? asset('images/landing/event-aqua.png') }}" alt=""
+                    <img src="{{ $ev->cover_url ?? asset('images/landing/' . $eventFallbacks[$loop->index % 3]) }}" alt=""
                         class="w-14 h-14 rounded-md object-cover shrink-0">
                     <div class="min-w-0">
                         <p class="text-[13px] font-semibold text-[#1D1B16] leading-snug line-clamp-2 group-hover:text-leaf transition-colors">
@@ -477,11 +502,17 @@
 
             <div class="mt-4 flex-1 grid grid-cols-4 gap-2.5 content-start">
                 @forelse($partners as $partner)
-                <div class="bg-white rounded-lg flex flex-col items-center justify-center gap-1.5 py-3 px-1 min-h-[72px]" title="{{ $partner->name_fr }}">
+                @php $tile = $partnerTiles[$partner->name_fr] ?? null; @endphp
+                @if($tile)
+                <div class="{{ $partner->name_fr === 'Union Européenne' ? 'col-span-2' : '' }} bg-white rounded-lg overflow-hidden flex items-center justify-center" title="{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}">
+                    <img src="{{ asset('images/landing/' . $tile) }}" alt="{{ $partner->name_fr }}" class="w-full h-auto">
+                </div>
+                @else
+                <div class="bg-white rounded-lg flex flex-col items-center justify-center gap-1.5 py-3 px-1 min-h-[50px]" title="{{ $partner->name_fr }}">
                     @if($partner->logo_url ?? false)
                     <img src="{{ $partner->logo_url }}" alt="{{ $partner->name_fr }}" class="h-8 w-full object-contain px-1">
                     @else
-                    <span class="w-8 h-8 rounded-full bg-leaf/10 text-leaf text-[11px] font-bold flex items-center justify-center">
+                    <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf text-[10px] font-bold flex items-center justify-center">
                         {{ mb_strtoupper(mb_substr($partner->name_fr, 0, 2)) }}
                     </span>
                     @endif
@@ -489,6 +520,7 @@
                         {{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}
                     </span>
                 </div>
+                @endif
                 @empty
                 <p class="col-span-4 py-6 text-[12.5px] text-muted">{{ $isFr ? 'Nos partenaires seront annoncés bientôt.' : 'Our partners will be announced soon.' }}</p>
                 @endforelse
@@ -528,7 +560,7 @@
         <!-- Footer -->
         <footer class="bg-night">
             <div class="max-w-[1200px] mx-auto px-5 lg:px-8 pt-10 pb-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.9fr_0.8fr_1.2fr] gap-9">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.35fr_0.7fr_0.95fr_0.85fr_1.15fr] gap-7">
                     <!-- Brand -->
                     <div>
                         <div class="flex items-center gap-3">
@@ -566,7 +598,7 @@
                     <!-- Explorer -->
                     <div>
                         <h4 class="text-[12px] font-bold tracking-[0.15em] text-white uppercase mb-4">{{ $isFr ? 'Explorer' : 'Explore' }}</h4>
-                        <ul class="space-y-2.5 text-[12.5px] text-[#9A978E]">
+                        <ul class="space-y-2.5 text-[12.5px] text-[#9A978E] whitespace-nowrap">
                             <li><a href="{{ route('industries.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Collections' : 'Collections' }}</a></li>
                             <li><a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Artisans' : 'Artisans' }}</a></li>
                             <li><a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Régions' : 'Regions' }}</a></li>
@@ -579,7 +611,7 @@
                     <!-- Ressources -->
                     <div>
                         <h4 class="text-[12px] font-bold tracking-[0.15em] text-white uppercase mb-4">{{ $isFr ? 'Ressources' : 'Resources' }}</h4>
-                        <ul class="space-y-2.5 text-[12.5px] text-[#9A978E]">
+                        <ul class="space-y-2.5 text-[12.5px] text-[#9A978E] whitespace-nowrap">
                             <li><a href="{{ route('support.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Centre d\'aide' : 'Help center' }}</a></li>
                             <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Guide de l\'artisan' : 'Artisan guide' }}</a></li>
                             <li><a href="{{ route('events.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Formations' : 'Training' }}</a></li>
@@ -592,7 +624,7 @@
                     <!-- À propos -->
                     <div>
                         <h4 class="text-[12px] font-bold tracking-[0.15em] text-white uppercase mb-4">{{ $isFr ? 'À propos' : 'About' }}</h4>
-                        <ul class="space-y-2.5 text-[12.5px] text-[#9A978E]">
+                        <ul class="space-y-2.5 text-[12.5px] text-[#9A978E] whitespace-nowrap">
                             <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Notre mission' : 'Our mission' }}</a></li>
                             <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Équipe' : 'Team' }}</a></li>
                             <li><a href="{{ route('partners.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Partenaires' : 'Partners' }}</a></li>
