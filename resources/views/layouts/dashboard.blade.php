@@ -66,6 +66,7 @@
                     ['admin.businesses', 'building-2', 'Entreprises', 'Businesses'],
                     ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
                     ['admin.moderation', 'flag', 'Modération', 'Moderation'],
+                    ['admin.api-consumers', 'key-round', 'API & Développeurs', 'API & Developers'],
                     ['admin.users', 'users', 'Utilisateurs', 'Users'],
                 ],
             ],

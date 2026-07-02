@@ -478,4 +478,48 @@ class AdminWebController extends Controller
 
         return back()->with('success', $this->lang($request) === 'fr' ? 'Avis supprimé.' : 'Review deleted.');
     }
+
+    public function apiConsumers(Request $request)
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $query = \App\Modules\ApiProduct\Models\ApiConsumer::withCount([
+            'keys',
+            'keys as active_keys_count' => fn ($q) => $q->where('is_active', true),
+        ]);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $consumers = $query
+            ->orderByRaw("FIELD(status, 'pending', 'approved', 'suspended')")
+            ->orderByDesc('created_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        $pendingCount = \App\Modules\ApiProduct\Models\ApiConsumer::where('status', 'pending')->count();
+
+        return view('pages.dashboard.admin-api-consumers', compact('lang', 'consumers', 'pendingCount'));
+    }
+
+    public function updateApiConsumerStatus(Request $request, int $id): RedirectResponse
+    {
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $data = $request->validate(['status' => ['required', 'in:approved,suspended,pending']]);
+        $consumer = \App\Modules\ApiProduct\Models\ApiConsumer::findOrFail($id);
+        $oldStatus = $consumer->status;
+
+        $consumer->update([
+            'status'      => $data['status'],
+            'approved_at' => $data['status'] === 'approved' ? ($consumer->approved_at ?? now()) : $consumer->approved_at,
+        ]);
+
+        \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'api_consumer.status_changed', 'api_consumer', $consumer->id, ['status' => $oldStatus], ['status' => $data['status']]);
+
+        return back()->with('success', $this->lang($request) === 'fr' ? 'Statut du consommateur API mis à jour.' : 'API consumer status updated.');
+    }
 }
