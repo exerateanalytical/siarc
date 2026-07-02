@@ -1000,6 +1000,73 @@ Route::get('/about', function (Request $request) {
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     return response(view('about', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
 })->name('about');
+Route::get('/contact', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    return response(view('pages.contact', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
+})->name('contact');
+
+Route::post('/contact', function (Request $request) {
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang')
+        : (in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr');
+    $isFr = $lang === 'fr';
+
+    $limiterKey = 'contact:' . $request->ip();
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($limiterKey, 5)) {
+        $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($limiterKey);
+        return back()->withInput()->withErrors([
+            'message' => $isFr ? "Trop de messages envoyés. Réessayez dans {$seconds} secondes." : "Too many messages sent. Try again in {$seconds} seconds.",
+        ]);
+    }
+
+    $data = $request->validate([
+        'name'    => ['required', 'string', 'max:120'],
+        'email'   => ['required', 'email', 'max:190'],
+        'subject' => ['required', 'string', 'max:255'],
+        'message' => ['required', 'string', 'max:3000'],
+        'consent' => ['accepted'],
+    ]);
+
+    \Illuminate\Support\Facades\RateLimiter::hit($limiterKey, 300);
+
+    $siacUser = session('siac_user');
+    if ($siacUser) {
+        // Logged-in visitors get a real support ticket they can follow in their dashboard
+        $ticket = \App\Modules\Support\Models\SupportTicket::create([
+            'user_id'    => $siacUser['id'],
+            'subject_fr' => $data['subject'],
+            'subject_en' => $data['subject'],
+            'status'     => 'open',
+            'priority'   => 'medium',
+        ]);
+        \App\Modules\Support\Models\SupportTicketReply::create([
+            'ticket_id' => $ticket->id,
+            'user_id'   => $siacUser['id'],
+            'body_fr'   => $data['message'] . "\n\n— " . $data['name'] . ' <' . $data['email'] . '>',
+            'body_en'   => $data['message'] . "\n\n— " . $data['name'] . ' <' . $data['email'] . '>',
+            'is_staff'  => false,
+        ]);
+    } else {
+        // Guests: forward to the gallery inbox (goes to log when MAIL_MAILER=log)
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                "Nom : {$data['name']}\nEmail : {$data['email']}\n\n{$data['message']}",
+                function ($mail) use ($data) {
+                    $mail->to('contact@gvnac.cm')
+                        ->replyTo($data['email'], $data['name'])
+                        ->subject('[Contact GVNAC] ' . $data['subject']);
+                }
+            );
+        } catch (\Exception $e) {
+            // Mail failure is non-fatal in local/dev
+        }
+    }
+
+    return redirect()->route('contact', ['lang' => $lang])->with('success', $isFr
+        ? 'Merci ! Votre message a bien été envoyé. Notre équipe vous répondra rapidement.'
+        : 'Thank you! Your message has been sent. Our team will get back to you shortly.');
+})->name('contact.store');
+
 Route::get('/terms', function (Request $request) {
     $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
     return view('terms', compact('lang'));

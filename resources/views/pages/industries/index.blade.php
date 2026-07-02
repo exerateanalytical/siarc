@@ -140,7 +140,7 @@
                 <div>
                     <h3 class="text-[13.5px] font-bold text-[#1D1B16]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</h3>
                     <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Notre équipe est à votre écoute' : 'Our team is here for you' }}</p>
-                    <a href="{{ route('support.index') }}" class="mt-3 inline-flex items-center gap-2 bg-[#F1EFE9] hover:bg-[#EAE7DE] text-[12.5px] font-medium text-[#26251F] px-3.5 py-2 rounded-lg transition-colors">
+                    <a href="{{ route('contact', ['lang' => $lang]) }}" class="mt-3 inline-flex items-center gap-2 bg-[#F1EFE9] hover:bg-[#EAE7DE] text-[12.5px] font-medium text-[#26251F] px-3.5 py-2 rounded-lg transition-colors">
                         {{ $isFr ? 'Nous contacter' : 'Contact us' }}
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                     </a>

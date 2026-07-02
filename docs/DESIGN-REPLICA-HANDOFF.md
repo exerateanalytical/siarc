@@ -37,6 +37,7 @@ Concretely, this means:
 | About | `about page.png` (884×1779) | `resources/views/about.blade.php` | `/about` (`about`) | `3b446ba` |
 | Auth (login + signup) | `auth page.png` (1536×1024, both mockups side by side) | `resources/views/auth/login.blade.php`, `resources/views/auth/register.blade.php`, shared `resources/views/auth/partials/replica-bottom.blade.php` | `/login` (`login`), `/inscription` (`inscription`) | `fad3992` |
 | Categories | `categories page.png` (1536×1024) | `resources/views/pages/industries/index.blade.php` + shared `resources/views/pages/partials/gallery-header.blade.php` / `gallery-footer.blade.php` | `/galerie/secteurs` (`industries.index`) | `c1645fc` + fidelity rework (see git log) |
+| Contact | `contact page.png` (1024×1536) | `resources/views/pages/contact.blade.php` (standalone — does NOT use the gallery partials, see notes) | `/contact` (`contact`), POST `/contact` (`contact.store`) | (this session) |
 
 ### Categories-page notes
 
@@ -69,6 +70,46 @@ Concretely, this means:
   `#F2B01C→#E6C89A` with the heritage tagline right-aligned), search box wired to
   `gallery.search`, language dropdown, Connexion/Dashboard button (`#0A3020`).
 
+### Contact-page notes
+
+- The contact design's header and footer are DIFFERENT from both the gallery
+  partials and the home page — they were built inline in the view:
+  - Header: landing-style (logo + "Notre héritage…" tagline) but nav is
+    Explorer / Collections / Artisans / Régions / **Secteurs** / Événements /
+    À propos, a search **icon** (links to `gallery.search`, no input box), and
+    the mockup shows a pale-gold underline under "Événements" — replicated
+    verbatim (`$navLinks` third tuple element).
+  - Tricolor bar: green 41% / red 18.6% with ONE star centered / gold —
+    (`#015D38`/`#C10B1B`/`#EBAC23`), 18px tall.
+  - Footer: near-black `#131110` with faint pattern texture
+    (`contact-footer-tile.png` bg-repeat), kente strip image on top
+    (`contact-kente.png`), columns EXPLORER (…, Secteurs, Entreprises,
+    Actualités) / RESSOURCES (Guide de l'artisan, Formations, Financements,
+    Documents utiles, FAQ) / À PROPOS (…, Carrières, Presse) / RESTEZ INFORMÉ
+    (Votre email + green `#1B5B3C` S'inscrire → `/inscription`). Legal bar is
+    hardcoded "© 2025" per the fidelity mandate.
+- Hero: `contact-hero.png` is the design hero with the baked-in text patched
+  out (per-row horizontal-gradient fill between clean left/right samples —
+  flat fill showed seams against the photo bokeh). The gold diamond ornament
+  was cropped separately (`contact-ornament.png`) and sits in the text flow.
+- Map: `contact-map.png` includes the baked-in "Notre emplacement" card
+  (crisp design pixels). A transparent `<a>` positioned at 58.6%/51.1%
+  covers the "Itinéraire" button and opens Google Maps directions in a new
+  tab — the one external link on the page (offline rule concerns assets,
+  not hrefs).
+- Icons cropped: `contact-info-1..5.png` (info strip), `contact-help-1..5.png`
+  (help section), pattern edges `contact-help-left/right.png`,
+  `contact-cta-left/right.png`.
+- Form wiring (`support_tickets.user_id` is NOT nullable, so no guest
+  tickets): POST `/contact` validates (name/email/subject/message/consent
+  `accepted`), rate-limited 5/5min per IP. Logged-in → real `SupportTicket`
+  + first reply (message + "— name <email>" appended). Guest → `Mail::raw`
+  to contact@gvnac.cm in try/catch (non-fatal; .env uses smtp→127.0.0.1:1025
+  Mailpit, usually down in dev — same pattern as password-reset mail).
+  Both redirect back with a success flash rendered above the form.
+- "Nous contacter" links elsewhere now point at `route('contact')`:
+  home footer + categories sidebar help card (were `support.index`).
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -87,17 +128,19 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-1. **`contact page.png` — NEXT.** No dedicated contact route exists yet; nearest
-   existing targets are the `support.*` routes and `route('about')`. A new GET
-   route/view will likely be needed; wire any form submission to an existing
-   endpoint (e.g. `support.store`) rather than inventing a dead handler.
-2. Then, not yet ordered by the user — ask which is next:
+1. Not yet ordered by the user — ask which is next:
    `Product diretory.png` [sic], `Product detail page.png`, `vendors directory.png`,
    `vendors detail page.png`, `events page.png`, `events detail page.png`,
    `events ticket.png`, `default product images by ategory.png` [sic]
    (the last is likely default product imagery per category).
    The product/vendor/events pages should reuse `pages/partials/gallery-header` /
-   `gallery-footer`.
+   `gallery-footer` — but VERIFY against each PNG first: the contact page proved
+   the mockups vary header nav items and footers between pages.
+2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
+   `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],
+   `seller mobile dashboard.png` — dashboard replicas would extend scope beyond
+   public pages (dashboards use `layouts/dashboard.blade.php`, so far
+   deliberately untouched). Ask the user before starting these.
 
 ## The replication process (repeat for each new page)
 
@@ -121,7 +164,8 @@ Concretely, this means:
    `layouts/app.blade.php`; dashboard/gallery legacy pages still use that layout
    and must not be disturbed).
 6. Verify with the preview server (`.claude/launch.json`: `laravel` on port 8321,
-   `laravel-alt` on 8322 for when another session holds 8321; PHP at
+   `laravel-alt` on 8322, `laravel-alt2` on 8323 for when other sessions hold
+   the lower ports; PHP at
    `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe`). Known quirks:
    the screenshot tool lags one action behind or times out — restart the preview
    if stuck; preview screenshots render small (structure checks only) — use
