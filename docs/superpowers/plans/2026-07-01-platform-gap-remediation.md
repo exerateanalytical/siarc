@@ -78,10 +78,10 @@ Routes to KEEP: `home` (SIAC landing), `about/terms/privacy`, `login/login.post`
 - Modify: `resources/views/auth/login.blade.php` (add link), password-reset views (restyle onto SIAC design if legacy-styled)
 - Verify: `password.request/email/reset/update` routes work against `users` table
 
-- [ ] **Step 1:** Add "Mot de passe oublié ? / Forgot password?" link on the login form pointing to `route('password.request')`.
-- [ ] **Step 2:** Walk the flow in browser: request reset for `acheteur@siac2026.cm`, confirm token row created (`password_reset_tokens` table) and reset page renders. (Mail driver is `log` — read token from `storage/logs/laravel.log`.)
-- [ ] **Step 3:** Reset the password, log in with the new one, reset it back to `Demo@SIAC2026`.
-- [ ] **Step 4:** Commit.
+- [x] **Step 1:** Add "Mot de passe oublié ? / Forgot password?" link on the login form pointing to `route('password.request')`.
+- [x] **Step 2:** Walk the flow in browser: request reset for `acheteur@siac2026.cm`, confirm token row created (`password_reset_tokens` table) and reset page renders. (Mail driver is `log` — read token from `storage/logs/laravel.log`.)
+- [x] **Step 3:** Reset the password, log in with the new one, reset it back to `Demo@SIAC2026`.
+- [x] **Step 4:** Commit.
 
 ### Task 5: Profile/settings page in the dashboard shell (all roles)
 
@@ -91,11 +91,11 @@ Routes to KEEP: `home` (SIAC landing), `about/terms/privacy`, `login/login.post`
 
 Page contents: update name + preferred language; change password (current + new + confirm, validated against hash); read-only email + role badge.
 
-- [ ] **Step 1:** Add routes (session-guarded closures following existing dashboard closure pattern; refresh `siac_user` session array after name change).
-- [ ] **Step 2:** Build the view on `layouts.dashboard` (two cards: "Informations" and "Mot de passe"; semantic colors; Lucide `user-cog` icon).
-- [ ] **Step 3:** Add `profile.show` to `$navGroups` for every role in the dashboard layout and make the topbar avatar link to it.
-- [ ] **Step 4:** Browser-verify as buyer: change name (topbar updates), change password, log back in. Restore demo values.
-- [ ] **Step 5:** Commit.
+- [x] **Step 1:** Add routes (session-guarded closures following existing dashboard closure pattern; refresh `siac_user` session array after name change).
+- [x] **Step 2:** Build the view on `layouts.dashboard` (two cards: "Informations" and "Mot de passe"; semantic colors; Lucide `user-cog` icon).
+- [x] **Step 3:** Add `profile.show` to `$navGroups` for every role in the dashboard layout and make the topbar avatar link to it.
+- [x] **Step 4:** Browser-verify as buyer: change name (topbar updates), change password, log back in. Restore demo values.
+- [x] **Step 5:** Commit.
 
 ### Task 6: Buyer saved-items page
 
@@ -105,10 +105,10 @@ Page contents: update name + preferred language; change password (current + new 
 
 Page: two sections — saved products (from `saved_products` joined to products, 2-col card grid) and saved businesses (`saved_businesses`), each with unsave buttons reusing `products.toggle-save` (and a new `businesses.toggle-save` POST if missing).
 
-- [ ] **Step 1:** Check whether a business-save web route exists; create if missing (mirror `products.toggle-save`).
-- [ ] **Step 2:** Add `saved.index` route + view; wire navs.
-- [ ] **Step 3:** Browser-verify as buyer: save a product from the gallery, see it on the page, unsave it.
-- [ ] **Step 4:** Commit.
+- [x] **Step 1:** Check whether a business-save web route exists; create if missing (mirror `products.toggle-save`).
+- [x] **Step 2:** Add `saved.index` route + view; wire navs.
+- [x] **Step 3:** Browser-verify as buyer: save a product from the gallery, see it on the page, unsave it.
+- [x] **Step 4:** Commit.
 
 ### Task 7: Admin moderation — product reports + reviews
 
@@ -118,10 +118,10 @@ Page: two sections — saved products (from `saved_products` joined to products,
 
 Page: tab pills — "Signalements" (product_reports with status pending, product + reporter + reason, actions: resolve/dismiss + link to product) and "Avis" (latest business_reviews with delete action). All actions AuditLog::record()-ed.
 
-- [ ] **Step 1:** Controller methods + routes (guarded by `requireAdmin`).
-- [ ] **Step 2:** View on the dashboard shell.
-- [ ] **Step 3:** Seed one test report via tinker, verify it appears, resolve it, check audit log entry.
-- [ ] **Step 4:** Commit.
+- [x] **Step 1:** Controller methods + routes (guarded by `requireAdmin`).
+- [x] **Step 2:** View on the dashboard shell.
+- [x] **Step 3:** Seed one test report via tinker, verify it appears, resolve it, check audit log entry.
+- [x] **Step 4:** Commit.
 
 ### Task 8: Notification preferences page
 
@@ -131,10 +131,10 @@ Page: tab pills — "Signalements" (product_reports with status pending, product
 
 Uses existing `notification_preferences` table (check real columns first; wire only channels that exist — likely per-type email/in-app toggles). `NotificationPreference` model already exists.
 
-- [ ] **Step 1:** Inspect table schema (`SHOW COLUMNS`), map to toggle UI.
-- [ ] **Step 2:** Routes + view (toggle switches, save button).
-- [ ] **Step 3:** Browser-verify persistence across reload.
-- [ ] **Step 4:** Commit.
+- [x] **Step 1:** Inspect table schema (`SHOW COLUMNS`), map to toggle UI.
+- [x] **Step 2:** Routes + view (toggle switches, save button).
+- [x] **Step 3:** Browser-verify persistence across reload.
+- [x] **Step 4:** Commit.
 
 ### Task 9: Events API endpoints (API-first parity)
 
@@ -144,10 +144,10 @@ Uses existing `notification_preferences` table (check real columns first; wire o
 
 Endpoints (mirror other public modules): `GET /api/v1/events` (published, upcoming/past filter), `GET /api/v1/events/{slug}` (with exhibitors), `POST /api/v1/events/{slug}/attend` + `DELETE` (Sanctum-authed), `POST /api/v1/events/{slug}/exhibit` (Sanctum-authed, business owners).
 
-- [ ] **Step 1:** Copy the provider/routes wiring pattern from `app/Modules/Cms` (smallest example).
-- [ ] **Step 2:** Controller with the five endpoints, reusing logic from `EventWebController`.
-- [ ] **Step 3:** Verify: `php artisan route:list | grep api/v1/events` shows 5 routes; `curl localhost:8000/api/v1/events` returns JSON.
-- [ ] **Step 4:** Commit.
+- [x] **Step 1:** Copy the provider/routes wiring pattern from `app/Modules/Cms` (smallest example).
+- [x] **Step 2:** Controller with the five endpoints, reusing logic from `EventWebController`.
+- [x] **Step 3:** Verify: `php artisan route:list | grep api/v1/events` shows 5 routes; `curl localhost:8000/api/v1/events` returns JSON.
+- [x] **Step 4:** Commit.
 
 ### Task 10: View tracking + repo hygiene
 
@@ -155,10 +155,10 @@ Endpoints (mirror other public modules): `GET /api/v1/events` (published, upcomi
 - Modify: `app/Http/Controllers/FrontendController.php` (or wherever business/product show pages render) — insert rows into `business_views` / `product_views` (check real columns first) alongside existing `views_count` increments
 - Delete: empty dirs `app/Modules/Search/`, `app/Modules/Api/`
 
-- [ ] **Step 1:** Inspect `business_views`/`product_views` schemas; add inserts on public show pages (fire-and-forget, wrapped in try/catch so tracking never breaks a page).
+- [x] **Step 1:** Inspect `business_views`/`product_views` schemas; add inserts on public show pages (fire-and-forget, wrapped in try/catch so tracking never breaks a page).
 - [x] **Step 2:** Delete the two empty module directories. *(Done 2026-07-02 alongside Task 3.)*
-- [ ] **Step 3:** Load a business page, confirm a row lands in `business_views`.
-- [ ] **Step 4:** Commit.
+- [x] **Step 3:** Load a business page, confirm a row lands in `business_views`.
+- [x] **Step 4:** Commit.
 
 ---
 
@@ -166,8 +166,10 @@ Endpoints (mirror other public modules): `GET /api/v1/events` (published, upcomi
 
 ### Task 11: Full-platform regression pass
 
-- [ ] **Step 1:** Route audit script — every `route()` reference resolves; zero missing.
-- [ ] **Step 2:** `grep -rn "auth_user"` → zero. `wc -l routes/web.php` → report the reduction.
-- [ ] **Step 3:** Browser smoke as all six demo accounts: dashboard renders, no console errors, sidebar links all land on 200s.
-- [ ] **Step 4:** Public pages: home, gallery, business detail, product detail, events, partners, about/terms/privacy, login, register, forgot-password.
-- [ ] **Step 5:** Final commit.
+> Completed 2026-07-02. Route audit: 76 used route names, 0 missing. `auth_user`: zero hits. `routes/web.php`: 4,529 → 847 lines. All six demo accounts: dashboards 200, every sidebar link 200. 17 public pages: all 200. Note: `password_reset_tokens` table was missing from the migration set and was added in Task 4.
+
+- [x] **Step 1:** Route audit script — every `route()` reference resolves; zero missing.
+- [x] **Step 2:** `grep -rn "auth_user"` → zero. `wc -l routes/web.php` → report the reduction.
+- [x] **Step 3:** Browser smoke as all six demo accounts: dashboard renders, no console errors, sidebar links all land on 200s.
+- [x] **Step 4:** Public pages: home, gallery, business detail, product detail, events, partners, about/terms/privacy, login, register, forgot-password.
+- [x] **Step 5:** Final commit.
