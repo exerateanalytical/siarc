@@ -307,10 +307,10 @@
             'active' => request()->is('galerie/entreprises*') || request()->is('galerie/secteurs*'),
         ],
         [
-            'href'   => $siacUser ? '/tableau-de-bord/acheteur' : '/login',
+            'href'   => $siacUser ? route('saved.index') : '/login',
             'icon'   => 'bookmark',
             'label'  => $bottomNavLang === 'fr' ? 'Favoris' : 'Saved',
-            'active' => request()->is('tableau-de-bord/acheteur'),
+            'active' => request()->is('tableau-de-bord/sauvegardes'),
         ],
         [
             'href'   => $siacUser ? route('messages.inbox') : '/login',
