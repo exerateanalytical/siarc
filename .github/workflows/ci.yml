@@ -64,16 +64,6 @@ jobs:
           SESSION_DRIVER: array
         run: php artisan migrate --env=testing --force
 
-      - name: Run Passport client setup
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: camerooncompany_test
-          DB_USERNAME: root
-          DB_PASSWORD: password
-        run: php artisan passport:client --personal --name="CI Test Client" --no-interaction
-
       - name: Run tests
         env:
           DB_CONNECTION: mysql

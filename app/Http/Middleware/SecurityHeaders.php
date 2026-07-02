@@ -21,6 +21,25 @@ class SecurityHeaders
         // Drop powerful features the platform never uses.
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
 
+        // Allow exactly the external origins the layouts use: Tailwind Play
+        // CDN + unpkg (lucide) + jsdelivr (qrcodejs on the security page)
+        // scripts, Google Fonts styles/fonts. Inline scripts/styles are
+        // required by the Blade templates and Tailwind's runtime style
+        // injection. img-src allows https: for remote product media (S3).
+        // No plugins, no framing, forms post only to ourselves.
+        $response->headers->set('Content-Security-Policy', implode('; ', [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://cdn.jsdelivr.net",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "img-src 'self' data: blob: https:",
+            "connect-src 'self'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "frame-ancestors 'none'",
+        ]));
+
         // HSTS only makes sense once served over TLS.
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
