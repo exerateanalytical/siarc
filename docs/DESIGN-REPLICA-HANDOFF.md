@@ -38,7 +38,8 @@ Concretely, this means:
 | Auth (login + signup) | `auth page.png` (1536×1024, both mockups side by side) | `resources/views/auth/login.blade.php`, `resources/views/auth/register.blade.php`, shared `resources/views/auth/partials/replica-bottom.blade.php` | `/login` (`login`), `/inscription` (`inscription`) | `fad3992` |
 | Categories | `categories page.png` (1536×1024) | `resources/views/pages/industries/index.blade.php` + shared `resources/views/pages/partials/gallery-header.blade.php` / `gallery-footer.blade.php` | `/galerie/secteurs` (`industries.index`) | `c1645fc` + fidelity rework (see git log) |
 | Contact | `contact page.png` (1024×1536) | `resources/views/pages/contact.blade.php` (standalone — does NOT use the gallery partials, see notes) | `/contact` (`contact`), POST `/contact` (`contact.store`) | `27e4a92` |
-| Product directory | `Product diretory.png` [sic] (1536×1024) | `resources/views/pages/products/index.blade.php` + NEW shared `pages/partials/directory-header.blade.php` / `directory-footer.blade.php` | `/galerie/produits` (`products.index`) | (this session) |
+| Product directory | `Product diretory.png` [sic] (1536×1024) | `resources/views/pages/products/index.blade.php` + NEW shared `pages/partials/directory-header.blade.php` / `directory-footer.blade.php` | `/galerie/produits` (`products.index`) | `a71e7d2` |
+| Vendors directory | `vendors directory.png` (1536×1024) | `resources/views/pages/businesses/index.blade.php` (REPLACED the legacy layouts/app listing) using the directory partials with options | `/galerie/entreprises` (`businesses.index`, controller unchanged) | (this session) |
 
 ### Categories-page notes
 
@@ -150,6 +151,41 @@ Concretely, this means:
   `product-stamp.png` (AUTHENTICITÉ GARANTIE circular badge),
   `product-footer-map.png`, `product-kente-left/right.png`.
 
+### Vendors-directory notes
+
+- **Warning: the vendors PNG has non-96 DPI metadata** — GDI+ `DrawImage` scaling
+  silently blits 1:1 unless you call `$bmp.SetResolution(96,96)` after loading.
+  Also its mockup is DENSER (~0.65× the product page's scale); chrome was kept at
+  product-directory scale for cross-page consistency, content structure verbatim.
+- Reuses `directory-header` (options: `$dirIconVariant='vendors'` → Favoris +
+  Messages + Panier with badge "3"; `$dirSearchPlaceholder`; `$dirNavActive`
+  renders the secondary icon nav bar: Accueil/Catégories/Artisans/Entreprises/
+  Régions/Collections/Événements/À propos, active = gold underline) and
+  `directory-footer` (options: `$dfExplorer`/`$dfRessources` arrays,
+  `$dfNewsletterText`, `$dfShowHelp` → BESOIN D'AIDE ? column with
+  +237 670 416 238 / contact@galerieartisanat.cm / Lun - Ven : 8h00 - 17h00 /
+  gold-outline "Nous contacter →" → route('contact'); `$dfSocialStyle='outline'`,
+  `$dfShowLegalLinks=false`).
+- View REPLACED `pages/businesses/index.blade.php` (was a layouts/app page);
+  `FrontendController::businessIndex` unchanged — the sidebar search/category/
+  region filters post REAL params (q, industry, region by code) the controller
+  already supports. Design counts static: 2,548 found / stats box 2,548 · 10+ ·
+  58 · 100% / profile types (1,842)/(542)/(164) / pagination 1-5 … 64.
+- **All 8 design vendors SEEDED as real published businesses**
+  (`DesignVendorsSeeder`, idempotent): ceramiques-du-noun (Foumban),
+  afrik-cuir-excellence (Douala), sawa-wood-art (Kribi), tressage-bamenda
+  (Bamenda, cooperative), perles-du-sahel (Maroua), tissus-racines (Yaoundé),
+  rythmes-dafrique (Douala), nature-bienfaits (Bafoussam) — verification_tier
+  'verified', owner borrowed from the first existing business, cover images =
+  design crops in `storage/app/public/businesses/{slug}/cover.png`. Cards and
+  "Voir le profil" link to real `businesses.show` pages.
+- Card artwork (`vendor-1..8.png`) keeps the BAKED badges (gold pills — note the
+  design's own spellings "ARTISAN"/"ENTERPRISE"/"COOPÉRATIVE") and baked heart
+  buttons (a transparent link overlays the heart for favorites). Avatar strips
+  `vendor-av-1..8.png` + "+N" as HTML text. Other assets: `vendor-hero-map.png`,
+  `vendor-cta-mask.png`, `vendor-cert-icon.png`, `vendor-trust-1..5.png`,
+  `vendor-margin.png` (subtle right page-margin kente watermark, repeat-y).
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -168,12 +204,11 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-1. **`vendors directory.png` — NEXT (user order 2026-07-02).** Should reuse the
-   new `directory-header` / `directory-footer` partials — but VERIFY against the
-   PNG first; the mockups vary chrome between pages.
-2. Then, not yet ordered: `Product detail page.png`, `vendors detail page.png`,
-   `events page.png`, `events detail page.png`, `events ticket.png`,
-   `default product images by ategory.png` [sic].
+1. Not yet ordered by the user — ask which is next: `Product detail page.png`,
+   `vendors detail page.png`, `events page.png`, `events detail page.png`,
+   `events ticket.png`, `default product images by ategory.png` [sic].
+   Detail pages likely reuse the `directory-header`/`directory-footer` partials
+   (verify each PNG's chrome first — every mockup so far varied it).
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
    `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],
    `seller mobile dashboard.png` — dashboard replicas would extend scope beyond

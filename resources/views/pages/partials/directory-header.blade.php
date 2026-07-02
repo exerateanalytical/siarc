@@ -1,8 +1,16 @@
 {{-- Directory replica header (product/vendor directory design): thin tricolor with one
      centered star + white header with search + category select + icon links.
-     Expects: $lang, $isFr, $siacUser, optional $dirSearchCategories (label pairs for the select) --}}
+     Expects: $lang, $isFr, $siacUser
+     Optional: $dirSearchCategories (slug/label pairs for the select),
+               $dirSearchPlaceholder, $dirIconVariant ('products': Favoris+Demandes |
+               'vendors': Favoris+Messages+Panier(3)), $dirNavActive (renders the
+               secondary icon nav bar with that key active) --}}
 
 @php
+    $dirIconVariant = $dirIconVariant ?? 'products';
+    $dirSearchPlaceholder = $dirSearchPlaceholder
+        ?? ($isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...');
+
     $dhCategories = $dirSearchCategories ?? [
         ['arts-decoration',          $isFr ? 'Arts & Décoration' : 'Arts & Decoration'],
         ['mode-textile',             $isFr ? 'Mode & Textile' : 'Fashion & Textile'],
@@ -45,7 +53,7 @@
             <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:flex items-center gap-2.5 flex-1 max-w-[575px]">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <div class="flex items-center flex-1 h-[38px] bg-white border border-[#E3E3E1] rounded-lg overflow-hidden">
-                    <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...' }}"
+                    <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}"
                         class="flex-1 min-w-0 h-full px-4 text-[12.5px] text-[#1D1B16] placeholder-[#8A857A] focus:outline-none">
                     <span class="h-[22px] w-px bg-[#E3E3E1] shrink-0"></span>
                     <select name="categorie" class="h-full pl-3 pr-7 text-[12.5px] text-[#1D1B16] bg-transparent focus:outline-none cursor-pointer appearance-none bg-no-repeat bg-[right_0.6rem_center]"
@@ -67,10 +75,24 @@
                     <i data-lucide="heart" class="w-[17px] h-[17px]"></i>
                     {{ $isFr ? 'Favoris' : 'Saved' }}
                 </a>
+                @if($dirIconVariant === 'vendors')
+                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
+                    <i data-lucide="mail" class="w-[17px] h-[17px]"></i>
+                    Messages
+                </a>
+                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
+                    <span class="relative">
+                        <i data-lucide="shopping-cart" class="w-[17px] h-[17px]"></i>
+                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] bg-[#02301B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
+                    </span>
+                    {{ $isFr ? 'Panier' : 'Cart' }}
+                </a>
+                @else
                 <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
                     <i data-lucide="shopping-bag" class="w-[17px] h-[17px]"></i>
                     {{ $isFr ? 'Demandes' : 'Inquiries' }}
                 </a>
+                @endif
 
                 <!-- Language -->
                 <div class="relative group hidden sm:block">
@@ -133,3 +155,32 @@
         </div>
     </div>
 </header>
+
+@isset($dirNavActive)
+@php
+    $dirNavItems = [
+        ['home',        'home',          $isFr ? 'Accueil' : 'Home',            route('home', ['lang' => $lang])],
+        ['categories',  'layout-grid',   $isFr ? 'Catégories' : 'Categories',   route('industries.index', ['lang' => $lang])],
+        ['artisans',    'users',         'Artisans',                            route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        ['businesses',  'building-2',    $isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
+        ['regions',     'map-pin',       $isFr ? 'Régions' : 'Regions',         route('businesses.index', ['lang' => $lang])],
+        ['collections', 'mail',          'Collections',                         route('industries.index', ['lang' => $lang])],
+        ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',       route('events.index')],
+        ['about',       'info',          $isFr ? 'À propos' : 'About',          route('about')],
+    ];
+@endphp
+<!-- Secondary icon nav bar -->
+<div class="hidden lg:block bg-[#FEFEFE] border-b border-[#EFEDEA]">
+    <div class="max-w-[1472px] mx-auto px-4 sm:px-6">
+        <nav class="flex items-center justify-center gap-8 xl:gap-12">
+            @foreach($dirNavItems as [$dnKey, $dnIcon, $dnLabel, $dnHref])
+            <a href="{{ $dnHref }}" class="relative flex items-center gap-2 py-3 text-[13px] {{ $dnKey === $dirNavActive ? 'font-semibold text-[#14532D]' : 'font-medium text-[#3A3A35] hover:text-leaf' }} transition-colors whitespace-nowrap">
+                <i data-lucide="{{ $dnIcon }}" class="w-[15px] h-[15px]"></i>
+                {{ $dnLabel }}
+                @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
+            </a>
+            @endforeach
+        </nav>
+    </div>
+</div>
+@endisset
