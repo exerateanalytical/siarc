@@ -90,6 +90,9 @@
                         <label class="block text-sm font-medium text-gray-700" for="password">
                             {{ $lang === 'fr' ? 'Mot de passe' : 'Password' }}
                         </label>
+                        <a href="{{ route('password.request', ['lang' => $lang]) }}" class="text-xs text-forest-500 font-semibold hover:text-forest-600 transition-colors">
+                            {{ $lang === 'fr' ? 'Mot de passe oublié ?' : 'Forgot password?' }}
+                        </a>
                     </div>
                     <div class="relative">
                         <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
