@@ -8,15 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class NotificationPreference extends Model
 {
     protected $fillable = [
-        'user_id', 'type', 'email_enabled', 'push_enabled', 'in_app_enabled',
+        'user_id', 'channel', 'category', 'is_enabled',
     ];
 
     protected function casts(): array
     {
         return [
-            'email_enabled'  => 'boolean',
-            'push_enabled'   => 'boolean',
-            'in_app_enabled' => 'boolean',
+            'is_enabled' => 'boolean',
         ];
     }
 

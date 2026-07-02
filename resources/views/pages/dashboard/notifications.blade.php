@@ -14,6 +14,13 @@ $typeIcons = [
 @section('content')
 <div class="max-w-2xl mx-auto">
 
+    <div class="flex justify-end mb-3">
+        <a href="{{ route('notifications.settings') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-forest-600 transition-colors">
+            <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+            {{ $lang === 'fr' ? 'Préférences' : 'Preferences' }}
+        </a>
+    </div>
+
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
         @forelse($notifications as $n)
         <a href="{{ $n->link ?? '#' }}" class="flex items-start gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">

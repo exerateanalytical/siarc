@@ -654,6 +654,53 @@ Route::get('/tableau-de-bord/sauvegardes', function (Request $request) {
 })->name('saved.index');
 
 // ─────────────────────────────────────────────
+// Notification preferences
+// ─────────────────────────────────────────────
+Route::get('/tableau-de-bord/notifications/preferences', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+
+    // channel × category matrix; anything not stored yet defaults to enabled (matches the column default).
+    $stored = DB::table('notification_preferences')
+        ->where('user_id', $siacUser['id'])
+        ->get()
+        ->keyBy(fn ($r) => $r->category . '.' . $r->channel);
+
+    return view('pages.dashboard.notification-settings', compact('lang', 'siacUser', 'stored'));
+})->name('notifications.settings');
+
+Route::post('/tableau-de-bord/notifications/preferences', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+
+    $categories = ['messages', 'verification', 'business', 'events'];
+    $channels   = ['email', 'sms', 'push'];
+    $enabled    = (array) $request->input('prefs', []); // prefs[category][channel] = 1 when checked
+
+    $rows = [];
+    foreach ($categories as $category) {
+        foreach ($channels as $channel) {
+            $rows[] = [
+                'user_id'    => $siacUser['id'],
+                'category'   => $category,
+                'channel'    => $channel,
+                'is_enabled' => isset($enabled[$category][$channel]) ? 1 : 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+    }
+    DB::table('notification_preferences')->upsert($rows, ['user_id', 'channel', 'category'], ['is_enabled', 'updated_at']);
+
+    return redirect()->route('notifications.settings')
+        ->with('success', $lang === 'fr' ? 'Préférences enregistrées.' : 'Preferences saved.');
+})->name('notifications.settings.save');
+
+// ─────────────────────────────────────────────
 // Profile / settings (all roles)
 // ─────────────────────────────────────────────
 Route::get('/tableau-de-bord/profil', function (Request $request) {
