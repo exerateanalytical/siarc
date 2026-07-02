@@ -7,7 +7,7 @@ use App\Modules\Businesses\Controllers\PublicBusinessController;
 use App\Modules\Businesses\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('api/v1')->middleware(['api', 'json'])->group(function () {
+Route::prefix('api/v1')->middleware(['api', 'json', 'api.key'])->group(function () {
 
     // Public
     Route::get('/businesses',              [PublicBusinessController::class, 'index']);

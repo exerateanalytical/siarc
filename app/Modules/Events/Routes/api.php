@@ -3,7 +3,7 @@
 use App\Modules\Events\Controllers\PublicEventController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('api/v1')->middleware(['api', 'json'])->group(function () {
+Route::prefix('api/v1')->middleware(['api', 'json', 'api.key'])->group(function () {
 
     Route::get('/events',        [PublicEventController::class, 'index']);
     Route::get('/events/{slug}', [PublicEventController::class, 'show']);

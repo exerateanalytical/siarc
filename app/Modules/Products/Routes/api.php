@@ -6,7 +6,7 @@ use App\Modules\Products\Controllers\ProductReportController;
 use App\Modules\Products\Controllers\PublicProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('api/v1')->middleware(['api', 'json'])->group(function () {
+Route::prefix('api/v1')->middleware(['api', 'json', 'api.key'])->group(function () {
 
     // Public
     Route::get('/products',                           [PublicProductController::class, 'index']);

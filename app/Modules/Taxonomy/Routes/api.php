@@ -3,7 +3,7 @@
 use App\Modules\Taxonomy\Controllers\TaxonomyController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('api/v1')->middleware(['api', 'json'])->group(function () {
+Route::prefix('api/v1')->middleware(['api', 'json', 'api.key'])->group(function () {
 
     Route::get('/industries',                     [TaxonomyController::class, 'industries']);
     Route::get('/industries/{slug}',              [TaxonomyController::class, 'industry']);
