@@ -9,13 +9,37 @@ Claude Code session (or any developer) can continue without prior context.
 |------|--------------------------|------|-------|--------|
 | Landing | `Official landing page.png` (1024×1536) | `resources/views/pages/home.blade.php` | `/` (`home`) | `90c3735`, `1fbf5b8` |
 | About | `about page.png` (884×1779) | `resources/views/about.blade.php` | `/about` (`about`) | `3b446ba` |
+| Auth (login + signup) | `auth page.png` (1536×1024, both mockups side by side) | `resources/views/auth/login.blade.php`, `resources/views/auth/register.blade.php`, shared `resources/views/auth/partials/replica-bottom.blade.php` | `/login` (`login`), `/inscription` (`inscription`) | see git log |
 
-## What is pending
+Auth-page notes: the design canvas holds two page mockups (login left 784px-wide,
+signup right 713px-wide) plus a shared full-width "Pourquoi rejoindre" band and footer;
+the band + footer + mobile bottom nav live in the shared partial. All form logic was
+preserved: POST `/login` (email+password+hidden `next` passthrough), POST `/inscription`
+(name/email/phone/password/role) — the signup 3-step wizard is purely client-side inside
+one `<form>`, and a server validation error reopens step 2. Passkey login and the demo
+accounts were kept (demo accounts as a collapsed `<details>`; passkey as an extra button
+under the Google/Facebook buttons, which are visual-only and show "Bientôt disponible").
+The login card is absolutely positioned over the baked-in card in `auth-hero.png`.
+New assets: `public/images/landing/auth-*.png` (hero, baskets, footer-band, footer-map,
+footer-motif, band-motif-left/right). The web login accepts email only (`type="email"`
+is correct — the "phone" login test targets the separate API endpoint `/api/v1/auth/login`).
 
-Design files already dropped in the repo root, not yet built:
+## What is pending — build in this order
 
-- `auth page.png` — replica of login/register screens (current views: `resources/views/auth/*.blade.php`, routes `/login`, `/inscription`)
-- `contact page.png` — no dedicated contact route exists yet; nearest existing targets are `support.*` routes and `route('about')`
+Design files already dropped in the repo root, not yet built. The user has set the order:
+
+1. **`categories page.png` — NEXT.** Categories/sectors listing (nearest existing page:
+   `resources/views/pages/industries/index.blade.php`, route `industries.index`
+   at `/galerie/secteurs`). The PNG is still untracked in the repo root — commit it
+   with the implementation.
+2. **`contact page.png`** — no dedicated contact route exists yet; nearest existing
+   targets are the `support.*` routes and `route('about')`. A new GET route/view will
+   likely be needed; keep any form submission wired to an existing endpoint
+   (e.g. `support.store`) rather than inventing a dead handler.
+
+Also in the repo root, untracked: `default product images by ategory.png` [sic] —
+purpose not yet scoped by the user; likely default product imagery per category for
+the categories page. Ask before using.
 
 ## The replication process used (repeat for each new page)
 
@@ -25,7 +49,7 @@ Design files already dropped in the repo root, not yet built:
 3. Sample flat-fill colors with `Bitmap.GetPixel` (9-point grids per element — single
    points often hit text/anti-aliasing).
 4. Crop photo/pattern/logo assets from the PNG into `public/images/landing/`
-   (naming: `about-*.png`, `partner-*.png`, `biz-*.png`, `event-*.png`).
+   (naming: `about-*.png`, `partner-*.png`, `biz-*.png`, `event-*.png`, `auth-*.png`).
    - If baked-in text must be hidden, cover with a gradient fill and clone-patch
      from adjacent clean rows (see hero-bg.png history in `90c3735`).
    - When tiling a crop as a pattern, trim ~10px off the crop edges or the tile
@@ -34,8 +58,11 @@ Design files already dropped in the repo root, not yet built:
    do NOT extend `layouts/app.blade.php`; other gallery pages still use that layout
    and must not be disturbed).
 6. Verify with the preview server (`.claude/launch.json`, name `laravel`, port 8321;
+   `laravel-alt` on 8322 exists for when another session holds 8321;
    PHP at `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe`). The screenshot
    tool sometimes lags one action behind or times out — restart the preview if stuck.
+   preview_click on a submit button may not fire the native submit — use
+   `form.requestSubmit()` via preview_eval when testing form flows.
 7. Run `php artisan test` (34 tests must stay green), then commit.
 
 ## Shared design system

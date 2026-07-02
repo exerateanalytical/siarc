@@ -1,1 +1,1 @@
-﻿{"version":"0.0.1","configurations":[{"name":"laravel","runtimeExecutable":"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe","runtimeArgs":["artisan","serve","--port=8321"],"port":8321}]}
+{"version":"0.0.1","configurations":[{"name":"laravel","runtimeExecutable":"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe","runtimeArgs":["artisan","serve","--port=8321"],"port":8321},{"name":"laravel-alt","runtimeExecutable":"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe","runtimeArgs":["artisan","serve","--port=8322"],"port":8322}]}
