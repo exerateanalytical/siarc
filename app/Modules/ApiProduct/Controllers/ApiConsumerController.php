@@ -16,24 +16,26 @@ class ApiConsumerController extends Controller
     public function register(Request $request): JsonResponse
     {
         $request->validate([
-            'app_name'        => ['required', 'string', 'max:100'],
-            'app_description' => ['required', 'string', 'max:1000'],
-            'website'         => ['nullable', 'url', 'max:255'],
-            'use_case'        => ['required', 'string', 'max:1000'],
+            'app_name' => ['required', 'string', 'max:255'],
+            'use_case' => ['required', 'string', 'max:1000'],
+            'website'  => ['nullable', 'url', 'max:255'],
+            'company'  => ['nullable', 'string', 'max:255'],
+            'country'  => ['nullable', 'string', 'size:2'],
         ]);
 
-        $existing = ApiConsumer::where('user_id', $request->user()->id)->first();
+        $existing = ApiConsumer::forEmail($request->user()->email);
         if ($existing) {
             return response()->json(['message' => 'You already have an API consumer account.', 'data' => ['id' => $existing->id, 'status' => $existing->status]], 422);
         }
 
         $consumer = ApiConsumer::create([
-            'user_id'         => $request->user()->id,
-            'app_name'        => $request->app_name,
-            'app_description' => $request->app_description,
-            'website'         => $request->website,
-            'use_case'        => $request->use_case,
-            'status'          => 'pending',
+            'name'    => $request->app_name,
+            'email'   => strtolower($request->user()->email),
+            'purpose' => $request->use_case,
+            'website' => $request->website,
+            'company' => $request->company,
+            'country' => $request->country ? strtoupper($request->country) : null,
+            'status'  => 'pending',
         ]);
 
         return response()->json(['data' => [
@@ -45,11 +47,11 @@ class ApiConsumerController extends Controller
 
     public function show(Request $request): JsonResponse
     {
-        $consumer = ApiConsumer::where('user_id', $request->user()->id)->with('keys')->firstOrFail();
+        $consumer = ApiConsumer::where('email', strtolower($request->user()->email))->with('keys')->firstOrFail();
 
         return response()->json(['data' => [
             'id'       => $consumer->id,
-            'app_name' => $consumer->app_name,
+            'app_name' => $consumer->name,
             'status'   => $consumer->status,
             'keys'     => $consumer->keys->map(fn ($k) => [
                 'id'         => $k->id,
@@ -66,7 +68,7 @@ class ApiConsumerController extends Controller
     {
         $request->validate(['name' => ['required', 'string', 'max:100']]);
 
-        $consumer = ApiConsumer::where('user_id', $request->user()->id)
+        $consumer = ApiConsumer::where('email', strtolower($request->user()->email))
             ->where('status', 'approved')
             ->firstOrFail();
 
@@ -84,7 +86,7 @@ class ApiConsumerController extends Controller
 
     public function revokeKey(Request $request, int $keyId): JsonResponse
     {
-        $consumer = ApiConsumer::where('user_id', $request->user()->id)->firstOrFail();
+        $consumer = ApiConsumer::where('email', strtolower($request->user()->email))->firstOrFail();
         $key      = $consumer->keys()->findOrFail($keyId);
 
         $this->keyService->revoke($key);
@@ -94,14 +96,14 @@ class ApiConsumerController extends Controller
 
     public function usage(Request $request): JsonResponse
     {
-        $consumer = ApiConsumer::where('user_id', $request->user()->id)->firstOrFail();
+        $consumer = ApiConsumer::where('email', strtolower($request->user()->email))->firstOrFail();
 
         $keyIds = $consumer->keys()->pluck('id');
 
         $daily = DB::table('api_usage_logs')
-            ->whereIn('api_key_id', $keyIds)
-            ->where('requested_at', '>=', now()->subDays(30))
-            ->selectRaw('DATE(requested_at) as date, COUNT(*) as requests, AVG(response_time_ms) as avg_ms')
+            ->whereIn('key_id', $keyIds)
+            ->where('called_at', '>=', now()->subDays(30))
+            ->selectRaw('DATE(called_at) as date, COUNT(*) as requests, AVG(response_time_ms) as avg_ms')
             ->groupBy('date')
             ->orderBy('date')
             ->get();

@@ -11,7 +11,7 @@ class ApiKeyService
     public function issue(ApiConsumer $consumer, string $name): array
     {
         $raw    = 'siac_' . Str::random(40);
-        $prefix = substr($raw, 0, 12);
+        $prefix = substr($raw, 0, 8); // api_keys.key_prefix is varchar(8)
         $hash   = hash('sha256', $raw);
 
         $key = ApiKey::create([
