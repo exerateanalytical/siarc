@@ -666,8 +666,8 @@ class AdminWebController extends Controller
 
         if ($response->successful()) {
             return back()->with('success', $lang === 'fr'
-                ? 'Message de test envoyé à ' . $data['test_phone'] . ' (SID: ' . $response->json('sid') . ').'
-                : 'Test message sent to ' . $data['test_phone'] . ' (SID: ' . $response->json('sid') . ').');
+                ? 'Message de test envoyé à ' . $data['test_phone'] . '.'
+                : 'Test message sent to ' . $data['test_phone'] . '.');
         }
 
         return back()->withErrors(['twilio' => 'Twilio: ' . ($response->json('message') ?? ('HTTP ' . $response->status()))]);

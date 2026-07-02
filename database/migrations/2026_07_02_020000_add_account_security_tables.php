@@ -34,7 +34,13 @@ return new class extends Migration
             $table->string('code', 64)->change();
             $table->string('channel', 20)->nullable()->after('type'); // email | sms | whatsapp
         });
-        DB::statement("ALTER TABLE otp_verifications MODIFY COLUMN type ENUM('email_verification','phone_verification','login','password_reset','enroll') NOT NULL");
+        // MySQL-only; on other drivers (SQLite in tests) relax the column to a
+        // plain string, which also drops the CHECK constraint from enum()
+        if (in_array(DB::getDriverName(), ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE otp_verifications MODIFY COLUMN type ENUM('email_verification','phone_verification','login','password_reset','enroll') NOT NULL");
+        } else {
+            Schema::table('otp_verifications', fn (Blueprint $table) => $table->string('type', 30)->change());
+        }
     }
 
     public function down(): void

@@ -18,7 +18,7 @@ class NotificationController extends Controller
 
         $notifications = NotificationLog::where('user_id', $user->id)
             ->latest()
-            ->paginate($request->integer('per_page', 30));
+            ->paginate(max(1, min($request->integer('per_page', 30), 100)));
 
         return response()->json([
             'data' => collect($notifications->items())->map(fn ($n) => [

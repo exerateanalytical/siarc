@@ -7,14 +7,18 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 // ─────────────────────────────────────────────
-// Helpers
+// Helpers — function_exists guards so tests can boot the app more than
+// once per PHP process without a redeclare fatal
 // ─────────────────────────────────────────────
+if (! function_exists('webUser')) {
 function webUser(): ?object
 {
     $u = session('siac_user');
     return $u ? (object) $u : null;
 }
+}
 
+if (! function_exists('requireAuth')) {
 function requireAuth(Request $request)
 {
     if (!session('siac_user')) {
@@ -22,12 +26,14 @@ function requireAuth(Request $request)
     }
     return null;
 }
+}
 
 /**
  * Establish the authenticated web session for a users row.
  * Single place where siac_user is written after a successful factor check —
  * regenerates the session id to prevent session fixation.
  */
+if (! function_exists('establishSiacSession')) {
 function establishSiacSession(object $user, Request $request): void
 {
     $siacRole = DB::table('model_has_roles')
@@ -54,6 +60,7 @@ function establishSiacSession(object $user, Request $request): void
         'is_admin' => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
     ]]);
 }
+}
 
 // ─────────────────────────────────────────────
 // SIAC Platform — API landing
@@ -69,10 +76,10 @@ Route::get('/galerie/produits/{slug}', [FrontendController::class, 'productShow'
 
 use App\Http\Controllers\MessagingWebController;
 
-Route::post('/galerie/messages', [MessagingWebController::class, 'send'])->name('messages.send');
+Route::post('/galerie/messages', [MessagingWebController::class, 'send'])->name('messages.send')->middleware('verified.email');
 Route::get('/tableau-de-bord/messages', [MessagingWebController::class, 'inbox'])->name('messages.inbox');
 Route::get('/tableau-de-bord/messages/{id}', [MessagingWebController::class, 'thread'])->name('messages.thread');
-Route::post('/tableau-de-bord/messages/{id}/repondre', [MessagingWebController::class, 'reply'])->name('messages.reply');
+Route::post('/tableau-de-bord/messages/{id}/repondre', [MessagingWebController::class, 'reply'])->name('messages.reply')->middleware('verified.email');
 
 use App\Http\Controllers\ReviewWebController;
 
@@ -123,23 +130,23 @@ Route::post('/galerie/entreprises/{slug}/sauvegarder', function (Request $reques
 use App\Http\Controllers\BusinessWebController;
 
 Route::get('/tableau-de-bord/entreprise/creer', [BusinessWebController::class, 'create'])->name('business.create');
-Route::post('/tableau-de-bord/entreprise/creer', [BusinessWebController::class, 'store'])->name('business.store');
+Route::post('/tableau-de-bord/entreprise/creer', [BusinessWebController::class, 'store'])->name('business.store')->middleware('verified.email');
 Route::get('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class, 'edit'])->name('business.edit');
-Route::post('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class, 'update'])->name('business.update');
+Route::post('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class, 'update'])->name('business.update')->middleware('verified.email');
 Route::get('/api-interne/villes/{regionId}', [BusinessWebController::class, 'citiesForRegion'])->name('business.cities-for-region');
 
 use App\Http\Controllers\ProductWebController;
 
 Route::get('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'create'])->name('products.web-create');
-Route::post('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'store'])->name('products.web-store');
+Route::post('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'store'])->name('products.web-store')->middleware('verified.email');
 Route::get('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'edit'])->name('products.web-edit');
-Route::post('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'update'])->name('products.web-update');
+Route::post('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'update'])->name('products.web-update')->middleware('verified.email');
 Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/supprimer', [ProductWebController::class, 'destroyImage'])->name('products.web-delete-image');
 
 use App\Http\Controllers\VerificationWebController;
 
 Route::get('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'show'])->name('verification.show');
-Route::post('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'apply'])->name('verification.apply');
+Route::post('/tableau-de-bord/entreprise/verification', [VerificationWebController::class, 'apply'])->name('verification.apply')->middleware('verified.email');
 
 use App\Http\Controllers\AdminWebController;
 
@@ -270,13 +277,10 @@ Route::post('/forgot-password', function (Request $request) {
         $resetUrl = url('/reset-password/' . $plainToken . '?email=' . urlencode($email));
 
         // Send email (goes to log when MAIL_MAILER=log)
+        $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
         try {
-            \Illuminate\Support\Facades\Mail::raw(
-                "Hello {$user->first_name},\n\nClick the link below to reset your Galerie virtuelle de l'artisanat du Cameroun password:\n\n{$resetUrl}\n\nThis link expires in 60 minutes. If you didn't request a reset, ignore this email.\n\n— Galerie virtuelle de l'artisanat du Cameroun",
-                function ($mail) use ($email, $user) {
-                    $mail->to($email)->subject('Reset your Galerie virtuelle de l\'artisanat du Cameroun password');
-                }
-            );
+            \Illuminate\Support\Facades\Mail::to($email)
+                ->send(new \App\Mail\PasswordResetMail($user->name ?? '', $resetUrl, $lang));
         } catch (\Exception $e) {
             // Mail failure is non-fatal; link is still logged
         }
@@ -296,9 +300,10 @@ Route::get('/reset-password/{token}', function (Request $request, string $token)
     $email = $request->query('email', '');
     $row   = DB::table('password_reset_tokens')->where('email', strtolower($email))->first();
 
+    // Carbon 3 diffs are signed (past dates give negatives) — compare against a cutoff instead
     $tokenValid = $row
         && Hash::check($token, $row->token)
-        && now()->diffInMinutes($row->created_at) <= 60;
+        && now()->subMinutes(60)->lte($row->created_at);
 
     $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : (in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr');
 
@@ -316,7 +321,7 @@ Route::post('/reset-password', function (Request $request) {
     $email = strtolower(trim($data['email']));
     $row   = DB::table('password_reset_tokens')->where('email', $email)->first();
 
-    if (!$row || !Hash::check($data['token'], $row->token) || now()->diffInMinutes($row->created_at) > 60) {
+    if (!$row || !Hash::check($data['token'], $row->token) || now()->subMinutes(60)->gt($row->created_at)) {
         return back()->withErrors(['email' => 'This reset link is invalid or has expired.']);
     }
 
@@ -856,9 +861,65 @@ Route::post('/tableau-de-bord/securite/passkeys/options', [SecurityWebController
 Route::post('/tableau-de-bord/securite/passkeys', [SecurityWebController::class, 'passkeyRegister'])->name('security.passkeys.register');
 Route::post('/tableau-de-bord/securite/passkeys/{id}/supprimer', [SecurityWebController::class, 'passkeyDelete'])->name('security.passkeys.delete');
 
-// Passkey login (guest)
-Route::post('/webauthn/login/options', [SecurityWebController::class, 'passkeyLoginOptions'])->name('webauthn.login.options');
-Route::post('/webauthn/login', [SecurityWebController::class, 'passkeyLogin'])->name('webauthn.login');
+// Passkey login (guest) — throttled like the password login endpoints
+Route::post('/webauthn/login/options', [SecurityWebController::class, 'passkeyLoginOptions'])->name('webauthn.login.options')->middleware('throttle:10,1');
+Route::post('/webauthn/login', [SecurityWebController::class, 'passkeyLogin'])->name('webauthn.login')->middleware('throttle:5,1');
+
+// ─────────────────────────────────────────────
+// Email verification (gates business/product/messaging writes)
+// ─────────────────────────────────────────────
+Route::get('/verification-email', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $user = DB::table('users')->where('id', $siacUser['id'])->first();
+    if ($user && $user->is_email_verified) return redirect('/tableau-de-bord');
+
+    return view('auth.verify-email', ['lang' => $lang, 'email' => $user->email]);
+})->name('email.verify');
+
+Route::post('/verification-email/envoyer', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $user = DB::table('users')->where('id', $siacUser['id'])->first();
+    if (!$user || $user->is_email_verified) return redirect('/tableau-de-bord');
+
+    $sent = app(\App\Modules\Auth\Services\OtpService::class)
+        ->send($user->email, 'email_verification', 'email', $user->id, $lang);
+
+    return back()->with($sent ? 'status' : 'error', $sent
+        ? ($lang === 'fr' ? 'Code envoyé à ' . $user->email . '.' : 'Code sent to ' . $user->email . '.')
+        : ($lang === 'fr' ? 'Trop de demandes. Réessayez dans quelques minutes.' : 'Too many requests. Try again in a few minutes.'));
+})->name('email.verify.send');
+
+Route::post('/verification-email/confirmer', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $request->validate(['code' => ['required', 'string', 'max:10']]);
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $user = DB::table('users')->where('id', $siacUser['id'])->first();
+    if (!$user) return redirect('/login');
+
+    $ok = app(\App\Modules\Auth\Services\OtpService::class)
+        ->verify($user->email, $request->input('code'), 'email_verification');
+
+    if (!$ok) {
+        return back()->withErrors(['code' => $lang === 'fr' ? 'Code invalide ou expiré.' : 'Invalid or expired code.']);
+    }
+
+    DB::table('users')->where('id', $user->id)->update([
+        'is_email_verified' => 1,
+        'updated_at'        => now(),
+    ]);
+
+    return redirect('/tableau-de-bord')->with('success', $lang === 'fr'
+        ? 'Adresse email vérifiée.'
+        : 'Email address verified.');
+})->name('email.verify.confirm')->middleware('throttle:10,1');
 
 // ─────────────────────────────────────────────
 // Profile / settings (all roles)
@@ -951,6 +1012,7 @@ Route::get('/privacy', function (Request $request) {
 // Developer / API Keys
 // ─────────────────────────────────────────────
 // A web user's API consumer record is matched by email (api_consumers has no user_id column).
+if (! function_exists('developerConsumer')) {
 function developerConsumer(object $user, bool $createIfMissing = false): ?object
 {
     $consumer = DB::table('api_consumers')->where('email', $user->email)->first();
@@ -967,6 +1029,7 @@ function developerConsumer(object $user, bool $createIfMissing = false): ?object
         $consumer = DB::table('api_consumers')->where('id', $id)->first();
     }
     return $consumer;
+}
 }
 
 Route::get('/developer', function (Request $request) {

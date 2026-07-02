@@ -23,7 +23,7 @@ class ConversationController extends Controller
             })
             ->with(['buyer', 'business', 'product', 'latestMessage'])
             ->orderByDesc('last_message_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         $lang = $request->header('Accept-Language', 'fr');
         $pick = fn ($fr, $en) => ($lang === 'en' && $en) ? $en : $fr;

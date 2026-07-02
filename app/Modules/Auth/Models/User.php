@@ -47,6 +47,13 @@ class User extends Authenticatable
         return $this->belongsTo(\App\Modules\Taxonomy\Models\Region::class, 'assigned_region_id');
     }
 
+    // Factory lives at Database\Factories\UserFactory, not the namespace
+    // HasFactory would guess from App\Modules\Auth\Models
+    protected static function newFactory(): \Database\Factories\UserFactory
+    {
+        return \Database\Factories\UserFactory::new();
+    }
+
     public function isActive(): bool
     {
         return $this->status === 'active';

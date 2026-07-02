@@ -14,7 +14,7 @@ class AdminApiConsumerController extends Controller
         $consumers = ApiConsumer::with(['user', 'keys'])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
             ->latest()
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         return response()->json([
             'data' => collect($consumers->items())->map(fn ($c) => [

@@ -24,7 +24,7 @@ class AdminUserController extends Controller
             $query->where('status', $request->status);
         }
 
-        $users = $query->paginate($request->integer('per_page', 25));
+        $users = $query->paginate(max(1, min($request->integer('per_page', 25), 100)));
 
         return response()->json([
             'data' => collect($users->items())->map(fn ($u) => [

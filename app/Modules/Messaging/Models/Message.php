@@ -4,9 +4,12 @@ namespace App\Modules\Messaging\Models;
 
 use App\Modules\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'conversation_id', 'sender_id', 'body', 'read_at', 'deleted_by_sender_at', 'deleted_by_receiver_at',
     ];

@@ -46,7 +46,7 @@ class PublicProductController extends Controller
             default  => $query->latest(),
         };
 
-        $products = $query->paginate($request->integer('per_page', 24));
+        $products = $query->paginate(max(1, min($request->integer('per_page', 24), 100)));
 
         return response()->json([
             'data' => ProductListResource::collection($products->items()),
@@ -78,7 +78,7 @@ class PublicProductController extends Controller
             ->with(['primaryImage', 'category'])
             ->whereHas('business', fn ($q) => $q->where('slug', $businessSlug)->published())
             ->orderBy('sort_order')
-            ->paginate($request->integer('per_page', 24));
+            ->paginate(max(1, min($request->integer('per_page', 24), 100)));
 
         return response()->json([
             'data' => ProductListResource::collection($products->items()),

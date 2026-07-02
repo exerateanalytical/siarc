@@ -12,25 +12,23 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name'        => fake()->firstName(),
-            'last_name'         => fake()->lastName(),
-            'email'             => fake()->unique()->safeEmail(),
-            'phone'             => '+237' . fake()->numerify('#########'),
-            'email_verified_at' => now(),
-            'password'          => 'Password1!',
-            'status'            => 'active',
-            'locale'            => 'fr',
-            'timezone'          => 'Africa/Douala',
+            'name'                => fake()->name(),
+            'email'               => fake()->unique()->safeEmail(),
+            'phone'               => '+237' . fake()->unique()->numerify('#########'),
+            'password'            => 'Password1!',
+            'status'              => 'active',
+            'language_preference' => 'fr',
+            'is_email_verified'   => true,
         ];
     }
 
     public function unverified(): static
     {
-        return $this->state(fn() => ['email_verified_at' => null, 'status' => 'pending']);
+        return $this->state(fn () => ['is_email_verified' => false]);
     }
 
     public function suspended(): static
     {
-        return $this->state(fn() => ['status' => 'suspended']);
+        return $this->state(fn () => ['status' => 'suspended']);
     }
 }

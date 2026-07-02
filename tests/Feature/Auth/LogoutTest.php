@@ -13,13 +13,14 @@ class LogoutTest extends TestCase
     public function test_authenticated_user_can_logout(): void
     {
         $user  = User::factory()->create(['status' => 'active']);
-        $token = $user->createToken('api-token')->accessToken;
+        $token = $user->createToken('api')->plainTextToken;
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                         ->postJson('/api/v1/auth/logout');
+        $this->withHeader('Authorization', 'Bearer ' . $token)
+             ->postJson('/api/v1/auth/logout')
+             ->assertStatus(200)
+             ->assertJson(['message' => 'Logged out.']);
 
-        $response->assertStatus(200)
-                 ->assertJson(['success' => true]);
+        $this->assertSame(0, $user->tokens()->count());
     }
 
     public function test_logout_requires_authentication(): void

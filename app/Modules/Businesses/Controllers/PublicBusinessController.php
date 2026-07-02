@@ -44,7 +44,7 @@ class PublicBusinessController extends Controller
             default   => $query->orderByDesc('is_featured')->orderByDesc('views_count'),
         };
 
-        $businesses = $query->paginate($request->integer('per_page', 20));
+        $businesses = $query->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         return response()->json([
             'data' => BusinessListResource::collection($businesses->items()),

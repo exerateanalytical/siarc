@@ -13,12 +13,9 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             TaxonomySeeder::class,
             SystemSettingsSeeder::class,
-            SampleCompaniesSeeder::class,
-            SampleOfferingsSeeder::class,
         ]);
 
-        // SIAC platform — the active product. Runs after the legacy seeders above
-        // (kept only because some still-reachable legacy pages depend on that data).
+        // SIAC platform — the active product
         $this->call(SiacSeeder::class);
     }
 }

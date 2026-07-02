@@ -4,10 +4,13 @@ namespace App\Modules\Support\Models;
 
 use App\Modules\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class SupportTicket extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'uuid', 'user_id', 'category_id', 'subject_fr', 'subject_en', 'status', 'priority',
         'assigned_to', 'resolved_at',

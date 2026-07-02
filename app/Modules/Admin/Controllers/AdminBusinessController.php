@@ -30,7 +30,7 @@ class AdminBusinessController extends Controller
             $query->where(fn ($q) => $q->where('name_fr', 'like', $search)->orWhere('name_en', 'like', $search));
         }
 
-        $businesses = $query->paginate($request->integer('per_page', 25));
+        $businesses = $query->paginate(max(1, min($request->integer('per_page', 25), 100)));
 
         return response()->json([
             'data' => collect($businesses->items())->map(fn ($b) => [
@@ -63,7 +63,7 @@ class AdminBusinessController extends Controller
         $applications = VerificationApplication::with(['business', 'documents'])
             ->where('status', 'pending')
             ->oldest()
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         return response()->json([
             'data' => collect($applications->items())->map(fn ($a) => [

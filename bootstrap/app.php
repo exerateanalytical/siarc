@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'json'               => \App\Http\Middleware\ForceJsonResponse::class,
             'api.key'            => \App\Http\Middleware\AuthenticateApiKey::class,
+            'verified.email'     => \App\Http\Middleware\EnsureEmailVerified::class,
             'locale'             => \App\Http\Middleware\SetLocale::class,
             'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,

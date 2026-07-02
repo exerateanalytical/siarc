@@ -33,7 +33,12 @@ class TwilioWhatsAppOtpSender implements OtpSender
             if (app()->isProduction()) {
                 throw new \RuntimeException('Twilio WhatsApp is not configured (TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN / TWILIO_WHATSAPP_FROM).');
             }
-            Log::warning("[OTP:whatsapp] Twilio not configured — code {$code} for {$destination} (logged instead of sent)");
+            // The plain code is only ever written to local/testing logs
+            if (app()->environment('local', 'testing')) {
+                Log::warning("[OTP:whatsapp] Twilio not configured — code {$code} for {$destination} (logged instead of sent)");
+            } else {
+                Log::warning("[OTP:whatsapp] Twilio not configured — OTP for {$destination} was NOT delivered");
+            }
             return;
         }
 

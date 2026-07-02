@@ -17,7 +17,7 @@ class AdminSupportController extends Controller
             ->when($request->filled('priority'), fn ($q) => $q->where('priority', $request->priority))
             ->latest();
 
-        $tickets = $query->paginate($request->integer('per_page', 25));
+        $tickets = $query->paginate(max(1, min($request->integer('per_page', 25), 100)));
 
         return response()->json([
             'data' => collect($tickets->items())->map(fn ($t) => [

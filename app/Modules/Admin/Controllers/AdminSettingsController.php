@@ -70,7 +70,7 @@ class AdminSettingsController extends Controller
             $query->where('action', $request->action);
         }
 
-        $logs = $query->paginate($request->integer('per_page', 30));
+        $logs = $query->paginate(max(1, min($request->integer('per_page', 30), 100)));
 
         return response()->json([
             'data' => $logs->items(),

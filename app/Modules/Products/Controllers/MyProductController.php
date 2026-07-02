@@ -25,7 +25,7 @@ class MyProductController extends Controller
             ->withoutGlobalScopes()
             ->with(['primaryImage', 'category'])
             ->latest()
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         return response()->json([
             'data' => ProductListResource::collection($products->items()),

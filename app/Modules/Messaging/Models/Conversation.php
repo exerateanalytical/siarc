@@ -6,10 +6,13 @@ use App\Modules\Auth\Models\User;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Products\Models\Product;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Conversation extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'uuid', 'buyer_id', 'business_id', 'product_id',
         'subject', 'status', 'last_message_at', 'deal_marked_at',

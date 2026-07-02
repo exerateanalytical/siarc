@@ -29,7 +29,7 @@ class SupportTicketController extends Controller
         $tickets = SupportTicket::where('user_id', $request->user()->id)
             ->with('category')
             ->latest()
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(max(1, min($request->integer('per_page', 15), 100)));
 
         $lang = $request->header('Accept-Language', 'fr');
         $pick = fn ($fr, $en) => ($lang === 'en' && $en) ? $en : $fr;

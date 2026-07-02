@@ -26,6 +26,15 @@ class AuthenticateApiKey
     {
         $rawKey = $request->header('X-API-Key');
         if (! $rawKey) {
+            // Keyless callers stay anonymous but get a per-IP ceiling so the
+            // public API can't be hammered without limit
+            $ipLimiter = 'api-anon:' . sha1($request->ip());
+            if (RateLimiter::tooManyAttempts($ipLimiter, 60)) {
+                return response()->json(['message' => 'Rate limit exceeded.'], 429)
+                    ->header('Retry-After', RateLimiter::availableIn($ipLimiter));
+            }
+            RateLimiter::hit($ipLimiter, 60);
+
             return $next($request);
         }
 

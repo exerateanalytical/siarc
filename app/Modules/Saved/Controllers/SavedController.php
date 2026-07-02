@@ -25,7 +25,7 @@ class SavedController extends Controller
         $businesses = Business::published()
             ->whereIn('id', $saved)
             ->with(['industry', 'region', 'tags'])
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         return response()->json([
             'data' => BusinessListResource::collection($businesses->items()),
@@ -72,7 +72,7 @@ class SavedController extends Controller
             ->whereIn('id', $saved)
             ->whereHas('business', fn ($q) => $q->published())
             ->with(['primaryImage', 'category', 'business'])
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min($request->integer('per_page', 20), 100)));
 
         return response()->json([
             'data' => ProductListResource::collection($products->items()),

@@ -40,7 +40,7 @@ class CmsController extends Controller
             $query->where('type', $request->type);
         }
 
-        $posts = $query->paginate($request->integer('per_page', 12));
+        $posts = $query->paginate(max(1, min($request->integer('per_page', 12), 100)));
 
         return response()->json([
             'data' => collect($posts->items())->map(fn ($p) => [

@@ -14,7 +14,7 @@ class LoginTest extends TestCase
     {
         User::factory()->create([
             'email'    => 'test@example.cm',
-            'password' => bcrypt('Password1!'),
+            'password' => 'Password1!',
             'status'   => 'active',
         ]);
 
@@ -24,22 +24,34 @@ class LoginTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure(['data' => ['token', 'token_type', 'user']]);
+                 ->assertJsonStructure(['data' => ['id', 'email'], 'token']);
     }
 
     public function test_login_fails_with_wrong_password(): void
     {
-        User::factory()->create(['email' => 'test@example.cm', 'password' => bcrypt('Password1!')]);
+        User::factory()->create(['email' => 'test@example.cm', 'password' => 'Password1!']);
 
+        // Failed credentials surface as a validation error (422), never a token
         $this->postJson('/api/v1/auth/login', ['email' => 'test@example.cm', 'password' => 'wrong'])
-             ->assertStatus(401);
+             ->assertStatus(422)
+             ->assertJsonMissingPath('token');
     }
 
     public function test_suspended_user_cannot_login(): void
     {
-        User::factory()->create(['email' => 'test@example.cm', 'password' => bcrypt('Password1!'), 'status' => 'suspended']);
+        User::factory()->suspended()->create(['email' => 'test@example.cm', 'password' => 'Password1!']);
 
         $this->postJson('/api/v1/auth/login', ['email' => 'test@example.cm', 'password' => 'Password1!'])
-             ->assertStatus(403);
+             ->assertStatus(422)
+             ->assertJsonMissingPath('token');
+    }
+
+    public function test_login_can_use_phone(): void
+    {
+        User::factory()->create(['phone' => '+237699000001', 'password' => 'Password1!']);
+
+        $this->postJson('/api/v1/auth/login', ['phone' => '+237699000001', 'password' => 'Password1!'])
+             ->assertStatus(200)
+             ->assertJsonStructure(['data', 'token']);
     }
 }
