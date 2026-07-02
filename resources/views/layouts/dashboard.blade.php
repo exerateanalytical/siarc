@@ -77,6 +77,12 @@
                     ['admin.support', 'life-buoy', 'Support', 'Support'],
                 ],
             ],
+            [
+                'title' => ['fr' => 'Compte', 'en' => 'Account'],
+                'items' => [
+                    ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
+                ],
+            ],
         ];
     } elseif ($role === 'business_owner') {
         $navGroups = [
@@ -89,6 +95,7 @@
                     ['verification.show', 'badge-check', 'Vérification', 'Verification'],
                     ['events.index', 'calendar-days', 'Événements', 'Events'],
                     ['support.index', 'life-buoy', 'Support', 'Support'],
+                    ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
                 ],
             ],
         ];
@@ -98,21 +105,30 @@
                 'title' => null,
                 'items' => [
                     ['dashboard.buyer', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
+                    ['saved.index', 'bookmark', 'Mes favoris', 'Saved'],
                     ['messages.inbox', 'message-circle', 'Messages', 'Messages'],
                     ['businesses.index', 'search', 'Explorer', 'Browse'],
                     ['events.index', 'calendar-days', 'Événements', 'Events'],
                     ['support.index', 'life-buoy', 'Support', 'Support'],
+                    ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
                 ],
             ],
         ];
     } elseif ($role === 'regional_rep') {
-        $navGroups = [['title' => null, 'items' => [['dashboard.regional-rep', 'layout-dashboard', 'Tableau de bord', 'Dashboard']]]];
+        $navGroups = [['title' => null, 'items' => [
+            ['dashboard.regional-rep', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
+            ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
+        ]]];
     } elseif ($role === 'ministry') {
-        $navGroups = [['title' => null, 'items' => [['dashboard.ministry', 'layout-dashboard', 'Tableau de bord', 'Dashboard']]]];
+        $navGroups = [['title' => null, 'items' => [
+            ['dashboard.ministry', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
+            ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
+        ]]];
     } elseif ($role === 'technical_reviewer') {
         $navGroups = [['title' => null, 'items' => [
             ['dashboard.technical-reviewer', 'layout-dashboard', 'File d\'attente', 'Queue'],
             ['technical.history', 'history', 'Historique', 'History'],
+            ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
         ]]];
     }
 
@@ -199,9 +215,9 @@
                     <span class="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}</span>
                     @endif
                 </a>
-                <div class="w-7 h-7 bg-{{ $identityColor }}-500 rounded-full flex items-center justify-center ml-1">
+                <a href="{{ route('profile.show') }}" class="w-7 h-7 bg-{{ $identityColor }}-500 hover:opacity-80 rounded-full flex items-center justify-center ml-1 transition-opacity" title="{{ $lang === 'fr' ? 'Mon profil' : 'My Profile' }}">
                     <span class="text-white text-[11px] font-bold">{{ strtoupper(substr($siacUser['name'] ?? 'U', 0, 1)) }}</span>
-                </div>
+                </a>
             </div>
         </header>
 

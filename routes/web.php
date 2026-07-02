@@ -52,6 +52,42 @@ use App\Http\Controllers\ProductActionsWebController;
 Route::post('/galerie/produits/{slug}/sauvegarder', [ProductActionsWebController::class, 'toggleSave'])->name('products.toggle-save');
 Route::post('/galerie/produits/{slug}/signaler', [ProductActionsWebController::class, 'report'])->name('products.report');
 
+Route::post('/galerie/entreprises/{slug}/sauvegarder', function (Request $request, string $slug) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) {
+        return $request->wantsJson()
+            ? response()->json(['message' => 'unauthenticated'], 401)
+            : redirect('/login?next=' . urlencode($request->input('return_to', '/')));
+    }
+
+    $business = DB::table('businesses')->where('slug', $slug)->whereNull('deleted_at')->first();
+    abort_unless((bool) $business, 404);
+
+    $existing = DB::table('saved_businesses')
+        ->where('user_id', $siacUser['id'])
+        ->where('business_id', $business->id)
+        ->exists();
+
+    if ($existing) {
+        DB::table('saved_businesses')->where('user_id', $siacUser['id'])->where('business_id', $business->id)->delete();
+        $saved = false;
+    } else {
+        DB::table('saved_businesses')->insert([
+            'user_id'     => $siacUser['id'],
+            'business_id' => $business->id,
+            'created_at'  => now(),
+        ]);
+        $saved = true;
+    }
+
+    if ($request->wantsJson()) {
+        return response()->json(['saved' => $saved]);
+    }
+
+    return redirect($request->input('return_to', '/'))
+        ->with('success', $saved ? 'Entreprise sauvegardée.' : 'Entreprise retirée des favoris.');
+})->name('businesses.toggle-save');
+
 use App\Http\Controllers\BusinessWebController;
 
 Route::get('/tableau-de-bord/entreprise/creer', [BusinessWebController::class, 'create'])->name('business.create');
@@ -570,6 +606,112 @@ Route::get('/tableau-de-bord/acheteur', function (Request $request) {
 
     return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats'));
 })->name('dashboard.buyer');
+
+// ─────────────────────────────────────────────
+// Saved items (buyer)
+// ─────────────────────────────────────────────
+Route::get('/tableau-de-bord/sauvegardes', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+
+    $savedProductRows = DB::table('saved_products')
+        ->where('user_id', $siacUser['id'])
+        ->orderByDesc('created_at')
+        ->get();
+
+    $savedProducts = \App\Modules\Products\Models\Product::with('images')
+        ->whereIn('id', $savedProductRows->pluck('product_id'))
+        ->whereNull('deleted_at')
+        ->get()
+        ->sortBy(fn ($p) => $savedProductRows->search(fn ($r) => $r->product_id === $p->id))
+        ->values();
+
+    $savedBusinesses = DB::table('saved_businesses')
+        ->join('businesses', 'businesses.id', '=', 'saved_businesses.business_id')
+        ->leftJoin('industries', 'industries.id', '=', 'businesses.industry_id')
+        ->where('saved_businesses.user_id', $siacUser['id'])
+        ->whereNull('businesses.deleted_at')
+        ->select(
+            'businesses.id as business_id',
+            'businesses.name_fr',
+            'businesses.name_en',
+            'businesses.slug',
+            'businesses.logo',
+            'businesses.verification_tier',
+            'industries.name_fr as industry_fr',
+            'industries.name_en as industry_en',
+            'saved_businesses.created_at as saved_at'
+        )
+        ->orderByDesc('saved_businesses.created_at')
+        ->get();
+
+    return view('pages.dashboard.saved', compact('lang', 'siacUser', 'savedProducts', 'savedBusinesses'));
+})->name('saved.index');
+
+// ─────────────────────────────────────────────
+// Profile / settings (all roles)
+// ─────────────────────────────────────────────
+Route::get('/tableau-de-bord/profil', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $user = DB::table('users')->where('id', $siacUser['id'])->whereNull('deleted_at')->first();
+    if (!$user) return redirect('/login');
+
+    return view('pages.dashboard.profile', compact('lang', 'siacUser', 'user'));
+})->name('profile.show');
+
+Route::post('/tableau-de-bord/profil', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $data = $request->validate([
+        'name'                => ['required', 'string', 'max:255'],
+        'language_preference' => ['required', 'in:fr,en'],
+    ]);
+
+    DB::table('users')->where('id', $siacUser['id'])->update([
+        'name'                => $data['name'],
+        'language_preference' => $data['language_preference'],
+        'updated_at'          => now(),
+    ]);
+
+    $siacUser['name'] = $data['name'];
+    session(['siac_user' => $siacUser]);
+
+    return redirect()->route('profile.show')
+        ->with('success', $lang === 'fr' ? 'Profil mis à jour.' : 'Profile updated.')
+        ->cookie('lang', $data['language_preference'], 60 * 24 * 30);
+})->name('profile.update');
+
+Route::post('/tableau-de-bord/profil/mot-de-passe', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $data = $request->validate([
+        'current_password'      => ['required'],
+        'password'              => ['required', 'min:8', 'confirmed'],
+        'password_confirmation' => ['required'],
+    ]);
+
+    $user = DB::table('users')->where('id', $siacUser['id'])->whereNull('deleted_at')->first();
+    if (!$user || !Hash::check($data['current_password'], $user->password)) {
+        return back()->withErrors(['current_password' => $lang === 'fr' ? 'Le mot de passe actuel est incorrect.' : 'Current password is incorrect.']);
+    }
+
+    DB::table('users')->where('id', $siacUser['id'])->update([
+        'password'   => Hash::make($data['password']),
+        'updated_at' => now(),
+    ]);
+
+    return redirect()->route('profile.show')
+        ->with('success', $lang === 'fr' ? 'Mot de passe modifié.' : 'Password changed.');
+})->name('profile.password');
 
 // ─────────────────────────────────────────────
 // Logout
