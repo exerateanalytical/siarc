@@ -522,4 +522,154 @@ class AdminWebController extends Controller
 
         return back()->with('success', $this->lang($request) === 'fr' ? 'Statut du consommateur API mis à jour.' : 'API consumer status updated.');
     }
+
+    // ─────────────────────────────────────────
+    // Platform settings & integrations
+    // ─────────────────────────────────────────
+
+    public function settings(Request $request)
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $all = \App\Modules\Admin\Services\SystemSettings::all();
+
+        // Editable platform settings, grouped; integrations rendered separately
+        $groups = collect($all)
+            ->reject(fn ($row) => $row['group'] === 'integrations')
+            ->map(fn ($row, $key) => $row + ['key' => $key])
+            ->groupBy('group');
+
+        $twilio = \App\Modules\Auth\Services\Otp\TwilioWhatsAppOtpSender::credentials();
+        $mask = fn (?string $v) => $v ? '••••••••' . substr($v, -4) : null;
+
+        return view('pages.dashboard.admin-settings', [
+            'lang'     => $lang,
+            'groups'   => $groups,
+            'twilio'   => [
+                'sid_masked'   => $mask($twilio['sid']),
+                'token_masked' => $mask($twilio['token']),
+                'from'         => $twilio['from'],
+                'configured'   => (bool) ($twilio['sid'] && $twilio['token'] && $twilio['from']),
+                'from_env'     => ! \App\Modules\Admin\Services\SystemSettings::get('twilio.sid') && config('services.twilio.sid'),
+            ],
+        ]);
+    }
+
+    public function updateSettings(Request $request): RedirectResponse
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $posted = (array) $request->input('settings', []);
+        $all    = \App\Modules\Admin\Services\SystemSettings::all();
+
+        $old = $new = [];
+        foreach ($posted as $key => $value) {
+            $row = $all[$key] ?? null;
+            if (! $row || $row['group'] === 'integrations') continue; // only known, non-secret settings
+
+            $value = is_string($value) ? trim($value) : $value;
+            if ($row['type'] === 'boolean') {
+                $value = in_array($value, ['1', 'true', 'on'], true) ? 'true' : 'false';
+            } elseif ($row['type'] === 'integer') {
+                if (! is_numeric($value)) {
+                    return back()->withErrors(['settings' => ($lang === 'fr' ? 'Valeur numérique requise pour ' : 'Numeric value required for ') . $key]);
+                }
+                $value = (string) (int) $value;
+            }
+
+            $current = $row['type'] === 'boolean' ? ($row['value'] ? 'true' : 'false') : (string) ($row['value'] ?? '');
+            if ($current === (string) $value) continue;
+
+            $old[$key] = $row['value'];
+            $new[$key] = $value;
+            \App\Modules\Admin\Services\SystemSettings::set($key, (string) $value, $row['type'], $row['group'], false, $admin['id']);
+        }
+
+        if ($new) {
+            \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'settings.updated', 'system_settings', null, $old, $new);
+        }
+
+        return back()->with('success', $lang === 'fr'
+            ? (count($new) . ' paramètre(s) mis à jour.')
+            : (count($new) . ' setting(s) updated.'));
+    }
+
+    public function saveTwilioSettings(Request $request): RedirectResponse
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $data = $request->validate([
+            'sid'           => ['nullable', 'string', 'max:100'],
+            'token'         => ['nullable', 'string', 'max:100'],
+            'whatsapp_from' => ['nullable', 'string', 'max:30', 'regex:/^\+[0-9]{6,15}$/'],
+        ], [
+            'whatsapp_from.regex' => $lang === 'fr' ? 'Numéro au format international requis (ex. +14155238886).' : 'International format required (e.g. +14155238886).',
+        ]);
+
+        // Blank fields keep their current value (the form shows masked secrets)
+        $changed = [];
+        $set = function (string $key, ?string $value, bool $secret) use ($admin, &$changed) {
+            if ($value === null || $value === '') return;
+            \App\Modules\Admin\Services\SystemSettings::set($key, $value, 'string', 'integrations', $secret, $admin['id']);
+            $changed[] = $key;
+        };
+        $set('twilio.sid', $data['sid'] ?? null, true);
+        $set('twilio.token', $data['token'] ?? null, true);
+        $set('twilio.whatsapp_from', $data['whatsapp_from'] ?? null, false);
+
+        if ($changed) {
+            // Never write credential values to the audit log — only which keys changed
+            \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'settings.twilio_updated', 'system_settings', null, null, ['keys' => $changed]);
+        }
+
+        return back()->with('success', $lang === 'fr' ? 'Identifiants Twilio enregistrés.' : 'Twilio credentials saved.');
+    }
+
+    public function testTwilio(Request $request): RedirectResponse
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $data = $request->validate([
+            'test_phone' => ['required', 'string', 'regex:/^\+[0-9]{6,15}$/'],
+        ], [
+            'test_phone.regex' => $lang === 'fr' ? 'Numéro au format international requis.' : 'International format required.',
+        ]);
+
+        $creds = \App\Modules\Auth\Services\Otp\TwilioWhatsAppOtpSender::credentials();
+        if (! $creds['sid'] || ! $creds['token'] || ! $creds['from']) {
+            return back()->withErrors(['twilio' => $lang === 'fr'
+                ? 'Twilio n\'est pas entièrement configuré (SID, token et numéro expéditeur requis).'
+                : 'Twilio is not fully configured (SID, token and sender number required).']);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::asForm()
+                ->withBasicAuth($creds['sid'], $creds['token'])
+                ->post("https://api.twilio.com/2010-04-01/Accounts/{$creds['sid']}/Messages.json", [
+                    'From' => 'whatsapp:' . $creds['from'],
+                    'To'   => 'whatsapp:' . $data['test_phone'],
+                    'Body' => $lang === 'fr'
+                        ? 'Message de test — Galerie virtuelle de l\'artisanat du Cameroun.'
+                        : 'Test message — Virtual gallery of Cameroonian crafts.',
+                ]);
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            return back()->withErrors(['twilio' => ($lang === 'fr' ? 'Connexion à Twilio impossible : ' : 'Could not reach Twilio: ') . $e->getMessage()]);
+        }
+
+        if ($response->successful()) {
+            return back()->with('success', $lang === 'fr'
+                ? 'Message de test envoyé à ' . $data['test_phone'] . ' (SID: ' . $response->json('sid') . ').'
+                : 'Test message sent to ' . $data['test_phone'] . ' (SID: ' . $response->json('sid') . ').');
+        }
+
+        return back()->withErrors(['twilio' => 'Twilio: ' . ($response->json('message') ?? ('HTTP ' . $response->status()))]);
+    }
 }

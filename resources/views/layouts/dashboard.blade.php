@@ -80,6 +80,12 @@
                 ],
             ],
             [
+                'title' => ['fr' => 'Configuration', 'en' => 'Configuration'],
+                'items' => [
+                    ['admin.settings', 'settings-2', 'Paramètres & Intégrations', 'Settings & Integrations'],
+                ],
+            ],
+            [
                 'title' => ['fr' => 'Compte', 'en' => 'Account'],
                 'items' => [
                     ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],

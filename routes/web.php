@@ -161,6 +161,10 @@ Route::get('/tableau-de-bord/admin/rapports', [AdminWebController::class, 'repor
 Route::get('/tableau-de-bord/admin/moderation', [AdminWebController::class, 'moderation'])->name('admin.moderation');
 Route::get('/tableau-de-bord/admin/api-consommateurs', [AdminWebController::class, 'apiConsumers'])->name('admin.api-consumers');
 Route::post('/tableau-de-bord/admin/api-consommateurs/{id}/statut', [AdminWebController::class, 'updateApiConsumerStatus'])->name('admin.api-consumers.update-status');
+Route::get('/tableau-de-bord/admin/parametres', [AdminWebController::class, 'settings'])->name('admin.settings');
+Route::post('/tableau-de-bord/admin/parametres', [AdminWebController::class, 'updateSettings'])->name('admin.settings.update');
+Route::post('/tableau-de-bord/admin/parametres/twilio', [AdminWebController::class, 'saveTwilioSettings'])->name('admin.settings.twilio');
+Route::post('/tableau-de-bord/admin/parametres/twilio/test', [AdminWebController::class, 'testTwilio'])->name('admin.settings.twilio.test');
 Route::post('/tableau-de-bord/admin/signalements/{id}/traiter', [AdminWebController::class, 'resolveReport'])->name('admin.reports.resolve');
 Route::post('/tableau-de-bord/admin/avis/{id}/supprimer', [AdminWebController::class, 'deleteReview'])->name('admin.reviews.destroy');
 Route::get('/tableau-de-bord/admin/evenements', [AdminWebController::class, 'events'])->name('admin.events');

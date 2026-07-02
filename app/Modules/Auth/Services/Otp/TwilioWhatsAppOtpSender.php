@@ -15,11 +15,19 @@ use Illuminate\Support\Facades\Log;
  */
 class TwilioWhatsAppOtpSender implements OtpSender
 {
+    /** Resolved credentials: admin-saved settings win, .env is the fallback. */
+    public static function credentials(): array
+    {
+        return [
+            'sid'   => \App\Modules\Admin\Services\SystemSettings::get('twilio.sid') ?: config('services.twilio.sid'),
+            'token' => \App\Modules\Admin\Services\SystemSettings::get('twilio.token') ?: config('services.twilio.token'),
+            'from'  => \App\Modules\Admin\Services\SystemSettings::get('twilio.whatsapp_from') ?: config('services.twilio.whatsapp_from'),
+        ];
+    }
+
     public function send(string $destination, string $code, string $lang = 'fr'): void
     {
-        $sid   = config('services.twilio.sid');
-        $token = config('services.twilio.token');
-        $from  = config('services.twilio.whatsapp_from');
+        ['sid' => $sid, 'token' => $token, 'from' => $from] = static::credentials();
 
         if (! $sid || ! $token || ! $from) {
             if (app()->isProduction()) {

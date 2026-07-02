@@ -11,7 +11,8 @@ class AdminSettingsController extends Controller
 {
     public function index(): JsonResponse
     {
-        $settings = DB::table('system_settings')->get(['key', 'value', 'type', 'group']);
+        // Secret rows (encrypted API credentials) never leave the server
+        $settings = DB::table('system_settings')->where('is_secret', false)->get(['key', 'value', 'type', 'group']);
 
         return response()->json(['data' => $settings->groupBy('group')]);
     }
@@ -27,8 +28,11 @@ class AdminSettingsController extends Controller
         foreach ($request->settings as $setting) {
             DB::table('system_settings')
                 ->where('key', $setting['key'])
+                ->where('is_secret', false) // credentials only change via the admin settings page
                 ->update(['value' => $setting['value'], 'updated_at' => now()]);
         }
+
+        \App\Modules\Admin\Services\SystemSettings::flush();
 
         return response()->json(['message' => 'Settings updated.']);
     }
