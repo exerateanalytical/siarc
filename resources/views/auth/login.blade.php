@@ -110,6 +110,13 @@
                 </button>
             </form>
 
+            <button type="button" id="passkey-login"
+                class="w-full mt-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                <i data-lucide="fingerprint" class="w-4 h-4"></i>
+                {{ $lang === 'fr' ? 'Se connecter avec une passkey' : 'Sign in with a passkey' }}
+            </button>
+            <p id="passkey-login-error" class="hidden mt-2 text-xs text-red-600 text-center"></p>
+
             <div class="mt-6 pt-5 border-t border-gray-100 text-center">
                 <p class="text-sm text-gray-500">
                     {{ $lang === 'fr' ? 'Pas encore de compte ?' : 'No account yet?' }}
@@ -132,5 +139,55 @@ function demoLogin(email, password) {
     document.getElementById('password').value = password;
     document.getElementById('login-form').submit();
 }
+
+// ── Passkey login ──
+function pkB64ToBuf(obj) {
+    if (typeof obj === 'string' && obj.startsWith('=?BINARY?B?')) {
+        const bin = atob(obj.substring(11, obj.length - 2));
+        const buf = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+        return buf.buffer;
+    }
+    if (obj && typeof obj === 'object') {
+        for (const k of Object.keys(obj)) obj[k] = pkB64ToBuf(obj[k]);
+    }
+    return obj;
+}
+function pkBufToB64(buf) { return btoa(String.fromCharCode(...new Uint8Array(buf))); }
+function pkBufToB64Url(buf) { return pkBufToB64(buf).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+
+document.getElementById('passkey-login')?.addEventListener('click', async function () {
+    const errBox = document.getElementById('passkey-login-error');
+    errBox.classList.add('hidden');
+    try {
+        if (!window.PublicKeyCredential) throw new Error(@json($lang === 'fr' ? "Votre navigateur ne supporte pas les passkeys." : "Your browser does not support passkeys."));
+
+        const optRes = await fetch(@json(route('webauthn.login.options')), {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': @json(csrf_token()), 'Accept': 'application/json' },
+        });
+        if (!optRes.ok) throw new Error('options: ' + optRes.status);
+        const args = pkB64ToBuf(await optRes.json());
+
+        const cred = await navigator.credentials.get(args);
+
+        const res = await fetch(@json(route('webauthn.login')), {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': @json(csrf_token()), 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: cred.id,
+                clientDataJSON: pkBufToB64(cred.response.clientDataJSON),
+                authenticatorData: pkBufToB64(cred.response.authenticatorData),
+                signature: pkBufToB64(cred.response.signature),
+            }),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(j.message || ('login: ' + res.status));
+        window.location.href = j.redirect || '/tableau-de-bord';
+    } catch (e) {
+        errBox.textContent = e.message || e;
+        errBox.classList.remove('hidden');
+    }
+});
 </script>
 @endsection

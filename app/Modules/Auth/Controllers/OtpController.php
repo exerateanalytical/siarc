@@ -22,14 +22,18 @@ class OtpController extends Controller
             ->orWhere('phone', $request->identifier)
             ->first();
 
-        $otp = $this->otpService->generate(
+        $channel = str_contains($request->identifier, '@') ? 'email' : 'sms';
+
+        $sent = $this->otpService->send(
             $request->identifier,
             $request->type,
+            $channel,
             $user?->id
         );
 
-        // In production: dispatch email/SMS job. For now log.
-        logger("OTP for {$request->identifier}: {$otp->code}");
+        if (! $sent) {
+            return response()->json(['message' => 'Too many codes requested. Try again later.'], 429);
+        }
 
         return response()->json(['message' => 'OTP sent.']);
     }

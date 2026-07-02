@@ -23,6 +23,38 @@ function requireAuth(Request $request)
     return null;
 }
 
+/**
+ * Establish the authenticated web session for a users row.
+ * Single place where siac_user is written after a successful factor check —
+ * regenerates the session id to prevent session fixation.
+ */
+function establishSiacSession(object $user, Request $request): void
+{
+    $siacRole = DB::table('model_has_roles')
+        ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+        ->where('model_has_roles.model_id', $user->id)
+        ->orderByRaw("FIELD(roles.name,'super_admin','admin','ministry','technical_reviewer','regional_rep','moderator','business_owner') DESC")
+        ->value('roles.name');
+
+    $displayName = $user->name ?? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+
+    DB::table('users')->where('id', $user->id)->update([
+        'last_login_at' => now(),
+        'last_login_ip' => $request->ip(),
+        'updated_at'    => now(),
+    ]);
+
+    $request->session()->regenerate();
+
+    session(['siac_user' => [
+        'id'       => $user->id,
+        'name'     => $displayName,
+        'email'    => $user->email,
+        'role'     => $siacRole,
+        'is_admin' => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
+    ]]);
+}
+
 // ─────────────────────────────────────────────
 // SIAC Platform — API landing
 // ─────────────────────────────────────────────
@@ -314,12 +346,23 @@ Route::post('/login', function (Request $request) {
         'password' => ['required'],
     ]);
 
+    $email      = strtolower(trim($data['email']));
+    $limiterKey = 'login:' . sha1($email . '|' . $request->ip());
+
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($limiterKey, 5)) {
+        $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($limiterKey);
+        return back()->withErrors(['email' => $request->lang === 'en'
+            ? "Too many attempts. Try again in {$seconds}s."
+            : "Trop de tentatives. Réessayez dans {$seconds}s."])->withInput();
+    }
+
     $user = DB::table('users')
         ->whereNull('deleted_at')
-        ->where('email', strtolower(trim($data['email'])))
+        ->where('email', $email)
         ->first();
 
     if (!$user || !Hash::check($data['password'], $user->password)) {
+        \Illuminate\Support\Facades\RateLimiter::hit($limiterKey, 60);
         return back()->withErrors(['email' => $request->lang === 'en' ? 'Email or password is incorrect.' : 'Email ou mot de passe incorrect.'])->withInput();
     }
 
@@ -327,33 +370,121 @@ Route::post('/login', function (Request $request) {
         return back()->withErrors(['email' => 'Compte suspendu.'])->withInput();
     }
 
-    DB::table('users')->where('id', $user->id)->update([
-        'last_login_at' => now(),
-        'last_login_ip' => $request->ip(),
-        'updated_at'    => now(),
-    ]);
-
-    // Detect SIAC role
-    $siacRole = DB::table('model_has_roles')
-        ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-        ->where('model_has_roles.model_id', $user->id)
-        ->orderByRaw("FIELD(roles.name,'super_admin','admin','ministry','technical_reviewer','regional_rep','moderator','business_owner') DESC")
-        ->value('roles.name');
-
-    $displayName = $user->name ?? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
-
-    // Store SIAC session
-    session(['siac_user' => [
-        'id'       => $user->id,
-        'name'     => $displayName,
-        'email'    => $user->email,
-        'role'     => $siacRole,
-        'is_admin' => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
-    ]]);
+    \Illuminate\Support\Facades\RateLimiter::clear($limiterKey);
 
     $next = $request->get('next', '/tableau-de-bord');
+
+    // Second factor required? Password alone no longer grants a session.
+    $hasTotp    = $user->two_factor_confirmed_at && $user->two_factor_secret;
+    $hasChannel = (bool) $user->two_factor_channel;
+    if ($hasTotp || $hasChannel) {
+        session(['2fa_pending' => ['user_id' => $user->id, 'next' => $next]]);
+        return redirect()->route('login.challenge');
+    }
+
+    establishSiacSession($user, $request);
+
     return redirect($next);
 })->name('login.post');
+
+// ─────────────────────────────────────────────
+// Two-factor challenge (after password, before session)
+// ─────────────────────────────────────────────
+Route::get('/login/verification', function (Request $request) {
+    $pending = session('2fa_pending');
+    if (!$pending) return redirect('/login');
+
+    $user = DB::table('users')->where('id', $pending['user_id'])->whereNull('deleted_at')->first();
+    if (!$user) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+
+    return view('auth.two-factor-challenge', [
+        'lang'       => $lang,
+        'hasTotp'    => (bool) ($user->two_factor_confirmed_at && $user->two_factor_secret),
+        'channel'    => $user->two_factor_channel,
+        'maskedDest' => $user->two_factor_channel === 'email'
+            ? preg_replace('/(?<=.).(?=[^@]*@)/', '•', $user->email)
+            : ($user->phone ? substr($user->phone, 0, 4) . '••••' . substr($user->phone, -2) : null),
+    ]);
+})->name('login.challenge');
+
+Route::post('/login/verification/send', function (Request $request) {
+    $pending = session('2fa_pending');
+    if (!$pending) return redirect('/login');
+
+    $user = DB::table('users')->where('id', $pending['user_id'])->whereNull('deleted_at')->first();
+    if (!$user || !$user->two_factor_channel) return redirect('/login');
+
+    $lang       = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $identifier = $user->two_factor_channel === 'email' ? $user->email : (string) $user->phone;
+
+    $sent = app(\App\Modules\Auth\Services\OtpService::class)
+        ->send($identifier, 'login', $user->two_factor_channel, $user->id, $lang);
+
+    return back()->with(
+        $sent ? 'success' : 'error',
+        $sent
+            ? ($lang === 'fr' ? 'Code envoyé.' : 'Code sent.')
+            : ($lang === 'fr' ? 'Trop de codes demandés. Réessayez plus tard.' : 'Too many codes requested. Try again later.')
+    );
+})->name('login.challenge.send');
+
+Route::post('/login/verification', function (Request $request) {
+    $pending = session('2fa_pending');
+    if (!$pending) return redirect('/login');
+
+    $user = DB::table('users')->where('id', $pending['user_id'])->whereNull('deleted_at')->first();
+    if (!$user) return redirect('/login');
+
+    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $data = $request->validate([
+        'code'   => ['required', 'string', 'max:20'],
+        'method' => ['required', 'in:totp,channel,recovery'],
+    ]);
+
+    $limiterKey = '2fa:' . sha1($user->id . '|' . $request->ip());
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($limiterKey, 5)) {
+        $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($limiterKey);
+        return back()->withErrors(['code' => $lang === 'fr' ? "Trop de tentatives. Réessayez dans {$seconds}s." : "Too many attempts. Try again in {$seconds}s."]);
+    }
+
+    $ok = false;
+
+    if ($data['method'] === 'totp' && $user->two_factor_secret && $user->two_factor_confirmed_at) {
+        $secret = \Illuminate\Support\Facades\Crypt::decryptString($user->two_factor_secret);
+        $ok = app(\App\Modules\Auth\Services\TotpService::class)->verify($secret, $data['code']);
+    } elseif ($data['method'] === 'channel' && $user->two_factor_channel) {
+        $identifier = $user->two_factor_channel === 'email' ? $user->email : (string) $user->phone;
+        $ok = app(\App\Modules\Auth\Services\OtpService::class)->verify($identifier, $data['code'], 'login');
+    } elseif ($data['method'] === 'recovery' && $user->two_factor_recovery_codes) {
+        try {
+            $hashes = json_decode(\Illuminate\Support\Facades\Crypt::decryptString($user->two_factor_recovery_codes), true) ?: [];
+            $needle = hash('sha256', strtoupper(trim($data['code'])));
+            $idx = array_search($needle, $hashes, true);
+            if ($idx !== false) {
+                unset($hashes[$idx]); // recovery codes are single-use
+                DB::table('users')->where('id', $user->id)->update([
+                    'two_factor_recovery_codes' => \Illuminate\Support\Facades\Crypt::encryptString(json_encode(array_values($hashes))),
+                    'updated_at'                => now(),
+                ]);
+                $ok = true;
+            }
+        } catch (\Throwable $e) {
+        }
+    }
+
+    if (!$ok) {
+        \Illuminate\Support\Facades\RateLimiter::hit($limiterKey, 60);
+        return back()->withErrors(['code' => $lang === 'fr' ? 'Code invalide.' : 'Invalid code.']);
+    }
+
+    \Illuminate\Support\Facades\RateLimiter::clear($limiterKey);
+    session()->forget('2fa_pending');
+    establishSiacSession($user, $request);
+
+    return redirect($pending['next'] ?? '/tableau-de-bord');
+})->name('login.challenge.verify');
 
 // ─────────────────────────────────────────────
 // Register (legacy — kept for backward compat)
@@ -701,6 +832,27 @@ Route::post('/tableau-de-bord/notifications/preferences', function (Request $req
     return redirect()->route('notifications.settings')
         ->with('success', $lang === 'fr' ? 'Préférences enregistrées.' : 'Preferences saved.');
 })->name('notifications.settings.save');
+
+// ─────────────────────────────────────────────
+// Account security (2FA, OTP channels, passkeys)
+// ─────────────────────────────────────────────
+use App\Http\Controllers\SecurityWebController;
+
+Route::get('/tableau-de-bord/securite', [SecurityWebController::class, 'show'])->name('security.show');
+Route::post('/tableau-de-bord/securite/totp/activer', [SecurityWebController::class, 'startTotp'])->name('security.totp.start');
+Route::post('/tableau-de-bord/securite/totp/confirmer', [SecurityWebController::class, 'confirmTotp'])->name('security.totp.confirm');
+Route::post('/tableau-de-bord/securite/totp/desactiver', [SecurityWebController::class, 'disableTotp'])->name('security.totp.disable');
+Route::post('/tableau-de-bord/securite/recuperation/regenerer', [SecurityWebController::class, 'regenerateRecoveryCodes'])->name('security.recovery.regenerate');
+Route::post('/tableau-de-bord/securite/canal/activer', [SecurityWebController::class, 'startChannel'])->name('security.channel.start');
+Route::post('/tableau-de-bord/securite/canal/confirmer', [SecurityWebController::class, 'confirmChannel'])->name('security.channel.confirm');
+Route::post('/tableau-de-bord/securite/canal/desactiver', [SecurityWebController::class, 'disableChannel'])->name('security.channel.disable');
+Route::post('/tableau-de-bord/securite/passkeys/options', [SecurityWebController::class, 'passkeyRegisterOptions'])->name('security.passkeys.options');
+Route::post('/tableau-de-bord/securite/passkeys', [SecurityWebController::class, 'passkeyRegister'])->name('security.passkeys.register');
+Route::post('/tableau-de-bord/securite/passkeys/{id}/supprimer', [SecurityWebController::class, 'passkeyDelete'])->name('security.passkeys.delete');
+
+// Passkey login (guest)
+Route::post('/webauthn/login/options', [SecurityWebController::class, 'passkeyLoginOptions'])->name('webauthn.login.options');
+Route::post('/webauthn/login', [SecurityWebController::class, 'passkeyLogin'])->name('webauthn.login');
 
 // ─────────────────────────────────────────────
 // Profile / settings (all roles)

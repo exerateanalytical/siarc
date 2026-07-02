@@ -3,25 +3,59 @@
 namespace App\Modules\Auth\Services;
 
 use App\Modules\Auth\Models\OtpVerification;
-use App\Modules\Auth\Models\User;
+use App\Modules\Auth\Services\Otp\LogOtpSender;
+use App\Modules\Auth\Services\Otp\OtpSender;
+use Illuminate\Support\Facades\RateLimiter;
 
 class OtpService
 {
-    public function generate(string $identifier, string $type, ?string $userId = null): OtpVerification
+    private const MAX_ATTEMPTS  = 5;
+    private const TTL_MINUTES   = 10;
+    private const SENDS_PER_10M = 3;
+
+    /**
+     * Generate a code, store its hash, and dispatch it over the channel.
+     * Returns false when the per-identifier send limit is hit.
+     *
+     * @param string $channel email | sms | whatsapp
+     */
+    public function send(string $identifier, string $type, string $channel, ?string $userId = null, string $lang = 'fr'): bool
     {
-        // Invalidate any existing unexpired OTP for this identifier+type
+        $limiterKey = 'otp-send:' . sha1($identifier . '|' . $type);
+        if (RateLimiter::tooManyAttempts($limiterKey, self::SENDS_PER_10M)) {
+            return false;
+        }
+        RateLimiter::hit($limiterKey, 600);
+
+        $code = $this->generate($identifier, $type, $userId, $channel);
+        $this->sender($channel)->send($identifier, $code, $lang);
+
+        return true;
+    }
+
+    /**
+     * Create the OTP row (hashed) and return the PLAIN code — callers
+     * that need custom delivery use this; the plain code is never stored.
+     */
+    public function generate(string $identifier, string $type, ?string $userId = null, ?string $channel = null): string
+    {
         OtpVerification::where('identifier', $identifier)
             ->where('type', $type)
             ->whereNull('verified_at')
             ->delete();
 
-        return OtpVerification::create([
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        OtpVerification::create([
             'user_id'    => $userId,
             'identifier' => $identifier,
-            'code'       => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
+            'code'       => hash('sha256', $code),
             'type'       => $type,
-            'expires_at' => now()->addMinutes(10),
+            'channel'    => $channel,
+            'expires_at' => now()->addMinutes(self::TTL_MINUTES),
         ]);
+
+        return $code;
     }
 
     public function verify(string $identifier, string $code, string $type): bool
@@ -29,25 +63,29 @@ class OtpService
         $otp = OtpVerification::where('identifier', $identifier)
             ->where('type', $type)
             ->whereNull('verified_at')
-            ->latest()
+            ->latest('id')
             ->first();
 
-        if (! $otp || $otp->isExpired()) {
+        if (! $otp || $otp->isExpired() || $otp->attempt_count >= self::MAX_ATTEMPTS) {
             return false;
         }
 
-        $otp->increment('attempt_count');
-
-        if ($otp->attempt_count > 5) {
-            return false;
-        }
-
-        if ($otp->code !== $code) {
+        $code = preg_replace('/\D/', '', $code);
+        if (! hash_equals($otp->code, hash('sha256', $code))) {
+            $otp->increment('attempt_count');
             return false;
         }
 
         $otp->update(['verified_at' => now()]);
 
         return true;
+    }
+
+    public function sender(string $channel): OtpSender
+    {
+        $class = config("otp.senders.{$channel}");
+        abort_unless($class && class_exists($class), 500, "No OTP sender configured for channel [{$channel}]");
+
+        return $class === LogOtpSender::class ? new $class($channel) : app($class);
     }
 }

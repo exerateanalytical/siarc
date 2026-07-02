@@ -16,6 +16,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^11.3",
         "laravel/tinker": "^3.0",
+        "lbuchs/webauthn": "^2.2",
         "league/flysystem-aws-s3-v3": "^3.0",
         "meilisearch/meilisearch-php": "^1.16",
         "sentry/sentry-laravel": "^4.26",

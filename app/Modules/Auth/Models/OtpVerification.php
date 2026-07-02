@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class OtpVerification extends Model
 {
     protected $fillable = [
-        'user_id', 'identifier', 'code', 'type',
+        'user_id', 'identifier', 'code', 'type', 'channel',
         'expires_at', 'verified_at', 'attempt_count',
     ];
+
+    protected $hidden = ['code'];
 
     protected function casts(): array
     {

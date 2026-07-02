@@ -83,6 +83,7 @@
                 'title' => ['fr' => 'Compte', 'en' => 'Account'],
                 'items' => [
                     ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
+                    ['security.show', 'shield-check', 'Sécurité', 'Security'],
                 ],
             ],
         ];
@@ -98,6 +99,7 @@
                     ['events.index', 'calendar-days', 'Événements', 'Events'],
                     ['support.index', 'life-buoy', 'Support', 'Support'],
                     ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
+                    ['security.show', 'shield-check', 'Sécurité', 'Security'],
                 ],
             ],
         ];
@@ -113,6 +115,7 @@
                     ['events.index', 'calendar-days', 'Événements', 'Events'],
                     ['support.index', 'life-buoy', 'Support', 'Support'],
                     ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
+                    ['security.show', 'shield-check', 'Sécurité', 'Security'],
                 ],
             ],
         ];
