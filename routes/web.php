@@ -11,13 +11,13 @@ use Illuminate\Support\Str;
 // ─────────────────────────────────────────────
 function webUser(): ?object
 {
-    $u = session('auth_user');
+    $u = session('siac_user');
     return $u ? (object) $u : null;
 }
 
 function requireAuth(Request $request)
 {
-    if (!session('auth_user')) {
+    if (!session('siac_user')) {
         return redirect('/login?next=' . urlencode($request->fullUrl()));
     }
     return null;
@@ -163,13 +163,13 @@ Route::get('/lang/{locale}', function (string $locale, Request $request) {
 // Forgot / Reset password
 // ─────────────────────────────────────────────
 Route::get('/forgot-password', function (Request $request) {
-    if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
+    if (session('siac_user')) return redirect('/tableau-de-bord');
     $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : (in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr');
     return view('auth.forgot-password', compact('lang'));
 })->name('password.request');
 
 Route::post('/forgot-password', function (Request $request) {
-    if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
+    if (session('siac_user')) return redirect('/tableau-de-bord');
 
     $request->validate(['email' => ['required', 'email']]);
     $email = strtolower(trim($request->input('email')));
@@ -214,7 +214,7 @@ Route::post('/forgot-password', function (Request $request) {
 })->name('password.email');
 
 Route::get('/reset-password/{token}', function (Request $request, string $token) {
-    if (session('auth_user') || session('siac_user')) return redirect('/tableau-de-bord');
+    if (session('siac_user')) return redirect('/tableau-de-bord');
 
     $email = $request->query('email', '');
     $row   = DB::table('password_reset_tokens')->where('email', strtolower($email))->first();
@@ -310,27 +310,6 @@ Route::post('/login', function (Request $request) {
         'is_admin' => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
     ]]);
 
-    // Also store legacy session for backward compat with other routes
-    session(['auth_user' => [
-        'id'                   => $user->id,
-        'first_name'           => $user->first_name ?? $displayName,
-        'last_name'            => $user->last_name ?? '',
-        'email'                => $user->email,
-        'status'               => $user->status ?? 'active',
-        'locale'               => $user->locale ?? $user->language_preference ?? 'fr',
-        'avatar_url'           => $user->avatar ?? $user->avatar_url ?? null,
-        'user_type'            => $user->user_type ?? 'buyer',
-        'onboarding_completed' => (bool) ($user->onboarding_completed ?? true),
-        'is_admin'             => in_array($siacRole, ['super_admin', 'admin', 'moderator']),
-    ]]);
-
-    // All SIAC platform users go to SIAC dashboard
-    // (detect SIAC user by presence of 'name' column and absence of legacy first_name)
-    $isSiacUser = !empty($user->name) && empty($user->first_name);
-    if ($isSiacUser || $siacRole) {
-        return redirect('/tableau-de-bord');
-    }
-
     $next = $request->get('next', '/tableau-de-bord');
     return redirect($next);
 })->name('login.post');
@@ -352,31 +331,29 @@ Route::post('/register', function (Request $request) {
         'phone'                 => ['nullable', 'string', 'max:30'],
         'password'              => ['required', 'min:8', 'confirmed'],
         'password_confirmation' => ['required'],
-        'user_type'             => ['nullable', 'string', 'in:investor,job_seeker,company_owner,developer'],
     ]);
 
-    $data['email'] = strtolower(trim($data['email']));
+    $email = strtolower(trim($data['email']));
+    $name  = trim($data['first_name'] . ' ' . $data['last_name']);
 
-    if (DB::table('users')->where('email', $data['email'])->exists()) {
+    if (DB::table('users')->where('email', $email)->exists()) {
         return back()->withErrors(['email' => 'An account with this email already exists. Try logging in instead.'])->withInput();
     }
 
-    $userType = $data['user_type'] ?? 'investor';
     $userId = Str::uuid()->toString();
     try {
         DB::table('users')->insert([
-            'id'                   => $userId,
-            'first_name'           => $data['first_name'],
-            'last_name'            => $data['last_name'],
-            'email'                => $data['email'],
-            'phone'                => $data['phone'] ?? null,
-            'password'             => Hash::make($data['password']),
-            'status'               => 'active',
-            'locale'               => 'fr',
-            'user_type'            => $userType,
-            'onboarding_completed' => 0,
-            'created_at'           => now(),
-            'updated_at'           => now(),
+            'id'                  => $userId,
+            'name'                => $name,
+            'email'               => $email,
+            'phone'               => $data['phone'] ?? null,
+            'password'            => Hash::make($data['password']),
+            'status'              => 'active',
+            'language_preference' => 'fr',
+            'is_email_verified'   => 0,
+            'is_phone_verified'   => 0,
+            'created_at'          => now(),
+            'updated_at'          => now(),
         ]);
     } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
         // Race condition (e.g. double form submit) — the email was taken between
@@ -384,20 +361,15 @@ Route::post('/register', function (Request $request) {
         return back()->withErrors(['email' => 'An account with this email already exists. Try logging in instead.'])->withInput();
     }
 
-    session(['auth_user' => [
-        'id'                   => $userId,
-        'first_name'           => $data['first_name'],
-        'last_name'            => $data['last_name'],
-        'email'                => $data['email'],
-        'status'               => 'active',
-        'locale'               => 'fr',
-        'avatar_url'           => null,
-        'user_type'            => $userType,
-        'onboarding_completed' => 0,
-        'is_admin'             => 0,
+    session(['siac_user' => [
+        'id'       => $userId,
+        'name'     => $name,
+        'email'    => $email,
+        'role'     => null,
+        'is_admin' => false,
     ]]);
 
-    return redirect('/welcome');
+    return redirect('/tableau-de-bord');
 })->name('register.post');
 
 // ─────────────────────────────────────────────
@@ -460,18 +432,6 @@ Route::post('/inscription', function (Request $request) {
         'name'     => $data['name'],
         'email'    => $email,
         'role'     => $role === 'business_owner' ? 'business_owner' : null,
-        'is_admin' => false,
-    ]]);
-    session(['auth_user' => [
-        'id'       => $userId,
-        'first_name' => $data['name'],
-        'last_name'  => '',
-        'email'    => $email,
-        'status'   => 'active',
-        'locale'   => $lang,
-        'avatar_url' => null,
-        'user_type' => $role === 'business_owner' ? 'company_owner' : 'investor',
-        'onboarding_completed' => true,
         'is_admin' => false,
     ]]);
 
@@ -615,43 +575,9 @@ Route::get('/tableau-de-bord/acheteur', function (Request $request) {
 // Logout
 // ─────────────────────────────────────────────
 Route::post('/logout', function () {
-    session()->forget(['auth_user', 'siac_user', 'lang']);
+    session()->flush();
     return redirect('/');
 })->name('logout');
-
-// ─────────────────────────────────────────────
-// Onboarding welcome
-// ─────────────────────────────────────────────
-Route::get('/welcome', function (Request $request) {
-    if ($r = requireAuth($request)) return $r;
-    return view('welcome');
-})->name('welcome');
-
-Route::post('/welcome', function (Request $request) {
-    if ($r = requireAuth($request)) return $r;
-    $user = webUser();
-    $validTypes = ['investor', 'job_seeker', 'company_owner', 'developer'];
-    $userType = in_array($request->input('user_type'), $validTypes) ? $request->input('user_type') : 'investor';
-
-    DB::table('users')->where('id', $user->id)->update([
-        'user_type'            => $userType,
-        'onboarding_completed' => 1,
-        'updated_at'           => now(),
-    ]);
-
-    $sessionUser = session('auth_user', []);
-    $sessionUser['user_type']            = $userType;
-    $sessionUser['onboarding_completed'] = true;
-    session(['auth_user' => $sessionUser]);
-
-    $destinations = [
-        'company_owner' => '/tableau-de-bord',
-        'developer'     => '/developer',
-    ];
-
-    return redirect($destinations[$userType] ?? '/tableau-de-bord')
-        ->with('success', 'Welcome aboard! Here\'s where to start.');
-})->name('welcome.post');
 
 // ─────────────────────────────────────────────
 // Static Pages
@@ -672,25 +598,58 @@ Route::get('/privacy', function (Request $request) {
 // ─────────────────────────────────────────────
 // Developer / API Keys
 // ─────────────────────────────────────────────
+// A web user's API consumer record is matched by email (api_consumers has no user_id column).
+function developerConsumer(object $user, bool $createIfMissing = false): ?object
+{
+    $consumer = DB::table('api_consumers')->where('email', $user->email)->first();
+    if (!$consumer && $createIfMissing) {
+        $id = DB::table('api_consumers')->insertGetId([
+            'uuid'        => Str::uuid()->toString(),
+            'name'        => $user->name,
+            'email'       => $user->email,
+            'status'      => 'approved',
+            'approved_at' => now(),
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
+        $consumer = DB::table('api_consumers')->where('id', $id)->first();
+    }
+    return $consumer;
+}
+
 Route::get('/developer', function (Request $request) {
     if ($r = requireAuth($request)) return $r;
-    $user    = webUser();
-    $keys     = DB::table('api_keys')->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+    $consumer = developerConsumer(webUser());
+    $keys     = $consumer
+        ? DB::table('api_keys')->where('consumer_id', $consumer->id)->orderBy('created_at', 'desc')->get()
+        : collect();
     $keyCount = $keys->where('is_active', 1)->count();
     return view('developer', compact('keys', 'keyCount'));
 })->name('developer');
 
 Route::post('/developer/keys', function (Request $request) {
     if ($r = requireAuth($request)) return $r;
-    $user  = webUser();
-    $data  = $request->validate(['name' => 'required|string|max:60']);
-    $plain = 'cc_' . Str::random(40);
-    DB::table('api_keys')->insert(['id' => Str::uuid()->toString(), 'user_id' => $user->id, 'name' => $data['name'], 'key' => hash('sha256', $plain), 'key_prefix' => substr($plain, 0, 8), 'is_active' => 1, 'created_at' => now(), 'updated_at' => now()]);
+    $data     = $request->validate(['name' => 'required|string|max:60']);
+    $consumer = developerConsumer(webUser(), createIfMissing: true);
+    $plain    = 'siac_' . Str::random(40);
+    DB::table('api_keys')->insert([
+        'consumer_id'           => $consumer->id,
+        'name'                  => $data['name'],
+        'key_hash'              => hash('sha256', $plain),
+        'key_prefix'            => substr($plain, 0, 8),
+        'rate_limit_per_minute' => 60,
+        'is_active'             => 1,
+        'created_at'            => now(),
+        'updated_at'            => now(),
+    ]);
     return back()->with('success', 'API key created: ' . $plain . ' — copy it now, it will not be shown again.');
 })->name('developer.keys.create');
 
 Route::post('/developer/keys/{id}/revoke', function (Request $request, $id) {
     if ($r = requireAuth($request)) return $r;
-    DB::table('api_keys')->where('id', $id)->where('user_id', webUser()->id)->update(['is_active' => 0, 'updated_at' => now()]);
+    $consumer = developerConsumer(webUser());
+    if ($consumer) {
+        DB::table('api_keys')->where('id', $id)->where('consumer_id', $consumer->id)->update(['is_active' => 0, 'updated_at' => now()]);
+    }
     return back()->with('success', 'API key revoked.');
 })->name('developer.keys.revoke');
