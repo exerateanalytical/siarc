@@ -3,7 +3,7 @@
 @php $pageTitle = $lang === 'fr' ? 'Messagerie' : 'Messages'; @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl">
 
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         @forelse($conversations as $conv)

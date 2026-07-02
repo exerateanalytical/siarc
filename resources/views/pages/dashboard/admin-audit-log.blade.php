@@ -23,7 +23,7 @@ $actionLabels = [
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl">
 
     <form method="GET" class="flex gap-2 mb-4">
         <input name="action" value="{{ request('action') }}" placeholder="{{ $lang === 'fr' ? 'Filtrer par action (ex: verification)...' : 'Filter by action (e.g. verification)...' }}" class="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">

@@ -3,7 +3,7 @@
 @php $pageTitle = $lang === 'fr' ? 'Administration' : 'Admin Dashboard'; @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl">
 
     {{-- Stats --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">

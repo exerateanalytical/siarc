@@ -11,7 +11,7 @@ $statusLabels = [
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl">
 
     <div class="flex items-center gap-2 mb-4">
         <a href="{{ route('admin.businesses') }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100">

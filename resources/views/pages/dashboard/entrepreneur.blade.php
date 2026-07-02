@@ -3,7 +3,7 @@
 @php $pageTitle = $lang === 'fr' ? 'Mon espace entrepreneur' : 'My Business Space'; @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl">
 
     @if($business)
 

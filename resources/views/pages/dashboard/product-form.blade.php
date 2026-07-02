@@ -9,7 +9,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl">
 
     @if($isEdit)
     <div class="flex justify-end mb-3">

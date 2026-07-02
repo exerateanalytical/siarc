@@ -11,7 +11,7 @@ $actionMeta = [
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl">
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
         @forelse($decisions as $log)
         @php $meta = $actionMeta[$log->action] ?? ['icon' => 'activity', 'color' => 'gray', 'label' => ['fr' => $log->action, 'en' => $log->action]]; @endphp

@@ -13,7 +13,7 @@ $docTypeLabels = [
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl">
 
     <div class="flex items-center gap-2 mb-6">
         <h2 class="text-base font-semibold text-gray-900">{{ $lang === 'fr' ? 'File d\'attente' : 'Queue' }}</h2>

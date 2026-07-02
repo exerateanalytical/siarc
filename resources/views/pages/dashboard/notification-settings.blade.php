@@ -14,7 +14,7 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl">
 
     @if(session('success'))
         <div class="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">

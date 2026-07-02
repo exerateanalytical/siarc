@@ -5,7 +5,7 @@ $pageTitle = ($lang === 'fr' ? 'Représentant régional' : 'Regional Representat
 @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl">
 
     @if(! ($region ?? null))
     <div class="bg-amber-50 border border-amber-200 text-amber-700 text-sm rounded-xl p-5 flex items-start gap-2">

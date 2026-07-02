@@ -12,7 +12,7 @@ $monthLabels = [
 @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl">
 
     <div class="bg-forest-50 border border-forest-100 text-forest-700 text-xs rounded-lg p-3 mb-5 flex items-start gap-2">
         <i data-lucide="eye" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>

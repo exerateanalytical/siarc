@@ -12,7 +12,7 @@ $typeIcons = [
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl">
 
     <div class="flex justify-end mb-3">
         <a href="{{ route('notifications.settings') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-forest-600 transition-colors">

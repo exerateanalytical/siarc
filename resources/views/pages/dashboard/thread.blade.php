@@ -9,7 +9,7 @@ $pageTitle = $lang === 'fr' ? 'Messagerie' : 'Messages';
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl">
 
     <div class="flex items-center gap-2 mb-4">
         <a href="{{ route('messages.inbox') }}" class="p-2 -ml-2 rounded-lg hover:bg-gray-100 lg:hidden">

@@ -15,7 +15,7 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
 @endphp
 
 @section('content')
-<div class="max-w-2xl mx-auto space-y-6">
+<div class="max-w-2xl space-y-6">
 
     @if(session('success'))
         <div class="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">

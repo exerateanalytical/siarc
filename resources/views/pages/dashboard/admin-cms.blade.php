@@ -3,7 +3,7 @@
 @php $pageTitle = $lang === 'fr' ? 'Pages CMS' : 'CMS Pages'; @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl">
 
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">

@@ -3,7 +3,7 @@
 @php $pageTitle = $lang === 'fr' ? 'Mon espace acheteur' : 'My Buyer Space'; @endphp
 
 @section('content')
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl">
 
     {{-- Hero search banner --}}
     <div class="bg-forest-600 rounded-2xl p-5 mb-5 text-white">
