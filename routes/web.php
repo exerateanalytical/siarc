@@ -996,8 +996,9 @@ Route::post('/logout', function () {
 // Static Pages
 // ─────────────────────────────────────────────
 Route::get('/about', function (Request $request) {
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
-    return view('about', compact('lang'));
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    return response(view('about', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
 })->name('about');
 Route::get('/terms', function (Request $request) {
     $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
