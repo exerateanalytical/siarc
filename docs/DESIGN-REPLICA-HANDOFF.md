@@ -446,6 +446,23 @@ business.create since buyers have no shop). Design statics: KPIs 28/+18%,
   window.print() (@page landscape, chrome hidden). Reachable from the seller
   dashboard header profile dropdown ("Mon certificat d'adhésion").
 
+**Onboarding wizard** (added 2026-07-03): `onboardine page.png` [sic] (864×1821,
+step 1) + `onboardding step 2.png` [sic] (1024×1536, step 2) → NEW public route
+`/creer-mon-compte` (`onboarding`), standalone `pages/onboarding.blade.php`.
+Both steps live in one page with client-side switching: step 1 = account-type
+cards (Artisan Individuel / Coopérative / PME / Grande Entreprise with colored
+check lists, "Pourquoi devenir membre ?" strip with `ob-vases.png`, avantages +
+security bands shown ONLY on step 1), step 2 = the identity form with the
+design's demo values (Aristide Ndop etc.), live photo-upload preview. The
+10-step sidebar mirrors the design: steps 1–2 clickable, 3–10 are plain
+progress items (their designs don't exist yet); after step 1 the sidebar shows
+the chosen type under "Type de compte" and the bottom card swaps
+"Sécurisé & Vérifié" → "Sécurisé & Confidentiel" (per the two PNGs).
+"Suivant" exits into the REAL flow: guests → `/inscription`, logged-in →
+`business.create`. When steps 3–10 designs arrive, extend the same page.
+Assets: `ob-type-1..4`, `ob-adv-1..6`, `ob-sec-1..4`, `ob-vases`, `ob-photo`,
+`ob-flag`, `ob-help`, `ob-shield`.
+
 Remember SetResolution(96,96) before GDI+ crops if new designs arrive.
 
 ## The replication process (repeat for each new page)

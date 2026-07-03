@@ -1031,6 +1031,11 @@ Route::get('/certificat-adhesion', function (Request $request) {
 
     return view('pages.membership-certificate', compact('lang', 'siacUser', 'business'));
 })->name('membership.certificate');
+Route::get('/creer-mon-compte', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    return response(view('pages.onboarding', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
+})->name('onboarding');
 
 Route::post('/contact', function (Request $request) {
     $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang')
