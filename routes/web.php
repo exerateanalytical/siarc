@@ -783,6 +783,8 @@ foreach ([
     '/tableau-de-bord/propositions/comparaison' => ['quotes.compare',  'pages.quotes.compare'],
     '/tableau-de-bord/commandes/bon'            => ['quotes.po',       'pages.quotes.po'],
     '/tableau-de-bord/propositions/apercu'      => ['quotes.proposal', 'pages.quotes.proposal'],
+    '/tableau-de-bord/propositions/articles'    => ['quotes.builder',  'pages.quotes.builder'],
+    '/tableau-de-bord/factures/detail'          => ['quotes.invoice',  'pages.quotes.invoice'],
 ] as $qfPath => [$qfName, $qfView]) {
     Route::get($qfPath, function (Request $request) use ($qfPath, $qfView) {
         $siacUser = session('siac_user');
