@@ -632,6 +632,34 @@ data verbatim (`demand.png` is a duplicate of the RFQ wizard design):
 
 Remember SetResolution(96,96) before GDI+ crops if new designs arrive.
 
+## Platform uniformization (2026-07-03, commits bf24cef + 64d0977)
+
+The 39 legacy views were brought under the new identity WITHOUT rebuilding
+them: the two shared layouts were re-skinned in place (all legacy views
+inherit their chrome).
+
+- `layouts/dashboard.blade.php`: Poppins, white sidebar with platform logo,
+  initials user card + green role chip, green active rows `#E7F1EA`/`#14652F`
+  (per-role color tints removed — one identity), 64px white header (lang
+  toggle, messages, red bell badge, initials avatar). Nav now includes
+  "Demandes de devis" → dashboard.quotes (sellers) and "Mes Demandes &
+  Devis" → quotes.index (buyers). ALL role menus/routes/logic preserved.
+- `layouts/app.blade.php`: dark-green utility bar + heritage tagline, white
+  nav with real logo + uppercase brand (lg+), tricolor strip, green hover
+  states, `#0A3020` register button, deep green `#0B2C1E` footer with gold
+  headings, green mobile bottom nav. Header collapses into the hamburger
+  below lg (tablet overflow fix). `brand`/`forest` tints kept in the config
+  for legacy content sections.
+- 404/500/developer: re-skinned standalone (Poppins, cream, tricolor,
+  dark-green nav); 404's dead `/offerings` link fixed.
+- Duplicate dashboards bridged without touching replica pixels: the
+  entrepreneur replica's "Commandes" sidebar item now targets
+  dashboard.quotes; the buyer replica's (extrapolated) slide-over menu
+  gained "Mes Demandes & Devis" → quotes.index.
+- NOTE: legacy CONTENT sections still use gray/forest/brand utility classes
+  inside the new chrome — acceptable contrast, but a per-page content
+  restyle is the remaining polish work if full uniformity is wanted.
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —
