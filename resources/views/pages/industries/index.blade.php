@@ -86,7 +86,8 @@
 </head>
 <body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
 
-@include('pages.partials.gallery-header')
+{{-- Canonical platform chrome (consolidated 2026-07-03) --}}
+@include('pages.partials.directory-header')
 
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-5 pb-9">
     <div class="flex flex-col lg:flex-row gap-8 xl:gap-9 items-start">
@@ -252,7 +253,8 @@
     </div>
 </div>
 
-@include('pages.partials.gallery-footer')
+{{-- Canonical platform chrome (consolidated 2026-07-03) --}}
+@include('pages.partials.directory-footer')
 
 <script>
     lucide.createIcons();

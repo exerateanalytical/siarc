@@ -68,44 +68,8 @@
 <body class="bg-[#FEFEFE] text-[#1B1B18] antialiased">
 
 <!-- Header -->
-<header class="bg-white">
-    <div class="max-w-[1024px] mx-auto px-4 lg:px-0 flex items-center justify-between gap-4 py-3">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
-            <span class="leading-tight">
-                <span class="block text-[11.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
-                <span class="block text-[11.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
-                <span class="block text-[9.5px] text-[#55524A] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
-            </span>
-        </a>
-        <nav class="hidden lg:flex items-center gap-6">
-            @foreach($navLinks as [$navLabel, $navHref])
-            <a href="{{ $navHref }}" class="text-[13px] font-medium text-[#1B1B18] hover:text-leaf transition-colors whitespace-nowrap">{{ $navLabel }}</a>
-            @endforeach
-        </nav>
-        <div class="flex items-center gap-4 shrink-0">
-            <div class="relative group hidden sm:block">
-                <button class="flex items-center gap-1 text-[13px] font-semibold text-[#1B1B18]">
-                    {{ strtoupper($lang) }}
-                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
-                </button>
-                <div class="absolute right-0 top-full w-28 bg-white rounded-lg shadow-lg border border-[#E7E7E5] py-1 hidden group-hover:block z-50">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="block px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf' : 'text-[#262521]' }}">FR — Français</a>
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf' : 'text-[#262521]' }}">EN — English</a>
-                </div>
-            </div>
-            @if($siacUser)
-            <a href="/tableau-de-bord" class="bg-deep hover:bg-leaf text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap">
-                {{ $isFr ? 'Tableau de bord' : 'Dashboard' }}
-            </a>
-            @else
-            <a href="/login?lang={{ $lang }}" class="bg-deep hover:bg-leaf text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap">
-                {{ $isFr ? 'Se connecter' : 'Sign in' }}
-            </a>
-            @endif
-        </div>
-    </div>
-</header>
+{{-- Canonical platform chrome (consolidated 2026-07-03) --}}
+@include('pages.partials.directory-header')
 
 <div class="max-w-[1024px] mx-auto px-4 lg:px-0">
 
@@ -285,77 +249,8 @@
 </div>
 
 <!-- Footer -->
-<footer class="bg-certgr">
-    <div class="max-w-[1024px] mx-auto px-4 lg:px-0 pt-9 pb-5">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_0.8fr_0.9fr_1.1fr_1.2fr] gap-7">
-            <div>
-                <div class="flex items-center gap-3">
-                    <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-11 h-12 object-contain">
-                    <span class="text-[11px] font-bold tracking-[0.06em] text-white uppercase leading-snug">
-                        {{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}<br>
-                        {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
-                    </span>
-                </div>
-                <p class="mt-3 text-[11.5px] text-[#A8B8AC]">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</p>
-                <div class="mt-4 flex items-center gap-2">
-                    @foreach(['facebook' => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>', 'instagram' => '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>', 'youtube' => '<path d="M18.2 6.3a2.1 2.1 0 0 0-1.5-1.5C15.4 4.4 10 4.4 10 4.4s-5.4 0-6.7.4A2.1 2.1 0 0 0 1.8 6.3 22 22 0 0 0 1.5 10a22 22 0 0 0 .3 3.7 2.1 2.1 0 0 0 1.5 1.5c1.3.4 6.7.4 6.7.4s5.4 0 6.7-.4a2.1 2.1 0 0 0 1.5-1.5A22 22 0 0 0 18.5 10a22 22 0 0 0-.3-3.7zM8.3 12.5v-5l4.4 2.5z"/>', 'linkedin' => '<path d="M4.98 3.5a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM3.5 8.5h3v8h-3zM9 8.5h2.8v1.1h.1c.4-.7 1.4-1.4 2.8-1.4 3 0 3.5 1.9 3.5 4.3v4h-3v-3.5c0-.8 0-1.9-1.2-1.9s-1.4.9-1.4 1.9v3.5H9z" transform="scale(0.83) translate(2,1)"/>'] as $socialName => $socialPath)
-                    <a href="#" aria-label="{{ $socialName }}" class="w-8 h-8 rounded-full border border-white/25 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                        <svg viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">{!! $socialPath !!}</svg>
-                    </a>
-                    @endforeach
-                </div>
-            </div>
-            <div>
-                <h4 class="text-[11.5px] font-bold tracking-[0.12em] text-white uppercase mb-4">{{ $isFr ? 'Liens rapides' : 'Quick links' }}</h4>
-                <ul class="space-y-2.5 text-[12px] text-[#A8B8AC]">
-                    <li><a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a></li>
-                    <li><a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']) }}" class="hover:text-white transition-colors">Artisans</a></li>
-                    <li><a href="{{ route('products.index', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Produits' : 'Products' }}</a></li>
-                    <li><a href="{{ route('events.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Événements' : 'Events' }}</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-[11.5px] font-bold tracking-[0.12em] text-white uppercase mb-4">{{ $isFr ? 'Ressources' : 'Resources' }}</h4>
-                <ul class="space-y-2.5 text-[12px] text-[#A8B8AC]">
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'À propos' : 'About' }}</a></li>
-                    <li><a href="{{ route('events.index') }}" class="hover:text-white transition-colors">Blog</a></li>
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">FAQ</a></li>
-                    <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Conditions d\'utilisation' : 'Terms of use' }}</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-[11.5px] font-bold tracking-[0.12em] text-white uppercase mb-4">Support</h4>
-                <ul class="space-y-2.5 text-[12px] text-[#A8B8AC]">
-                    <li><a href="{{ route('support.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Aide' : 'Help' }}</a></li>
-                    <li><a href="{{ route('contact') }}" class="hover:text-white transition-colors">Contact</a></li>
-                    <li><a href="{{ route('privacy') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Politique de confidentialité' : 'Privacy policy' }}</a></li>
-                    <li><a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Plan du site' : 'Site map' }}</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-[11.5px] font-bold tracking-[0.12em] text-white uppercase mb-4">Contact</h4>
-                <ul class="space-y-2.5 text-[12px] text-[#A8B8AC]">
-                    <li class="flex items-center gap-2.5"><i data-lucide="phone" class="w-4 h-4 text-goldlt shrink-0"></i>+237 6XX XXX XXX</li>
-                    <li class="flex items-center gap-2.5"><i data-lucide="mail" class="w-4 h-4 text-goldlt shrink-0"></i>contact@gvn-artisanat.cm</li>
-                    <li class="flex items-center gap-2.5"><i data-lucide="map-pin" class="w-4 h-4 text-goldlt shrink-0"></i>{{ $isFr ? 'Yaoundé, Cameroun' : 'Yaounde, Cameroon' }}</li>
-                </ul>
-            </div>
-        </div>
-        <div class="mt-8 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#A8B8AC]">
-            <span>&copy; 2025 {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</span>
-            <span class="flex items-center gap-2.5">
-                {{ $isFr ? 'Plateforme officielle du gouvernement du Cameroun' : 'Official platform of the government of Cameroon' }}
-                <span class="flex w-6 h-4 rounded-[2px] overflow-hidden">
-                    <span class="flex-1 bg-[#014D25]"></span>
-                    <span class="relative flex-1 bg-[#CA0107]">
-                        <svg viewBox="0 0 24 24" class="absolute inset-0 m-auto w-2 h-2 fill-[#F3AA02]"><path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/></svg>
-                    </span>
-                    <span class="flex-1 bg-[#F3AA02]"></span>
-                </span>
-            </span>
-        </div>
-    </div>
-</footer>
+{{-- Canonical platform chrome (consolidated 2026-07-03) --}}
+@include('pages.partials.directory-footer')
 
 <script>
     lucide.createIcons();
