@@ -3,11 +3,12 @@
 Status as of 2026-07-03. This documents the pixel-replica work done so far so a fresh
 Claude Code session (or any developer, on any account) can continue without prior context.
 
-**CURRENT STATE: ALL 17 design PNGs are replicated and committed (all 34 tests
-green) — 12 public pages + seller dashboard (desktop & mobile) + buyer dashboard
-+ certificate verification + membership certificate. Nothing is pending. If new
-design PNGs appear in the repo root, follow THE OVERRIDING RULE and the process
-below.**
+**CURRENT STATE: the original 17 design PNGs plus the FULL onboarding wizard
+(steps 1–10 + the step-12 success screen, all in `pages/onboarding.blade.php`)
+are replicated (all 34 tests green). PENDING: the quote-flow design family —
+`onboarding step 11.png` (quote-centric seller dashboard) + the 5 quotation
+PNGs (see "Still pending" in the onboarding section below). If new design PNGs
+appear in the repo root, follow THE OVERRIDING RULE and the process below.**
 
 ## THE OVERRIDING RULE — 100% pixel-perfect fidelity (user mandate, 2026-07-02)
 
@@ -446,22 +447,56 @@ business.create since buyers have no shop). Design statics: KPIs 28/+18%,
   window.print() (@page landscape, chrome hidden). Reachable from the seller
   dashboard header profile dropdown ("Mon certificat d'adhésion").
 
-**Onboarding wizard** (added 2026-07-03): `onboardine page.png` [sic] (864×1821,
-step 1) + `onboardding step 2.png` [sic] (1024×1536, step 2) → NEW public route
-`/creer-mon-compte` (`onboarding`), standalone `pages/onboarding.blade.php`.
-Both steps live in one page with client-side switching: step 1 = account-type
-cards (Artisan Individuel / Coopérative / PME / Grande Entreprise with colored
-check lists, "Pourquoi devenir membre ?" strip with `ob-vases.png`, avantages +
-security bands shown ONLY on step 1), step 2 = the identity form with the
-design's demo values (Aristide Ndop etc.), live photo-upload preview. The
-10-step sidebar mirrors the design: steps 1–2 clickable, 3–10 are plain
-progress items (their designs don't exist yet); after step 1 the sidebar shows
-the chosen type under "Type de compte" and the bottom card swaps
-"Sécurisé & Vérifié" → "Sécurisé & Confidentiel" (per the two PNGs).
-"Suivant" exits into the REAL flow: guests → `/inscription`, logged-in →
-`business.create`. When steps 3–10 designs arrive, extend the same page.
+**Onboarding wizard** (added 2026-07-03, extended through the full 10 steps +
+success screen): `onboardine page.png` [sic] (864×1821, step 1) +
+`onboardding step 2.png` [sic] (1024×1536, step 2) + `onboarding 3..10.png`
+(steps 3–10 wizard forms) + `onboarding step 12.png` (1024×1536, post-submission
+success screen) → NEW public route `/creer-mon-compte` (`onboarding`),
+standalone `pages/onboarding.blade.php`. ALL states live in ONE page with
+client-side switching (`goToStep(n)`):
+
+- Steps 1–10 = wizard panels (`panel-1..10`) inside the dark-green-sidebar
+  layout (`#wizard-flex`): account type, identity, business info, categories
+  (5-max secondary picker), atelier/localisation, produits & services
+  (add/delete rows, availability toggles), galerie média, certifications &
+  documents, vérification, revue & soumission. Per-step bottom strips
+  (`#strip-2..10`, `#step1-extras`) swap with the step.
+- Step 11 = SUCCESS SCREEN (design `onboarding step 12.png`): its own layout
+  block `#success-screen` with a WHITE sidebar variant ("Étapes complétées
+  10 sur 10", green numbered circles, "Votre confiance est notre priorité"
+  card), reached by "Soumettre mon dossier" on step 10 → `goToStep(11)`.
+  Content verbatim: Félicitations card (`ob12-check.png` confetti +
+  `ob12-mail.png` envelope art), dossier row (GVNA-2024-000158 with WORKING
+  clipboard-copy button, "12 Mai 2024 à 14:32", account type mirroring the
+  step-1 choice via `.success-type-name`), "Où en est votre dossier ?"
+  5-step timeline (En cours / À venir badges), "Délai de traitement estimé"
+  (24 à 72 heures; email/phone show the real `$siacUser` values when logged
+  in, design's `nshome@opesware.com` / `+237 670 416 238` otherwise),
+  10-card Récapitulatif (design's "Review" title kept verbatim), 4 action
+  cards with stacked-deck outline effect — Voir le dossier → REAL flow exit
+  `$nextUrl` (guests `/inscription`, logged-in `business.create`),
+  Télécharger PDF → `window.print()`, Explorer → `products.index`, Accueil →
+  `home` — help bar (mailto/tel links) and closing quote with
+  `ob12-heart.png`. The header bell (green badge "2" + red dot, `#ob-bell`)
+  and the near-white body bg (`#FBFCFC`) only appear on this screen, per the
+  design; the shared flat tricolor bar was kept (the step-12 PNG rounds its
+  corners — chrome kept consistent across steps, same call as the vendors
+  directory).
+
 Assets: `ob-type-1..4`, `ob-adv-1..6`, `ob-sec-1..4`, `ob-vases`, `ob-photo`,
-`ob-flag`, `ob-help`, `ob-shield`.
+`ob-flag`, `ob-help`, `ob-shield`, plus per-step crops `ob3-*`, `ob4-*`,
+`ob5-map`, `ob6-*`, `ob7-*`, `ob8-*`, `ob9-*`, `ob10-*` and success-screen
+crops `ob12-check/mail/heart/shield.png`.
+
+**Still pending — quote-flow design family** (PNGs in repo root, NOT built):
+`onboarding step 11.png` (despite its filename it is a post-approval seller
+dashboard centered on "Demandes de devis" — Bonjour Jude, pipeline
+Nouvelles/En discussion/Devis envoyés/Négociation/En attente client/Converties,
+KPIs 18/12/7/7/23), plus `Quotation flow.png`, `Quotation flow complete.png`,
+`create un demande.png`, `missing quote flows.png`, `quote propositions.png`.
+These describe the buyer→seller quotation feature; build them together as the
+next phase (the step-11 dashboard is their hub, likely a new route rather than
+a replacement of `dashboard.entrepreneur`).
 
 Remember SetResolution(96,96) before GDI+ crops if new designs arrive.
 
