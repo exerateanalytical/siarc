@@ -670,6 +670,19 @@ inherit their chrome).
   accessors (APP_URL breaks on preview ports). Saved page recolored to the
   identity palette.
 
+## Chrome consolidation — ONE public header/footer (2026-07-03, commit 656f696)
+
+USER ORDER overriding the fidelity mandate for CHROME ONLY: every public page
+now uses the canonical `pages/partials/directory-header` + `directory-footer`,
+even where its PNG drew a different header/footer. Applied to: home, about,
+contact, categories (gallery-header/footer partials now unused), certificate
+verification, and the auth pages (replica-bottom keeps the "Pourquoi
+rejoindre" band + mobile nav, its footer is the directory one). layouts/app
+pages were already on this chrome. Dashboards keep their app chrome;
+printable pages (event ticket, membership certificate) stay chrome-less.
+For NEW replica pages: reproduce the CONTENT verbatim per the mandate, but
+mount it under the directory chrome regardless of the PNG's own header.
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —
