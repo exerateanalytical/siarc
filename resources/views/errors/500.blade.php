@@ -1,30 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Server Error — Galerie virtuelle de l'artisanat du Cameroun</title>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Erreur serveur — Galerie Virtuelle Nationale de l'Artisanat du Cameroun</title>
+<link href="/vendor/fonts.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;color:#2c3e50;min-height:100vh;display:flex;flex-direction:column;}
+body{font-family:'Poppins',-apple-system,'Segoe UI',sans-serif;background:#F8F6F2;color:#1B1B18;min-height:100vh;display:flex;flex-direction:column;}
 .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;}
-.code{font-size:6rem;font-weight:900;line-height:1;color:#dde2ea;margin-bottom:.5rem;}
-h1{font-size:1.4rem;font-weight:800;margin-bottom:.5rem;}
-p{color:#6b7a8d;font-size:.9rem;margin-bottom:1.5rem;}
-.btn{display:inline-block;padding:.65rem 1.5rem;background:#007a33;color:#fff;border-radius:8px;font-weight:700;font-size:.9rem;text-decoration:none;margin:.3rem;}
-.btn-sec{background:#f4f6f9;color:#2c3e50;border:1px solid #dde2ea;}
-nav{background:#0f1623;padding:.85rem 1.5rem;display:flex;align-items:center;gap:.6rem;}
-.logo{color:#fff;font-weight:800;font-size:1rem;text-decoration:none;display:flex;align-items:center;gap:.5rem;}
+.code{font-size:6rem;font-weight:700;line-height:1;color:#DCE7DF;margin-bottom:.5rem;}
+h1{font-size:1.35rem;font-weight:700;margin-bottom:.5rem;color:#14532D;}
+p{color:#55524A;font-size:.9rem;margin-bottom:1.5rem;}
+.btn{display:inline-block;padding:.65rem 1.5rem;background:#0A3020;color:#fff;border-radius:8px;font-weight:600;font-size:.85rem;text-decoration:none;margin:.3rem;}
+.btn-sec{background:#fff;color:#14652F;border:1px solid #DCE7DF;}
+nav{background:#0A2C1D;padding:.85rem 1.5rem;display:flex;align-items:center;gap:.6rem;}
+.logo{color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:.6rem;text-transform:uppercase;letter-spacing:.02em;}
 .flag{display:inline-flex;height:20px;border-radius:3px;overflow:hidden;}
 .flag span{display:block;width:8px;height:20px;}
+.tricolor{display:flex;height:5px;}
+.tricolor span:nth-child(1){width:46%;background:#094F2B;}
+.tricolor span:nth-child(2){width:26%;background:#B61012;}
+.tricolor span:nth-child(3){flex:1;background:#E9A411;}
 </style>
 </head>
 <body>
-<nav><a class="logo" href="/"><div class="flag"><span style="background:#007a33"></span><span style="background:#ce1126"></span><span style="background:#fcd116"></span></div>Galerie virtuelle de l'artisanat du Cameroun</a></nav>
+<nav><a class="logo" href="/"><span class="flag"><span style="background:#094F2B"></span><span style="background:#B61012"></span><span style="background:#E9A411"></span></span>Galerie Virtuelle Nationale de l'Artisanat du Cameroun</a></nav>
+<div class="tricolor"><span></span><span></span><span></span></div>
 <div class="wrap">
     <div>
         <div class="code">500</div>
-        <h1>Something went wrong</h1>
-        <p>An unexpected error occurred. Our team has been notified. Please try again in a few minutes.</p>
-        <a href="/" class="btn">Go to Homepage</a>
-        <a href="/support" class="btn btn-sec">Contact Support</a>
+        <h1>Une erreur est survenue</h1>
+        <p>Une erreur inattendue s'est produite. Notre équipe a été notifiée. Veuillez réessayer dans quelques minutes.</p>
+        <a href="/" class="btn">Retour à l'accueil</a>
+        <a href="/tableau-de-bord/support" class="btn btn-sec">Contacter le support</a>
     </div>
 </div>
 </body>

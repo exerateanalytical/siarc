@@ -13,32 +13,31 @@
                     brand: { 50:'#fef9ee',100:'#fdf0d3',200:'#fada9a',300:'#f7c062',400:'#f4a32a',500:'#e8880e',600:'#cc6a09',700:'#a84e0b',800:'#873d10',900:'#6e3311' },
                     forest: { 50:'#f0f9f4',100:'#dbf0e3',200:'#b8e0c9',300:'#8cc9a8',400:'#5ba883',500:'#2d6a4f',600:'#1b4332',700:'#0d2b1e',800:'#082018',900:'#03130e' },
                 },
-                fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
             }
         }
     }
 </script>
 <script src="{{ asset('vendor/lucide.min.js') }}"></script>
 <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-<style>body{font-family:'Inter',system-ui,sans-serif;}</style>
+<style>body{font-family:'Poppins',system-ui,sans-serif;}</style>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased">
+<body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 
 {{-- Minimal header --}}
-<header class="bg-white border-b border-gray-200">
-    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2.5">
-            <div class="w-7 h-7 bg-forest-500 rounded flex items-center justify-center">
-                <i data-lucide="store" class="w-4 h-4 text-white"></i>
-            </div>
-            <span class="font-bold text-gray-900 text-sm">Galerie Artisanat <span class="font-normal text-gray-400">— SIAC Cameroun</span></span>
+<header class="bg-white border-b border-[#EEEDEA]">
+    <div class="max-w-6xl mx-auto px-4 h-[60px] flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3">
+            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[32px] h-[35px] object-contain">
+            <span class="font-bold text-[#1B1B18] text-[12px] uppercase tracking-[0.02em]">Galerie Virtuelle Nationale <span class="font-semibold text-[#157A43] normal-case tracking-normal">— Developer Portal</span></span>
         </a>
-        <a href="/dashboard" class="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1">
-            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <a href="/tableau-de-bord" class="text-[13px] font-semibold text-[#14652F] hover:text-[#14532D] flex items-center gap-1.5">
+            <i data-lucide="layout-dashboard" class="w-4 h-4" style="stroke-width:1.7"></i>
             Dashboard
         </a>
     </div>
 </header>
+<div class="flex h-[5px]"><div class="w-[46%] bg-[#094F2B]"></div><div class="w-[26%] bg-[#B61012]"></div><div class="flex-1 bg-[#E9A411]"></div></div>
 
 <div class="max-w-4xl mx-auto px-4 py-10">
     <h1 class="text-xl font-bold text-gray-900 mb-1">Developer Portal</h1>

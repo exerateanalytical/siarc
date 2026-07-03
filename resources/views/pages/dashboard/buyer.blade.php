@@ -100,6 +100,7 @@
             ['house',          $isFr ? 'Accueil' : 'Home',                       route('dashboard.buyer')],
             ['compass',        $isFr ? 'Explorer la galerie' : 'Browse gallery', route('products.index', ['lang' => $lang])],
             ['bookmark',       $isFr ? 'Entreprises sauvegardées' : 'Saved businesses', route('saved.index')],
+            ['file-text',      $isFr ? 'Mes Demandes & Devis' : 'My Requests & Quotes', route('quotes.index')],
             ['message-circle', 'Messages',                                        route('messages.inbox')],
             ['bell',           'Notifications',                                   route('notifications.index')],
             ['user',           $isFr ? 'Mon profil' : 'My profile',              route('profile.show')],

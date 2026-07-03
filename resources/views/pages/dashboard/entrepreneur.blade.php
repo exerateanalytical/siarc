@@ -18,7 +18,7 @@
     // design numbers where it doesn't (orders/reviews have no web system yet).
     $navItems = [
         ['sd-nav-1.png',  $isFr ? 'Tableau de bord' : 'Dashboard',              route('dashboard.entrepreneur'), null, true],
-        ['sd-nav-2.png',  $isFr ? 'Commandes' : 'Orders',                       route('messages.inbox'), ['28', 'red'], false],
+        ['sd-nav-2.png',  $isFr ? 'Commandes' : 'Orders',                       route('dashboard.quotes'), ['28', 'red'], false],
         ['sd-nav-3.png',  $isFr ? 'Produits' : 'Products',                      $ownStoreUrl, [(string) $productCount, 'gray'], false],
         ['sd-nav-4.png',  $isFr ? 'Événements' : 'Events',                      route('events.index'), [(string) $eventParticipations->count(), 'red'], false],
         ['sd-nav-5.png',  $isFr ? 'Collections' : 'Collections',                route('saved.index'), null, false],
