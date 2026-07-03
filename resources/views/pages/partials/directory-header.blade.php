@@ -26,6 +26,28 @@
 @endphp
 
 <!-- Tricolor top bar -->
+@if($dirTopBar ?? false)
+<div class="relative flex h-[26px] overflow-hidden text-[10.5px]">
+    <div class="w-[37.5%] bg-[#012C1B] flex items-center pl-4 sm:pl-6">
+        <span class="text-white/90 truncate">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+    </div>
+    <div class="relative w-[27.6%] bg-[#C0010C]">
+        <svg viewBox="0 0 24 24" class="absolute left-[45.2%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-[12px] h-[12px] fill-[#FBB604]" aria-hidden="true">
+            <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
+        </svg>
+    </div>
+    <div class="flex-1 bg-[#FBB604] hidden sm:flex items-center justify-end pr-4 sm:pr-6 text-[#3A2E08] font-medium whitespace-nowrap">
+        <a href="{{ route('partners.index') }}" class="hover:underline">{{ $isFr ? 'Devenir partenaire' : 'Become a partner' }}</a>
+        <span class="mx-2 opacity-50">|</span>
+        <a href="/login?lang={{ $lang }}" class="hover:underline">{{ $isFr ? 'Espace Artisan' : 'Artisan area' }}</a>
+        <span class="mx-2 opacity-50">|</span>
+        <a href="/login?lang={{ $lang }}" class="hover:underline">{{ $isFr ? 'Espace Entreprise' : 'Business area' }}</a>
+        <span class="mx-2 opacity-50">|</span>
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Aide' : 'Help' }}</a>
+    </div>
+    <div class="flex-1 bg-[#FBB604] sm:hidden"></div>
+</div>
+@else
 <div class="relative flex h-5 overflow-hidden">
     <div class="w-[37.5%] bg-[#012C1B]"></div>
     <div class="relative w-[27.6%] bg-[#C0010C]">
@@ -35,6 +57,7 @@
     </div>
     <div class="flex-1 bg-[#FBB604]"></div>
 </div>
+@endif
 
 <!-- Header -->
 <header class="bg-[#FEFEFE] border-b border-[#EFEDEA]">

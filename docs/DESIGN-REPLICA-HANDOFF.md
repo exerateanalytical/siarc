@@ -42,7 +42,8 @@ Concretely, this means:
 | Vendors directory | `vendors directory.png` (1536×1024) | `resources/views/pages/businesses/index.blade.php` (REPLACED the legacy layouts/app listing) using the directory partials with options | `/galerie/entreprises` (`businesses.index`, controller unchanged) | `d479146` |
 | Product detail | `Product detail page.png` (1536×1024, canvas cut before footer) | `resources/views/pages/products/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/produits/{slug}` (`products.show`) | `bfd3cd4` |
 | Vendor detail | `vendors detail page.png` (1536×1024) | `resources/views/pages/businesses/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/entreprises/{slug}` (`businesses.show`) | `fef96fb` |
-| Events | `events page.png` (979×1606) | `resources/views/pages/events/index.blade.php` (REPLACED the legacy layouts/app listing) | `/evenements` (`events.index`, controller lang() now honours ?lang=) | (this session) |
+| Events | `events page.png` (979×1606) | `resources/views/pages/events/index.blade.php` (REPLACED the legacy layouts/app listing) | `/evenements` (`events.index`, controller lang() now honours ?lang=) | `f915dcf` |
+| Event detail | `events detail page.png` (984×1599) | `resources/views/pages/events/show.blade.php` (REPLACED the legacy layouts/app template) | `/evenements/{slug}` (`events.show`) | (this session) |
 
 ### Categories-page notes
 
@@ -280,6 +281,31 @@ Concretely, this means:
 - Assets: `event-icon-1..6.png` (ticket illustrations), `event-map.png`
   (sidebar map with pins), `event-payments.png`.
 
+### Event-detail notes
+
+- Template page at `events.show`; the 6 seeded design events carry per-slug
+  display maps in the view (`$eventMeta`: city line, venue, badge + color,
+  price, tag chips) with generic fallbacks parsed from `location_fr` for other
+  events. Date/time/title/description come from the event row.
+- NEW header option `$dirTopBar`: the tricolor becomes a 26px utility bar —
+  tagline on green, star on red, links on gold (Devenir partenaire →
+  partners.index, Espace Artisan / Espace Entreprise → /login, Aide → contact).
+- Hero = ticket: dark green stub (big date, times, pin, CSS barcode, notch),
+  CREAM panel (`#FAF5EC`) with `edetail-art.png` (mask/vase artwork + pattern +
+  star circle, baked) on the right, badge/serif title/description/chips HTML.
+- Design-static template content: stats 500+/50+/20+/10+/1, 7 tabs (À propos
+  has the design paragraph for the design event + 5 Objectifs checks + video
+  card `edetail-video.png` with baked play overlay, href="#"), 5 Points forts
+  cards (`edetail-pf-1..5.png`), 6 Régions participantes silhouettes
+  (`edetail-region-1..6.png`), 5 Partenaires officiels (`edetail-partner-1..5`:
+  MINPMEESA/ONUDI/BANGE/CAMPOST/AFC).
+- Right rail: Réservez votre place (price, S'inscrire → /inscription,
+  "Ajouter à mon agenda" → real Google Calendar template URL, share circles →
+  real wa.me/facebook/twitter/linkedin/mailto share links), Informations
+  pratiques ("Voir sur la carte" → Google Maps search), Organisateur MINPMEESA
+  card (site officiel → minpmeesa.gov.cm), Télécharger (3 PDF rows, href="#"
+  as the PDFs don't exist), Restez informé mini-newsletter.
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -299,8 +325,7 @@ Concretely, this means:
 ## What is pending — build in this order
 
 1. Working through the remaining PNGs in order (user said "proceed" 2026-07-03):
-   `events detail page.png` — NEXT, then `events ticket.png`,
-   `default product images by ategory.png` [sic].
+   `events ticket.png` — NEXT, then `default product images by ategory.png` [sic].
    Verify each PNG's chrome first — every mockup so far varied it. Remember
    SetResolution(96,96) before GDI+ crops.
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
