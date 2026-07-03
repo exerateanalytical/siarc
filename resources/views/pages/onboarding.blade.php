@@ -1662,7 +1662,7 @@
                             </span>
                             <span class="text-[12.5px] text-[#3B382F] leading-relaxed">
                                 @if(str_contains($ckText, '%LINK%'))
-                                    {{ Str::before($ckText, '%LINK%') }}<a href="#" class="text-[#157A43] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a>{{ Str::after($ckText, '%LINK%') }}
+                                    {{ Str::before($ckText, '%LINK%') }}<a href="{{ route('terms') }}" target="_blank" class="text-[#157A43] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a>{{ Str::after($ckText, '%LINK%') }}
                                 @else
                                     {{ $ckText }}
                                 @endif
@@ -1807,7 +1807,7 @@
                             </span>
                             <span class="text-[12.5px] text-[#3B382F] leading-relaxed">
                                 {{ $isFr ? "Je certifie que toutes les informations fournies sont exactes et que j'accepte" : 'I certify that all the information provided is accurate and that I accept' }}
-                                {{ $isFr ? 'les' : 'the' }} <a href="#" class="text-[#157A43] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a> {{ $isFr ? 'de la plateforme.' : 'of the platform.' }}
+                                {{ $isFr ? 'les' : 'the' }} <a href="{{ route('terms') }}" target="_blank" class="text-[#157A43] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a> {{ $isFr ? 'de la plateforme.' : 'of the platform.' }}
                             </span>
                         </label>
                     </div>
