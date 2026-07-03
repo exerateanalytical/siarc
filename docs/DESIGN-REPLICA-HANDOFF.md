@@ -1,7 +1,12 @@
 # Design Replica Handoff — Galerie Virtuelle Nationale de l'Artisanat du Cameroun
 
-Status as of 2026-07-02. This documents the pixel-replica work done so far so a fresh
+Status as of 2026-07-03. This documents the pixel-replica work done so far so a fresh
 Claude Code session (or any developer, on any account) can continue without prior context.
+
+**CURRENT STATE: all 12 public-page design PNGs are replicated and committed
+(latest commit `46f6ab4`, all 34 tests green). Only the dashboard/certificate
+PNGs remain — see "What is pending" below. To resume: read this file top to
+bottom, then ask the user how to scope the dashboard designs.**
 
 ## THE OVERRIDING RULE — 100% pixel-perfect fidelity (user mandate, 2026-07-02)
 
