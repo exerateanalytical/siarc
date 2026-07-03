@@ -1,9 +1,17 @@
-{{-- Buyer quote-flow sidebar (designs: "create un demande.png" / "quote propositions.png").
-     Expects: $lang, $isFr, $siacUser, $messageCount. Options: $qbCompanyFirst (bool). --}}
+{{-- Buyer quote-flow sidebar (designs: "create un demande.png" / "quote propositions.png" /
+     "accepte le devis.png" / "comparison de version.png" / "bonne de demand.png").
+     Expects: $lang, $isFr, $siacUser, $messageCount.
+     Options: $qbCompanyFirst (bool), $qbNavOverride (rows: [icon, label, url, active, badge, badgeStyle]
+     or group rows: [icon, label, 'group', children[]] where children are [label, url, active, badge, badgeStyle]). --}}
 @php
     $qbName = $siacUser['name'] ?? 'Jean Dupont';
     $qbInitials = strtoupper(collect(explode(' ', trim($qbName)))->filter()->map(fn ($w) => mb_substr($w, 0, 1))->take(2)->implode(''));
     $qbMsgBadge = ($messageCount ?? 0) > 0 ? $messageCount : 3;
+    $qbBadgeCls = [
+        'red'    => 'bg-[#E01E1E] text-white',
+        'green'  => 'bg-[#DFF0E4] text-[#14652F]',
+        'orange' => 'bg-[#FDF0DC] text-[#E8890C]',
+    ];
     $qbNav = [
         ['house',          $isFr ? 'Tableau de bord' : 'Dashboard',                 route('dashboard.buyer', ['lang' => $lang]),   false, null, null],
         ['search',         $isFr ? 'Rechercher des produits' : 'Search products',   route('products.index', ['lang' => $lang]),    false, null, null],
@@ -38,14 +46,33 @@
         </div>
 
         <nav class="mt-5 space-y-0.5">
-            @foreach($qbNav as [$qbIcon, $qbLabel, $qbUrl, $qbIsActive, $qbBadge, $qbBadgeStyle])
+            @foreach($qbNavOverride ?? $qbNav as $qbRow)
+            @if(($qbRow[2] ?? null) === 'group')
+            <div>
+                <span class="flex items-center gap-3.5 rounded-xl px-3.5 py-[11px]">
+                    <i data-lucide="{{ $qbRow[0] }}" class="w-[19px] h-[19px] shrink-0 text-[#3B382F]" style="stroke-width:1.7"></i>
+                    <span class="flex-1 text-[13.5px] text-[#3B382F]">{{ $qbRow[1] }}</span>
+                    <i data-lucide="chevron-up" class="w-4 h-4 shrink-0 text-[#8A857A]"></i>
+                </span>
+                <div class="space-y-0.5">
+                    @foreach($qbRow[3] as [$qcLabel, $qcUrl, $qcActive, $qcBadge, $qcBadgeStyle])
+                    <a href="{{ $qcUrl }}" class="flex items-center gap-3.5 rounded-xl pl-[46px] pr-3.5 py-[9px] {{ $qcActive ? 'bg-[#E7F1EA]' : 'hover:bg-[#F6F7F6]' }}">
+                        <span class="flex-1 text-[13px] {{ $qcActive ? 'font-bold text-[#14652F]' : 'text-[#55524A]' }}">{{ $qcLabel }}</span>
+                        @if($qcBadge)<span class="shrink-0 min-w-[24px] h-[22px] rounded-full text-[11px] font-bold flex items-center justify-center px-1.5 {{ $qbBadgeCls[$qcBadgeStyle] ?? $qbBadgeCls['green'] }}">{{ $qcBadge }}</span>@endif
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @else
+            @php [$qbIcon, $qbLabel, $qbUrl, $qbIsActive, $qbBadge, $qbBadgeStyle] = $qbRow; @endphp
             <a href="{{ $qbUrl }}" class="flex items-center gap-3.5 rounded-xl px-3.5 py-[11px] {{ $qbIsActive ? 'bg-[#E7F1EA]' : 'hover:bg-[#F6F7F6]' }}">
                 <i data-lucide="{{ $qbIcon }}" class="w-[19px] h-[19px] shrink-0 {{ $qbIsActive ? 'text-[#14652F]' : 'text-[#3B382F]' }}" style="stroke-width:1.7"></i>
                 <span class="flex-1 text-[13.5px] {{ $qbIsActive ? 'font-bold text-[#14652F]' : 'text-[#3B382F]' }}">{{ $qbLabel }}</span>
                 @if($qbBadge)
-                <span class="shrink-0 min-w-[24px] h-[22px] rounded-full text-[11px] font-bold flex items-center justify-center px-1.5 {{ $qbBadgeStyle === 'red' ? 'bg-[#E01E1E] text-white' : 'bg-[#DFF0E4] text-[#14652F]' }}">{{ $qbBadge }}</span>
+                <span class="shrink-0 min-w-[24px] h-[22px] rounded-full text-[11px] font-bold flex items-center justify-center px-1.5 {{ $qbBadgeCls[$qbBadgeStyle] ?? $qbBadgeCls['green'] }}">{{ $qbBadge }}</span>
                 @endif
             </a>
+            @endif
             @endforeach
         </nav>
 

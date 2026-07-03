@@ -776,6 +776,28 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
     return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount'));
 })->name('quotes.index');
 
+// Quote-flow detail pages (pixel replicas of "accepte le devis.png", "comparison de version.png",
+// "bonne de demand.png" and "demands and devis.png")
+foreach ([
+    '/tableau-de-bord/propositions/accepter'    => ['quotes.accept',   'pages.quotes.accept'],
+    '/tableau-de-bord/propositions/comparaison' => ['quotes.compare',  'pages.quotes.compare'],
+    '/tableau-de-bord/commandes/bon'            => ['quotes.po',       'pages.quotes.po'],
+    '/tableau-de-bord/propositions/apercu'      => ['quotes.proposal', 'pages.quotes.proposal'],
+] as $qfPath => [$qfName, $qfView]) {
+    Route::get($qfPath, function (Request $request) use ($qfPath, $qfView) {
+        $siacUser = session('siac_user');
+        if (!$siacUser) return redirect('/login?next=' . urlencode($qfPath));
+
+        $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+        $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+        $quoteVendor = DB::table('businesses')->whereNull('deleted_at')->where('slug', 'art-bois-nature')->first();
+        $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
+
+        return view($qfView, compact('lang', 'siacUser', 'quoteVendor', 'messageCount'));
+    })->name($qfName);
+}
+
 Route::get('/tableau-de-bord/acheteur', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
