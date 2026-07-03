@@ -717,6 +717,39 @@ Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
     return view('pages.dashboard.entrepreneur', compact('lang', 'siacUser', 'business', 'productCount', 'products', 'messageCount', 'latestVerification', 'eventParticipations'));
 })->name('dashboard.entrepreneur');
 
+// Quote-centric artisan dashboard (pixel replica of the "onboarding step 11" design)
+Route::get('/tableau-de-bord/devis', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login?next=' . urlencode('/tableau-de-bord/devis'));
+
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $business = DB::table('businesses')
+        ->whereNull('deleted_at')
+        ->where('user_id', $siacUser['id'])
+        ->first();
+
+    $topProducts = $business
+        ? DB::table('products')->where('business_id', $business->id)->whereNull('deleted_at')
+            ->orderByDesc('views_count')->orderByDesc('created_at')->limit(5)->get()
+        : collect();
+
+    $messageCount = DB::table('conversations')
+        ->where('buyer_id', $siacUser['id'])
+        ->orWhere('business_id', $business->id ?? 0)
+        ->count();
+
+    $siacEvent = DB::table('events')->where('slug', 'like', 'siac%')->first();
+
+    $topProductImages = $topProducts->isNotEmpty()
+        ? DB::table('product_images')->whereIn('product_id', $topProducts->pluck('id'))
+            ->orderBy('id')->get()->groupBy('product_id')->map(fn ($imgs) => $imgs->first()->file_path)
+        : collect();
+
+    return view('pages.dashboard.quotes', compact('lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent'));
+})->name('dashboard.quotes');
+
 Route::get('/tableau-de-bord/acheteur', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
