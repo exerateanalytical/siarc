@@ -3,10 +3,11 @@
 Status as of 2026-07-03. This documents the pixel-replica work done so far so a fresh
 Claude Code session (or any developer, on any account) can continue without prior context.
 
-**CURRENT STATE: all 12 public-page design PNGs are replicated and committed
-(latest commit `46f6ab4`, all 34 tests green). Only the dashboard/certificate
-PNGs remain — see "What is pending" below. To resume: read this file top to
-bottom, then ask the user how to scope the dashboard designs.**
+**CURRENT STATE: ALL 17 design PNGs are replicated and committed (all 34 tests
+green) — 12 public pages + seller dashboard (desktop & mobile) + buyer dashboard
++ certificate verification + membership certificate. Nothing is pending. If new
+design PNGs appear in the repo root, follow THE OVERRIDING RULE and the process
+below.**
 
 ## THE OVERRIDING RULE — 100% pixel-perfect fidelity (user mandate, 2026-07-02)
 
@@ -419,14 +420,33 @@ business.create since buyers have no shop). Design statics: KPIs 28/+18%,
 356 000 FCFA/+24%, 1 245/+12%, 96% Excellent; same 4 GVN orders; badges 3/5/12
 (Messages badge uses the real conversation count).
 
-Remaining, in the user's order:
+**ALL 17 design PNGs are now replicated. Nothing is pending.** The last two:
 
-1. **`certificate verification page.png` — NEXT.** Likely a public verification
-   page; scope the route when reading the design.
-2. **`memersbip certificate.png`** [sic] — likely a printable certificate
-   (follow the event-ticket page pattern).
+- **Certificate verification** (`certificate verification page.png`, 1024×1536) →
+  NEW public route `/verification-certificat` (`certificate.verify`), standalone
+  `pages/certificate-verify.blade.php` with its own header (nav Accueil/À propos/
+  Artisans/Produits/Événements/Actualités/Contact + Se connecter) and footer
+  (LIENS RAPIDES / RESSOURCES / SUPPORT / CONTACT + "Plateforme officielle du
+  gouvernement du Cameroun" mini-flag). Hero uses `cert-hero-art.png` (shield +
+  flag curves). Two working tabs (numéro / QR); the form GETs `?numero=` back to
+  the page; the result card is the design's demo content verbatim (GVN-2025-0002587,
+  Artisan Ndop, all 8 info rows, "Vérifié le 15 Mai 2025 à 14:35") with
+  `cert-image.png` (the certificate artwork cropped from the design). Both QR
+  codes are LIVE (vendored qrcodejs, encode the verification URL). Assets:
+  `cert-hero-art/cert-image/cert-card-icon-1..3.png`.
+- **Membership certificate** (`memersbip certificate.png` [sic], 1536×1024) →
+  NEW auth route `/certificat-adhesion` (`membership.certificate`), standalone
+  printable `pages/membership-certificate.blade.php`. Max-fidelity approach: the
+  ENTIRE design is the base image (`cert-full.png`), with a LIVE QR overlaid on
+  the baked one and — when the logged-in user owns a business — parchment-colored
+  patches overlaying the demo name/number/code/dates with real values (number
+  `GVN-{year}-{7 digits}` and code both derived deterministically from
+  md5('gvn-cert-'+business id); dates = business created_at → +1 year). Without
+  a business the design renders untouched. Print/download buttons call
+  window.print() (@page landscape, chrome hidden). Reachable from the seller
+  dashboard header profile dropdown ("Mon certificat d'adhésion").
 
-Remember SetResolution(96,96) before GDI+ crops.
+Remember SetResolution(96,96) before GDI+ crops if new designs arrive.
 
 ## The replication process (repeat for each new page)
 

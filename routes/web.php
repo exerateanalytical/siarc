@@ -1011,6 +1011,26 @@ Route::get('/contact', function (Request $request) {
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     return response(view('pages.contact', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
 })->name('contact');
+Route::get('/verification-certificat', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    $numero = trim((string) $request->query('numero', ''));
+    return response(view('pages.certificate-verify', compact('lang', 'numero')))->cookie('lang', $lang, 60 * 24 * 30);
+})->name('certificate.verify');
+Route::get('/certificat-adhesion', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login?next=' . urlencode('/certificat-adhesion'));
+
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $business = DB::table('businesses')
+        ->whereNull('deleted_at')
+        ->where('user_id', $siacUser['id'])
+        ->first();
+
+    return view('pages.membership-certificate', compact('lang', 'siacUser', 'business'));
+})->name('membership.certificate');
 
 Route::post('/contact', function (Request $request) {
     $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang')

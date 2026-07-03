@@ -285,6 +285,7 @@
                         </button>
                         <div class="absolute right-0 top-full w-52 bg-white rounded-lg shadow-lg border border-[#E7E7E5] py-1 hidden group-hover:block z-50">
                             <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-gray-50">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
+                            <a href="{{ route('membership.certificate') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-gray-50">{{ $isFr ? 'Mon certificat d\'adhésion' : 'My membership certificate' }}</a>
                             <a href="{{ route('security.show') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-gray-50">{{ $isFr ? 'Sécurité' : 'Security' }}</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
