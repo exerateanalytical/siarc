@@ -683,6 +683,19 @@ printable pages (event ticket, membership certificate) stay chrome-less.
 For NEW replica pages: reproduce the CONTENT verbatim per the mandate, but
 mount it under the directory chrome regardless of the PNG's own header.
 
+## Footer/header menu completion (2026-07-03, commit 2a6ac5c)
+
+Every canonical-menu item now has a real page; every public page is in the
+menus. NEW info pages (bilingual, directory chrome): `/guide-artisan`
+(guide.artisan, 6 steps -> real flows), `/faq` (faq — renders CMS FAQs from
+admin.cms with a static fallback), `/actualites` (news.index — event-backed
+news cards), `/carrieres` (careers), `/presse` (press — live DB stats +
+downloadable logo). directory-footer defaults updated (Produits + Événements
+in EXPLORER; Guide/FAQ/Actualités/Vérifier un certificat/API in RESSOURCES;
+Carrières/Presse/Devenir membre in À PROPOS). directory-header: Produits
+added to the secondary nav; the mobile hamburger menu now lists all main
+pages (it previously had none).
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —
