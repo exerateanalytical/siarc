@@ -680,7 +680,8 @@ Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
     $business = DB::table('businesses')
         ->whereNull('deleted_at')

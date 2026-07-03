@@ -50,7 +50,47 @@ Concretely, this means:
 | Events | `events page.png` (979×1606) | `resources/views/pages/events/index.blade.php` (REPLACED the legacy layouts/app listing) | `/evenements` (`events.index`, controller lang() now honours ?lang=) | `f915dcf` |
 | Event detail | `events detail page.png` (984×1599) | `resources/views/pages/events/show.blade.php` (REPLACED the legacy layouts/app template) | `/evenements/{slug}` (`events.show`) | `7ace734` |
 | Event ticket | `events ticket.png` (1536×1024) | `resources/views/pages/events/ticket.blade.php` (NEW standalone printable page, no site chrome per design) | `/evenements/{slug}/billet` (`events.ticket`, NEW route) | `846076f` |
-| Default product images | `default product images by ategory.png` [sic] (1536×1024, asset sheet not a page) | 10 crops `default-product-{industry-slug}.png` wired as product-image fallbacks in `products/show` (gallery + related) and `businesses/show` (featured strip); legacy industries map artisanat→arts-decoration, aquaculture/agriculture→produits-naturels | — | (this session) |
+| Default product images | `default product images by ategory.png` [sic] (1536×1024, asset sheet not a page) | 10 crops `default-product-{industry-slug}.png` wired as product-image fallbacks in `products/show` (gallery + related) and `businesses/show` (featured strip); legacy industries map artisanat→arts-decoration, aquaculture/agriculture→produits-naturels | — | `46f6ab4` |
+| Seller dashboard | `seller dashbaord.png` [sic] (1536×1024) | `resources/views/pages/dashboard/entrepreneur.blade.php` (REPLACED the legacy layouts/dashboard view; standalone template) | `/tableau-de-bord/entrepreneur` (`dashboard.entrepreneur`; route now honours `?lang=`) | see git log |
+
+### Seller-dashboard notes
+
+- TEMPLATE page for every business_owner: real data threads through (shop name,
+  logo w/ `sd-avatar-shop.png` fallback, member-since month, verified badge by
+  real tier → links to `verification.show`, real Produits/Messages/Événements
+  badge counts, real shop visits in KPI 3, real products in "Produits les plus
+  populaires" → `products.web-edit` links preserve the product-edit flow, design's
+  5 rows shown when the business has no products). Everything with no backing
+  system is design-static verbatim: KPI numbers (356 000 FCFA / 28 / 3.6% / 96%),
+  the 4 Commandes récentes rows (#GVN-2025-0009..0012), the activity feed, wallet
+  amounts (156 500 / 45 200 / 890 750), region stats, "Vendeur Gold" pill,
+  bell badge 5.
+- Sidebar nav maps design items onto real routes: Commandes/Messages →
+  messages.inbox, Produits/Avis & Clients → own storefront, Événements →
+  events.index, Collections → saved.index, Statistiques → #performances,
+  Revenus & Portefeuille → #portefeuille, Promotions → contact, Expéditions →
+  support.index, Paramètres boutique → business.edit, Mon compte → profile.show,
+  Aide & Support → support.index. Logout lives in the header profile dropdown
+  (POST route('logout')) with Mon profil + Sécurité.
+- Design artwork cropped: `sd-nav-1..14.png` (sidebar icons), `sd-kpi-icon-1..5` +
+  `sd-kpi-spark-1..5`, `sd-chart.png` (whole plot incl axis labels),
+  `sd-order-1..4` + `sd-pop-1..5` (product thumbs), `sd-avatar-shop`,
+  `sd-user-avatar`, `sd-promo-art`, `sd-region-map`, `sd-event-art`,
+  `sd-wallet-icon`. Quick-action + activity icons are generic → lucide.
+- Palette: sidebar `#002714`, brand band `#031E12`, active row `#14391E` + gold
+  bar/text `#FCB806`, badge red `#DC0508`, tricolor `#014D25`/`#CA0107`/`#F3AA02`
+  (ONE star centered in red), search button `#052912`, wallet card `#07271A`,
+  gold buttons `#FEBF00` (text `#3A2A03`), main bg `#FCFCFC`, KPI tint gradients
+  white→`#F1F8EF`/`#FEF7EC`/`#F2F6FE`/`#FEF3F3`.
+- The old dashboard's verification-progress card and event-participation list
+  have no design equivalent; those flows remain reachable (verification via the
+  sidebar badge link, events via the nav item). The old "no business yet" branch
+  is kept inside the new chrome.
+- **Preview-tool gotcha discovered here**: the preview browser's animation clock
+  can freeze — CSS transitions stay `running` forever (breaking translate-based
+  slide-overs) and preview_screenshot times out. Avoid `transition-transform` on
+  the mobile sidebar (state is applied instantly via a plain `#dash-sidebar.open`
+  media-query rule); verify via preview_eval/inspect instead of screenshots.
 
 ### Categories-page notes
 
@@ -353,17 +393,22 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-1. **All public-page design PNGs are DONE.** Remaining PNGs are the
-   dashboard/certificate designs (buyer dashboard mobile, seller dashbaord
-   [sic], seller mobile dashboard, certificate verification page, memersbip
-   certificate [sic]) — these extend beyond public pages; confirm approach
-   with the user before touching `layouts/dashboard.blade.php` pages.
-   Remember SetResolution(96,96) before GDI+ crops.
-2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
-   `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],
-   `seller mobile dashboard.png` — dashboard replicas would extend scope beyond
-   public pages (dashboards use `layouts/dashboard.blade.php`, so far
-   deliberately untouched). Ask the user before starting these.
+All public pages AND the seller (desktop) dashboard are done. The user approved
+dashboard replicas on 2026-07-03 ("proceed in order"). Remaining, in the user's
+order:
+
+1. **`seller mobile dashboard.png` — NEXT.** Mobile variant of the seller
+   dashboard; extend `pages/dashboard/entrepreneur.blade.php`'s responsive
+   layout to match it (don't fork a second view unless the design demands it).
+2. **`buyer dashboard mobile.png`** — buyer dashboard at
+   `/tableau-de-bord/acheteur` (`pages/dashboard/buyer.blade.php`, still the
+   legacy layouts/dashboard view).
+3. **`certificate verification page.png`** — likely a public verification page;
+   scope the route when reading the design.
+4. **`memersbip certificate.png`** [sic] — likely a printable certificate
+   (follow the event-ticket page pattern).
+
+Remember SetResolution(96,96) before GDI+ crops.
 
 ## The replication process (repeat for each new page)
 
