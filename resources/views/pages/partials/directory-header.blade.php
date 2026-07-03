@@ -87,7 +87,7 @@
                     <span class="relative">
                         <i data-lucide="mail" class="w-[17px] h-[17px]"></i>
                         @if($dirMsgBadge)
-                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] bg-[#02301B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $dirMsgBadge }}</span>
+                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] text-white text-[9px] font-bold rounded-full flex items-center justify-center" style="background-color: {{ $dirMsgBadgeColor ?? '#02301B' }}">{{ $dirMsgBadge }}</span>
                         @endif
                     </span>
                     Messages

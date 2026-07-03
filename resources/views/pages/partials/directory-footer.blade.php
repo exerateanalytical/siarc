@@ -24,6 +24,9 @@
     $dfShowHelp = $dfShowHelp ?? false;
     $dfSocialStyle = $dfSocialStyle ?? 'filled';
     $dfShowLegalLinks = $dfShowLegalLinks ?? true;
+    $dfBrandParagraph = $dfBrandParagraph ?? null;
+    $dfShowPayments = $dfShowPayments ?? false;
+    $dfBgColor = $dfBgColor ?? '#012B1C';
 
     $dfSocialIcons = [
         'Facebook'  => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>',
@@ -34,7 +37,7 @@
     ];
 @endphp
 
-<footer class="relative bg-[#012B1C] overflow-hidden">
+<footer class="relative overflow-hidden" style="background-color: {{ $dfBgColor }}">
     <img src="{{ asset('images/landing/product-kente-left.png') }}" alt="" class="absolute inset-y-0 left-0 w-[64px] h-full object-cover hidden md:block pointer-events-none select-none" aria-hidden="true">
     <img src="{{ asset('images/landing/product-kente-right.png') }}" alt="" class="absolute inset-y-0 right-0 w-[64px] h-full object-cover hidden md:block pointer-events-none select-none" aria-hidden="true">
 
@@ -50,6 +53,9 @@
                     </span>
                 </div>
                 <p class="mt-2 text-[11px] text-[#9DB3A6]">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</p>
+                @if($dfBrandParagraph)
+                <p class="mt-3 text-[12px] text-[#B9C4BC] leading-relaxed max-w-[230px]">{{ $dfBrandParagraph }}</p>
+                @endif
                 <div class="mt-5 flex items-center gap-2.5">
                     @foreach($dfSocialIcons as $socialName => $socialPath)
                     @if($dfSocialStyle === 'outline')
@@ -145,7 +151,9 @@
         <!-- Legal bar -->
         <div class="mt-7 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] text-[#93A79B]">
             <span>&copy; 2025 {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</span>
-            @if($dfShowLegalLinks)
+            @if($dfShowPayments)
+            <img src="{{ asset('images/landing/event-payments.png') }}" alt="MTN Mobile Money, Orange Money, VISA, Mastercard, PayPal" class="h-[16px] w-auto">
+            @elseif($dfShowLegalLinks)
             <span class="flex items-center gap-3 whitespace-nowrap">
                 <a href="{{ route('terms') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Mentions légales' : 'Legal notice' }}</a>
                 <span class="text-white/20">|</span>

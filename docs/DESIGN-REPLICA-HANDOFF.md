@@ -41,7 +41,8 @@ Concretely, this means:
 | Product directory | `Product diretory.png` [sic] (1536×1024) | `resources/views/pages/products/index.blade.php` + NEW shared `pages/partials/directory-header.blade.php` / `directory-footer.blade.php` | `/galerie/produits` (`products.index`) | `a71e7d2` |
 | Vendors directory | `vendors directory.png` (1536×1024) | `resources/views/pages/businesses/index.blade.php` (REPLACED the legacy layouts/app listing) using the directory partials with options | `/galerie/entreprises` (`businesses.index`, controller unchanged) | `d479146` |
 | Product detail | `Product detail page.png` (1536×1024, canvas cut before footer) | `resources/views/pages/products/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/produits/{slug}` (`products.show`) | `bfd3cd4` |
-| Vendor detail | `vendors detail page.png` (1536×1024) | `resources/views/pages/businesses/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/entreprises/{slug}` (`businesses.show`) | (this session) |
+| Vendor detail | `vendors detail page.png` (1536×1024) | `resources/views/pages/businesses/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/entreprises/{slug}` (`businesses.show`) | `fef96fb` |
+| Events | `events page.png` (979×1606) | `resources/views/pages/events/index.blade.php` (REPLACED the legacy layouts/app listing) | `/evenements` (`events.index`, controller lang() now honours ?lang=) | (this session) |
 
 ### Categories-page notes
 
@@ -250,6 +251,35 @@ Concretely, this means:
 - Assets: vdetail-banner/about/client/why-pattern/cert-1..4/prod-pot/
   prod-jarre/prod-sac.
 
+### Events-page notes
+
+- Ticket-style listing at `events.index`; the design's 6 events render verbatim
+  as static view data AND were **seeded as real events** (`DesignEventsSeeder`,
+  design's 2025 dates kept verbatim — they're past dates, `events.show` still
+  serves them; the legacy 3 events remain untouched). "Voir détails" → real
+  `events.show` pages.
+- Ticket anatomy: colored left stub (date/time + CSS `repeating-linear-gradient`
+  barcode + notch circles), white body (badge pill, verified title, gold pin
+  city + venue rows, description, 4 tag chips), colored right stub (star, price,
+  gold "Voir détails", bookmark). Stub colors green `#06301A` / red `#C1272D` /
+  gold `#EFA912`; badges red/gold/green per design.
+- Design-static numbers: "128 événements trouvés", sidebar category counts
+  (32/28/24/16/18/10/8/12), region counts (38/25/18/14/10/8/7/5/3/3), prices
+  (ENTRÉE LIBRE / 2 000 / 5 000 / 3 000 FCFA).
+- Functional: type pills + sidebar category/region links filter the static
+  list via ?type=/?region=; sort works; filter panel round-trips; "Soumettre
+  un événement" → admin.events for admins, contact page otherwise;
+  "Charger plus" → events.index.
+- Header: 'vdetail' variant with RED Messages badge "2" (`$dirMsgBadgeColor`).
+  Footer gained options: `$dfBrandParagraph` ("Plateforme officielle … à
+  travers le digital."), `$dfShowPayments` (event-payments.png strip: MTN
+  Mobile Money, Orange Money, VISA, Mastercard, PayPal), `$dfBgColor`
+  (`#021A0D` here — darker than the directory pages).
+- **Fixed**: `EventWebController::lang()` read the cookie only; it now honours
+  `?lang=` (same bug family as the terms/privacy note below).
+- Assets: `event-icon-1..6.png` (ticket illustrations), `event-map.png`
+  (sidebar map with pins), `event-payments.png`.
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -269,8 +299,8 @@ Concretely, this means:
 ## What is pending — build in this order
 
 1. Working through the remaining PNGs in order (user said "proceed" 2026-07-03):
-   `events page.png` — NEXT, then `events detail page.png`,
-   `events ticket.png`, `default product images by ategory.png` [sic].
+   `events detail page.png` — NEXT, then `events ticket.png`,
+   `default product images by ategory.png` [sic].
    Verify each PNG's chrome first — every mockup so far varied it. Remember
    SetResolution(96,96) before GDI+ crops.
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):

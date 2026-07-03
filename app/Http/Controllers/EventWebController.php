@@ -14,7 +14,7 @@ class EventWebController extends Controller
 {
     private function lang(Request $request): string
     {
-        $lang = $request->cookie('lang', 'fr');
+        $lang = $request->query('lang', $request->cookie('lang', 'fr'));
         return in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     }
 
