@@ -725,9 +725,16 @@ NEW admin routes (admin-guarded closures, same chrome, REAL data):
 (/tableau-de-bord/admin/categories — industries + regions w/ live counts,
 #regions anchor), `admin.siarc` (/tableau-de-bord/admin/siarc — real siac
 event + exhibitors + 4 anchored section cards). The layouts/dashboard
-admin menu also links these. Remaining admin-* pages still use
-layouts/dashboard (uniform identity) — migrating them into the new admin
-chrome is optional follow-up.
+admin menu also links these. **Commit a883c84: the whole admin suite was
+migrated** — NEW `layouts/admin.blade.php` wraps @yield('content') with the
+admin chrome ($adminActive auto-derived from the route); all 14 admin-*
+views now extend layouts.admin; the sidebar gained an "Administration"
+group (Partenaires/Modération/Rapports/Support). Same commit: permanent
+RouteSmokeTest (no parameterless GET route may 5xx), 17 routes now honour
+?lang= over the cookie, all APP_URL-accessor image bugs fixed
+(asset('storage/…') everywhere), vendor-detail cert links wired to
+certificate.verify, and a REAL newsletter workflow
+(newsletter_subscribers table + POST /newsletter + footer confirmation).
 
 ## The replication process (repeat for each new page)
 
