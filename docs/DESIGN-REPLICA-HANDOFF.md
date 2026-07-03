@@ -3,12 +3,16 @@
 Status as of 2026-07-03. This documents the pixel-replica work done so far so a fresh
 Claude Code session (or any developer, on any account) can continue without prior context.
 
-**CURRENT STATE: the original 17 design PNGs plus the FULL onboarding wizard
+**CURRENT STATE: the original 17 design PNGs, the FULL onboarding wizard
 (steps 1–10 + the step-12 success screen, all in `pages/onboarding.blade.php`)
-are replicated (all 34 tests green). PENDING: the quote-flow design family —
-`onboarding step 11.png` (quote-centric seller dashboard) + the 5 quotation
-PNGs (see "Still pending" in the onboarding section below). If new design PNGs
-appear in the repo root, follow THE OVERRIDING RULE and the process below.**
+AND the quote-flow design family's three full-page designs (step-11 seller
+quote dashboard + buyer RFQ wizard + buyer quotes listing — see the
+"Quote-flow design family" section) are replicated (all 34 tests green).
+The remaining quotation PNGs (`Quotation flow.png`, `Quotation flow
+complete.png`, `missing quote flows.png`) are 15–17-thumbnail overview SHEETS,
+not full-page designs — treated as references like the default-product-images
+asset sheet. If new full-page design PNGs appear in the repo root, follow THE
+OVERRIDING RULE and the process below.**
 
 ## THE OVERRIDING RULE — 100% pixel-perfect fidelity (user mandate, 2026-07-02)
 
@@ -488,15 +492,59 @@ Assets: `ob-type-1..4`, `ob-adv-1..6`, `ob-sec-1..4`, `ob-vases`, `ob-photo`,
 `ob5-map`, `ob6-*`, `ob7-*`, `ob8-*`, `ob9-*`, `ob10-*` and success-screen
 crops `ob12-check/mail/heart/shield.png`.
 
-**Still pending — quote-flow design family** (PNGs in repo root, NOT built):
-`onboarding step 11.png` (despite its filename it is a post-approval seller
-dashboard centered on "Demandes de devis" — Bonjour Jude, pipeline
-Nouvelles/En discussion/Devis envoyés/Négociation/En attente client/Converties,
-KPIs 18/12/7/7/23), plus `Quotation flow.png`, `Quotation flow complete.png`,
-`create un demande.png`, `missing quote flows.png`, `quote propositions.png`.
-These describe the buyer→seller quotation feature; build them together as the
-next phase (the step-11 dashboard is their hub, likely a new route rather than
-a replacement of `dashboard.entrepreneur`).
+## Quote-flow design family (built 2026-07-03, commits 1ebe927 + 8b5aab5)
+
+Three full-page designs; the other three PNGs (`Quotation flow.png`,
+`Quotation flow complete.png`, `missing quote flows.png`) are thumbnail
+overview sheets kept as references only.
+
+- **Seller quote dashboard** (`onboarding step 11.png`, 1024×1536 — despite
+  its filename NOT an onboarding step) → NEW auth route `/tableau-de-bord/devis`
+  (`dashboard.quotes`), standalone `pages/dashboard/quotes.blade.php`. Dense
+  1024-wide mockup rebuilt at the established dashboard scale. Real data:
+  shop name/logo, generated `ART-CM-{year}-{id}` (design ART-CM-2024-000158
+  as guest-of fallback), member-since, real Messages badge, top-5 products by
+  views_count with real covers in Performance des produits (design's 5 rows
+  when no products), SIAC card → the real siac% event. Design-static verbatim:
+  KPI row 18/12/7/7/23, pipeline dots 18/7/12/5/7/7 (colored rings + segment
+  lines), 23% / 12,450,000 FCFA + `qd-spark.png`, 5 Demandes récentes with
+  pills NOUVELLE/EN DISCUSSION/DEVIS ENVOYÉ/NÉGOCIATION/CONVERTIE, activity
+  feed, 85% donut (CSS conic-gradient), documents rows, portefeuille 450,000
+  FCFA, Événements/Conseils cards + `qd-rocket.png`, bottom "Voir ma boutique
+  publique" → own storefront. Sidebar maps all items onto real routes
+  (Documents → membership.certificate, Certifications → verification.show…).
+  Assets `qd-*.png`.
+- **Buyer RFQ wizard** (`create un demande.png`, 1536×1024) → NEW auth route
+  `/tableau-de-bord/demandes/creer` (`quotes.create`),
+  `pages/quotes/create.blade.php`. 5-step stepper (only step 1 has a design;
+  extend the page when steps 2–5 arrive). Buyer info prefilled with the REAL
+  logged-in user; design demo values elsewhere (RFQ-2024-000189, Mobilier en
+  bois massif pour hôtel…), live char counters, file list add/remove with
+  cropped icons, "Enregistrer comme brouillon" → localStorage + visible ✓.
+  **"Étape suivante" exits into the REAL flow**: composes title/description/
+  message/contact into ONE `messages.send` POST to Art Bois Nature and lands
+  in the real messages inbox (verified end-to-end with the demo buyer).
+  **Art Bois Nature was SEEDED** (`DesignQuoteVendorSeeder`, idempotent,
+  Yaoundé/Centre, bois-sculpture, verified, cover = `qb-artbois.png`) so the
+  rail's "Voir le profil" opens a real profile. Assets `qb-*.png`.
+- **Buyer quotes listing** (`quote propositions.png`, 1536×1024) → NEW auth
+  route `/tableau-de-bord/demandes` (`quotes.index`),
+  `pages/quotes/index.blade.php`. Design's 8 rows verbatim (ENQ/QUO refs,
+  cropped thumbs `qp-thumb-1..8.png`, type pills Demande envoyée/Proposition
+  reçue, status pills + subs, orange expiry lines); tabs Toutes (18)…Expirées
+  (0) and the Statut select genuinely filter via `?tab=`, search via `?q=`;
+  Exporter → window.print(); résumé rail 6 tinted stat cards, Répartition
+  donut (conic-gradient 33.3/16.7/5.6/38.9/5.6 + legend), Actions rapides →
+  quotes.create/messages/profile; pagination strip verbatim (page links
+  round-trip on the same route).
+- Shared buyer chrome: `pages/partials/quotes-buyer-header.blade.php`
+  (hamburger toggles `#qb-sidebar.open`, search → gallery.search, chat 3 /
+  bell 12 badges, `qb-avatar.png`, profile dropdown w/ logout; option
+  `$qbSearchPlaceholder`) and `quotes-buyer-sidebar.blade.php` (initials
+  card — real user name, "Achat Pro SARL" static, `$qbCompanyFirst` flips the
+  order per design —, 11 nav items with Messages (real count) / Notifications
+  12 badges, help card → support). Mobile: sidebars are display:none +
+  `.open` fixed overlay (NO transitions — preview animation-clock gotcha).
 
 Remember SetResolution(96,96) before GDI+ crops if new designs arrive.
 
