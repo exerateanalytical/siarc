@@ -721,7 +721,10 @@ Route::get('/tableau-de-bord/acheteur', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $buyerSince = DB::table('users')->where('id', $siacUser['id'])->value('created_at');
 
     $savedBusinesses = DB::table('saved_businesses')
         ->join('businesses', 'businesses.id', '=', 'saved_businesses.business_id')
@@ -754,7 +757,7 @@ Route::get('/tableau-de-bord/acheteur', function (Request $request) {
         'industries' => DB::table('industries')->where('is_active', 1)->count(),
     ];
 
-    return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats'));
+    return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats', 'buyerSince'));
 })->name('dashboard.buyer');
 
 // ─────────────────────────────────────────────

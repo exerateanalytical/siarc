@@ -404,14 +404,26 @@ wallet bar `sm-wallet-icon`, bottom tab bar with green FAB → products.web-crea
 and a Menu tab that opens the sidebar slide-over) are done. The user approved
 dashboard replicas on 2026-07-03 ("proceed in order"). Remaining:
 
-1. **`buyer dashboard mobile.png` — NEXT.** Buyer dashboard at
-   `/tableau-de-bord/acheteur` (`pages/dashboard/buyer.blade.php`, still the
-   legacy layouts/dashboard view). The design is mobile-only — decide whether
-   the desktop buyer view keeps the legacy layout (ask user) or gets a scaled-up
-   variant.
-2. **`certificate verification page.png`** — likely a public verification page;
-   scope the route when reading the design.
-3. **`memersbip certificate.png`** [sic] — likely a printable certificate
+The buyer dashboard is also done: `buyer dashboard mobile.png` → REPLACED
+`pages/dashboard/buyer.blade.php` (route `dashboard.buyer` now honours `?lang=`
+and passes `$buyerSince`). NOTE: despite its filename the design's CONTENT is a
+seller/boutique dashboard ("Bonjour, Artisan Ndop", Chiffre d'affaires, Gérer
+produits, "Développez votre boutique") — replicated verbatim per the mandate,
+with name/member-since as template fields. Mobile-first page rendered centered
+at `max-w-[431px]` on all screen sizes. The design has no sidebar, so buyer
+flows (saved businesses, messages, notifications, profile, security, support,
+LOGOUT) live in an extrapolated dark-green slide-over menu (hamburger + Menu
+tab). Assets: `bm-avatar/hero-flag/kpi-1..4/order-1..4/qa-1..8/promo-art.png`
+(hero "Voir ma boutique" HTML button covers the baked one; it links to
+business.create since buyers have no shop). Design statics: KPIs 28/+18%,
+356 000 FCFA/+24%, 1 245/+12%, 96% Excellent; same 4 GVN orders; badges 3/5/12
+(Messages badge uses the real conversation count).
+
+Remaining, in the user's order:
+
+1. **`certificate verification page.png` — NEXT.** Likely a public verification
+   page; scope the route when reading the design.
+2. **`memersbip certificate.png`** [sic] — likely a printable certificate
    (follow the event-ticket page pattern).
 
 Remember SetResolution(96,96) before GDI+ crops.
