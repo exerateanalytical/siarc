@@ -150,8 +150,28 @@ class FrontendController extends Controller
             // ignore
         }
 
+        // "Produits phares" — the business's products, topped up to 6 with recent
+        // public products from other vendors
+        $featuredProducts = $business->products
+            ->where('status', 'published')
+            ->sortBy('sort_order')
+            ->take(6)
+            ->values();
+        if ($featuredProducts->count() < 6) {
+            $featuredProducts = $featuredProducts->concat(
+                Product::whereNotIn('id', $featuredProducts->pluck('id')->push(0))
+                    ->where('business_id', '!=', $business->id)
+                    ->where('status', 'published')
+                    ->whereHas('business', fn ($q) => $q->where('status', 'published'))
+                    ->with(['primaryImage', 'category'])
+                    ->latest()
+                    ->limit(6 - $featuredProducts->count())
+                    ->get()
+            );
+        }
+
         return response(
-            view('pages.businesses.show', compact('lang', 'business'))
+            view('pages.businesses.show', compact('lang', 'business', 'featuredProducts'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 

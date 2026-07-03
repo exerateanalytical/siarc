@@ -40,7 +40,8 @@ Concretely, this means:
 | Contact | `contact page.png` (1024×1536) | `resources/views/pages/contact.blade.php` (standalone — does NOT use the gallery partials, see notes) | `/contact` (`contact`), POST `/contact` (`contact.store`) | `27e4a92` |
 | Product directory | `Product diretory.png` [sic] (1536×1024) | `resources/views/pages/products/index.blade.php` + NEW shared `pages/partials/directory-header.blade.php` / `directory-footer.blade.php` | `/galerie/produits` (`products.index`) | `a71e7d2` |
 | Vendors directory | `vendors directory.png` (1536×1024) | `resources/views/pages/businesses/index.blade.php` (REPLACED the legacy layouts/app listing) using the directory partials with options | `/galerie/entreprises` (`businesses.index`, controller unchanged) | `d479146` |
-| Product detail | `Product detail page.png` (1536×1024, canvas cut before footer) | `resources/views/pages/products/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/produits/{slug}` (`products.show`) | (this session) |
+| Product detail | `Product detail page.png` (1536×1024, canvas cut before footer) | `resources/views/pages/products/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/produits/{slug}` (`products.show`) | `bfd3cd4` |
+| Vendor detail | `vendors detail page.png` (1536×1024) | `resources/views/pages/businesses/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/entreprises/{slug}` (`businesses.show`) | (this session) |
 
 ### Categories-page notes
 
@@ -222,6 +223,33 @@ Concretely, this means:
   `asset('storage/' . file_path)` — the `ProductImage->url` accessor builds
   from APP_URL (artisanatcameroun.test), which breaks on the preview ports.
 
+### Vendor-detail notes
+
+- Template page (serves every business), replaced the legacy layouts/app view.
+  Header = directory-header variant 'vdetail' (Favoris + Messages badge "3" +
+  Panier without badge; icon flags are now derived per variant in the partial).
+  Secondary nav bar active = Entreprises. Footer = vendors options + Événements
+  in EXPLORER + Politique de confidentialité in RESSOURCES.
+- **Seeded (`DesignVendorDetailSeeder`)**: Céramiques du Noun profile details —
+  tagline "Poterie & Céramique Traditionnelle", year_established 2018,
+  employee_count 8, phone/whatsapp/email/website, response_time_hours 2,
+  languages ['Français','English'], created_at forced to 2021 ("Membre depuis
+  2021") — plus 3 new products for the Produits phares strip:
+  pot-traditionnel-bamoun, jarre-decorative (Céramiques du Noun) and
+  sac-en-cuir-artisanal (Afrik Cuir Excellence), covers from design crops.
+- Design-static template values with real-data fallbacks: rating 4.8 (156 avis),
+  ID ENT-CN-2021-0456 and registration RC/DLA/2018/B/1234 (slug-mapped for the
+  design business, generated formulas otherwise), hero stats 8/312/1,842/98%/
+  2 ans/100%, tab counts Produits (312) / Collections (12) / Avis (156),
+  "Voir tous les produits (312)".
+- Banner `vdetail-banner.png`: design photo with title/paragraph/stats patched
+  out (mirror-tile + flat strip fill; residual banding is hidden by the CSS
+  left gradient overlay). Title/paragraph/stats bar are live HTML on top.
+- Produits phares = business products topped to 6 by `businessShow` (new
+  `$featuredProducts`), horizontal scroll carousel with arrows.
+- Assets: vdetail-banner/about/client/why-pattern/cert-1..4/prod-pot/
+  prod-jarre/prod-sac.
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -241,11 +269,10 @@ Concretely, this means:
 ## What is pending — build in this order
 
 1. Working through the remaining PNGs in order (user said "proceed" 2026-07-03):
-   `vendors detail page.png` — NEXT, then `events page.png`,
-   `events detail page.png`, `events ticket.png`,
-   `default product images by ategory.png` [sic].
-   Detail pages likely reuse the `directory-header`/`directory-footer` partials
-   (verify each PNG's chrome first — every mockup so far varied it).
+   `events page.png` — NEXT, then `events detail page.png`,
+   `events ticket.png`, `default product images by ategory.png` [sic].
+   Verify each PNG's chrome first — every mockup so far varied it. Remember
+   SetResolution(96,96) before GDI+ crops.
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
    `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],
    `seller mobile dashboard.png` — dashboard replicas would extend scope beyond

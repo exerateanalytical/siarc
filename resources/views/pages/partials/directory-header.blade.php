@@ -75,20 +75,35 @@
                     <i data-lucide="heart" class="w-[17px] h-[17px]"></i>
                     {{ $isFr ? 'Favoris' : 'Saved' }}
                 </a>
-                @if($dirIconVariant === 'vendors' || $dirIconVariant === 'detail')
-                @if($dirIconVariant === 'vendors')
+                @php
+                    $dirShowMessages = in_array($dirIconVariant, ['vendors', 'vdetail']);
+                    $dirMsgBadge = $dirIconVariant === 'vdetail' ? ($dirMsgCount ?? 3) : null;
+                    $dirShowCart = in_array($dirIconVariant, ['vendors', 'detail', 'vdetail']);
+                    $dirCartBadge = $dirIconVariant === 'vendors' ? ($dirCartCount ?? 3) : ($dirIconVariant === 'detail' ? ($dirCartCount ?? 2) : null);
+                @endphp
+                @if($dirShowMessages || $dirShowCart)
+                @if($dirShowMessages)
                 <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
-                    <i data-lucide="mail" class="w-[17px] h-[17px]"></i>
+                    <span class="relative">
+                        <i data-lucide="mail" class="w-[17px] h-[17px]"></i>
+                        @if($dirMsgBadge)
+                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] bg-[#02301B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $dirMsgBadge }}</span>
+                        @endif
+                    </span>
                     Messages
                 </a>
                 @endif
+                @if($dirShowCart)
                 <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
                     <span class="relative">
                         <i data-lucide="shopping-cart" class="w-[17px] h-[17px]"></i>
-                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] bg-[#02301B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $dirCartCount ?? 3 }}</span>
+                        @if($dirCartBadge)
+                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] bg-[#02301B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $dirCartBadge }}</span>
+                        @endif
                     </span>
                     {{ $isFr ? 'Panier' : 'Cart' }}
                 </a>
+                @endif
                 @else
                 <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
                     <i data-lucide="shopping-bag" class="w-[17px] h-[17px]"></i>
