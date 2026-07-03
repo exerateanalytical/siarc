@@ -700,6 +700,35 @@ pages were REMOVED so every page shows the one canonical footer menu
 (cosmetic footer options remain); the partners page content was restyled
 to the identity (green hero, landing partner-*.png logo tiles).
 
+## Admin panel replica (2026-07-03, commit b12201e)
+
+`admin panel.png` (1536x1024) REPLACED `pages/dashboard/admin.blade.php`
+(standalone, own chrome per the design — dashboards are exempt from the
+public-chrome consolidation). Shared chrome partials:
+`pages/partials/admin-sidebar.blade.php` (option `$adminActive`; green
+gradient + gold kente crops ad-side-edge/ad-side-band, cream active pill,
+5 gold-labeled groups — 29 items ALL mapped to real routes, gold 28/16
+badges kept design-verbatim, République card w/ `ad-coat.png`) and
+`admin-topbar.blade.php` (green hamburger toggles `#ad-sidebar.ad-open`,
+search → gallery.search, +Ajouter dropdown → real create routes, bell 12
+gold / mail 5 red, globe lang switch, `ad-avatar.png` dropdown). Main
+content design-verbatim (KPIs, 10-region legend + `ad-map.png`,
+`ad-chart.png` + stats, 8 quick actions, top-5 bars, 2 CSS conic donuts,
+2-col region table w/ `ad-spark-1..6.png` incl. "Nord-Oèst" [sic], SIARC
+countdown + `ad-siarc.png`, Dame Rosine Mefou `ad-artisan.png`, CSS
+revenue bars). Real data: admin name; dashboard.admin route now honours
+?lang=.
+
+NEW admin routes (admin-guarded closures, same chrome, REAL data):
+`admin.products` (/tableau-de-bord/admin/produits), `admin.quotes`
+(/tableau-de-bord/admin/devis — all conversations), `admin.industries`
+(/tableau-de-bord/admin/categories — industries + regions w/ live counts,
+#regions anchor), `admin.siarc` (/tableau-de-bord/admin/siarc — real siac
+event + exhibitors + 4 anchored section cards). The layouts/dashboard
+admin menu also links these. Remaining admin-* pages still use
+layouts/dashboard (uniform identity) — migrating them into the new admin
+chrome is optional follow-up.
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —
