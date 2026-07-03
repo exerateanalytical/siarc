@@ -423,7 +423,12 @@
                                     @if($fp->primaryImage)
                                     <img src="{{ asset('storage/' . $fp->primaryImage->file_path) }}" alt="{{ $fpName }}" class="w-full h-[86px] object-cover">
                                     @else
-                                    <span class="block w-full h-[86px] bg-[#F4F1EC]"></span>
+                                    @php
+                                        $fpIndSlug = $fp->category?->sector?->industry?->slug ?? $fp->business?->industry?->slug ?? $business->industry?->slug;
+                                        $fpDefault = in_array($fpIndSlug, ['arts-decoration','textile-mode','bois-sculpture','poterie-ceramique','bijouterie-accessoires','cuir-maroquinerie','musique-instruments','produits-naturels','agroalimentaire','technologies-innovation'])
+                                            ? $fpIndSlug : (['artisanat' => 'arts-decoration', 'aquaculture' => 'produits-naturels', 'agriculture' => 'produits-naturels'][$fpIndSlug] ?? 'arts-decoration');
+                                    @endphp
+                                    <img src="{{ asset('images/landing/default-product-' . $fpDefault . '.png') }}" alt="{{ $fpName }}" class="w-full h-[86px] object-contain p-1.5 bg-[#F9F5EE]">
                                     @endif
                                 </a>
                                 @if($fpBadge === 'best')

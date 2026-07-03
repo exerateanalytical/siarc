@@ -44,7 +44,8 @@ Concretely, this means:
 | Vendor detail | `vendors detail page.png` (1536×1024) | `resources/views/pages/businesses/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/entreprises/{slug}` (`businesses.show`) | `fef96fb` |
 | Events | `events page.png` (979×1606) | `resources/views/pages/events/index.blade.php` (REPLACED the legacy layouts/app listing) | `/evenements` (`events.index`, controller lang() now honours ?lang=) | `f915dcf` |
 | Event detail | `events detail page.png` (984×1599) | `resources/views/pages/events/show.blade.php` (REPLACED the legacy layouts/app template) | `/evenements/{slug}` (`events.show`) | `7ace734` |
-| Event ticket | `events ticket.png` (1536×1024) | `resources/views/pages/events/ticket.blade.php` (NEW standalone printable page, no site chrome per design) | `/evenements/{slug}/billet` (`events.ticket`, NEW route) | (this session) |
+| Event ticket | `events ticket.png` (1536×1024) | `resources/views/pages/events/ticket.blade.php` (NEW standalone printable page, no site chrome per design) | `/evenements/{slug}/billet` (`events.ticket`, NEW route) | `846076f` |
+| Default product images | `default product images by ategory.png` [sic] (1536×1024, asset sheet not a page) | 10 crops `default-product-{industry-slug}.png` wired as product-image fallbacks in `products/show` (gallery + related) and `businesses/show` (featured strip); legacy industries map artisanat→arts-decoration, aquaculture/agriculture→produits-naturels | — | (this session) |
 
 ### Categories-page notes
 
@@ -347,13 +348,11 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-1. Working through the remaining PNGs in order (user said "proceed" 2026-07-03):
-   `default product images by ategory.png` [sic] — NEXT (likely default product
-   imagery per category, not a page; scope with the user if unclear). Then the
-   dashboard/certificate PNGs (buyer dashboard mobile, seller dashbaord [sic],
-   seller mobile dashboard, certificate verification page, memersbip
+1. **All public-page design PNGs are DONE.** Remaining PNGs are the
+   dashboard/certificate designs (buyer dashboard mobile, seller dashbaord
+   [sic], seller mobile dashboard, certificate verification page, memersbip
    certificate [sic]) — these extend beyond public pages; confirm approach
-   before touching `layouts/dashboard.blade.php` pages.
+   with the user before touching `layouts/dashboard.blade.php` pages.
    Remember SetResolution(96,96) before GDI+ crops.
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
    `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],

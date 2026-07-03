@@ -70,6 +70,13 @@
     $contactPhone = $business->phone ?: '+237670416238';
     $contactEmail = $business->email ?: 'contact@gvnac.cm';
     $waNumber = preg_replace('/\D/', '', $business->whatsapp ?: $contactPhone);
+
+    // Default product artwork per category (design: "default product images by category")
+    $defaultBySlug = fn (?string $slug) => asset('images/landing/default-product-' . (in_array($slug, [
+        'arts-decoration', 'textile-mode', 'bois-sculpture', 'poterie-ceramique', 'bijouterie-accessoires',
+        'cuir-maroquinerie', 'musique-instruments', 'produits-naturels', 'agroalimentaire', 'technologies-innovation',
+    ]) ? $slug : (['artisanat' => 'arts-decoration', 'aquaculture' => 'produits-naturels', 'agriculture' => 'produits-naturels'][$slug] ?? 'arts-decoration')) . '.png');
+    $productDefaultImg = $defaultBySlug($industry->slug ?? $business->industry?->slug);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -135,7 +142,7 @@
         <!-- Gallery -->
         <div>
             <div class="relative rounded-xl overflow-hidden bg-[#F4F1EC]">
-                <img id="gallery-main" src="{{ $mainImage ? asset('storage/' . $mainImage->file_path) : asset('images/landing/pdetail-main.png') }}" alt="{{ $name }}" class="w-full h-[402px] object-cover">
+                <img id="gallery-main" src="{{ $mainImage ? asset('storage/' . $mainImage->file_path) : $productDefaultImg }}" alt="{{ $name }}" class="w-full h-[402px] {{ $mainImage ? 'object-cover' : 'object-contain p-8' }}">
                 @if(($product->created_at ?? null) && $product->created_at->gt(now()->subDays(60)))
                 <span class="absolute top-4 left-4 bg-[#0E3D26] text-white text-[10px] font-bold tracking-[0.06em] uppercase rounded-md px-2.5 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
                 @endif
@@ -479,6 +486,7 @@
             @php
                 $relName = $isFr ? $rel->name_fr : ($rel->name_en ?? $rel->name_fr);
                 $relImg = $rel->primaryImage ? asset('storage/' . $rel->primaryImage->file_path) : null;
+                $relDefault = $defaultBySlug($rel->category?->sector?->industry?->slug ?? $rel->business?->industry?->slug);
                 $relBadge = $designBadges[$rel->slug] ?? null;
             @endphp
             <article class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
@@ -487,7 +495,7 @@
                         @if($relImg)
                         <img src="{{ $relImg }}" alt="{{ $relName }}" class="w-full h-[150px] object-cover">
                         @else
-                        <span class="w-full h-[150px] bg-[#F4F1EC] flex items-center justify-center text-[#C9C4BA]"><i data-lucide="image" class="w-8 h-8"></i></span>
+                        <img src="{{ $relDefault }}" alt="{{ $relName }}" class="w-full h-[150px] object-contain p-3 bg-[#F9F5EE]">
                         @endif
                     </a>
                     @if($relBadge === 'new')
