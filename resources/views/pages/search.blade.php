@@ -52,21 +52,25 @@ $totalResults = $businesses->count() + $products->count();
             {{ $lang === 'fr' ? 'Produits' : 'Products' }}
             <span class="text-sm font-normal text-gray-400">({{ $products->count() }})</span>
         </h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             @foreach($products as $product)
-            <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-forest-300 hover:shadow-sm transition-all">
-                <div class="aspect-square bg-gray-100 flex items-center justify-center">
+            <article class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex flex-col">
+                <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="block aspect-square bg-[#F5F1E9] flex items-center justify-center">
                     @if($product->primaryImage)
-                    <img src="{{ $product->primaryImage->url }}" alt="" class="w-full h-full object-cover">
+                    <img src="{{ asset('storage/' . $product->primaryImage->file_path) }}" alt="" class="w-full h-full object-cover">
                     @else
-                    <i data-lucide="package" class="w-6 h-6 text-gray-300"></i>
+                    <i data-lucide="package" class="w-8 h-8 text-[#D9CFBB]"></i>
                     @endif
+                </a>
+                <div class="p-3 flex-1 flex flex-col">
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="text-[12.5px] font-bold text-[#1D1B16] truncate hover:text-leaf transition-colors">
+                        {{ $lang === 'fr' ? $product->name_fr : ($product->name_en ?? $product->name_fr) }}
+                    </a>
+                    <p class="mt-0.5 text-[11px] text-[#6F6B60] truncate">{{ $lang === 'fr' ? $product->business->name_fr : ($product->business->name_en ?? $product->business->name_fr) }}</p>
+                    <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}"
+                        class="mt-auto pt-2.5 block"><span class="h-[30px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center text-[11.5px] font-semibold text-[#1D1B16] transition-colors">{{ $lang === 'fr' ? 'Voir le produit' : 'View product' }}</span></a>
                 </div>
-                <div class="p-2.5">
-                    <p class="text-xs font-medium text-gray-800 truncate">{{ $lang === 'fr' ? $product->name_fr : ($product->name_en ?? $product->name_fr) }}</p>
-                    <p class="text-[11px] text-gray-400 truncate">{{ $lang === 'fr' ? $product->business->name_fr : ($product->business->name_en ?? $product->business->name_fr) }}</p>
-                </div>
-            </a>
+            </article>
             @endforeach
         </div>
     </div>
