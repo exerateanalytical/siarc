@@ -74,22 +74,6 @@
     $dfSocialStyle = 'outline';
     $dfShowLegalLinks = false;
     $dfNewsletterText = $isFr ? 'Recevez nos nouveautés et offres exclusives.' : 'Receive our new arrivals and exclusive offers.';
-    $dfExplorer = [
-        ($isFr ? 'Catégories' : 'Categories')  => route('industries.index', ['lang' => $lang]),
-        'Artisans'                             => route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']),
-        ($isFr ? 'Entreprises' : 'Businesses') => route('businesses.index', ['lang' => $lang]),
-        ($isFr ? 'Régions' : 'Regions')        => route('businesses.index', ['lang' => $lang]),
-        'Collections'                          => route('industries.index', ['lang' => $lang]),
-        ($isFr ? 'Événements' : 'Events')      => route('events.index'),
-    ];
-    $dfRessources = [
-        ($isFr ? 'Guide de l\'artisan' : 'Artisan guide')                    => route('about'),
-        'Blog'                                                               => route('events.index'),
-        'FAQ'                                                                => route('about'),
-        ($isFr ? 'Centre d\'aide' : 'Help center')                           => route('support.index'),
-        ($isFr ? 'Conditions d\'utilisation' : 'Terms of use')               => route('terms'),
-        ($isFr ? 'Politique de confidentialité' : 'Privacy policy')          => route('privacy'),
-    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
