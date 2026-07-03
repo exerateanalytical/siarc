@@ -659,6 +659,16 @@ inherit their chrome).
 - NOTE: legacy CONTENT sections still use gray/forest/brand utility classes
   inside the new chrome — acceptable contrast, but a per-page content
   restyle is the remaining polish work if full uniformity is wanted.
+- **Chrome/card inheritance (commit 90f3207)**: `layouts/app.blade.php` now
+  @includes the REAL `directory-header`/`directory-footer` partials (not an
+  approximation) — it defines `$isFr`/`$siacUser` before including; the
+  partials' own `mobile-menu-btn`/`mobile-menu` ids match the layout script.
+  `components/business-card.blade.php` (used by search results) is the
+  vendors-directory card anatomy (gold ownership pill, green verified SVG,
+  Voir le profil + message buttons); search product cards match. IMPORTANT:
+  cards use `asset('storage/' . ...)`, never the `cover_url`/`url`
+  accessors (APP_URL breaks on preview ports). Saved page recolored to the
+  identity palette.
 
 ## The replication process (repeat for each new page)
 
