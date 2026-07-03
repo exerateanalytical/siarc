@@ -694,7 +694,11 @@ downloadable logo). directory-footer defaults updated (Produits + Événements
 in EXPLORER; Guide/FAQ/Actualités/Vérifier un certificat/API in RESSOURCES;
 Carrières/Presse/Devenir membre in À PROPOS). directory-header: Produits
 added to the secondary nav; the mobile hamburger menu now lists all main
-pages (it previously had none).
+pages (it previously had none). Commit c79a50c: the per-page
+$dfExplorer/$dfRessources footer-menu overrides on the vendors/events
+pages were REMOVED so every page shows the one canonical footer menu
+(cosmetic footer options remain); the partners page content was restyled
+to the identity (green hero, landing partner-*.png logo tiles).
 
 ## The replication process (repeat for each new page)
 
