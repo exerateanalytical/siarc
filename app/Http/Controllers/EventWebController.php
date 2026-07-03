@@ -29,6 +29,16 @@ class EventWebController extends Controller
             ->cookie('lang', $lang, 60 * 24 * 30);
     }
 
+    public function ticket(Request $request, string $slug)
+    {
+        $lang = $this->lang($request);
+
+        $event = Event::published()->where('slug', $slug)->firstOrFail();
+
+        return response(view('pages.events.ticket', compact('lang', 'event')))
+            ->cookie('lang', $lang, 60 * 24 * 30);
+    }
+
     public function show(Request $request, string $slug)
     {
         $lang = $this->lang($request);

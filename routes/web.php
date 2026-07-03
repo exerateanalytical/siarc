@@ -183,6 +183,7 @@ Route::post('/tableau-de-bord/admin/evenements/{id}/supprimer', [AdminWebControl
 use App\Http\Controllers\EventWebController;
 
 Route::get('/evenements', [EventWebController::class, 'index'])->name('events.index');
+Route::get('/evenements/{slug}/billet', [EventWebController::class, 'ticket'])->name('events.ticket');
 Route::get('/evenements/{slug}', [EventWebController::class, 'show'])->name('events.show');
 Route::post('/evenements/{slug}/participer', [EventWebController::class, 'attend'])->name('events.attend');
 Route::post('/evenements/{slug}/annuler', [EventWebController::class, 'cancelAttend'])->name('events.cancel-attend');

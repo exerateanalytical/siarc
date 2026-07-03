@@ -415,7 +415,7 @@
                 </p>
                 <p class="mt-3 text-[22px] font-bold text-white">{{ $meta['price'] }}</p>
                 <p class="mt-1 text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Inscription obligatoire en ligne' : 'Online registration required' }}</p>
-                <a href="/inscription?lang={{ $lang }}"
+                <a href="{{ $siacUser ? route('events.ticket', ['slug' => $event->slug, 'lang' => $lang]) : '/inscription?lang=' . $lang }}"
                     class="mt-4 w-full h-[42px] bg-[#E9A825] hover:bg-goldbt text-[#3A2E08] rounded-lg flex items-center justify-center gap-2 text-[13px] font-bold transition-colors">
                     {{ $isFr ? 'S\'inscrire maintenant' : 'Sign up now' }}
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>

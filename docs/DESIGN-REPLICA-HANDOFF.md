@@ -43,7 +43,8 @@ Concretely, this means:
 | Product detail | `Product detail page.png` (1536×1024, canvas cut before footer) | `resources/views/pages/products/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/produits/{slug}` (`products.show`) | `bfd3cd4` |
 | Vendor detail | `vendors detail page.png` (1536×1024) | `resources/views/pages/businesses/show.blade.php` (REPLACED the legacy layouts/app template) | `/galerie/entreprises/{slug}` (`businesses.show`) | `fef96fb` |
 | Events | `events page.png` (979×1606) | `resources/views/pages/events/index.blade.php` (REPLACED the legacy layouts/app listing) | `/evenements` (`events.index`, controller lang() now honours ?lang=) | `f915dcf` |
-| Event detail | `events detail page.png` (984×1599) | `resources/views/pages/events/show.blade.php` (REPLACED the legacy layouts/app template) | `/evenements/{slug}` (`events.show`) | (this session) |
+| Event detail | `events detail page.png` (984×1599) | `resources/views/pages/events/show.blade.php` (REPLACED the legacy layouts/app template) | `/evenements/{slug}` (`events.show`) | `7ace734` |
+| Event ticket | `events ticket.png` (1536×1024) | `resources/views/pages/events/ticket.blade.php` (NEW standalone printable page, no site chrome per design) | `/evenements/{slug}/billet` (`events.ticket`, NEW route) | (this session) |
 
 ### Categories-page notes
 
@@ -306,6 +307,28 @@ Concretely, this means:
   card (site officiel → minpmeesa.gov.cm), Télécharger (3 PDF rows, href="#"
   as the PDFs don't exist), Restez informé mini-newsletter.
 
+### Event-ticket notes
+
+- Standalone printable page (no header/footer, per the design): TÉLÉCHARGER
+  (PDF) + IMPRIMER buttons both call window.print() (@media print hides them
+  and the feature row). Reached from the event detail page — "S'inscrire
+  maintenant" routes logged-in users to the ticket, guests to /inscription.
+- Ticket anatomy: left date column (kente `ticket-pattern.png` tile +
+  `ticket-swoosh.png` brush/star crop + white SVG curve divider), center
+  (logo/brand, badge, uppercase title, description, 5 illustrated chips
+  `ticket-chip-1..5.png`, stats box 500+/50+/20+/10+), artwork
+  `ticket-art.png` (re-cropped from x852 to exclude the baked stats-box
+  fragment), dark contact bar (www.galerieartisanat.cm /
+  contact@galerieartisanat.cm / +237 670 416 238 / social), CSS perforation,
+  stub with LIVE QR code (vendored qrcodejs, encodes the event URL + ticket
+  id), ENTRÉE GRATUITE (red) or the price, dashed divider, DATE/HEURE/LIEU/
+  TYPE rows, TICKET ID (GVC-2025-00012345 for the design event, generated
+  GVC-{year}-{8 digits} otherwise), CSS barcode, "MERCI DE SOUTENIR
+  L'ARTISANAT CAMEROUNAIS" strip.
+- Bottom feature row (hidden on print): Imprimable / Mobile / Sécurisé /
+  Éco-responsable with cropped icons (`ticket-feat-1..4.png`).
+- Same per-slug meta map as the detail page (city/venue/badge/price).
+
 ### Auth-page notes
 
 - The design canvas holds two page mockups (login left 784px wide, signup right
@@ -325,9 +348,13 @@ Concretely, this means:
 ## What is pending — build in this order
 
 1. Working through the remaining PNGs in order (user said "proceed" 2026-07-03):
-   `events ticket.png` — NEXT, then `default product images by ategory.png` [sic].
-   Verify each PNG's chrome first — every mockup so far varied it. Remember
-   SetResolution(96,96) before GDI+ crops.
+   `default product images by ategory.png` [sic] — NEXT (likely default product
+   imagery per category, not a page; scope with the user if unclear). Then the
+   dashboard/certificate PNGs (buyer dashboard mobile, seller dashbaord [sic],
+   seller mobile dashboard, certificate verification page, memersbip
+   certificate [sic]) — these extend beyond public pages; confirm approach
+   before touching `layouts/dashboard.blade.php` pages.
+   Remember SetResolution(96,96) before GDI+ crops.
 2. Three NEW design PNGs appeared at repo root (untracked, not yet discussed):
    `buyer dashboard mobile.png`, `seller dashbaord.png` [sic],
    `seller mobile dashboard.png` — dashboard replicas would extend scope beyond
