@@ -543,8 +543,51 @@ overview sheets kept as references only.
   `$qbSearchPlaceholder`) and `quotes-buyer-sidebar.blade.php` (initials
   card — real user name, "Achat Pro SARL" static, `$qbCompanyFirst` flips the
   order per design —, 11 nav items with Messages (real count) / Notifications
-  12 badges, help card → support). Mobile: sidebars are display:none +
-  `.open` fixed overlay (NO transitions — preview animation-clock gotcha).
+  12 badges, help card → support; `$qbNavOverride` swaps the whole nav —
+  rows or `'group'` rows with indented children and green/red/orange
+  badges, used by the detail pages below). Mobile: sidebars are
+  display:none + `.open` fixed overlay (NO transitions — preview
+  animation-clock gotcha).
+
+**Quote-flow detail pages (added later on 2026-07-03, commit a34d87d)** —
+four more full-page designs dropped mid-session, all buyer-chrome, demo
+data verbatim (`demand.png` is a duplicate of the RFQ wizard design):
+
+- **Accepter la proposition** (`accepte le devis.png`) → `/tableau-de-bord/
+  propositions/accepter` (`quotes.accept`), `pages/quotes/accept.blade.php`.
+  Artisan card (`qv-abn-logo.png` tree-logo crop, contact rows, profile link
+  → seeded Art Bois Nature), 6 toggleable acceptance checkboxes, e-signature
+  block with WORKING Dessiner/Téléverser/Taper tabs (`qv-signature.png`
+  script crop, upload preview, typed-name fallback, Effacer), montant
+  5,628,253 FCFA, Résumé (V2) rail, Étapes suivantes vertical timeline,
+  Sécurité & confiance. "Accepter … et générer le bon de commande" → the PO
+  replica (real in-family continuation).
+- **Comparaison des versions** (`comparison de version.png`) →
+  `/tableau-de-bord/propositions/comparaison` (`quotes.compare`). V1
+  (blue-edge, 4,751,750) vs V2 (5,628,253) cards + VS circle (+876,503 /
+  +18.44%), 9-column grouped table (VERSION 1 blue band / CHANGEMENT /
+  VERSION 2 green band; per-row change colors replicated verbatim — row 1
+  green, rows 2–4 red, arrows up/down), Résumé/Principaux changements,
+  net-decrease donut (-165,000 FCFA center), Notes de l'artisan quote card,
+  Actions rapides, Documents joints (`qv-pdf.png`). "Accepter la version 2"
+  → accept page; "Voir version 1" → proposal preview.
+- **Bon de commande** (`bonne de demand.png`) → `/tableau-de-bord/commandes/
+  bon` (`quotes.po`). PO-2024-00045 CONFIRMÉ; fournisseur/acheteur/dates
+  card; 4-row articles table (`qv-prod-1..4.png` thumbs, blue description
+  column per design); conditions (6 green checks) / instructions spéciales /
+  totals → TOTAL À PAYER 5,368,253; horizontal 5-node status timeline (2
+  done); rail: résumé + Commande confirmée box, Documents liés, Actions
+  (danger row "Annuler la commande"). Sidebar keeps the design's
+  "Bons de cornmande" [sic] active child.
+- **Créer une proposition de devis — Aperçu** (`demands and devis.png`) →
+  `/tableau-de-bord/propositions/apercu` (`quotes.proposal`). Step-4 stepper;
+  left "Modifier" cards (infos, conditions, 4 documents, message); the DEVIS
+  DOCUMENT itself (header + N° QUO-2024-000189, Proposé par/à blocks,
+  8-column items table with the design's verbatim tax/total figures, notes,
+  totals → 5,952,258 FCFA, 5 info chips, "Merci pour votre confiance,"
+  `qv-sign-abn.png` signature crop, LIVE QR via vendored qrcodejs); rail:
+  Résumé financier + "Vous économisez 95,035 FCFA", Actions, Options
+  d'envoi radios + big send button → quotes.index propositions tab.
 
 Remember SetResolution(96,96) before GDI+ crops if new designs arrive.
 
