@@ -579,6 +579,47 @@ data verbatim (`demand.png` is a duplicate of the RFQ wizard design):
   done); rail: résumé + Commande confirmée box, Documents liés, Actions
   (danger row "Annuler la commande"). Sidebar keeps the design's
   "Bons de cornmande" [sic] active child.
+- **Proposition builder — Articles** (`devis proposition.png`, step 2) →
+  `/tableau-de-bord/propositions/articles` (`quotes.builder`). Editable
+  product rows (qty/price/remise inputs with WORKING live recompute at
+  qty×price×(1−remise) + sous-total; initial render keeps the design's
+  verbatim figures incl. row-3 RFQ-2024-000188), add/delete rows, remise
+  globale / devise / validité / Incoterms / délais / lieu panels, rail with
+  ref+date box, totals, "Inclus dans cette proposition", orange Note
+  interne, blue Informations importantes. Étape suivante → quotes.proposal.
+- **Facture** (`facture.png`) → `/tableau-de-bord/factures/detail`
+  (`quotes.invoice`). INV-2024-00056 PAYÉE with WORKING
+  payée/impayée toggle, RCCM/NIU rows, bank info (BICEC/IBAN/SWIFT),
+  TOTAL À PAYER 5,368,253, all-green 5-node history timeline, paiement
+  rail + documents associés (`qv-pdf-green.png`). Sidebar: Factures active.
+- **Négociation en cours** (`negotiation en cours.png`) →
+  `/tableau-de-bord/propositions/negociation` (`quotes.negotiation`).
+  Conversation thread verbatim (buyer modification request + PDF chip,
+  vendor reply card, SYS system message), tabs linking across the family,
+  REAL composer POSTing messages.send to Art Bois Nature, versions rail
+  (V2 En attente / V1), colored quick actions, Conseil card.
+- **Proposition envoyée** (`proposition sent.png`, step 5 confirmation) →
+  `/tableau-de-bord/propositions/envoyee` (`quotes.sent`). `qv-plane.png`
+  success art, 4-cell info strip, "Et après ?" card, Prochaines étapes
+  timeline (Terminé/En cours states). Suivre cette proposition →
+  quotes.negotiation.
+- **Détail de la proposition** (`proposition de devis.png`) →
+  `/tableau-de-bord/propositions/detail` (`quotes.detail`). EN ATTENTE DE
+  RÉPONSE, 9-col articles table w/ green totals, stacked action buttons
+  (Accepter → accept page, Demander des modifications → negotiation),
+  Informations importantes icon list.
+- **Suivi de production** (`suivi de propositions.png` [sic — content is
+  production tracking]) → `/tableau-de-bord/commandes/production`
+  (`quotes.production`). 65% status card + donut, per-article stage table
+  (70/75/100/53%), activity dot timeline, 4 production-photo crops
+  (`qv-photo-1..4.png`), production-info rail (Martin Nguimatsia).
+  Keeps the design's "furnisseur" [sic].
+- **Aperçu — Envoyer** (`view proposition.png`, step 5 review) →
+  `/tableau-de-bord/propositions/envoi` (`quotes.review`). Devis document
+  again with live QR, Retour → builder, "Prêt à envoyer ?" card → the
+  quotes.sent confirmation.
+- Duplicates among the drops: `demand.png` = the RFQ wizard,
+  `devis accepte.png` = the accept page.
 - **Créer une proposition de devis — Aperçu** (`demands and devis.png`) →
   `/tableau-de-bord/propositions/apercu` (`quotes.proposal`). Step-4 stepper;
   left "Modifier" cards (infos, conditions, 4 documents, message); the DEVIS
