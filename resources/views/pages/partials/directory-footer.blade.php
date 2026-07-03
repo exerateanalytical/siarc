@@ -7,17 +7,21 @@
 
 @php
     $dfExplorer = $dfExplorer ?? [
+        ($isFr ? 'Produits' : 'Products')               => route('products.index', ['lang' => $lang]),
         'Collections'                                   => route('industries.index', ['lang' => $lang]),
         'Artisans'                                      => route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']),
         ($isFr ? 'Régions' : 'Regions')                 => route('businesses.index', ['lang' => $lang]),
         ($isFr ? 'Catégories' : 'Categories')           => route('industries.index', ['lang' => $lang]),
         ($isFr ? 'Entreprises' : 'Businesses')          => route('businesses.index', ['lang' => $lang]),
+        ($isFr ? 'Événements' : 'Events')               => route('events.index', ['lang' => $lang]),
     ];
     $dfRessources = $dfRessources ?? [
-        ($isFr ? 'Guide de l\'artisan' : 'Artisan guide')            => route('about'),
-        'FAQ'                                                        => route('about'),
+        ($isFr ? 'Guide de l\'artisan' : 'Artisan guide')            => route('guide.artisan', ['lang' => $lang]),
+        'FAQ'                                                        => route('faq', ['lang' => $lang]),
         ($isFr ? 'Centre d\'aide' : 'Help center')                   => route('support.index'),
-        'Blog'                                                       => route('events.index'),
+        ($isFr ? 'Actualités' : 'News')                              => route('news.index', ['lang' => $lang]),
+        ($isFr ? 'Vérifier un certificat' : 'Verify a certificate')  => route('certificate.verify', ['lang' => $lang]),
+        ($isFr ? 'API & Développeurs' : 'API & Developers')          => url('/docs/api'),
         ($isFr ? 'Conditions d\'utilisation' : 'Terms of use')       => route('terms'),
     ];
     $dfNewsletterText = $dfNewsletterText ?? ($isFr ? 'Restez informé de nos actualités et de nos nouveautés.' : 'Stay informed of our news and new arrivals.');
@@ -96,10 +100,10 @@
                 <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">{{ $isFr ? 'À propos' : 'About' }}</h4>
                 <ul class="space-y-2.5 text-[12.5px] text-[#B9C4BC] whitespace-nowrap">
                     <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Notre mission' : 'Our mission' }}</a></li>
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Équipe' : 'Team' }}</a></li>
+                    <li><a href="{{ route('onboarding', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Devenir membre' : 'Become a member' }}</a></li>
                     <li><a href="{{ route('partners.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Partenaires' : 'Partners' }}</a></li>
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Carrières' : 'Careers' }}</a></li>
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Presse' : 'Press' }}</a></li>
+                    <li><a href="{{ route('careers', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Carrières' : 'Careers' }}</a></li>
+                    <li><a href="{{ route('press', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Presse' : 'Press' }}</a></li>
                     <li><a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a></li>
                 </ul>
             </div>

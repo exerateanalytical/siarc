@@ -1186,6 +1186,48 @@ Route::post('/contact', function (Request $request) {
         : 'Thank you! Your message has been sent. Our team will get back to you shortly.');
 })->name('contact.store');
 
+// Public info pages created for the canonical footer menu (2026-07-03)
+Route::get('/guide-artisan', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    return view('pages.guide-artisan', compact('lang'));
+})->name('guide.artisan');
+
+Route::get('/faq', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    $faqCategories = \App\Modules\Cms\Models\CmsFaqCategory::with(['faqs' => fn ($q) => $q->orderBy('sort_order')])
+        ->orderBy('sort_order')->get()
+        ->filter(fn ($c) => $c->faqs->isNotEmpty());
+    $uncategorizedFaqs = \App\Modules\Cms\Models\CmsFaq::whereNull('category_id')->orderBy('sort_order')->get();
+    return view('pages.faq', compact('lang', 'faqCategories', 'uncategorizedFaqs'));
+})->name('faq');
+
+Route::get('/actualites', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    $newsEvents = DB::table('events')->orderByDesc('starts_at')->limit(12)->get();
+    return view('pages.news', compact('lang', 'newsEvents'));
+})->name('news.index');
+
+Route::get('/carrieres', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    return view('pages.careers', compact('lang'));
+})->name('careers');
+
+Route::get('/presse', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    $pressStats = [
+        'businesses' => DB::table('businesses')->whereNull('deleted_at')->where('status', 'published')->count(),
+        'products'   => DB::table('products')->whereNull('deleted_at')->where('status', 'published')->count(),
+        'events'     => DB::table('events')->count(),
+        'regions'    => DB::table('regions')->count(),
+    ];
+    return view('pages.press', compact('lang', 'pressStats'));
+})->name('press');
+
 Route::get('/terms', function (Request $request) {
     $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
     return view('terms', compact('lang'));

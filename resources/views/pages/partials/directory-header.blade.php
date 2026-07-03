@@ -181,6 +181,24 @@
                     <i data-lucide="shopping-bag" class="w-4 h-4"></i>{{ $isFr ? 'Demandes' : 'Inquiries' }}
                 </a>
             </div>
+            {{-- Main page links (canonical platform menu) --}}
+            <div class="mb-2">
+                @foreach([
+                    ['home',          $isFr ? 'Accueil' : 'Home',            route('home', ['lang' => $lang])],
+                    ['package',       $isFr ? 'Produits' : 'Products',       route('products.index', ['lang' => $lang])],
+                    ['layout-grid',   $isFr ? 'Catégories' : 'Categories',   route('industries.index', ['lang' => $lang])],
+                    ['users',         'Artisans',                            route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+                    ['building-2',    $isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
+                    ['calendar-days', $isFr ? 'Événements' : 'Events',       route('events.index', ['lang' => $lang])],
+                    ['info',          $isFr ? 'À propos' : 'About',          route('about')],
+                    ['circle-help',   'FAQ',                                 route('faq', ['lang' => $lang])],
+                    ['message-circle', $isFr ? 'Contact' : 'Contact',        route('contact', ['lang' => $lang])],
+                ] as [$mmIcon, $mmLabel, $mmHref])
+                <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] text-[#1D1B16] hover:text-leaf">
+                    <i data-lucide="{{ $mmIcon }}" class="w-4 h-4 text-[#55524A]"></i>{{ $mmLabel }}
+                </a>
+                @endforeach
+            </div>
             <div class="border-t border-[#E7E1D4] pt-2 flex items-center justify-between px-1">
                 @if($siacUser)
                 <a href="/tableau-de-bord" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
@@ -200,6 +218,7 @@
 @php
     $dirNavItems = [
         ['home',        'home',          $isFr ? 'Accueil' : 'Home',            route('home', ['lang' => $lang])],
+        ['products',    'package',       $isFr ? 'Produits' : 'Products',       route('products.index', ['lang' => $lang])],
         ['categories',  'layout-grid',   $isFr ? 'Catégories' : 'Categories',   route('industries.index', ['lang' => $lang])],
         ['artisans',    'users',         'Artisans',                            route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
         ['businesses',  'building-2',    $isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
