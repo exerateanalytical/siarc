@@ -62,6 +62,10 @@
                 'title' => ['fr' => 'Modération', 'en' => 'Moderation'],
                 'items' => [
                     ['admin.businesses', 'building-2', 'Entreprises', 'Businesses'],
+                    ['admin.products', 'package', 'Produits & Services', 'Products & Services'],
+                    ['admin.quotes', 'file-text', 'Devis & Commandes', 'Quotes & Orders'],
+                    ['admin.industries', 'tags', 'Catégories & Régions', 'Categories & Regions'],
+                    ['admin.siarc', 'store', 'SIARC 2026', 'SIARC 2026'],
                     ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
                     ['admin.moderation', 'flag', 'Modération', 'Moderation'],
                     ['admin.api-consumers', 'key-round', 'API & Développeurs', 'API & Developers'],

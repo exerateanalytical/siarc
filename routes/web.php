@@ -643,7 +643,8 @@ Route::get('/tableau-de-bord/admin', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
     $stats = [
         'businesses' => [
@@ -675,6 +676,84 @@ Route::get('/tableau-de-bord/admin', function (Request $request) {
 
     return view('pages.dashboard.admin', compact('lang', 'siacUser', 'stats', 'recentBusinesses', 'pendingVerifications'));
 })->name('dashboard.admin');
+
+// New admin sections introduced with the admin-panel replica (2026-07-03)
+Route::get('/tableau-de-bord/admin/produits', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $adminProducts = DB::table('products')
+        ->leftJoin('businesses', 'businesses.id', '=', 'products.business_id')
+        ->whereNull('products.deleted_at')
+        ->orderByDesc('products.created_at')
+        ->select('products.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug')
+        ->limit(100)->get();
+
+    return view('pages.dashboard.admin-products', compact('lang', 'siacUser', 'adminProducts'));
+})->name('admin.products');
+
+Route::get('/tableau-de-bord/admin/devis', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $adminConversations = DB::table('conversations')
+        ->leftJoin('users', 'users.id', '=', 'conversations.buyer_id')
+        ->leftJoin('businesses', 'businesses.id', '=', 'conversations.business_id')
+        ->orderByDesc('conversations.updated_at')
+        ->select('conversations.*', 'users.name as buyer_name', 'businesses.name_fr as business_name')
+        ->limit(100)->get();
+
+    return view('pages.dashboard.admin-quotes', compact('lang', 'siacUser', 'adminConversations'));
+})->name('admin.quotes');
+
+Route::get('/tableau-de-bord/admin/categories', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $adminIndustries = DB::table('industries')
+        ->leftJoin('businesses', function ($j) {
+            $j->on('businesses.industry_id', '=', 'industries.id')->whereNull('businesses.deleted_at');
+        })
+        ->groupBy('industries.id', 'industries.name_fr', 'industries.name_en', 'industries.slug', 'industries.sort_order', 'industries.is_active')
+        ->orderBy('industries.sort_order')
+        ->select('industries.id', 'industries.name_fr', 'industries.name_en', 'industries.slug', 'industries.sort_order', 'industries.is_active', DB::raw('COUNT(businesses.id) as business_count'))
+        ->get();
+
+    $adminRegions = DB::table('regions')
+        ->leftJoin('businesses', function ($j) {
+            $j->on('businesses.region_id', '=', 'regions.id')->whereNull('businesses.deleted_at');
+        })
+        ->groupBy('regions.id', 'regions.name_fr', 'regions.name_en')
+        ->orderBy('regions.name_fr')
+        ->select('regions.id', 'regions.name_fr', 'regions.name_en', DB::raw('COUNT(businesses.id) as business_count'))
+        ->get();
+
+    return view('pages.dashboard.admin-industries', compact('lang', 'siacUser', 'adminIndustries', 'adminRegions'));
+})->name('admin.industries');
+
+Route::get('/tableau-de-bord/admin/siarc', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $siarcEvent = DB::table('events')->where('slug', 'like', 'siac%')->first();
+    $siarcExhibitors = $siarcEvent
+        ? DB::table('event_exhibitors')
+            ->leftJoin('businesses', 'businesses.id', '=', 'event_exhibitors.business_id')
+            ->where('event_exhibitors.event_id', $siarcEvent->id)
+            ->select('event_exhibitors.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug')
+            ->get()
+        : collect();
+
+    return view('pages.dashboard.admin-siarc', compact('lang', 'siacUser', 'siarcEvent', 'siarcExhibitors'));
+})->name('admin.siarc');
 
 Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
     $siacUser = session('siac_user');
