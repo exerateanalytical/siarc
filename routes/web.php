@@ -750,6 +750,32 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
     return view('pages.dashboard.quotes', compact('lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent'));
 })->name('dashboard.quotes');
 
+// Buyer RFQ wizard + listing (pixel replicas of "create un demande.png" / "quote propositions.png")
+Route::get('/tableau-de-bord/demandes/creer', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login?next=' . urlencode('/tableau-de-bord/demandes/creer'));
+
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $quoteVendor = DB::table('businesses')->whereNull('deleted_at')->where('slug', 'art-bois-nature')->first();
+    $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
+
+    return view('pages.quotes.create', compact('lang', 'siacUser', 'quoteVendor', 'messageCount'));
+})->name('quotes.create');
+
+Route::get('/tableau-de-bord/demandes', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login?next=' . urlencode('/tableau-de-bord/demandes'));
+
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
+
+    return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount'));
+})->name('quotes.index');
+
 Route::get('/tableau-de-bord/acheteur', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
