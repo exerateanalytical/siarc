@@ -393,19 +393,25 @@ Concretely, this means:
 
 ## What is pending — build in this order
 
-All public pages AND the seller (desktop) dashboard are done. The user approved
-dashboard replicas on 2026-07-03 ("proceed in order"). Remaining, in the user's
-order:
+All public pages AND the seller dashboard (desktop + mobile, both inside
+`pages/dashboard/entrepreneur.blade.php`: desktop chrome is `hidden lg:*`, the
+mobile page is a `lg:hidden` block replicating `seller mobile dashboard.png` —
+hero flag card `sm-hero-flag.png` with the HTML "Voir ma boutique" button
+covering the baked one, 6 KPI tiles `sm-kpi-1..6`, Pipeline des devis
+`sm-pipe-1..5` with dashed connector, Activité récente `sm-act-1..5`, 6 Actions
+rapides `sm-qa-1..6`, product cards `sm-prod-1..4` with baked rank chips,
+wallet bar `sm-wallet-icon`, bottom tab bar with green FAB → products.web-create
+and a Menu tab that opens the sidebar slide-over) are done. The user approved
+dashboard replicas on 2026-07-03 ("proceed in order"). Remaining:
 
-1. **`seller mobile dashboard.png` — NEXT.** Mobile variant of the seller
-   dashboard; extend `pages/dashboard/entrepreneur.blade.php`'s responsive
-   layout to match it (don't fork a second view unless the design demands it).
-2. **`buyer dashboard mobile.png`** — buyer dashboard at
+1. **`buyer dashboard mobile.png` — NEXT.** Buyer dashboard at
    `/tableau-de-bord/acheteur` (`pages/dashboard/buyer.blade.php`, still the
-   legacy layouts/dashboard view).
-3. **`certificate verification page.png`** — likely a public verification page;
+   legacy layouts/dashboard view). The design is mobile-only — decide whether
+   the desktop buyer view keeps the legacy layout (ask user) or gets a scaled-up
+   variant.
+2. **`certificate verification page.png`** — likely a public verification page;
    scope the route when reading the design.
-4. **`memersbip certificate.png`** [sic] — likely a printable certificate
+3. **`memersbip certificate.png`** [sic] — likely a printable certificate
    (follow the event-ticket page pattern).
 
 Remember SetResolution(96,96) before GDI+ crops.

@@ -212,13 +212,13 @@
         </div>
     </aside>
 
-    <div id="dash-backdrop" class="fixed inset-0 z-30 bg-black/50 hidden lg:hidden"></div>
+    <div id="dash-backdrop" class="fixed inset-0 z-[35] bg-black/50 hidden lg:hidden"></div>
 
     <!-- Main column -->
     <div class="flex-1 min-w-0 lg:ml-[300px] xl:ml-[337px]">
 
-        <!-- Tricolor bar -->
-        <div class="flex h-[27px]">
+        <!-- Tricolor bar (desktop) -->
+        <div class="hidden lg:flex h-[27px]">
             <div class="w-[32.5%] bg-[#014D25]"></div>
             <div class="relative w-[25%] bg-[#CA0107]">
                 <svg viewBox="0 0 24 24" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 fill-[#F3AA02]" aria-hidden="true">
@@ -228,8 +228,8 @@
             <div class="flex-1 bg-[#F3AA02]"></div>
         </div>
 
-        <!-- Header -->
-        <header class="bg-white border-b border-[#F0F0EE]">
+        <!-- Header (desktop) -->
+        <header class="hidden lg:block bg-white border-b border-[#F0F0EE]">
             <div class="flex items-center gap-3 xl:gap-5 px-4 xl:px-8 py-3.5">
                 <button id="dash-menu-btn" class="lg:hidden p-2 -ml-1 rounded-md hover:bg-gray-100" aria-label="Menu">
                     <i data-lucide="menu" class="w-5 h-5 text-[#1B1B18]"></i>
@@ -296,8 +296,259 @@
             </div>
         </header>
 
-        <!-- Content -->
-        <main class="px-4 xl:px-7 py-6">
+        <!-- ══════════════ Mobile dashboard (seller mobile dashboard.png) ══════════════ -->
+        @php
+            $visits = number_format(max((int) ($business->views_count ?? 0), 0) ?: 1245, 0, ',', ' ');
+            $smKpis = [
+                ['sm-kpi-1.png', '356K', 'FCFA', $isFr ? 'Revenus' : 'Revenue',            '↑ 24%', true,  '#sm-wallet'],
+                ['sm-kpi-2.png', '28',  null,   $isFr ? 'Commandes' : 'Orders',            '↑ 18%', true,  route('messages.inbox')],
+                ['sm-kpi-3.png', '145', null,   $isFr ? 'Demandes' : 'Requests',           '↑ 15%', true,  route('messages.inbox')],
+                ['sm-kpi-4.png', '38',  null,   $isFr ? 'Devis en attente' : 'Pending quotes', '↓ 8%', false, route('messages.inbox')],
+                ['sm-kpi-5.png', (string) $messageCount, null, 'Messages',                 '↓ 12%', false, route('messages.inbox')],
+                ['sm-kpi-6.png', $visits, null, $isFr ? 'Visites' : 'Visits',              '↑ 12%', true,  $ownStoreUrl],
+            ];
+            $smPipeline = [
+                ['sm-pipe-1.png', '145', $isFr ? "Demandes\nreçues" : "Requests\nreceived"],
+                ['sm-pipe-2.png', '38',  $isFr ? 'Préparation' : 'Preparing'],
+                ['sm-pipe-3.png', '24',  $isFr ? 'Devis envoyés' : 'Quotes sent'],
+                ['sm-pipe-4.png', '18',  $isFr ? 'En négociation' : 'Negotiating'],
+                ['sm-pipe-5.png', '14',  $isFr ? 'Acceptés' : 'Accepted'],
+            ];
+            $smActivity = $isFr ? [
+                ['sm-act-1.png', "Nouvelle demande de devis pour \u{201C}Masque Bamileké Royal\u{201D}", 'Il y a 15 min', '#157A43'],
+                ['sm-act-2.png', 'Commande #GVN-2025-0016 confirmée', 'Il y a 1 h', '#F5A623'],
+                ['sm-act-3.png', 'Nouveau message de Jean M. (France)', 'Il y a 2 h', '#2E6BE0'],
+                ['sm-act-4.png', "Avis 5 étoiles reçu pour \u{201C}Collier Perles Recyclées\u{201D}", 'Il y a 5 h', '#8B5CF6'],
+                ['sm-act-5.png', 'Paiement reçu pour commande #GVN-2025-0014', 'Il y a 1 jour', '#157A43'],
+            ] : [
+                ['sm-act-1.png', "New quote request for \u{201C}Masque Bamileké Royal\u{201D}", '15 min ago', '#157A43'],
+                ['sm-act-2.png', 'Order #GVN-2025-0016 confirmed', '1 h ago', '#F5A623'],
+                ['sm-act-3.png', 'New message from Jean M. (France)', '2 h ago', '#2E6BE0'],
+                ['sm-act-4.png', "5-star review received for \u{201C}Collier Perles Recyclées\u{201D}", '5 h ago', '#8B5CF6'],
+                ['sm-act-5.png', 'Payment received for order #GVN-2025-0014', '1 day ago', '#157A43'],
+            ];
+            $smActions = [
+                ['sm-qa-1.png', $isFr ? "Ajouter\nun produit" : "Add\na product",          route('products.web-create'), null],
+                ['sm-qa-2.png', $isFr ? "Créer\nun devis" : "Create\na quote",             route('messages.inbox'), null],
+                ['sm-qa-3.png', $isFr ? "Répondre\naux messages" : "Reply\nto messages",   route('messages.inbox'), (string) $messageCount],
+                ['sm-qa-4.png', $isFr ? "Voir\ncommandes" : "View\norders",                route('messages.inbox'), null],
+                ['sm-qa-5.png', $isFr ? "Créer\névénement" : "Create\nan event",           route('events.index'), null],
+                ['sm-qa-6.png', $isFr ? "Ma\nboutique" : "My\nshop",                       $ownStoreUrl, null],
+            ];
+            $smProducts = [
+                ['sm-prod-1.png', $isFr ? 'Masque Bamileké Royal' : 'Royal Bamileke Mask',           '1.2K', '24'],
+                ['sm-prod-2.png', $isFr ? 'Panier Tressé Traditionnel' : 'Traditional Woven Basket', '980',  '18'],
+                ['sm-prod-3.png', $isFr ? 'Collier Perles Recyclées' : 'Recycled Bead Necklace',     '760',  '12'],
+                ['sm-prod-4.png', $isFr ? 'Statue Traditionnelle Sawa' : 'Traditional Sawa Statue',  '650',  '9'],
+            ];
+        @endphp
+        <div class="lg:hidden">
+            <!-- Mobile header -->
+            <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
+                <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
+                <span class="leading-tight min-w-0">
+                    <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
+                    <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                    <span class="block text-[9.5px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                </span>
+                <a href="{{ route('notifications.index') }}" class="relative ml-auto p-1 shrink-0" aria-label="Notifications">
+                    <i data-lucide="bell" class="w-[24px] h-[24px] text-[#1B1B18]" style="stroke-width:1.8"></i>
+                    <span class="absolute -top-1.5 -right-2 bg-[#D40C0F] text-white text-[10px] font-bold min-w-[19px] h-[19px] px-1 rounded-full flex items-center justify-center">12</span>
+                </a>
+                <button type="button" class="sm-menu-btn p-1 shrink-0" aria-label="Menu">
+                    <i data-lucide="menu" class="w-[26px] h-[26px] text-[#1B1B18]" style="stroke-width:2.2"></i>
+                </button>
+            </header>
+
+            <div class="px-4 pb-24 pt-1 space-y-3.5 bg-[#FEFEFE]">
+
+                @if($business)
+
+                <!-- Profile hero card -->
+                <section class="relative bg-[#012716] rounded-2xl overflow-hidden">
+                    <img src="{{ asset('images/landing/sm-hero-flag.png') }}" alt="" class="absolute right-0 inset-y-0 h-full pointer-events-none select-none" aria-hidden="true">
+                    <div class="relative flex items-center gap-3.5 p-3.5">
+                        <span class="relative shrink-0">
+                            <img src="{{ ($business->logo ?? null) ? asset('storage/' . $business->logo) : asset('images/landing/sm-avatar.png') }}" alt="" class="w-[66px] h-[66px] rounded-full object-cover bg-white">
+                            <a href="{{ route('business.edit') }}" aria-label="{{ $isFr ? 'Modifier le logo' : 'Edit logo' }}"
+                                class="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#0B5B31] border-2 border-[#012716] flex items-center justify-center text-white">
+                                <i data-lucide="camera" class="w-3 h-3"></i>
+                            </a>
+                        </span>
+                        <div class="min-w-0 py-1">
+                            <a href="{{ route('verification.show') }}" class="flex items-center gap-1.5 text-[11.5px] font-semibold text-white">
+                                {{ $isVerified ? ($isFr ? 'Boutique Vérifiée' : 'Verified Shop') : ($isFr ? 'Boutique' : 'Shop') }}
+                                @if($isVerified)<i data-lucide="badge-check" class="w-3.5 h-3.5" style="fill:#2FBF71;color:#012716"></i>@endif
+                            </a>
+                            <p class="text-[17px] font-bold text-white leading-tight truncate">{{ $shopName }}</p>
+                            <span class="mt-1 inline-flex items-center gap-1.5">
+                                <span class="bg-gradient-to-b from-[#FFD84D] to-[#F5B301] text-[#3A2A03] text-[10px] font-bold px-2 py-0.5 rounded-md">{{ $isFr ? 'Vendeur Gold' : 'Gold Seller' }}</span>
+                                <i data-lucide="star" class="w-3 h-3 text-[#F5B301]" style="fill:#F5B301"></i>
+                            </span>
+                            @if($memberSince)
+                            <p class="mt-1 text-[10px] text-[#C6D4C9]">{{ $isFr ? 'Membre depuis' : 'Member since' }} {{ $memberSince }}</p>
+                            @endif
+                        </div>
+                    </div>
+                    <a href="{{ $ownStoreUrl }}" class="absolute right-3.5 bottom-3 inline-flex items-center gap-2 bg-[#0A3D22]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
+                        {{ $isFr ? 'Voir ma boutique' : 'View my shop' }}
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    </a>
+                </section>
+
+                <!-- KPI tiles -->
+                <div class="grid grid-cols-3 gap-2">
+                    @foreach($smKpis as [$kIcon, $kVal, $kUnit, $kLabel, $kDelta, $kUp, $kHref])
+                    <a href="{{ $kHref }}" class="bg-white border border-[#F0F0EE] rounded-xl px-2.5 py-3 flex items-start gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+                        <img src="{{ asset('images/landing/' . $kIcon) }}" alt="" class="w-[28px] h-[28px] shrink-0" aria-hidden="true">
+                        <span class="min-w-0">
+                            <span class="block text-[15px] font-bold text-[#1B1B18] leading-tight">{{ $kVal }}@if($kUnit)<span class="text-[9px] font-bold ml-0.5">{{ $kUnit }}</span>@endif</span>
+                            <span class="block text-[10px] text-[#55524A] leading-tight">{{ $kLabel }}</span>
+                            <span class="block mt-0.5 text-[10px] font-semibold {{ $kUp ? 'text-[#157A43]' : 'text-[#D43C3C]' }}">{{ $kDelta }}</span>
+                        </span>
+                        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6] ml-auto self-center shrink-0"></i>
+                    </a>
+                    @endforeach
+                </div>
+
+                <!-- Pipeline des devis -->
+                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Pipeline des devis' : 'Quote pipeline' }}</h2>
+                        <a href="{{ route('messages.inbox') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
+                    </div>
+                    <div class="relative mt-4 flex items-start">
+                        <span class="absolute left-[10%] right-[10%] top-[15px] border-t-2 border-dashed border-[#DBDDDB]"></span>
+                        @foreach($smPipeline as [$pIcon, $pVal, $pLabel])
+                        <div class="relative w-1/5 flex flex-col items-center text-center">
+                            <img src="{{ asset('images/landing/' . $pIcon) }}" alt="" class="w-[31px] h-[31px]" aria-hidden="true">
+                            <p class="mt-2 text-[15px] font-bold text-[#1B1B18] leading-none">{{ $pVal }}</p>
+                            <p class="mt-1 text-[9.5px] text-[#55524A] leading-tight whitespace-pre-line">{{ $pLabel }}</p>
+                        </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <!-- Activité récente -->
+                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité récente' : 'Recent activity' }}</h2>
+                        <a href="{{ route('notifications.index') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
+                    </div>
+                    <div class="mt-2 divide-y divide-[#F4F4F2]">
+                        @foreach($smActivity as [$aIcon, $aText, $aTime, $aColor])
+                        <div class="flex items-center gap-2.5 py-2.5">
+                            <img src="{{ asset('images/landing/' . $aIcon) }}" alt="" class="w-[19px] h-[19px] shrink-0" aria-hidden="true">
+                            <p class="flex-1 min-w-0 text-[11.5px] text-[#1B1B18] leading-snug">{{ $aText }}</p>
+                            <span class="text-[10px] text-[#8A857A] whitespace-nowrap shrink-0">{{ $aTime }}</span>
+                            <span class="w-[7px] h-[7px] rounded-full shrink-0" style="background:{{ $aColor }}"></span>
+                        </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                <!-- Actions rapides -->
+                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                    <div class="mt-3 grid grid-cols-6 gap-1.5">
+                        @foreach($smActions as [$qIcon, $qLabel, $qHref, $qBadge])
+                        <a href="{{ $qHref }}" class="relative bg-[#F8F9F8] rounded-xl px-1 pt-2.5 pb-2 text-center">
+                            <span class="relative inline-block">
+                                <img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[26px] h-[26px] mx-auto" aria-hidden="true">
+                                @if($qBadge)
+                                <span class="absolute -top-2 -right-3 bg-[#D40C0F] text-white text-[8.5px] font-bold min-w-[15px] h-[15px] px-0.5 rounded-full flex items-center justify-center">{{ $qBadge }}</span>
+                                @endif
+                            </span>
+                            <span class="mt-1.5 block text-[9px] text-[#3B382F] leading-[1.25] whitespace-pre-line">{{ $qLabel }}</span>
+                        </a>
+                        @endforeach
+                    </div>
+                </section>
+
+                <!-- Produits les plus performants -->
+                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Produits les plus performants' : 'Top performing products' }}</h2>
+                        <a href="{{ $ownStoreUrl }}" class="text-[11.5px] font-medium text-[#157A43] whitespace-nowrap ml-2">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
+                    </div>
+                    <div class="mt-3 grid grid-cols-4 gap-2">
+                        @foreach($smProducts as [$prImg, $prName, $prViews, $prQuotes])
+                        <a href="{{ route('products.index', ['lang' => $lang]) }}" class="min-w-0">
+                            <img src="{{ asset('images/landing/' . $prImg) }}" alt="" class="w-full rounded-xl">
+                            <p class="mt-1.5 text-[10px] font-bold text-[#1B1B18] leading-tight truncate">{{ $prName }}</p>
+                            <p class="mt-0.5 text-[9px] text-[#8A857A] truncate">{{ $prViews }} {{ $isFr ? 'vues' : 'views' }} <span class="mx-0.5">•</span> {{ $prQuotes }} {{ $isFr ? 'devis' : 'quotes' }}</p>
+                        </a>
+                        @endforeach
+                    </div>
+                </section>
+
+                <!-- Wallet bar -->
+                <section id="sm-wallet" class="bg-[#012716] rounded-2xl p-3 flex items-center gap-2.5">
+                    <img src="{{ asset('images/landing/sm-wallet-icon.png') }}" alt="" class="w-[29px] h-[29px] shrink-0" aria-hidden="true">
+                    <div class="min-w-0">
+                        <p class="text-[10.5px] text-[#B9CBBE] leading-tight">{{ $isFr ? 'Solde disponible' : 'Available balance' }}</p>
+                        <p class="text-[16px] font-bold text-white leading-tight whitespace-nowrap">156 500 <span class="text-[9.5px]">FCFA</span></p>
+                    </div>
+                    <a href="{{ route('support.index') }}" class="ml-auto shrink-0 bg-[#FEBF00] text-[#3A2A03] text-[11px] font-bold px-3 py-2 rounded-lg whitespace-nowrap">
+                        {{ $isFr ? 'Retirer mes gains' : 'Withdraw earnings' }}
+                    </a>
+                    <a href="{{ route('notifications.index') }}" class="shrink-0 w-[28px] h-[28px] rounded-full border border-white/40 flex items-center justify-center text-white" aria-label="{{ $isFr ? 'Historique' : 'History' }}">
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </section>
+
+                @else
+                <!-- No business yet (mobile) -->
+                <div class="bg-white rounded-2xl border-2 border-dashed border-[#E3E3E0] p-8 text-center">
+                    <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i data-lucide="store" class="w-6 h-6 text-amber-500"></i>
+                    </div>
+                    <h2 class="text-[16px] font-bold text-[#1B1B18] mb-2">{{ $isFr ? 'Créez votre vitrine' : 'Create your storefront' }}</h2>
+                    <p class="text-[12.5px] text-[#6F6B60] mb-5">
+                        {{ $isFr ? 'Présentez vos produits à des acheteurs du monde entier. Gratuit, rapide, efficace.' : 'Showcase your products to buyers worldwide. Free, fast, effective.' }}
+                    </p>
+                    <a href="{{ route('business.create') }}"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#052912] text-white font-semibold rounded-xl text-[13px]">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        {{ $isFr ? 'Créer mon entreprise' : 'Create my business' }}
+                    </a>
+                </div>
+                @endif
+            </div>
+
+            <!-- Mobile bottom nav -->
+            <nav class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#EDEDEB] flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
+                <a href="{{ route('dashboard.entrepreneur') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#0B5B31]">
+                    <i data-lucide="house" class="w-[22px] h-[22px]"></i>
+                    <span class="text-[10px] font-semibold">{{ $isFr ? 'Accueil' : 'Home' }}</span>
+                    <span class="w-6 h-[3px] rounded-full bg-[#0B5B31]"></span>
+                </a>
+                <a href="{{ $ownStoreUrl }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+                    <i data-lucide="package" class="w-[22px] h-[22px]"></i>
+                    <span class="text-[10px]">{{ $isFr ? 'Produits' : 'Products' }}</span>
+                </a>
+                <a href="{{ route('products.web-create') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+                    <span class="-mt-7 w-[52px] h-[52px] rounded-full bg-[#0B4D27] shadow-lg flex items-center justify-center text-white">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </span>
+                    <span class="text-[10px] mt-0.5">{{ $isFr ? 'Ajouter' : 'Add' }}</span>
+                </a>
+                <a href="{{ route('messages.inbox') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+                    <span class="relative">
+                        <i data-lucide="clipboard-list" class="w-[22px] h-[22px]"></i>
+                        <span class="absolute -top-1.5 -right-3 bg-[#D40C0F] text-white text-[8.5px] font-bold min-w-[17px] h-[15px] px-0.5 rounded-full flex items-center justify-center">28</span>
+                    </span>
+                    <span class="text-[10px]">{{ $isFr ? 'Commandes' : 'Orders' }}</span>
+                </a>
+                <button type="button" class="sm-menu-btn flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+                    <i data-lucide="circle-user" class="w-[22px] h-[22px]"></i>
+                    <span class="text-[10px]">Menu</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Content (desktop) -->
+        <main class="hidden lg:block px-7 py-6">
 
             @if($business)
 
@@ -571,13 +822,14 @@
 <script>
     lucide.createIcons();
 
-    // Mobile sidebar
+    // Mobile sidebar (header hamburger, bottom-nav Menu tab, desktop fallback button)
     const sb = document.getElementById('dash-sidebar');
     const bd = document.getElementById('dash-backdrop');
-    document.getElementById('dash-menu-btn').addEventListener('click', () => {
+    const toggleSidebar = () => {
         sb.classList.toggle('open');
         bd.classList.toggle('hidden');
-    });
+    };
+    document.querySelectorAll('.sm-menu-btn, #dash-menu-btn').forEach(b => b.addEventListener('click', toggleSidebar));
     bd.addEventListener('click', () => {
         sb.classList.remove('open');
         bd.classList.add('hidden');
