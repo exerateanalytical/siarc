@@ -150,14 +150,14 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
                 <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">{{ $lang === 'fr' ? 'Logo' : 'Logo' }}</label>
                     @if($isEdit && $business->logo)
-                    <img src="{{ $business->logo_url }}" alt="" class="w-16 h-16 rounded-lg object-cover mb-2 border border-gray-200">
+                    <img src="{{ asset('storage/' . $business->logo) }}" alt="" class="w-16 h-16 rounded-lg object-cover mb-2 border border-gray-200">
                     @endif
                     <input type="file" name="logo" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-forest-50 file:text-forest-700 file:text-xs">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">{{ $lang === 'fr' ? 'Photo de couverture' : 'Cover photo' }}</label>
                     @if($isEdit && $business->cover_image)
-                    <img src="{{ $business->cover_url }}" alt="" class="w-full h-16 rounded-lg object-cover mb-2 border border-gray-200">
+                    <img src="{{ asset('storage/' . $business->cover_image) }}" alt="" class="w-full h-16 rounded-lg object-cover mb-2 border border-gray-200">
                     @endif
                     <input type="file" name="cover_image" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-forest-50 file:text-forest-700 file:text-xs">
                 </div>

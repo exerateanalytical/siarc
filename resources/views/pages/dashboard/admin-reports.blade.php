@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.admin')
 
 @php
 $pageTitle = $lang === 'fr' ? 'Rapports & Statistiques' : 'Reports & Statistics';

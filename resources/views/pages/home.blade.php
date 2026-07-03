@@ -280,7 +280,7 @@
             <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}"
                 class="snap-start shrink-0 w-[188px] bg-white border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] p-1.5 hover:shadow-md transition-shadow group">
                 <div class="h-[128px] rounded-lg overflow-hidden bg-sand/40">
-                    <img src="{{ $business->cover_url ?? asset('images/landing/' . $bizFallbacks[$loop->index % 6]) }}"
+                    <img src="{{ $business->cover_image ? asset('storage/' . $business->cover_image) : asset('images/landing/' . $bizFallbacks[$loop->index % 6]) }}"
                         alt="{{ $business->name_fr }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300">
                 </div>
                 <div class="px-2.5 pt-3 pb-2.5">
@@ -358,7 +358,7 @@
                     </a>
                 </div>
 
-                <img src="{{ $currentEvent->cover_url ?? asset('images/landing/event-aqua.png') }}" alt=""
+                <img src="{{ $currentEvent->cover_image ? asset('storage/' . $currentEvent->cover_image) : asset('images/landing/event-aqua.png') }}" alt=""
                     class="hidden sm:block w-[150px] lg:w-[165px] self-stretch max-h-[250px] object-cover rounded-lg shrink-0">
             </div>
         </div>
@@ -381,7 +381,7 @@
             <div class="mt-2 flex-1 divide-y divide-[#EEE8DB]">
                 @forelse($upcomingEvents as $ev)
                 <a href="{{ route('events.show', $ev->slug) }}" class="flex gap-3 py-3.5 group">
-                    <img src="{{ $ev->cover_url ?? asset('images/landing/' . $eventFallbacks[$loop->index % 3]) }}" alt=""
+                    <img src="{{ $ev->cover_image ? asset('storage/' . $ev->cover_image) : asset('images/landing/' . $eventFallbacks[$loop->index % 3]) }}" alt=""
                         class="w-14 h-14 rounded-md object-cover shrink-0">
                     <div class="min-w-0">
                         <p class="text-[13px] font-semibold text-[#1D1B16] leading-snug line-clamp-2 group-hover:text-leaf transition-colors">
@@ -415,8 +415,8 @@
                 </div>
                 @else
                 <div class="bg-white rounded-lg flex flex-col items-center justify-center gap-1.5 py-3 px-1 min-h-[50px]" title="{{ $partner->name_fr }}">
-                    @if($partner->logo_url ?? false)
-                    <img src="{{ $partner->logo_url }}" alt="{{ $partner->name_fr }}" class="h-8 w-full object-contain px-1">
+                    @if($partner->logo ?? false)
+                    <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name_fr }}" class="h-8 w-full object-contain px-1">
                     @else
                     <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf text-[10px] font-bold flex items-center justify-center">
                         {{ mb_strtoupper(mb_substr($partner->name_fr, 0, 2)) }}

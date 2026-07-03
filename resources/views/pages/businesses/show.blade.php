@@ -461,7 +461,7 @@
                     </li>
                     @endforeach
                 </ul>
-                <a href="#" class="mt-4 flex items-center gap-2 text-[12px] font-semibold text-[#14532D] hover:underline">
+                <a href="{{ route('certificate.verify', ['lang' => $lang]) }}" class="mt-4 flex items-center gap-2 text-[12px] font-semibold text-[#14532D] hover:underline">
                     {{ $isFr ? 'Voir le document d\'enregistrement' : 'View the registration document' }}
                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 </a>
@@ -495,7 +495,7 @@
                     </div>
                     @endforeach
                 </div>
-                <a href="#" class="mt-4 w-full h-[36px] bg-[#F6F4EF] hover:bg-[#EFECe4] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#3A3A35] transition-colors">
+                <a href="{{ route('certificate.verify', ['lang' => $lang]) }}" class="mt-4 w-full h-[36px] bg-[#F6F4EF] hover:bg-[#EFECe4] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#3A3A35] transition-colors">
                     {{ $isFr ? 'Voir tous les certificats' : 'See all certificates' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>

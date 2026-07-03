@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.admin')
 
 @php
 $pageTitle = $lang === 'fr' ? 'Partenaires & Sponsors' : 'Partners & Sponsors';
@@ -30,8 +30,8 @@ $tierLabels = [
         @forelse($partners as $partner)
         <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0">
             <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
-                @if($partner->logo_url)
-                <img src="{{ $partner->logo_url }}" alt="" class="w-full h-full object-contain">
+                @if($partner->logo)
+                <img src="{{ asset('storage/' . $partner->logo) }}" alt="" class="w-full h-full object-contain">
                 @else
                 <i data-lucide="building-2" class="w-4 h-4 text-gray-300"></i>
                 @endif

@@ -41,6 +41,12 @@
             ['siarc-b2b',  'handshake',     $isFr ? 'Rendez-vous B2B' : 'B2B Meetings',        route('admin.siarc') . '#b2b', null],
             ['siarc-spk',  'mic',           $isFr ? 'Intervenants & Conférenciers' : 'Speakers & Lecturers', route('admin.siarc') . '#intervenants', null],
         ]],
+        ['Administration', [
+            ['partners',     'handshake', $isFr ? 'Partenaires' : 'Partners',                  route('admin.partners'), null],
+            ['moderation',   'flag',      $isFr ? 'Modération' : 'Moderation',                 route('admin.moderation'), null],
+            ['reports',      'chart-column', $isFr ? 'Rapports & Statistiques' : 'Reports & Statistics', route('admin.reports'), null],
+            ['adminsupport', 'life-buoy', 'Support',                                            route('admin.support'), null],
+        ]],
         [$isFr ? 'Outils & Paramètres' : 'Tools & Settings', [
             ['settings',      'settings',    $isFr ? 'Paramètres Généraux' : 'General Settings', route('admin.settings'), null],
             ['pages',         'panel-top',   $isFr ? 'Pages & Menus' : 'Pages & Menus',        route('admin.cms'), null],

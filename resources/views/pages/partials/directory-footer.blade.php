@@ -131,7 +131,14 @@
                 <p class="text-[12px] text-[#B9C4BC] leading-relaxed">
                     {{ $dfNewsletterText }}
                 </p>
-                <form action="/inscription" method="GET" class="mt-4 flex gap-2">
+                @if(session('newsletter_ok'))
+                <p class="mt-4 flex items-start gap-2 text-[12px] font-semibold text-[#8FDCA8]">
+                    <i data-lucide="circle-check" class="w-4 h-4 shrink-0"></i>
+                    {{ session('newsletter_ok') }}
+                </p>
+                @else
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-4 flex gap-2">
+                    @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre email' : 'Your email' }}"
                         class="flex-1 min-w-0 w-[120px] bg-transparent border border-[#2E5240] rounded-md px-3 py-2.5 text-[12px] text-white placeholder-[#8FA79A] focus:outline-none focus:border-gold">
@@ -139,6 +146,7 @@
                         {{ $isFr ? 'S\'abonner' : 'Subscribe' }}
                     </button>
                 </form>
+                @endif
             </div>
 
             <!-- Cameroon map + caption -->

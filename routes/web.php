@@ -226,7 +226,7 @@ Route::post('/tableau-de-bord/admin/cms/faqs', [CmsWebController::class, 'storeF
 Route::post('/tableau-de-bord/admin/cms/faqs/{id}/supprimer', [CmsWebController::class, 'destroyFaq'])->name('admin.cms.faqs.destroy');
 
 Route::get('/partenaires', function (Illuminate\Http\Request $request) {
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->get();
     return view('pages.partners', compact('lang', 'partners'));
 })->name('partners.index');
@@ -279,7 +279,7 @@ Route::post('/forgot-password', function (Request $request) {
         $resetUrl = url('/reset-password/' . $plainToken . '?email=' . urlencode($email));
 
         // Send email (goes to log when MAIL_MAILER=log)
-        $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+        $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
         try {
             \Illuminate\Support\Facades\Mail::to($email)
                 ->send(new \App\Mail\PasswordResetMail($user->name ?? '', $resetUrl, $lang));
@@ -408,7 +408,7 @@ Route::get('/login/verification', function (Request $request) {
     $user = DB::table('users')->where('id', $pending['user_id'])->whereNull('deleted_at')->first();
     if (!$user) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
 
     return view('auth.two-factor-challenge', [
         'lang'       => $lang,
@@ -427,7 +427,7 @@ Route::post('/login/verification/send', function (Request $request) {
     $user = DB::table('users')->where('id', $pending['user_id'])->whereNull('deleted_at')->first();
     if (!$user || !$user->two_factor_channel) return redirect('/login');
 
-    $lang       = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang       = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $identifier = $user->two_factor_channel === 'email' ? $user->email : (string) $user->phone;
 
     $sent = app(\App\Modules\Auth\Services\OtpService::class)
@@ -448,7 +448,7 @@ Route::post('/login/verification', function (Request $request) {
     $user = DB::table('users')->where('id', $pending['user_id'])->whereNull('deleted_at')->first();
     if (!$user) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $data = $request->validate([
         'code'   => ['required', 'string', 'max:20'],
         'method' => ['required', 'in:totp,channel,recovery'],
@@ -934,7 +934,7 @@ Route::get('/tableau-de-bord/sauvegardes', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
 
     $savedProductRows = DB::table('saved_products')
         ->where('user_id', $siacUser['id'])
@@ -977,7 +977,7 @@ Route::get('/tableau-de-bord/notifications/preferences', function (Request $requ
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
 
     // channel × category matrix; anything not stored yet defaults to enabled (matches the column default).
     $stored = DB::table('notification_preferences')
@@ -992,7 +992,7 @@ Route::post('/tableau-de-bord/notifications/preferences', function (Request $req
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
 
     $categories = ['messages', 'verification', 'business', 'events'];
     $channels   = ['email', 'sms', 'push'];
@@ -1045,7 +1045,7 @@ Route::get('/verification-email', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $user = DB::table('users')->where('id', $siacUser['id'])->first();
     if ($user && $user->is_email_verified) return redirect('/tableau-de-bord');
 
@@ -1056,7 +1056,7 @@ Route::post('/verification-email/envoyer', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $user = DB::table('users')->where('id', $siacUser['id'])->first();
     if (!$user || $user->is_email_verified) return redirect('/tableau-de-bord');
 
@@ -1073,7 +1073,7 @@ Route::post('/verification-email/confirmer', function (Request $request) {
     if (!$siacUser) return redirect('/login');
 
     $request->validate(['code' => ['required', 'string', 'max:10']]);
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $user = DB::table('users')->where('id', $siacUser['id'])->first();
     if (!$user) return redirect('/login');
 
@@ -1101,7 +1101,7 @@ Route::get('/tableau-de-bord/profil', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $user = DB::table('users')->where('id', $siacUser['id'])->whereNull('deleted_at')->first();
     if (!$user) return redirect('/login');
 
@@ -1112,7 +1112,7 @@ Route::post('/tableau-de-bord/profil', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $data = $request->validate([
         'name'                => ['required', 'string', 'max:255'],
         'language_preference' => ['required', 'in:fr,en'],
@@ -1136,7 +1136,7 @@ Route::post('/tableau-de-bord/profil/mot-de-passe', function (Request $request) 
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
 
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     $data = $request->validate([
         'current_password'      => ['required'],
         'password'              => ['required', 'min:8', 'confirmed'],
@@ -1206,7 +1206,7 @@ Route::get('/creer-mon-compte', function (Request $request) {
 
 Route::post('/contact', function (Request $request) {
     $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang')
-        : (in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr');
+        : (in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr');
     $isFr = $lang === 'fr';
 
     $limiterKey = 'contact:' . $request->ip();
@@ -1265,6 +1265,21 @@ Route::post('/contact', function (Request $request) {
         : 'Thank you! Your message has been sent. Our team will get back to you shortly.');
 })->name('contact.store');
 
+// Newsletter subscription (real endpoint behind the canonical footer form)
+Route::post('/newsletter', function (Request $request) {
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $data = $request->validate(['email' => ['required', 'email', 'max:255']]);
+
+    DB::table('newsletter_subscribers')->updateOrInsert(
+        ['email' => strtolower($data['email'])],
+        ['lang' => $lang, 'updated_at' => now(), 'created_at' => now()]
+    );
+
+    return back()->with('newsletter_ok', $lang === 'fr'
+        ? 'Merci ! Vous êtes bien abonné à la newsletter.'
+        : 'Thank you! You are now subscribed to the newsletter.');
+})->name('newsletter.subscribe');
+
 // Public info pages created for the canonical footer menu (2026-07-03)
 Route::get('/guide-artisan', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
@@ -1308,11 +1323,11 @@ Route::get('/presse', function (Request $request) {
 })->name('press');
 
 Route::get('/terms', function (Request $request) {
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     return view('terms', compact('lang'));
 })->name('terms');
 Route::get('/privacy', function (Request $request) {
-    $lang = in_array($request->cookie('lang'), ['fr', 'en']) ? $request->cookie('lang') : 'fr';
+    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
     return view('privacy', compact('lang'));
 })->name('privacy');
 
