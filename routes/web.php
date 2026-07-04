@@ -227,6 +227,99 @@ Route::get('/tableau-de-bord/admin/kyc', function (Request $request) {
 
     return view('pages.dashboard.admin-kyc', compact('lang', 'siacUser', 'filters', 'applications', 'kycStats', 'kycRoleDist'));
 })->name('admin.kyc');
+
+// Roles & Permissions (design: "Roles and permissions.png") — real Spatie RBAC
+Route::get('/tableau-de-bord/admin/roles', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    // Real role display metadata [fr, en, icon, system?]
+    $roleMeta = [
+        'super_admin'        => ['Administrateur Principal', 'Principal Administrator', 'shield', true],
+        'admin'              => ['Administrateur', 'Administrator', 'shield-check', true],
+        'moderator'          => ['Modérateur', 'Moderator', 'gavel', false],
+        'business_owner'     => ['Artisan / Vendeur', 'Artisan / Seller', 'store', false],
+        'technical_reviewer' => ['Vérificateur KYC', 'KYC Reviewer', 'file-check', false],
+        'regional_rep'       => ['Consultant Régional', 'Regional Consultant', 'map-pin', false],
+        'ministry'           => ['Ministère', 'Ministry', 'landmark', false],
+        'buyer'              => ['Acheteur / Visiteur', 'Buyer / Visitor', 'user', false],
+    ];
+
+    $userCounts = DB::table('model_has_roles')->select('role_id', DB::raw('count(*) as n'))->groupBy('role_id')->pluck('n', 'role_id');
+    $permCounts = DB::table('role_has_permissions')->select('role_id', DB::raw('count(*) as n'))->groupBy('role_id')->pluck('n', 'role_id');
+
+    $roles = DB::table('roles')->where('guard_name', 'sanctum')->orderBy('id')->get()->map(function ($r) use ($roleMeta, $userCounts, $permCounts) {
+        [$fr, $en, $icon, $sys] = $roleMeta[$r->name] ?? [ucfirst($r->name), ucfirst($r->name), 'user', false];
+        $r->fr = $fr; $r->en = $en; $r->icon = $icon; $r->is_system = $sys;
+        $r->user_count = (int) ($userCounts[$r->id] ?? 0);
+        $r->perm_count = (int) ($permCounts[$r->id] ?? 0);
+        return $r;
+    });
+
+    // Selected role (?role=name) — default the first
+    $selectedName = (string) $request->query('role', '');
+    $selected = $roles->firstWhere('name', $selectedName) ?: $roles->first();
+
+    // Module/action catalog (mirrors the seeded permission names)
+    $modules = [
+        'content'    => ['Gestion du Contenu', 'Content Management'],
+        'artisans'   => ['Artisans', 'Artisans'],
+        'products'   => ['Produits & Services', 'Products & Services'],
+        'collections'=> ['Collections Héritage', 'Heritage Collections'],
+        'media'      => ['Médias & Documents', 'Media & Documents'],
+        'events'     => ['Événements & Festivals', 'Events & Festivals'],
+        'news'       => ['Actualités & Annonces', 'News & Announcements'],
+        'users'      => ['Utilisateurs', 'Users'],
+        'commerce'   => ['Commerce & Transactions', 'Commerce & Transactions'],
+        'reports'    => ['Analyses & Rapports', 'Analytics & Reports'],
+        'kyc'        => ['Vérifications KYC', 'KYC Verifications'],
+        'partners'   => ['Partenaires', 'Partners'],
+        'siarc'      => ['SIARC 2026', 'SIARC 2026'],
+        'moderation' => ['Modération', 'Moderation'],
+        'settings'   => ['Paramètres', 'Settings'],
+    ];
+    $actions = ['view', 'create', 'edit', 'delete', 'export', 'settings'];
+
+    // Permission id map + which the selected role holds
+    $permByName = DB::table('permissions')->where('guard_name', 'sanctum')->pluck('id', 'name');
+    $selectedPerms = $selected
+        ? DB::table('role_has_permissions as rp')->join('permissions as p', 'p.id', '=', 'rp.permission_id')
+            ->where('rp.role_id', $selected->id)->pluck('p.name')->flip()
+        : collect();
+
+    $stats = [
+        'roles'       => $roles->count(),
+        'users'       => (int) DB::table('model_has_roles')->distinct()->count('model_id'),
+        'permissions' => (int) DB::table('permissions')->where('guard_name', 'sanctum')->count(),
+        'system'      => $roles->where('is_system', true)->count(),
+        'modules'     => count($modules),
+    ];
+
+    return view('pages.dashboard.admin-roles', compact('lang', 'siacUser', 'roles', 'selected', 'modules', 'actions', 'selectedPerms', 'stats'));
+})->name('admin.roles');
+
+// Save a role's permission matrix
+Route::post('/tableau-de-bord/admin/roles/{id}/permissions', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+
+    $role = DB::table('roles')->where('id', $id)->where('guard_name', 'sanctum')->first();
+    if (!$role) abort(404);
+
+    $granted = array_values(array_filter((array) $request->input('perms', [])));
+    $permIds = DB::table('permissions')->where('guard_name', 'sanctum')->whereIn('name', $granted)->pluck('id');
+
+    DB::table('role_has_permissions')->where('role_id', $role->id)->delete();
+    foreach ($permIds as $pid) {
+        DB::table('role_has_permissions')->insert(['permission_id' => $pid, 'role_id' => $role->id]);
+    }
+
+    return redirect()->route('admin.roles', ['role' => $role->name, 'lang' => $lang])->with('success', $lang === 'fr'
+        ? 'Permissions du rôle mises à jour.'
+        : 'Role permissions updated.');
+})->name('admin.roles.update')->middleware('throttle:30,1');
 // =====================================================================
 // REPLACEMENT for the admin.users GET route in routes/web.php
 // (currently: Route::get('/tableau-de-bord/admin/utilisateurs',

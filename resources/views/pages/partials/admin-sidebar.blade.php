@@ -25,7 +25,7 @@
             ['pending-art',   'user-check',   $isFr ? 'Artisans en Attente' : 'Pending Artisans', route('admin.artisans') . '?statut=en-attente', '28'],
             ['pending-biz',   'building',     $isFr ? 'Entreprises en Attente' : 'Pending Businesses', route('admin.businesses') . '?statut=en-attente', '16'],
             ['kyc',           'shield-check', $isFr ? 'Vérifications KYC' : 'KYC Verifications', route('admin.kyc'), null],
-            ['roles',         'key-round',    $isFr ? 'Rôles & Permissions' : 'Roles & Permissions', route('admin.users') . '#roles', null],
+            ['roles',         'key-round',    $isFr ? 'Rôles & Permissions' : 'Roles & Permissions', route('admin.roles'), null],
         ]],
         [$isFr ? 'Commerce & Transactions' : 'Commerce & Transactions', [
             ['orders',        'shopping-cart', $isFr ? 'Commandes' : 'Orders',                  route('admin.orders'), null],

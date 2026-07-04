@@ -26,6 +26,7 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/artisans',
             '/tableau-de-bord/admin/commandes',
             '/tableau-de-bord/admin/kyc',
+            '/tableau-de-bord/admin/roles',
             '/tableau-de-bord/admin/collections',
             '/tableau-de-bord/admin/actualites',
             '/tableau-de-bord/admin/medias',
