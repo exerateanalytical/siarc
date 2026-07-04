@@ -2372,14 +2372,66 @@ Route::get('/tableau-de-bord/admin/paiements', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
-    return view('pages.dashboard.admin-payments', compact('lang', 'siacUser'));
+
+    // Real transaction feed: platform revenue comes from subscription payments +
+    // marketplace invoices. No hardcoded rows.
+    $subPayments = DB::table('business_subscriptions')
+        ->leftJoin('businesses', 'businesses.id', '=', 'business_subscriptions.business_id')
+        ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'business_subscriptions.subscription_plan_id')
+        ->select('business_subscriptions.*', 'businesses.name_fr as biz_name',
+            'subscription_plans.name_fr as plan_name', 'subscription_plans.currency as plan_currency')
+        ->orderByDesc('business_subscriptions.created_at')->limit(20)->get();
+
+    $payKpis = [
+        'revenue'      => (float) DB::table('business_subscriptions')->where('status', 'active')->sum('amount'),
+        'active'       => DB::table('business_subscriptions')->where('status', 'active')->count(),
+        'pending'      => DB::table('business_subscriptions')->where('status', 'pending')->count(),
+        'invoices'     => DB::table('invoices')->count(),
+        'invoices_due' => DB::table('invoices')->where('status', '!=', 'paid')->count(),
+        'pos'          => DB::table('purchase_orders')->count(),
+    ];
+    $payByStatus = DB::table('business_subscriptions')
+        ->select('status', DB::raw('count(*) as c'), DB::raw('sum(amount) as total'))
+        ->groupBy('status')->get()->keyBy('status');
+
+    return view('pages.dashboard.admin-payments', compact('lang', 'siacUser', 'subPayments', 'payKpis', 'payByStatus'));
 })->name('admin.payments');
 
 Route::get('/tableau-de-bord/admin/analytique', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
-    return view('pages.dashboard.admin-analytics', compact('lang', 'siacUser'));
+
+    // Real platform aggregates — no hardcoded numbers.
+    $anKpis = [
+        'users'       => DB::table('users')->count(),
+        'businesses'  => DB::table('businesses')->count(),
+        'products'    => DB::table('products')->whereNull('deleted_at')->count(),
+        'events'      => DB::table('events')->count(),
+        'subs_active' => DB::table('business_subscriptions')->where('status', 'active')->count(),
+        'revenue'     => (float) DB::table('business_subscriptions')->where('status', 'active')->sum('amount'),
+        'views'       => (int) DB::table('products')->whereNull('deleted_at')->sum('views_count'),
+    ];
+    // New businesses per month over the last 6 months (real growth series).
+    // Group in PHP (not SQL DATE_FORMAT) so it works on MySQL and SQLite alike.
+    $rows = DB::table('businesses')
+        ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+        ->pluck('created_at')
+        ->groupBy(fn ($d) => \Illuminate\Support\Carbon::parse($d)->format('Y-m'))
+        ->map->count();
+    $anSeries = [];
+    for ($i = 5; $i >= 0; $i--) {
+        $m = now()->subMonths($i);
+        $anSeries[] = ['label' => $m->translatedFormat('M'), 'value' => (int) ($rows[$m->format('Y-m')] ?? 0)];
+    }
+    // Top craft categories by live business count.
+    $anCategories = DB::table('industries')
+        ->leftJoin('businesses', 'businesses.industry_id', '=', 'industries.id')
+        ->select('industries.name_fr', DB::raw('count(businesses.id) as c'))
+        ->groupBy('industries.id', 'industries.name_fr')
+        ->orderByDesc('c')->limit(6)->get();
+
+    return view('pages.dashboard.admin-analytics', compact('lang', 'siacUser', 'anKpis', 'anSeries', 'anCategories'));
 })->name('admin.analytics');
 
 Route::get('/tableau-de-bord/admin/produits/{id}', function (Request $request, $id) {
@@ -2389,9 +2441,21 @@ Route::get('/tableau-de-bord/admin/produits/{id}', function (Request $request, $
     $adminProduct = DB::table('products')
         ->leftJoin('businesses', 'businesses.id', '=', 'products.business_id')
         ->whereNull('products.deleted_at')->where('products.id', $id)
-        ->select('products.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug', 'businesses.verification_tier as business_tier', 'businesses.created_at as business_since')
+        ->select('products.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug', 'businesses.verification_tier as business_tier', 'businesses.city_id as business_city', 'businesses.created_at as business_since')
         ->first();
-    return view('pages.dashboard.admin-product-detail', compact('lang', 'siacUser', 'adminProduct'));
+    if (!$adminProduct) { abort(404); }
+    $productImages = DB::table('product_images')->where('product_id', $id)
+        ->orderByDesc('is_cover')->orderBy('sort_order')->get();
+    $productAttributes = DB::table('product_attributes')->where('product_id', $id)
+        ->whereNotNull('value_fr')->get();
+    $productCategory = $adminProduct->category_id
+        ? DB::table('industries')->where('id', $adminProduct->category_id)->first() : null;
+    $productCity = $adminProduct->business_city
+        ? DB::table('cities')->where('id', $adminProduct->business_city)->value('name_fr') : null;
+    return view('pages.dashboard.admin-product-detail', compact(
+        'lang', 'siacUser', 'adminProduct', 'productImages', 'productAttributes',
+        'productCategory', 'productCity'
+    ));
 })->name('admin.products.detail');
 
 Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {

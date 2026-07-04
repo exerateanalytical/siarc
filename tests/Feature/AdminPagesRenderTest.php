@@ -38,8 +38,26 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/produits',
             '/tableau-de-bord/admin/utilisateurs',
             '/tableau-de-bord/admin/parametres',
+            '/tableau-de-bord/admin/paiements',
+            '/tableau-de-bord/admin/analytique',
         ] as $path) {
             $this->withSession($session)->get($path)->assertOk();
         }
+    }
+
+    public function test_admin_product_detail_page_renders(): void
+    {
+        $admin = $this->makeUser();
+        $session = ['siac_user' => [
+            'id' => $admin->id, 'name' => 'Admin Test', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]];
+
+        $product = $this->makeProduct();
+
+        $this->withSession($session)
+            ->get('/tableau-de-bord/admin/produits/' . $product->id)
+            ->assertOk()
+            ->assertSee($product->name_fr);
     }
 }
