@@ -49,6 +49,9 @@ class FrontendController extends Controller
             'regions'    => DB::table('regions')->count(),
         ];
 
+        // Admin-editable display settings for the hero stats band
+        $heroStats = DB::table('platform_settings')->pluck('value', 'key');
+
         $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->limit(9)->get();
 
         // Spotlight: prefer the flagship SIARC event, else the next upcoming one
@@ -73,7 +76,7 @@ class FrontendController extends Controller
             ->get();
 
         return response(
-            view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats', 'partners', 'currentEvent', 'upcomingEvents'))
+            view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats', 'heroStats', 'partners', 'currentEvent', 'upcomingEvents'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
@@ -113,16 +116,28 @@ class FrontendController extends Controller
             $query->where('is_featured', true);
         }
 
-        $businesses = $query->orderByDesc('is_featured')
-            ->orderByDesc('views_count')
-            ->paginate(12)
-            ->withQueryString();
+        $query->withCount(['products' => fn ($qb) => $qb->where('status', 'published')]);
+
+        if ($request->query('sort') === 'name') {
+            $query->orderBy('name_fr');
+        } else {
+            $query->orderByDesc('is_featured')->orderByDesc('views_count');
+        }
+
+        $businesses = $query->paginate(12)->withQueryString();
 
         $industries = Industry::withCount('businesses')->where('is_active', true)->orderBy('sort_order')->get();
         $regions    = DB::table('regions')->orderBy('name_fr')->get();
 
+        // Real directory stats for the hero band
+        $dirStats = [
+            'businesses' => Business::where('status', 'published')->count(),
+            'categories' => $industries->count(),
+            'regions'    => Business::where('status', 'published')->whereNotNull('region_id')->distinct()->count('region_id'),
+        ];
+
         return response(
-            view('pages.businesses.index', compact('lang', 'businesses', 'industries', 'regions'))
+            view('pages.businesses.index', compact('lang', 'businesses', 'industries', 'regions', 'dirStats'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
@@ -191,16 +206,60 @@ class FrontendController extends Controller
         $categorie = (string) $request->query('categorie', '');
         $region = (string) $request->query('region', '');
 
-        // Live public product count stays available if the display ever switches off design numbers
-        $liveCount = DB::table('products')
+        // Real, browsable products (published product + published business)
+        $query = Product::with(['images', 'business.industry', 'business.region'])
+            ->where('status', 'published')
+            ->whereHas('business', fn ($q) => $q->where('status', 'published'));
+
+        if ($categorie) {
+            $query->whereHas('business.industry', fn ($q) => $q->where('slug', $categorie));
+        }
+
+        if ($region) {
+            $query->whereHas('business.region', fn ($q) => $q->where('name_fr', $region)->orWhere('code', $region));
+        }
+
+        $vendorTypes = array_intersect((array) $request->query('vendeur', []), ['artisan', 'entreprise', 'cooperative']);
+        if ($vendorTypes) {
+            $query->whereHas('business', fn ($q) => $q->whereIn('vendor_type', $vendorTypes));
+        }
+
+        if ($request->boolean('dispo')) {
+            $query->where('is_available', true);
+        }
+
+        if ($sort === 'name') {
+            $query->orderBy('name_fr');
+        } else {
+            $query->orderByDesc('created_at');
+        }
+
+        $products = $query->paginate(24)->withQueryString();
+
+        $liveCount = Product::where('status', 'published')
+            ->whereHas('business', fn ($q) => $q->where('status', 'published'))
+            ->count();
+
+        // Sidebar categories with real per-industry product counts
+        $industries = Industry::where('is_active', true)->orderBy('sort_order')->get();
+        $sideCounts = DB::table('products')
             ->join('businesses', 'products.business_id', '=', 'businesses.id')
             ->where('products.status', 'published')
             ->whereNull('products.deleted_at')
             ->where('businesses.status', 'published')
-            ->count();
+            ->groupBy('businesses.industry_id')
+            ->selectRaw('businesses.industry_id, count(*) as total')
+            ->pluck('total', 'industry_id');
+
+        $regions = DB::table('regions')->orderBy('name_fr')->get();
+
+        $vendorTypeCounts = Business::where('status', 'published')
+            ->groupBy('vendor_type')
+            ->selectRaw('vendor_type, count(*) as total')
+            ->pluck('total', 'vendor_type');
 
         return response(
-            view('pages.products.index', compact('lang', 'sort', 'categorie', 'region', 'liveCount'))
+            view('pages.products.index', compact('lang', 'sort', 'categorie', 'region', 'liveCount', 'products', 'industries', 'sideCounts', 'regions', 'vendorTypeCounts', 'vendorTypes'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 

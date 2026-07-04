@@ -2,70 +2,48 @@
     $isFr = $lang === 'fr';
     $siacUser = session('siac_user');
 
-    // The design's 11 sidebar categories, verbatim (label, count, icon, slug)
-    $designSideCats = [
-        ['',                          $isFr ? 'Toutes les catégories' : 'All categories',           '5248', 'product-side-0.png'],
-        ['arts-decoration',           $isFr ? 'Arts & Décoration' : 'Arts & Decoration',            '642',  'product-side-1.png'],
-        ['mode-textile',              $isFr ? 'Mode & Textile' : 'Fashion & Textile',               '918',  'product-side-2.png'],
-        ['bois-sculpture',            $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture',              '567',  'product-side-3.png'],
-        ['poterie-ceramique',         $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics',         '487',  'product-side-4.png'],
-        ['bijouterie-accessoires',    $isFr ? 'Bijouterie & Accessoires' : 'Jewellery & Accessories','713',  'product-side-5.png'],
-        ['cuir-maroquinerie',         $isFr ? 'Cuir & Maroquinerie' : 'Leather & Leatherwork',      '398',  'product-side-6.png'],
-        ['musique-instruments',       $isFr ? 'Musique & Instruments' : 'Music & Instruments',      '296',  'product-side-7.png'],
-        ['produits-naturels',         $isFr ? 'Produits Naturels' : 'Natural Products',             '621',  'product-side-8.png'],
-        ['agroalimentaire',           $isFr ? 'Agroalimentaire' : 'Agri-food',                      '834',  'product-side-9.png'],
-        ['technologies-innovation',   $isFr ? 'Technologies & Innovation' : 'Technology & Innovation','172', 'product-side-10.png'],
+    // Sidebar categories: real industries + real per-industry product counts.
+    // The design's side icons (product-side-N.png) follow the seeded sort order.
+    $tileIndustries = $industries->filter(fn ($ind) => $ind->image_icon)->sortBy('sort_order')->values();
+    $designSideCats = collect([['', $isFr ? 'Toutes les catégories' : 'All categories', (string) $liveCount, 'product-side-0.png']])
+        ->concat($tileIndustries->map(fn ($ind, $idx) => [
+            $ind->slug,
+            $isFr ? $ind->name_fr : ($ind->name_en ?? $ind->name_fr),
+            (string) ($sideCounts[$ind->id] ?? 0),
+            'product-side-' . ($idx + 1) . '.png',
+        ]))->all();
+
+    // Product cards: the real, filtered, paginated query. The design's product
+    // crops stay as artwork for the seeded design products (mapped by slug) and
+    // as cycling fallbacks for products without an uploaded photo.
+    $designArt = [
+        'panier-africain-tresse' => 'product-1.png',  'sculpture-en-bois-sawa' => 'product-2.png',
+        'sac-a-main-traditionnel' => 'product-3.png', 'vase-en-terre-cuite' => 'product-4.png',
+        'collier-perles-africaines' => 'product-5.png', 'sac-en-cuir-veritable' => 'product-6.png',
+        'djembe-traditionnel' => 'product-7.png',     'miel-naturel-du-cameroun' => 'product-8.png',
+        'feves-de-cacao-premium' => 'product-9.png',  'savon-naturel-artisanal' => 'product-10.png',
+        'lampe-solaire-artisanale' => 'product-11.png', 'beurre-de-karite-pur' => 'product-12.png',
     ];
 
-    // The design's 12 products, verbatim (also seeded as real products — see DesignProductsSeeder)
-    $designProducts = [
-        ['slug' => 'panier-africain-tresse',    'img' => 'product-1.png',  'badge' => 'new',
-         'name' => $isFr ? 'Panier africain tressé' : 'African woven basket',
-         'cat' => $isFr ? 'Arts & Décoration' : 'Arts & Decoration',            'catSlug' => 'arts-decoration'],
-        ['slug' => 'sculpture-en-bois-sawa',    'img' => 'product-2.png',  'badge' => 'best',
-         'name' => $isFr ? 'Sculpture en bois Sawa' : 'Sawa wood sculpture',
-         'cat' => $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture',              'catSlug' => 'bois-sculpture'],
-        ['slug' => 'sac-a-main-traditionnel',   'img' => 'product-3.png',  'badge' => null,
-         'name' => $isFr ? 'Sac à main traditionnel' : 'Traditional handbag',
-         'cat' => $isFr ? 'Mode & Textile' : 'Fashion & Textile',               'catSlug' => 'mode-textile'],
-        ['slug' => 'vase-en-terre-cuite',       'img' => 'product-4.png',  'badge' => null,
-         'name' => $isFr ? 'Vase en terre cuite' : 'Terracotta vase',
-         'cat' => $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics',         'catSlug' => 'poterie-ceramique'],
-        ['slug' => 'collier-perles-africaines', 'img' => 'product-5.png',  'badge' => 'new',
-         'name' => $isFr ? 'Collier perles africaines' : 'African bead necklace',
-         'cat' => $isFr ? 'Bijouterie & Accessoires' : 'Jewellery & Accessories','catSlug' => 'bijouterie-accessoires'],
-        ['slug' => 'sac-en-cuir-veritable',     'img' => 'product-6.png',  'badge' => null,
-         'name' => $isFr ? 'Sac en cuir véritable' : 'Genuine leather bag',
-         'cat' => $isFr ? 'Cuir & Maroquinerie' : 'Leather & Leatherwork',      'catSlug' => 'cuir-maroquinerie'],
-        ['slug' => 'djembe-traditionnel',       'img' => 'product-7.png',  'badge' => null,
-         'name' => $isFr ? 'Djembé traditionnel' : 'Traditional djembe',
-         'cat' => $isFr ? 'Musique & Instruments' : 'Music & Instruments',      'catSlug' => 'musique-instruments'],
-        ['slug' => 'miel-naturel-du-cameroun',  'img' => 'product-8.png',  'badge' => null,
-         'name' => $isFr ? 'Miel naturel du Cameroun' : 'Natural Cameroon honey',
-         'cat' => $isFr ? 'Produits Naturels' : 'Natural Products',             'catSlug' => 'produits-naturels'],
-        ['slug' => 'feves-de-cacao-premium',    'img' => 'product-9.png',  'badge' => null,
-         'name' => $isFr ? 'Fèves de cacao premium' : 'Premium cocoa beans',
-         'cat' => $isFr ? 'Agroalimentaire' : 'Agri-food',                      'catSlug' => 'agroalimentaire'],
-        ['slug' => 'savon-naturel-artisanal',   'img' => 'product-10.png', 'badge' => null,
-         'name' => $isFr ? 'Savon naturel artisanal' : 'Natural handmade soap',
-         'cat' => $isFr ? 'Produits Naturels' : 'Natural Products',             'catSlug' => 'produits-naturels'],
-        ['slug' => 'lampe-solaire-artisanale',  'img' => 'product-11.png', 'badge' => null,
-         'name' => $isFr ? 'Lampe solaire artisanale' : 'Handcrafted solar lamp',
-         'cat' => $isFr ? 'Technologies & Innovation' : 'Technology & Innovation','catSlug' => 'technologies-innovation'],
-        ['slug' => 'beurre-de-karite-pur',      'img' => 'product-12.png', 'badge' => null,
-         'name' => $isFr ? 'Beurre de karité pur' : 'Pure shea butter',
-         'cat' => $isFr ? 'Produits Naturels' : 'Natural Products',             'catSlug' => 'produits-naturels'],
-    ];
+    $shownProducts = $products->map(function ($prod) use ($isFr, $designArt) {
+        static $i = 0;
+        $i++;
+        $firstImage = $prod->images->first();
+        return [
+            'slug'  => $prod->slug,
+            'img'   => $firstImage
+                ? asset('storage/' . $firstImage->file_path)
+                : asset('images/landing/' . ($designArt[$prod->slug] ?? 'product-' . (($i - 1) % 12 + 1) . '.png')),
+            'badge' => $prod->created_at->gt(now()->subDays(30)) ? 'new' : null,
+            'name'  => $isFr ? $prod->name_fr : ($prod->name_en ?? $prod->name_fr),
+            'cat'   => $prod->business->industry
+                ? ($isFr ? $prod->business->industry->name_fr : ($prod->business->industry->name_en ?? $prod->business->industry->name_fr))
+                : '',
+        ];
+    })->all();
 
-    // Category filter (?categorie=) narrows the static grid; sort works on the static array
     $activeCat = $categorie ?? '';
-    $shownProducts = $activeCat === ''
-        ? $designProducts
-        : array_values(array_filter($designProducts, fn ($p) => $p['catSlug'] === $activeCat));
-
-    if (($sort ?? 'recents') === 'name') {
-        usort($shownProducts, fn ($a, $b) => strcoll($a['name'], $b['name']));
-    }
+    $fmt = fn ($n) => $isFr ? number_format($n, 0, ',', ' ') : number_format($n);
 
     $trustItems = [
         ['product-trust-1.png', $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity', $isFr ? 'Produits 100% authentiques' : '100% authentic products'],
@@ -75,7 +53,6 @@
         ['product-trust-5.png', $isFr ? 'Service client dédié' : 'Dedicated customer service',$isFr ? 'Nous sommes à votre écoute' : 'We are here to listen'],
     ];
 
-    $regions = ['Centre','Littoral','Ouest','Nord-Ouest','Sud-Ouest','Nord','Adamaoua','Est','Sud','Extrême-Nord'];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -162,30 +139,30 @@
                     <p class="text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Région' : 'Region' }}</p>
                     <select name="region" class="mt-2 w-full h-[36px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12.5px] text-[#3A3A35] focus:outline-none focus:border-gold cursor-pointer">
                         <option value="">{{ $isFr ? 'Toutes les régions' : 'All regions' }}</option>
-                        @foreach($regions as $regionName)
-                        <option value="{{ \Illuminate\Support\Str::slug($regionName) }}" {{ ($region ?? '') === \Illuminate\Support\Str::slug($regionName) ? 'selected' : '' }}>{{ $regionName }}</option>
+                        @foreach($regions as $regionRow)
+                        <option value="{{ $regionRow->code }}" {{ ($region ?? '') === $regionRow->code ? 'selected' : '' }}>{{ $regionRow->name_fr }}</option>
                         @endforeach
                     </select>
 
                     <p class="mt-5 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Type de vendeur' : 'Vendor type' }}</p>
                     <div class="mt-2.5 space-y-2.5">
                         <label class="flex items-center gap-2.5 cursor-pointer">
-                            <input type="checkbox" name="vendeur[]" value="artisan" class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
-                            <span class="text-[12.5px] text-[#3A3A35]">Artisan&nbsp;&nbsp;(3421)</span>
+                            <input type="checkbox" name="vendeur[]" value="artisan" {{ in_array('artisan', $vendorTypes ?? []) ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                            <span class="text-[12.5px] text-[#3A3A35]">Artisan&nbsp;&nbsp;({{ $vendorTypeCounts['artisan'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center gap-2.5 cursor-pointer">
-                            <input type="checkbox" name="vendeur[]" value="entreprise" class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
-                            <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Entreprise' : 'Business' }}&nbsp;&nbsp;(1642)</span>
+                            <input type="checkbox" name="vendeur[]" value="entreprise" {{ in_array('entreprise', $vendorTypes ?? []) ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                            <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Entreprise' : 'Business' }}&nbsp;&nbsp;({{ $vendorTypeCounts['entreprise'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center gap-2.5 cursor-pointer">
-                            <input type="checkbox" name="vendeur[]" value="cooperative" class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
-                            <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Coopérative' : 'Cooperative' }}&nbsp;&nbsp;(185)</span>
+                            <input type="checkbox" name="vendeur[]" value="cooperative" {{ in_array('cooperative', $vendorTypes ?? []) ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                            <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Coopérative' : 'Cooperative' }}&nbsp;&nbsp;({{ $vendorTypeCounts['cooperative'] ?? 0 }})</span>
                         </label>
                     </div>
 
                     <p class="mt-5 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Disponibilité' : 'Availability' }}</p>
                     <label class="mt-2.5 flex items-center gap-2.5 cursor-pointer">
-                        <input type="checkbox" name="dispo" value="1" class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                        <input type="checkbox" name="dispo" value="1" {{ request()->boolean('dispo') ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
                         <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Disponible maintenant' : 'Available now' }}</span>
                     </label>
 
@@ -242,16 +219,16 @@
 
             <p class="mt-5 flex items-center gap-2 text-[12.5px] font-semibold text-[#1D1B16]">
                 <i data-lucide="package" class="w-[15px] h-[15px] text-[#0B3D28]"></i>
-                {{ $isFr ? '5 248 produits disponibles' : '5,248 products available' }}
+                {{ $fmt($liveCount) }} {{ $isFr ? 'produits disponibles' : 'products available' }}
             </p>
 
             <!-- Product grid -->
             <div id="product-grid" class="mt-4 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
-                @foreach($shownProducts as $product)
+                @forelse($shownProducts as $product)
                 <article class="prod-card bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                     <div class="prod-media relative">
                         <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}">
-                            <img src="{{ asset('images/landing/' . $product['img']) }}" alt="{{ $product['name'] }}" class="prod-img w-full h-[168px] object-cover">
+                            <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="prod-img w-full h-[168px] object-cover">
                         </a>
                         @if($product['badge'] === 'new')
                         <span class="absolute top-2.5 left-2.5 bg-[#0E3D26] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
@@ -275,20 +252,37 @@
                         </a>
                     </div>
                 </article>
-                @endforeach
+                @empty
+                <p class="col-span-full py-10 text-center text-[13px] text-[#6F6B60]">
+                    {{ $isFr ? 'Aucun produit ne correspond à ces critères.' : 'No product matches these criteria.' }}
+                </p>
+                @endforelse
             </div>
 
             <!-- Pagination -->
+            @if($products->lastPage() > 1)
             <nav class="mt-8 flex items-center justify-center gap-1.5" aria-label="Pagination">
+                @if($products->onFirstPage())
                 <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
-                <a href="{{ route('products.index', ['lang' => $lang]) }}" class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">1</a>
-                @foreach([2, 3, 4, 5] as $pageNum)
-                <a href="{{ route('products.index', ['lang' => $lang, 'page' => $pageNum]) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pageNum }}</a>
+                @else
+                <a href="{{ $products->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                @endif
+
+                @foreach(range(1, $products->lastPage()) as $pageNum)
+                @if($pageNum === $products->currentPage())
+                <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                @else
+                <a href="{{ $products->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pageNum }}</a>
+                @endif
                 @endforeach
-                <span class="w-8 h-8 flex items-center justify-center text-[#6F6B60] text-[12.5px]">…</span>
-                <a href="{{ route('products.index', ['lang' => $lang, 'page' => 175]) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">175</a>
-                <a href="{{ route('products.index', ['lang' => $lang, 'page' => 2]) }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+
+                @if($products->hasMorePages())
+                <a href="{{ $products->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                @else
+                <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                @endif
             </nav>
+            @endif
         </section>
     </div>
 </div>

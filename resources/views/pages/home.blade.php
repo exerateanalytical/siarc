@@ -50,11 +50,13 @@
          'sub' => "The official virtual gallery connecting\nCameroonian artisans with buyers\nand partners worldwide."],
     ];
 
+    // Hero stats: regions is live data; the marketing figures are admin-editable
+    // platform_settings (seeded with the official design numbers).
     $statItems = [
         ['icon' => 'map-pin',      'color' => '#114023', 'n' => (string) ($stats['regions'] ?? 10), 'label' => $isFr ? 'Régions' : 'Regions',        'cap' => $isFr ? 'Une diversité culturelle unique' : 'A unique cultural diversity'],
-        ['icon' => 'users',        'color' => '#A51717', 'n' => '250+',    'label' => $isFr ? 'Communautés' : 'Communities', 'cap' => $isFr ? 'Ethniques et culturelles' : 'Ethnic and cultural'],
-        ['icon' => 'palette',      'color' => '#D99B2E', 'n' => $isFr ? '10 000+' : '10,000+', 'label' => $isFr ? 'Artisans' : 'Artisans',    'cap' => $isFr ? 'Talents et savoir-faire d\'exception' : 'Exceptional talents and know-how'],
-        ['icon' => 'shopping-bag', 'color' => '#114023', 'n' => $isFr ? '50 000+' : '50,000+', 'label' => $isFr ? 'Produits' : 'Products',    'cap' => $isFr ? 'Créations authentiques et uniques' : 'Authentic and unique creations'],
+        ['icon' => 'users',        'color' => '#A51717', 'n' => $heroStats['stat_communities'] ?? '250+', 'label' => $isFr ? 'Communautés' : 'Communities', 'cap' => $isFr ? 'Ethniques et culturelles' : 'Ethnic and cultural'],
+        ['icon' => 'palette',      'color' => '#D99B2E', 'n' => $heroStats['stat_artisans'] ?? '10 000+', 'label' => $isFr ? 'Artisans' : 'Artisans',    'cap' => $isFr ? 'Talents et savoir-faire d\'exception' : 'Exceptional talents and know-how'],
+        ['icon' => 'shopping-bag', 'color' => '#114023', 'n' => $heroStats['stat_products'] ?? '50 000+', 'label' => $isFr ? 'Produits' : 'Products',    'cap' => $isFr ? 'Créations authentiques et uniques' : 'Authentic and unique creations'],
         ['icon' => 'globe',        'color' => '#A51717', 'n' => $isFr ? 'Ouvert' : 'Open',     'label' => $isFr ? 'au monde' : 'to the world','cap' => $isFr ? 'Un impact local, une portée globale' : 'Local impact, global reach'],
     ];
 
@@ -76,19 +78,16 @@
     $bizFallbacks = ['biz-1.png','biz-2.png','biz-3.png','biz-4.png','biz-5.png','biz-6.png'];
     $eventFallbacks = ['event-1.png','event-2.png','event-3.png'];
 
-    // The 10 categories of the official design, mapped onto real gallery filters
-    $sectorCards = [
-        ['flower',    $isFr ? "Arts &\nDécoration"          : "Arts &\nDecoration",        route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
-        ['shirt',     $isFr ? "Mode &\nTextile"             : "Fashion &\nTextile",        route('businesses.index', ['lang' => $lang, 'industry' => 'textile-mode'])],
-        ['trees',     $isFr ? "Bois &\nSculpture"           : "Wood &\nSculpture",         route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
-        ['amphora',   $isFr ? "Poterie &\nCéramique"        : "Pottery &\nCeramics",       route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
-        ['gem',       $isFr ? "Bijouterie &\nAccessoires"   : "Jewellery &\nAccessories",  route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
-        ['guitar',    $isFr ? "Musique &\nInstruments"      : "Music &\nInstruments",      route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
-        ['briefcase', $isFr ? "Cuir &\nMaroquinerie"        : "Leather &\nLeatherwork",    route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
-        ['sprout',    $isFr ? "Produits\nNaturels"          : "Natural\nProducts",         route('businesses.index', ['lang' => $lang, 'industry' => 'agriculture'])],
-        ['salad',     $isFr ? "Agroalimentaire"             : "Agri-food",                 route('businesses.index', ['lang' => $lang, 'industry' => 'agroalimentaire'])],
-        ['atom',      $isFr ? "Technologies\n& Innovation"  : "Technology &\nInnovation",  route('businesses.index', ['lang' => $lang])],
-    ];
+    // Category tiles come straight from the industries table (same illustrated
+    // icons as the categories page); each links to its real gallery filter.
+    $sectorCards = $industries
+        ->filter(fn ($ind) => $ind->image_icon)
+        ->sortBy('sort_order')
+        ->map(fn ($ind) => [
+            $ind->image_icon,
+            str_replace(' & ', " &\n", $isFr ? $ind->name_fr : ($ind->name_en ?? $ind->name_fr)),
+            route('businesses.index', ['lang' => $lang, 'industry' => $ind->slug]),
+        ])->values()->all();
 
     // Partner logo tiles cropped from the official design, keyed by name_fr
     $partnerTiles = [
@@ -242,7 +241,7 @@
         @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
         <a href="{{ $scHref }}"
             class="relative w-[46%] sm:w-[140px] lg:w-[86px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-5 pb-4 px-1.5 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center">
-            <i data-lucide="{{ $scIcon }}" class="w-9 h-9 text-cocoa" stroke-width="1.5"></i>
+            <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-11 h-11 object-contain" aria-hidden="true">
             <p class="mt-2.5 text-[11px] font-medium text-[#1D1B16] leading-[1.35] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
             <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
                 <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>

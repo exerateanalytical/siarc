@@ -3,22 +3,21 @@
     $siacUser = session('siac_user');
     $galleryActive = 'categories';
 
-    // Design content (categories page.png) — names, counts and artwork come from the
-    // official design verbatim; links map onto the matching industry slugs (seeded).
-    $designCategories = [
-        ['arts-decoration',         'Arts & Décoration',         'Arts & Decoration',          124, 'cat-icon-1.png',  'cat-side-1.png'],
-        ['textile-mode',            'Mode & Textile',            'Fashion & Textile',          112, 'cat-icon-2.png',  'cat-side-2.png'],
-        ['bois-sculpture',          'Bois & Sculpture',          'Wood & Sculpture',            96, 'cat-icon-3.png',  'cat-side-3.png'],
-        ['poterie-ceramique',       'Poterie & Céramique',       'Pottery & Ceramics',          88, 'cat-icon-4.png',  'cat-side-4.png'],
-        ['bijouterie-accessoires',  'Bijouterie & Accessoires',  'Jewelry & Accessories',       76, 'cat-icon-5.png',  'cat-side-5.png'],
-        ['cuir-maroquinerie',       'Cuir & Maroquinerie',       'Leather & Leather Goods',     65, 'cat-icon-6.png',  'cat-side-6.png'],
-        ['musique-instruments',     'Musique & Instruments',     'Music & Instruments',         58, 'cat-icon-7.png',  'cat-side-7.png'],
-        ['produits-naturels',       'Produits Naturels',         'Natural Products',            73, 'cat-icon-8.png',  'cat-side-8.png'],
-        ['agroalimentaire',         'Agroalimentaire',           'Agri-food',                   59, 'cat-icon-9.png',  'cat-side-9.png'],
-        ['technologies-innovation', 'Technologies & Innovation', 'Technologies & Innovation',   42, 'cat-icon-10.png', 'cat-side-10.png'],
-    ];
+    // Categories come from the industries table (illustrated tiles seeded from the
+    // official design); counts are the real number of browsable products per sector.
+    $designCategories = $industries
+        ->filter(fn ($ind) => $ind->image_icon)
+        ->sortBy('sort_order')
+        ->map(fn ($ind) => [
+            $ind->slug,
+            $ind->name_fr,
+            $ind->name_en ?? $ind->name_fr,
+            (int) ($productCounts[$ind->id] ?? 0),
+            $ind->image_icon,
+            $ind->side_icon ?? $ind->image_icon,
+        ])->values()->all();
 
-    $totalCount = 1245; // per the design ("1245" pill / "1 245 résultats trouvés")
+    $totalCount = array_sum(array_column($designCategories, 3));
     $fmt = fn ($n) => $isFr ? number_format($n, 0, ',', ' ') : number_format($n);
 
     $sorted = collect($designCategories);

@@ -7,55 +7,31 @@
     $dirNavActive = 'businesses';
     $dirSearchPlaceholder = $isFr ? 'Rechercher un artisan, une entreprise, un produit...' : 'Search an artisan, a business, a product...';
 
-    // The design's 8 vendors, verbatim (also seeded as real businesses — see DesignVendorsSeeder)
-    $designVendors = [
-        ['slug' => 'ceramiques-du-noun',     'img' => 'vendor-1.png', 'av' => 'vendor-av-1.png', 'plus' => '+12',
-         'name' => 'Céramiques du Noun',
-         'cat' => $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics',
-         'loc' => 'Foumban, Ouest',
-         'desc' => $isFr ? "Spécialistes de la poterie traditionnelle\net de la céramique artisanale." : "Specialists in traditional pottery\nand artisanal ceramics."],
-        ['slug' => 'afrik-cuir-excellence',  'img' => 'vendor-2.png', 'av' => 'vendor-av-2.png', 'plus' => '+18',
-         'name' => 'Afrik Cuir Excellence',
-         'cat' => $isFr ? 'Cuir & Maroquinerie' : 'Leather & Leatherwork',
-         'loc' => 'Douala, Littoral',
-         'desc' => $isFr ? "Conception et fabrication d'articles\nen cuir de haute qualité." : "Design and manufacture of\nhigh-quality leather goods."],
-        ['slug' => 'sawa-wood-art',          'img' => 'vendor-3.png', 'av' => 'vendor-av-3.png', 'plus' => '+9',
-         'name' => 'Sawa Wood Art',
-         'cat' => $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture',
-         'loc' => 'Kribi, Sud',
-         'desc' => $isFr ? "Sculptures et objets d'art en bois\ninspirés de la tradition Sawa." : "Wooden sculptures and works of art\ninspired by the Sawa tradition."],
-        ['slug' => 'tressage-bamenda',       'img' => 'vendor-4.png', 'av' => 'vendor-av-4.png', 'plus' => '+15',
-         'name' => 'Tressage Bamenda',
-         'cat' => $isFr ? 'Arts & Décoration' : 'Arts & Decoration',
-         'loc' => 'Bamenda, Nord-Ouest',
-         'desc' => $isFr ? "Créations en fibres naturelles\nfaites à la main par nos artisans." : "Natural-fibre creations\nhandmade by our artisans."],
-        ['slug' => 'perles-du-sahel',        'img' => 'vendor-5.png', 'av' => 'vendor-av-5.png', 'plus' => '+8',
-         'name' => 'Perles du Sahel',
-         'cat' => $isFr ? 'Bijouterie & Accessoires' : 'Jewellery & Accessories',
-         'loc' => 'Maroua, Extrême-Nord',
-         'desc' => $isFr ? "Bijoux et accessoires fabriqués\navec des perles africaines." : "Jewellery and accessories made\nwith African beads."],
-        ['slug' => 'tissus-racines',         'img' => 'vendor-6.png', 'av' => 'vendor-av-6.png', 'plus' => '+14',
-         'name' => 'Tissus & Racines',
-         'cat' => $isFr ? 'Mode & Textile' : 'Fashion & Textile',
-         'loc' => 'Yaoundé, Centre',
-         'desc' => $isFr ? "Tissus traditionnels et créations\ninspirées du patrimoine africain." : "Traditional fabrics and creations\ninspired by African heritage."],
-        ['slug' => 'rythmes-dafrique',       'img' => 'vendor-7.png', 'av' => 'vendor-av-7.png', 'plus' => '+6',
-         'name' => 'Rythmes d\'Afrique',
-         'cat' => $isFr ? 'Musique & Instruments' : 'Music & Instruments',
-         'loc' => 'Douala, Littoral',
-         'desc' => $isFr ? "Instruments de musique traditionnels\net accessoires." : "Traditional musical instruments\nand accessories."],
-        ['slug' => 'nature-bienfaits',       'img' => 'vendor-8.png', 'av' => 'vendor-av-8.png', 'plus' => '+10',
-         'name' => 'Nature & Bienfaits',
-         'cat' => $isFr ? 'Produits Naturels' : 'Natural Products',
-         'loc' => 'Bafoussam, Ouest',
-         'desc' => $isFr ? "Produits naturels et cosmétiques\nfaits à partir d'ingrédients locaux." : "Natural products and cosmetics\nmade from local ingredients."],
-    ];
+    // Vendor cards come from the real, filtered, paginated $businesses query.
+    // Design crops (vendor-N.png / vendor-av-N.png) remain the fallback artwork
+    // for businesses without an uploaded cover.
+    $designVendors = $businesses->map(function ($b) use ($isFr) {
+        static $i = 0;
+        $i++;
+        return [
+            'slug'     => $b->slug,
+            'img'      => $b->cover_image ? asset('storage/' . $b->cover_image) : asset('images/landing/vendor-' . (($i - 1) % 8 + 1) . '.png'),
+            'av'       => 'vendor-av-' . (($i - 1) % 8 + 1) . '.png',
+            'plus'     => '+' . (int) ($b->products_count ?? 0),
+            'name'     => $isFr ? $b->name_fr : ($b->name_en ?? $b->name_fr),
+            'cat'      => $b->industry ? ($isFr ? $b->industry->name_fr : ($b->industry->name_en ?? $b->industry->name_fr)) : '',
+            'loc'      => trim(($b->city->name_fr ?? '') . ($b->city && $b->region ? ', ' : '') . ($b->region->name_fr ?? ''), ', ') ?: 'Cameroun',
+            'desc'     => $isFr ? ($b->tagline_fr ?? '') : ($b->tagline_en ?? $b->tagline_fr ?? ''),
+            'verified' => in_array($b->verification_tier, ['verified', 'certified'], true),
+        ];
+    })->all();
 
+    $fmtStat = fn ($n) => $isFr ? number_format($n, 0, ',', ' ') : number_format($n);
     $statItems = [
-        ['users',        '2,548', $isFr ? 'Artisans & Entreprises' : 'Artisans & Businesses'],
-        ['layout-grid',  '10+',   $isFr ? 'Catégories' : 'Categories'],
-        ['map-pin',      '58',    $isFr ? 'Régions représentées' : 'Regions represented'],
-        ['shield-check', '100%',  $isFr ? 'Authentiques' : 'Authentic'],
+        ['users',        $fmtStat($dirStats['businesses']), $isFr ? 'Artisans & Entreprises' : 'Artisans & Businesses'],
+        ['layout-grid',  $dirStats['categories'] . '+',     $isFr ? 'Catégories' : 'Categories'],
+        ['map-pin',      $fmtStat($dirStats['regions']),    $isFr ? 'Régions représentées' : 'Regions represented'],
+        ['shield-check', '100%',                            $isFr ? 'Authentiques' : 'Authentic'],
     ];
 
     $trustItems = [
@@ -71,18 +47,11 @@
          $isFr ? "Boostez votre activité et touchez\nplus de clients" : "Boost your activity and reach\nmore customers"],
     ];
 
-    $searchCats = [
-        ['arts-decoration',          $isFr ? 'Arts & Décoration' : 'Arts & Decoration'],
-        ['textile-mode',             $isFr ? 'Mode & Textile' : 'Fashion & Textile'],
-        ['bois-sculpture',           $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture'],
-        ['poterie-ceramique',        $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics'],
-        ['bijouterie-accessoires',   $isFr ? 'Bijouterie & Accessoires' : 'Jewellery & Accessories'],
-        ['cuir-maroquinerie',        $isFr ? 'Cuir & Maroquinerie' : 'Leather & Leatherwork'],
-        ['musique-instruments',      $isFr ? 'Musique & Instruments' : 'Music & Instruments'],
-        ['produits-naturels',        $isFr ? 'Produits Naturels' : 'Natural Products'],
-        ['agroalimentaire',          $isFr ? 'Agroalimentaire' : 'Agri-food'],
-        ['technologies-innovation',  $isFr ? 'Technologies & Innovation' : 'Technology & Innovation'],
-    ];
+    // Category filter options come from the industries table
+    $searchCats = $industries
+        ->sortBy('sort_order')
+        ->map(fn ($ind) => [$ind->slug, $isFr ? $ind->name_fr : ($ind->name_en ?? $ind->name_fr)])
+        ->values()->all();
 
     // Footer options (directory-footer partial)
     $dfShowHelp = true;
@@ -285,17 +254,11 @@
 
             <!-- Vendor grid -->
             <div id="vendor-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                @php
-                    $shownVendors = $designVendors;
-                    if (request('sort') === 'name') {
-                        usort($shownVendors, fn ($a, $b) => strcoll($a['name'], $b['name']));
-                    }
-                @endphp
-                @foreach($shownVendors as $vendor)
+                @forelse($designVendors as $vendor)
                 <article class="vend-card bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                     <div class="vend-media relative">
                         <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}">
-                            <img src="{{ asset('images/landing/' . $vendor['img']) }}" alt="{{ $vendor['name'] }}" class="vend-img w-full h-[140px] object-cover">
+                            <img src="{{ $vendor['img'] }}" alt="{{ $vendor['name'] }}" class="vend-img w-full h-[140px] object-cover">
                         </a>
                         {{-- The heart is baked into the artwork; this transparent link makes it functional --}}
                         <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
@@ -304,10 +267,12 @@
                     <div class="p-3.5">
                         <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16]">
                             <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}" class="truncate hover:text-leaf transition-colors">{{ $vendor['name'] }}</a>
+                            @if($vendor['verified'])
                             <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0" aria-label="{{ $isFr ? 'Vérifié' : 'Verified' }}">
                                 <circle cx="8" cy="8" r="8" fill="#17A34A"/>
                                 <path d="M4.7 8.2 7 10.4l4.3-4.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
+                            @endif
                         </h3>
                         <p class="mt-1 text-[11.5px] text-[#55524A]">{{ $vendor['cat'] }}</p>
                         <p class="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-[#6F6B60]">
@@ -331,20 +296,37 @@
                         </div>
                     </div>
                 </article>
-                @endforeach
+                @empty
+                <p class="col-span-full py-10 text-center text-[13px] text-[#6F6B60]">
+                    {{ $isFr ? 'Aucune entreprise ne correspond à ces critères.' : 'No business matches these criteria.' }}
+                </p>
+                @endforelse
             </div>
 
-            <!-- Pagination -->
+            <!-- Pagination (real) -->
+            @if($businesses->lastPage() > 1)
             <nav class="mt-8 flex items-center justify-center gap-1.5" aria-label="Pagination">
+                @if($businesses->onFirstPage())
                 <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
-                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">1</a>
-                @foreach([2, 3, 4, 5] as $pageNum)
-                <a href="{{ route('businesses.index', ['lang' => $lang, 'page' => $pageNum]) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pageNum }}</a>
+                @else
+                <a href="{{ $businesses->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                @endif
+
+                @foreach(range(1, $businesses->lastPage()) as $pageNum)
+                @if($pageNum === $businesses->currentPage())
+                <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                @else
+                <a href="{{ $businesses->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pageNum }}</a>
+                @endif
                 @endforeach
-                <span class="w-8 h-8 flex items-center justify-center text-[#6F6B60] text-[12.5px]">…</span>
-                <a href="{{ route('businesses.index', ['lang' => $lang, 'page' => 64]) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">64</a>
-                <a href="{{ route('businesses.index', ['lang' => $lang, 'page' => 2]) }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+
+                @if($businesses->hasMorePages())
+                <a href="{{ $businesses->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                @else
+                <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                @endif
             </nav>
+            @endif
         </section>
     </div>
 </div>
