@@ -254,7 +254,11 @@
             @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
             <a href="{{ $scHref }}"
                 class="relative snap-start shrink-0 w-[calc((100%-1rem)/2)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)] min-h-[218px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-7 pb-6 px-3 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center">
-                <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-20 h-20 object-contain" aria-hidden="true">
+                {{-- The icon crops are 110px squares holding a 94px circle: the round
+                     mask + 117% zoom clips the white corners so only the circle shows --}}
+                <span class="block w-20 h-20 rounded-full overflow-hidden shrink-0">
+                    <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
+                </span>
                 <p class="mt-4 text-[13px] font-medium text-[#1D1B16] leading-[1.4] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
                 <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
                     <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
