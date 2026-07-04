@@ -872,8 +872,8 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
 })->name('quotes.index');
 
 // Quotation system write-endpoints (real backend behind the replica pages)
-Route::post('/tableau-de-bord/demandes', [App\Http\Controllers\QuoteWebController::class, 'storeRequest'])->name('quotes.store');
-Route::post('/tableau-de-bord/demandes/{quoteRequest}/proposition', [App\Http\Controllers\QuoteWebController::class, 'storeProposal'])->name('quotes.store-proposal');
+Route::post('/tableau-de-bord/demandes', [App\Http\Controllers\QuoteWebController::class, 'storeRequest'])->name('quotes.store')->middleware('throttle:30,1');
+Route::post('/tableau-de-bord/demandes/{quoteRequest}/proposition', [App\Http\Controllers\QuoteWebController::class, 'storeProposal'])->name('quotes.store-proposal')->middleware('throttle:30,1');
 Route::post('/tableau-de-bord/propositions/{proposal}/accepter', [App\Http\Controllers\QuoteWebController::class, 'acceptProposal'])->name('quotes.accept-proposal');
 Route::post('/tableau-de-bord/propositions/{proposal}/refuser', [App\Http\Controllers\QuoteWebController::class, 'refuseProposal'])->name('quotes.refuse-proposal');
 Route::post('/tableau-de-bord/factures/{invoice}/basculer', [App\Http\Controllers\QuoteWebController::class, 'toggleInvoice'])->name('quotes.toggle-invoice');
@@ -1332,7 +1332,69 @@ Route::post('/newsletter', function (Request $request) {
     return back()->with('newsletter_ok', $lang === 'fr'
         ? 'Merci ! Vous êtes bien abonné à la newsletter.'
         : 'Thank you! You are now subscribed to the newsletter.');
-})->name('newsletter.subscribe');
+})->name('newsletter.subscribe')->middleware('throttle:10,1');
+
+// SEO: dynamic sitemap + robots (served by routes so tests and production match)
+Route::get('/sitemap.xml', function () {
+    $urls = collect([
+        ['loc' => url('/'),                     'priority' => '1.0'],
+        ['loc' => url('/galerie/entreprises'),  'priority' => '0.9'],
+        ['loc' => url('/galerie/produits'),     'priority' => '0.9'],
+        ['loc' => url('/galerie/secteurs'),     'priority' => '0.8'],
+        ['loc' => url('/evenements'),           'priority' => '0.8'],
+        ['loc' => url('/partenaires'),          'priority' => '0.6'],
+        ['loc' => url('/faq'),                  'priority' => '0.6'],
+        ['loc' => url('/actualites'),           'priority' => '0.6'],
+        ['loc' => url('/guide-artisan'),        'priority' => '0.6'],
+        ['loc' => url('/contact'),              'priority' => '0.5'],
+        ['loc' => url('/carrieres'),            'priority' => '0.4'],
+        ['loc' => url('/presse'),               'priority' => '0.4'],
+    ]);
+
+    DB::table('businesses')->whereNull('deleted_at')->where('status', 'published')
+        ->orderBy('id')->limit(5000)->pluck('slug')
+        ->each(function ($slug) use ($urls) {
+            $urls->push(['loc' => url('/galerie/entreprises/' . $slug), 'priority' => '0.7']);
+        });
+
+    DB::table('products')
+        ->join('businesses', 'businesses.id', '=', 'products.business_id')
+        ->whereNull('products.deleted_at')->whereNull('businesses.deleted_at')
+        ->where('products.status', 'published')->where('businesses.status', 'published')
+        ->orderBy('products.id')->limit(20000)->pluck('products.slug')
+        ->each(function ($slug) use ($urls) {
+            $urls->push(['loc' => url('/galerie/produits/' . $slug), 'priority' => '0.7']);
+        });
+
+    DB::table('events')->orderBy('id')->limit(500)->pluck('slug')
+        ->each(function ($slug) use ($urls) {
+            $urls->push(['loc' => url('/evenements/' . $slug), 'priority' => '0.5']);
+        });
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+        . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    foreach ($urls as $u) {
+        $xml .= "  <url><loc>" . e($u['loc']) . "</loc><priority>{$u['priority']}</priority></url>\n";
+    }
+    $xml .= '</urlset>';
+
+    return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+})->name('sitemap');
+
+Route::get('/robots.txt', function () {
+    $lines = [
+        'User-agent: *',
+        'Disallow: /tableau-de-bord',
+        'Disallow: /login',
+        'Disallow: /inscription',
+        'Disallow: /onboarding',
+        'Allow: /',
+        '',
+        'Sitemap: ' . url('/sitemap.xml'),
+    ];
+
+    return response(implode("\n", $lines) . "\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('robots');
 
 // Public info pages created for the canonical footer menu (2026-07-03)
 Route::get('/guide-artisan', function (Request $request) {
