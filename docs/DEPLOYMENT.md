@@ -41,14 +41,31 @@ php artisan storage:link          # business logos / product images live on the 
 php artisan config:cache
 php artisan view:cache
 php artisan event:cache
+php artisan route:cache
 ```
 
-### Route caching is NOT possible
+Or just run the bundled idempotent script (safe to re-run per release):
 
-`routes/web.php` defines most pages as **closure routes**, and
-`php artisan route:cache` refuses to serialize closures. Do **not** add
-`route:cache` to the deploy pipeline — it will fail. `config:cache` and
-`view:cache` work normally and give most of the win.
+```bash
+./deploy.sh
+```
+
+### Route caching
+
+`routes/web.php` defines most pages as **closure routes**. On Laravel 11+/13
+these ARE cacheable — closures are serialized via `laravel/serializable-closure`,
+and `php artisan route:cache` has been verified to build cleanly and serve every
+route correctly (landing, product/vendor/news detail, admin auth redirects).
+Include it in the deploy pipeline for the perf win:
+
+```bash
+php artisan route:cache
+```
+
+Caveat: if a future closure captures an unserializable object via `use (...)`,
+`route:cache` will fail at build time — convert that single route to a
+controller or invokable class. `config:cache`, `view:cache`, `event:cache`
+work normally.
 
 ## Background workers
 
