@@ -736,6 +736,45 @@ RouteSmokeTest (no parameterless GET route may 5xx), 17 routes now honour
 certificate.verify, and a REAL newsletter workflow
 (newsletter_subscribers table + POST /newsletter + footer confirmation).
 
+## Quote-system backend + production hardening (2026-07-04, commits a836725, ca53bdc, f96278b)
+
+The quote-flow replicas are no longer display-only — a real quotation backend
+now powers them, built TDD-first (superpowers TDD skill):
+
+- **Schema** (`2026_07_04_000002_create_quote_system_tables.php`):
+  `quote_requests` (buyer_id is a **uuid**, users.id is uuid), `quote_proposals`
+  (money columns unsignedBigInteger FCFA), `quote_proposal_items`,
+  `purchase_orders`, `invoices`. The migration drops an unused legacy
+  `quote_requests` scaffold table first.
+- **Models** in `app/Modules/Quotes/Models/` — references auto-generated in
+  `created` hooks: `RFQ-YYYY-000001`, `QUO-` (6d), `PO-` (5d), `INV-` (5d).
+  `QuoteProposal::recalculateTotals()` implements the design math: item total =
+  qty × price × (1 − disc%), global discount, 19.25% VAT on the discounted
+  base, delivery + insurance fees.
+- **Controller** `QuoteWebController`: storeRequest (also opens a real
+  conversation via ConversationService), storeProposal (owner/admin only,
+  403 otherwise), acceptProposal (generates PO 'confirmed' + Invoice 'unpaid'
+  due +14d), refuseProposal, toggleInvoice (participants only).
+- **Frontend wiring** — the replica pages render REAL records when opened with
+  a query param, and fall back to the pixel demo content otherwise
+  (unauthorized viewers silently get the demo — no data leak, page stays
+  browsable): `quotes/index` (buyer rows prepended), `dashboard/quotes`
+  (seller "Demandes récentes" → builder), `quotes/builder?rfq=` (real POST
+  proposal form, JS reindexes cloned rows + strips thousand separators),
+  `quotes/detail?proposal=` (accept/refuse POST forms),
+  `quotes/po?po=`, `quotes/invoice?invoice=` (real paid/unpaid toggle form).
+  Authorization lives in the shared GET closure ($canSee: buyer, business
+  owner, or admin).
+- **Tests**: `tests/Feature/Quotes/QuoteFlowTest.php` — 8 tests including a
+  full end-to-end render walk (RFQ → builder → proposal → listing → detail →
+  accept → PO → invoice).
+
+Production hardening (commit f96278b): dynamic `/sitemap.xml` +
+`/robots.txt` routes (static robots.txt deleted), `throttle:10,1` on
+newsletter, `throttle:30,1` on quote writes, `docs/DEPLOYMENT.md` (note:
+**route:cache is impossible** — closure routes; config/view cache are fine).
+Suite: **47 tests / 168 assertions green**.
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —
@@ -768,7 +807,7 @@ certificate.verify, and a REAL newsletter workflow
    via preview_eval.
 7. Check FR (`?lang=fr`) and EN (`?lang=en`), mobile (375px, no horizontal
    overflow, bottom nav present).
-8. Run `php artisan test` (34 tests must stay green), then commit
+8. Run `php artisan test` (47 tests must stay green), then commit
    (PowerShell 5.1: multiline commit messages need `git commit -F <file>`).
 
 ## Shared design system
