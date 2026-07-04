@@ -436,9 +436,62 @@ class AdminWebController extends Controller
         $admin = $this->requireAdmin($request);
         if ($admin instanceof RedirectResponse) return $admin;
 
-        $events = Event::withCount(['exhibitors', 'attendees'])->orderByDesc('starts_at')->get();
+        $now = now();
+        $q = trim((string) $request->query('q', ''));
+        $status = $request->query('status', '');
+        $type = $request->query('type', '');
+        $region = $request->query('region', '');
 
-        return view('pages.dashboard.admin-events', compact('lang', 'events'));
+        $base = Event::withCount(['exhibitors', 'attendees']);
+        if ($q !== '') $base->where('name_fr', 'like', "%{$q}%");
+        if ($type !== '') $base->where('event_type', $type);
+        if ($region !== '') $base->where('region_key', $region);
+        if ($status === 'upcoming') $base->where('starts_at', '>', $now);
+        elseif ($status === 'ongoing') $base->where('starts_at', '<=', $now)->where('ends_at', '>=', $now);
+        elseif ($status === 'completed') $base->where('ends_at', '<', $now);
+
+        $events = (clone $base)->orderByDesc('starts_at')->paginate(8)->withQueryString();
+
+        // KPIs computed over ALL events (not the filtered/paginated page).
+        $allEvents = Event::withCount(['exhibitors', 'attendees'])->get();
+        $evKpis = [
+            'total'     => $allEvents->count(),
+            'upcoming'  => $allEvents->where('starts_at', '>', $now)->count(),
+            'ongoing'   => $allEvents->filter(fn ($e) => $e->starts_at <= $now && $e->ends_at >= $now)->count(),
+            'completed' => $allEvents->where('ends_at', '<', $now)->count(),
+            'participants' => $allEvents->sum('exhibitors_count') + $allEvents->sum('attendees_count'),
+            'exhibitors' => $allEvents->sum('exhibitors_count'),
+            'attendees' => $allEvents->sum('attendees_count'),
+        ];
+
+        // Breakdown by type (real).
+        $evByType = Event::selectRaw('event_type, count(*) as c')->groupBy('event_type')->orderByDesc('c')->pluck('c', 'event_type');
+
+        // Breakdown by region (real) — region_key is a fixed lowercase slug, not a FK.
+        $evRegionLabels = [
+            'centre' => 'Centre', 'littoral' => 'Littoral', 'ouest' => 'Ouest', 'nord-ouest' => 'Nord-Ouest',
+            'sud-ouest' => 'Sud-Ouest', 'nord' => 'Nord', 'adamaoua' => 'Adamaoua', 'est' => 'Est',
+            'sud' => 'Sud', 'extreme-nord' => 'Extrême-Nord',
+        ];
+        $evByRegion = Event::whereNotNull('region_key')->selectRaw('region_key, count(*) as c')
+            ->groupBy('region_key')->orderByDesc('c')->limit(5)->get();
+
+        // Upcoming events list (real, soonest first).
+        $evUpcoming = Event::where('starts_at', '>', $now)->orderBy('starts_at')->limit(3)->get();
+
+        // Calendar: current (or requested) month grid with real event-day markers.
+        $calMonth = \Illuminate\Support\Carbon::parse($request->query('month', $now->format('Y-m')) . '-01');
+        $calEvents = Event::whereBetween('starts_at', [$calMonth->copy()->startOfMonth(), $calMonth->copy()->endOfMonth()])->get();
+        $calDays = $calEvents->groupBy(fn ($e) => $e->starts_at->format('j'));
+
+        // Participants evolution — real exhibitors+attendees per month (last 6 months of event activity).
+        $evSeriesRaw = $allEvents->groupBy(fn ($e) => $e->starts_at->format('Y-m'))
+            ->map(fn ($g) => $g->sum('exhibitors_count') + $g->sum('attendees_count'));
+
+        return view('pages.dashboard.admin-events', compact(
+            'lang', 'events', 'evKpis', 'evByType', 'evByRegion', 'evRegionLabels',
+            'evUpcoming', 'calMonth', 'calDays', 'evSeriesRaw', 'q', 'status', 'type', 'region'
+        ));
     }
 
     public function storeEvent(Request $request): RedirectResponse
