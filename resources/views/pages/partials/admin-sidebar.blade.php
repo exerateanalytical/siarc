@@ -41,9 +41,11 @@
             ['logs',          'side-ic-journal',       $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
             ['notifications', 'side-ic-notifications', 'Notifications',                                     route('notifications.index'), '12'],
             ['backups',       'side-ic-sauvegardes',   $isFr ? 'Sauvegardes' : 'Backups',                   route('admin.audit-log') . '#sauvegardes', null],
+            ['exports',       'side-ic-exports',       'Data Export Centre',                                route('admin.exports'), null],
             ['pages',         'side-ic-outils',        $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
         ]],
     ];
+    $adSideQuote = $adSideQuote ?? ($isFr ? 'Valorisons l\'artisanat, développons nos communautés, préservons notre héritage.' : 'Let\'s value craftsmanship, grow our communities, preserve our heritage.');
 @endphp
 <aside id="ad-sidebar" class="shrink-0 lg:w-[290px] bg-gradient-to-b from-[#042B15] to-[#03200E] text-white flex flex-col relative">
     <div class="px-4 pt-4 pb-3 flex items-center gap-3">
@@ -79,6 +81,6 @@
 
     <div class="shrink-0 relative">
         <img src="{{ asset('images/landing/ad-side-vases.png') }}" alt="" class="w-full h-auto block">
-        <p class="absolute left-[9%] top-[15%] w-[62%] font-serif text-[13.5px] leading-[1.6] text-[#F0EBDD]">{{ $isFr ? 'Valorisons l\'artisanat, développons nos communautés, préservons notre héritage.' : 'Let\'s value craftsmanship, grow our communities, preserve our heritage.' }}</p>
+        <p class="absolute left-[9%] top-[15%] w-[62%] font-serif text-[13.5px] leading-[1.6] text-[#F0EBDD]">{{ $adSideQuote }}</p>
     </div>
 </aside>

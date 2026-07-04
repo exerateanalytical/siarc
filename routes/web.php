@@ -419,6 +419,148 @@ Route::get('/tableau-de-bord/admin/abonnements', function (Request $request) {
 
     return view('pages.dashboard.admin-subscriptions', compact('lang', 'siacUser', 'filters', 'subscriptions', 'subStats', 'finance', 'planDist', 'plans', 'isDefaultView', 'perPage'));
 })->name('admin.subscriptions');
+
+// Data Export Centre (design: "Data Export Centre.png") — real export registry;
+// every download streams a live CSV of the requested dataset.
+if (! function_exists('dataExportDatasets')) {
+    function dataExportDatasets(bool $isFr): array
+    {
+        return [
+            'artisans'     => $isFr ? 'Artisans' : 'Artisans',
+            'produits'     => $isFr ? 'Produits & Services' : 'Products & Services',
+            'utilisateurs' => $isFr ? 'Utilisateurs & Activité' : 'Users & Activity',
+            'transactions' => 'Transactions',
+            'kyc'          => $isFr ? 'KYC & Vérifications' : 'KYC & Verifications',
+            'rapports'     => $isFr ? 'Rapports de Vente' : 'Sales Reports',
+            'medias'       => $isFr ? 'Médias & Ressources' : 'Media & Resources',
+            'evenements'   => $isFr ? 'Événements & Actualités' : 'Events & News',
+        ];
+    }
+    function dataExportRows(string $dataset): array
+    {
+        return match ($dataset) {
+            'artisans'     => [['ID', 'Nom', 'Slug', 'Type', 'Statut', 'Créé le'],
+                DB::table('businesses')->whereNull('deleted_at')->orderBy('id')->limit(5000)
+                    ->get(['id', 'name_fr', 'slug', 'vendor_type', 'status', 'created_at'])->map(fn ($r) => (array) $r)->all()],
+            'produits'     => [['ID', 'Nom', 'Slug', 'Statut', 'Créé le'],
+                DB::table('products')->whereNull('deleted_at')->orderBy('id')->limit(5000)
+                    ->get(['id', 'name_fr', 'slug', 'status', 'created_at'])->map(fn ($r) => (array) $r)->all()],
+            'utilisateurs' => [['ID', 'Nom', 'Email', 'Statut', 'Créé le'],
+                DB::table('users')->orderBy('created_at')->limit(5000)
+                    ->get(['id', 'name', 'email', 'status', 'created_at'])->map(fn ($r) => (array) $r)->all()],
+            'transactions' => [['ID', 'Entreprise', 'Plan', 'Statut', 'Montant (FCFA)', 'Début', 'Prochain paiement'],
+                DB::table('business_subscriptions as bs')->join('businesses as b', 'b.id', '=', 'bs.business_id')
+                    ->join('subscription_plans as p', 'p.id', '=', 'bs.subscription_plan_id')->orderBy('bs.id')
+                    ->get(['bs.id', 'b.name_fr', 'p.name_fr as plan', 'bs.status', 'bs.amount', 'bs.started_at', 'bs.next_payment_at'])
+                    ->map(fn ($r) => (array) $r)->all()],
+            'kyc'          => [['ID', 'Entreprise', 'Niveau de vérification', 'Statut'],
+                DB::table('businesses')->whereNull('deleted_at')->orderBy('id')->limit(5000)
+                    ->get(['id', 'name_fr', 'verification_tier', 'status'])->map(fn ($r) => (array) $r)->all()],
+            'rapports'     => [['Indicateur', 'Valeur'], [
+                ['Entreprises publiées', DB::table('businesses')->where('status', 'published')->whereNull('deleted_at')->count()],
+                ['Produits publiés', DB::table('products')->where('status', 'published')->whereNull('deleted_at')->count()],
+                ['Utilisateurs', DB::table('users')->count()],
+                ['Abonnements actifs', DB::table('business_subscriptions')->where('status', 'active')->count()],
+                ['Événements', DB::table('events')->count()],
+            ]],
+            'medias'       => [['ID', 'Produit', 'Fichier'],
+                DB::table('product_images as pi')->join('products as p', 'p.id', '=', 'pi.product_id')->orderBy('pi.id')->limit(5000)
+                    ->get(['pi.id', 'p.name_fr', 'pi.file_path'])->map(fn ($r) => (array) $r)->all()],
+            default        => [['ID', 'Titre', 'Début', 'Fin', 'Lieu'],
+                DB::table('events')->orderBy('id')->limit(5000)
+                    ->get(['id', 'title_fr', 'start_date', 'end_date', 'location_fr'])->map(fn ($r) => (array) $r)->all()],
+        };
+    }
+}
+
+Route::get('/tableau-de-bord/admin/exports', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $parseDate = function ($v) {
+        if (! $v) return null;
+        foreach (['Y-m-d', 'd/m/Y', 'd M Y'] as $f) {
+            try { return \Carbon\Carbon::createFromFormat($f, trim($v))->startOfDay(); } catch (\Throwable) {}
+        }
+        return null;
+    };
+    $filters = [
+        'du'     => (string) $request->query('du', ''),
+        'au'     => (string) $request->query('au', ''),
+        'type'   => (string) $request->query('type', ''),
+        'statut' => (string) $request->query('statut', ''),
+        'q'      => trim((string) $request->query('q', '')),
+    ];
+    $perPage = in_array((int) $request->query('per'), [10, 25, 50], true) ? (int) $request->query('per') : 8;
+    $isDefaultView = ! array_filter($filters) && ! $request->query('page') && ! $request->query('per');
+
+    $rows = DB::table('data_exports');
+    if ($filters['q'] !== '')     $rows->where('name', 'like', '%' . $filters['q'] . '%');
+    if ($filters['type'] !== '')  $rows->where('dataset', $filters['type']);
+    if ($filters['statut'] !== '') $rows->where('status', $filters['statut']);
+    if ($from = $parseDate($filters['du'])) $rows->where('created_at', '>=', $from);
+    if ($to = $parseDate($filters['au']))   $rows->where('created_at', '<=', $to->endOfDay());
+    $exports = $rows->orderByRaw('sort_order is null')->orderBy('sort_order')->orderByDesc('created_at')
+        ->paginate($perPage)->withQueryString();
+
+    return view('pages.dashboard.admin-exports', compact('lang', 'siacUser', 'filters', 'exports', 'isDefaultView', 'perPage'));
+})->name('admin.exports');
+
+Route::post('/tableau-de-bord/admin/exports', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->input('lang', 'fr'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $dataset = array_key_exists($request->input('dataset'), dataExportDatasets(true)) ? $request->input('dataset') : 'artisans';
+    $format  = in_array($request->input('format'), ['csv', 'xlsx', 'pdf', 'zip'], true) ? $request->input('format') : 'csv';
+
+    [, $dataRows] = dataExportRows($dataset);
+    $id = DB::table('data_exports')->insertGetId([
+        'name'         => ucfirst($dataset) . '_Export_' . now()->format('Y-m-d_Hi'),
+        'dataset'      => $dataset,
+        'format'       => $format,
+        'status'       => 'reussi',
+        'records'      => count($dataRows),
+        'counts_files' => $dataset === 'medias',
+        'size_bytes'   => max(1024, strlen(json_encode($dataRows))),
+        'expires_at'   => now()->addDays(7),
+        'created_at'   => now(),
+        'updated_at'   => now(),
+    ]);
+
+    return redirect()->route('admin.exports.download', ['id' => $id, 'lang' => $lang]);
+})->name('admin.exports.create')->middleware('throttle:10,1');
+
+Route::get('/tableau-de-bord/admin/exports/{id}/telecharger', function (Request $request, int $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $export = DB::table('data_exports')->where('id', $id)->first();
+    abort_unless($export, 404);
+
+    [$header, $dataRows] = dataExportRows($export->dataset);
+    return response()->streamDownload(function () use ($header, $dataRows) {
+        $outStream = fopen('php://output', 'w');
+        fwrite($outStream, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel
+        fputcsv($outStream, $header, ';');
+        foreach ($dataRows as $r) fputcsv($outStream, $r, ';');
+        fclose($outStream);
+    }, $export->name . '.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+})->name('admin.exports.download');
+
+Route::post('/tableau-de-bord/admin/exports/{id}/supprimer', function (Request $request, int $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    DB::table('data_exports')->where('id', $id)->delete();
+    return back()->with('status', $request->input('lang') === 'en' ? 'Export deleted.' : 'Export supprimé.');
+})->name('admin.exports.delete')->middleware('throttle:30,1');
+
+Route::post('/tableau-de-bord/admin/exports/{id}/statut', function (Request $request, int $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $to = in_array($request->input('statut'), ['planifie', 'en_cours', 'echoue'], true) ? $request->input('statut') : 'planifie';
+    DB::table('data_exports')->where('id', $id)->update(['status' => $to, 'updated_at' => now()]);
+    return back()->with('status', $request->input('lang') === 'en' ? 'Export updated.' : 'Export mis à jour.');
+})->name('admin.exports.status')->middleware('throttle:30,1');
 // =====================================================================
 // REPLACEMENT for the admin.users GET route in routes/web.php
 // (currently: Route::get('/tableau-de-bord/admin/utilisateurs',

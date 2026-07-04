@@ -19,6 +19,14 @@
             @if($pageSubtitle)
             <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $pageSubtitle }}</p>
             @endif
+            @if(!empty($pageBreadcrumb))
+            <p class="mt-1 flex items-center gap-1.5 text-[11.5px] text-[#8A857A]">
+                @foreach($pageBreadcrumb as $bi => [$bLabel, $bUrl])
+                    @if($bi > 0)<i data-lucide="chevron-right" class="w-3 h-3 text-[#B9B4A9]"></i>@endif
+                    @if($bUrl)<a href="{{ $bUrl }}" class="hover:text-[#14652F]">{{ $bLabel }}</a>@else<span class="text-[#55524A]">{{ $bLabel }}</span>@endif
+                @endforeach
+            </p>
+            @endif
         </div>
 
         <div class="flex items-center gap-3.5 shrink-0 ml-auto">

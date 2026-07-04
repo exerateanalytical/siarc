@@ -819,6 +819,34 @@ family's sidebar (the one drawn in Subscriptions/KYC/User Management/…):
 - Suite 60 green. Cream card chrome on this page: bg `#FEFAF4`, border
   `#F3E5D0`, page bg `#FDF8F1`.
 
+## Data Export Centre (2026-07-04, design "Data Export Centre.png")
+
+NEW route `/tableau-de-bord/admin/exports` (`admin.exports`) + REAL export
+backend, `pages/dashboard/admin-exports.blade.php`:
+
+- `data_exports` table (migration …000016) + `DesignDataExportsSeeder`: the
+  design's 8 rows verbatim (names/records/formats/statuses/sizes/dates,
+  sort_order 1–8) PLUS 116 deterministic filler rows so the design's "124
+  exports"/16-page pagination is fully REAL (8/page).
+- Every download streams a LIVE CSV (`dataExportRows()` helper in routes:
+  artisans/produits/utilisateurs/transactions/kyc/rapports/medias/evenements
+  → real tables, UTF-8 BOM + `;`). "Nouvel Export" = real POST creating a
+  row for the currently-filtered dataset then downloading it. Row actions:
+  download (reussi only), eye → ?type= filter, trash → real delete
+  (confirm), running rows get pause (→ planifie) + X (→ echoue) POSTs.
+- Filters: date range (du/au text inputs prefilled with the design's
+  "01 Mai 2025 → 12 Mai 2025", parse d M Y/d/m/Y/ISO), type, statut, q.
+- Design-verbatim statics: 5 KPI cards (258/124/8/3/12.45 GB; only 5-col row
+  in the MAIN column — the rail starts with the donut here), activity donut
+  48.1/3.1/1.2/47.6, type bars 28.4/24.8/18.6/12.4/15.8 with sampled colors
+  (#10562C/#E48C16/#5887BD/#B84A45/#9882BB).
+- Assets `dex-*`: 5 KPI tiles, 4 file icons (csv/xlsx/pdf/zip), 5 type
+  icons, 5 QA icons, heritage card (statue, text patched).
+- Chrome additions: heritage header gained `$pageBreadcrumb`; sidebar gained
+  the design's "Data Export Centre" item (`side-ic-exports.png`) and the
+  `$adSideQuote` override (this design's sidebar quote differs; artwork stays
+  canonical per the chrome rule).
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —
