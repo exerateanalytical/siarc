@@ -855,6 +855,13 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
     return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount'));
 })->name('quotes.index');
 
+// Quotation system write-endpoints (real backend behind the replica pages)
+Route::post('/tableau-de-bord/demandes', [App\Http\Controllers\QuoteWebController::class, 'storeRequest'])->name('quotes.store');
+Route::post('/tableau-de-bord/demandes/{quoteRequest}/proposition', [App\Http\Controllers\QuoteWebController::class, 'storeProposal'])->name('quotes.store-proposal');
+Route::post('/tableau-de-bord/propositions/{proposal}/accepter', [App\Http\Controllers\QuoteWebController::class, 'acceptProposal'])->name('quotes.accept-proposal');
+Route::post('/tableau-de-bord/propositions/{proposal}/refuser', [App\Http\Controllers\QuoteWebController::class, 'refuseProposal'])->name('quotes.refuse-proposal');
+Route::post('/tableau-de-bord/factures/{invoice}/basculer', [App\Http\Controllers\QuoteWebController::class, 'toggleInvoice'])->name('quotes.toggle-invoice');
+
 // Quote-flow detail pages (pixel replicas of "accepte le devis.png", "comparison de version.png",
 // "bonne de demand.png" and "demands and devis.png")
 foreach ([
