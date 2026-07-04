@@ -82,27 +82,16 @@
 <div class="flex items-stretch min-h-screen">
     @include('pages.partials.admin-sidebar')
     <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
+        @include('pages.partials.admin-heritage-header', [
+            'pageTitle' => 'KYC CENTRE',
+            'pageSubtitle' => $isFr ? 'Know Your Customer — Sécurisé. Vérifié. Fiable.' : 'Know Your Customer — Secure. Verified. Reliable.',
+            'pageSearchPlaceholder' => $isFr ? 'Rechercher un utilisateur, un document, un statut...' : 'Search a user, a document, a status...',
+        ])
 
-        <main class="px-5 lg:px-7 pb-8">
-
-            {{-- Branded KYC hero band --}}
-            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0E3D22] to-[#12522C] px-6 py-5 flex items-center gap-4">
-                <img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="absolute inset-x-0 bottom-0 h-[8px] w-full object-cover opacity-90" aria-hidden="true">
-                <span class="w-[52px] h-[52px] rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                    <i data-lucide="shield-check" class="w-7 h-7 text-[#E9C25A]" style="stroke-width:1.7"></i>
-                </span>
-                <div class="min-w-0">
-                    <h1 class="flex items-center gap-2 text-[22px] font-bold text-white tracking-tight">
-                        {{ $isFr ? 'KYC CENTRE' : 'KYC CENTRE' }}
-                        <span class="text-[#E9C25A] text-[13px]">◇ ◈ ◇</span>
-                    </h1>
-                    <p class="mt-0.5 text-[12.5px] text-[#CFE3D5]">{{ $isFr ? 'Know Your Customer — Sécurisé. Vérifié. Fiable.' : 'Know Your Customer — Secure. Verified. Reliable.' }}</p>
-                </div>
-            </div>
+        <main class="px-5 lg:px-7 pt-5 pb-8">
 
             {{-- Stat cards --}}
-            <section class="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+            <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 @foreach($kycCards as [$kcIcon, $kcColor, $kcTile, $kcCard, $kcValue, $kcLabel, $kcSub, $kcSpark])
                 <div class="{{ $kcCard }} border rounded-2xl px-4 py-4 flex flex-col">
                     <div class="flex items-start justify-between">

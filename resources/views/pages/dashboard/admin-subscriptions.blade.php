@@ -79,18 +79,13 @@
 <div class="flex items-stretch min-h-screen">
     @include('pages.partials.admin-sidebar')
     <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
+        @include('pages.partials.admin-heritage-header', [
+            'pageTitle' => $isFr ? 'ABONNEMENTS' : 'SUBSCRIPTIONS',
+            'pageSubtitle' => $isFr ? 'Gérez les abonnements, plans et facturations de la plateforme.' : 'Manage the platform\'s subscriptions, plans and billing.',
+            'pageSearchPlaceholder' => $isFr ? 'Rechercher un abonnement, un utilisateur...' : 'Search a subscription, a user...',
+        ])
 
-        <main class="px-5 lg:px-7 pb-8">
-
-            {{-- Branded header --}}
-            <div class="flex items-center gap-3 pt-1 pb-4">
-                <span class="w-[46px] h-[46px] rounded-xl bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-6 h-6 text-[#14652F]" style="stroke-width:1.7"></i></span>
-                <div>
-                    <h1 class="text-[22px] font-bold text-[#1B1B18] tracking-tight">{{ $isFr ? 'ABONNEMENTS' : 'SUBSCRIPTIONS' }}</h1>
-                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Gérez les abonnements, plans et facturations de la plateforme.' : 'Manage the platform\'s subscriptions, plans and billing.' }}</p>
-                </div>
-            </div>
+        <main class="px-5 lg:px-7 pt-5 pb-8">
 
             {{-- Stat cards --}}
             <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
