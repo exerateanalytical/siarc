@@ -29,6 +29,8 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/roles',
             '/tableau-de-bord/admin/abonnements',
             '/tableau-de-bord/admin/regions-centres',
+            '/tableau-de-bord/admin/sauvegardes',
+            '/tableau-de-bord/admin/sauvegardes/1',
             '/tableau-de-bord/admin/exports',
             '/tableau-de-bord/admin/collections',
             '/tableau-de-bord/admin/actualites',
