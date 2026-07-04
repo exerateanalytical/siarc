@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('quote_requests', function (Blueprint $table) {
             $table->id();
             $table->string('reference')->unique()->nullable();
-            $table->foreignId('buyer_id')->constrained('users')->cascadeOnDelete();
+            // users.id is a UUID (same convention as conversations.buyer_id)
+            $table->uuid('buyer_id')->index();
             $table->foreignId('business_id')->constrained('businesses')->cascadeOnDelete();
             $table->foreignId('conversation_id')->nullable()->constrained('conversations')->nullOnDelete();
             $table->string('title');
