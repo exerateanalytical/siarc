@@ -203,7 +203,9 @@
             <div id="cards-grid" class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 @foreach($sorted as [$catSlug, $catFr, $catEn, $catCount, $catIcon, $catSideIcon])
                 <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center">
-                    <img src="{{ asset('images/landing/' . $catIcon) }}" alt="" class="mx-auto w-[96px] h-[96px]" aria-hidden="true">
+                    <span class="block mx-auto w-[96px] h-[96px] rounded-full overflow-hidden">
+                        <img src="{{ asset('images/landing/' . $catIcon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
+                    </span>
                     <h2 class="mt-4 text-[15px] font-bold text-[#1D1B16] leading-snug">
                         {{ $isFr ? $catFr : $catEn }}
                     </h2>
@@ -222,7 +224,9 @@
             <div id="cards-list" class="hidden mt-4 space-y-3.5">
                 @foreach($sorted as [$catSlug, $catFr, $catEn, $catCount, $catIcon, $catSideIcon])
                 <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-5 py-3.5 flex items-center gap-5">
-                    <img src="{{ asset('images/landing/' . $catIcon) }}" alt="" class="w-[64px] h-[64px] shrink-0" aria-hidden="true">
+                    <span class="block w-[64px] h-[64px] shrink-0 rounded-full overflow-hidden">
+                        <img src="{{ asset('images/landing/' . $catIcon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
+                    </span>
                     <div class="min-w-0">
                         <h2 class="text-[15.5px] font-bold text-[#1D1B16] truncate">{{ $isFr ? $catFr : $catEn }}</h2>
                         <p class="mt-0.5 text-[13px] text-[#6F6B60]">{{ $catCount }} {{ $isFr ? 'produits' : 'products' }}</p>
