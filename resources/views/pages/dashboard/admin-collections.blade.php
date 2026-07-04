@@ -361,7 +361,7 @@
                     <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Collections par région' : 'Collections by region' }}</h2>
-                            <a href="{{ route('admin.industries') }}#regions" class="shrink-0 text-[11px] font-semibold text-[#157A43]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
+                            <a href="{{ route('admin.regions') }}" class="shrink-0 text-[11px] font-semibold text-[#157A43]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <img src="{{ asset('images/landing/hc-map.png') }}" alt="{{ $isFr ? 'Carte des collections par région' : 'Map of collections by region' }}" class="mt-3 w-full object-contain">
                     </section>

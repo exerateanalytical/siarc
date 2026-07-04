@@ -42,6 +42,7 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/analytique',
             '/tableau-de-bord/admin/rapports',
             '/tableau-de-bord/admin/evenements',
+            '/tableau-de-bord/admin/categories',
         ] as $path) {
             $this->withSession($session)->get($path)->assertOk();
         }
@@ -61,5 +62,35 @@ class AdminPagesRenderTest extends TestCase
             ->get('/tableau-de-bord/admin/produits/' . $product->id)
             ->assertOk()
             ->assertSee($product->name_fr);
+    }
+
+    public function test_admin_categories_page_renders_with_real_rows(): void
+    {
+        // industries base rows are seeded once in dev (not via migration), so
+        // the test DB starts empty — create real parent + child rows here to
+        // actually exercise the hierarchy/date-formatting code paths.
+        $admin = $this->makeUser();
+        $session = ['siac_user' => [
+            'id' => $admin->id, 'name' => 'Admin Test', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]];
+
+        $parentId = \Illuminate\Support\Facades\DB::table('industries')->insertGetId([
+            'slug' => 'test-industrie', 'name_fr' => 'Industrie Test', 'name_en' => 'Test Industry',
+            'icon' => 'shapes', 'description_fr' => 'Une industrie de test.', 'description_en' => 'A test industry.',
+            'sort_order' => 1, 'is_active' => true, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        \Illuminate\Support\Facades\DB::table('industries')->insert([
+            'parent_id' => $parentId, 'slug' => 'test-sous-industrie', 'name_fr' => 'Sous-Industrie Test',
+            'name_en' => 'Test Sub-Industry', 'icon' => 'shapes', 'description_fr' => 'Une sous-industrie de test.',
+            'description_en' => 'A test sub-industry.', 'sort_order' => 2, 'is_active' => true,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $this->withSession($session)
+            ->get('/tableau-de-bord/admin/categories')
+            ->assertOk()
+            ->assertSee('Industrie Test')
+            ->assertSee('Sous-Industrie Test');
     }
 }

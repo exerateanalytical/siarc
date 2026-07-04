@@ -175,7 +175,7 @@
                         <section class="flex-[1.05] min-w-0 bg-white border border-[#EFEBE2] rounded-2xl p-5">
                             <div class="flex items-center justify-between gap-3">
                                 <h2 class="text-[13px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Répartition des artisans par région' : 'Artisans by region' }}</h2>
-                                <a href="{{ route('admin.industries') }}#regions" class="shrink-0 text-[11.5px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir la carte détaillée' : 'Detailed map' }} →</a>
+                                <a href="{{ route('admin.regions') }}" class="shrink-0 text-[11.5px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir la carte détaillée' : 'Detailed map' }} →</a>
                             </div>
                             <div class="mt-3 flex flex-col sm:flex-row gap-4">
                                 <img src="{{ asset('images/landing/ad-map.png') }}" alt="{{ $isFr ? 'Carte du Cameroun' : 'Map of Cameroon' }}" class="w-full sm:w-[60%] object-contain self-start">

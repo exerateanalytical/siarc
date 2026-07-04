@@ -1784,10 +1784,76 @@ Route::get('/tableau-de-bord/admin/categories', function (Request $request) {
         ->leftJoin('businesses', function ($j) {
             $j->on('businesses.industry_id', '=', 'industries.id')->whereNull('businesses.deleted_at');
         })
-        ->groupBy('industries.id', 'industries.name_fr', 'industries.name_en', 'industries.slug', 'industries.sort_order', 'industries.is_active')
+        ->groupBy('industries.id', 'industries.parent_id', 'industries.name_fr', 'industries.name_en', 'industries.description_fr', 'industries.icon', 'industries.slug', 'industries.sort_order', 'industries.is_active', 'industries.created_at', 'industries.updated_at')
         ->orderBy('industries.sort_order')
-        ->select('industries.id', 'industries.name_fr', 'industries.name_en', 'industries.slug', 'industries.sort_order', 'industries.is_active', DB::raw('COUNT(businesses.id) as business_count'))
+        ->select(
+            'industries.id', 'industries.parent_id', 'industries.name_fr', 'industries.name_en', 'industries.description_fr',
+            'industries.icon', 'industries.slug', 'industries.sort_order', 'industries.is_active',
+            'industries.created_at', 'industries.updated_at',
+            DB::raw('COUNT(businesses.id) as business_count')
+        )
         ->get();
+
+    // Real product counts per category (products.category_id -> industries.id).
+    $productCounts = DB::table('products')->whereNull('deleted_at')
+        ->select('category_id', DB::raw('count(*) as c'))->groupBy('category_id')->pluck('c', 'category_id');
+    $adminIndustries = $adminIndustries->map(function ($row) use ($productCounts) {
+        $row->product_count = (int) ($productCounts[$row->id] ?? 0);
+        return $row;
+    });
+
+    $catByParent = $adminIndustries->groupBy('parent_id');
+    $catTop = $adminIndustries->whereNull('parent_id')->sortBy('sort_order')->values();
+
+    $catKpis = [
+        'total' => $adminIndustries->count(),
+        'principales' => $catTop->count(),
+        'sous' => $adminIndustries->whereNotNull('parent_id')->count(),
+        'active' => $adminIndustries->where('is_active', true)->count(),
+        'inactive' => $adminIndustries->where('is_active', false)->count(),
+    ];
+    $catLevelDist = [
+        1 => $catKpis['principales'],
+        2 => $catKpis['sous'],
+    ];
+
+    // Filters
+    $catQ = trim((string) $request->query('q', ''));
+    $catStatus = $request->query('status', '');
+    $catParent = $request->query('parent', '');
+
+    $rowsFiltered = $adminIndustries->filter(function ($row) use ($catQ, $catStatus, $catParent) {
+        if ($catQ !== '' && stripos($row->name_fr, $catQ) === false) return false;
+        if ($catStatus === 'active' && ! $row->is_active) return false;
+        if ($catStatus === 'inactive' && $row->is_active) return false;
+        if ($catParent !== '' && (string) $row->parent_id !== $catParent) return false;
+        return true;
+    })->values();
+
+    // Build a flat, parent-then-children display order from the filtered set.
+    $filteredIds = $rowsFiltered->pluck('id')->all();
+    $catTreeRows = collect();
+    foreach ($catTop as $top) {
+        if (in_array($top->id, $filteredIds, true)) $catTreeRows->push($top);
+        foreach ($catByParent->get($top->id, collect()) as $sub) {
+            if (in_array($sub->id, $filteredIds, true)) $catTreeRows->push($sub);
+        }
+    }
+
+    // Manual pagination over the ordered tree rows (10 per page).
+    $catPerPage = 10;
+    $catPage = max(1, (int) $request->query('page', 1));
+    $catPagedRows = new \Illuminate\Pagination\LengthAwarePaginator(
+        $catTreeRows->forPage($catPage, $catPerPage)->values(),
+        $catTreeRows->count(), $catPerPage, $catPage,
+        ['path' => $request->url(), 'query' => $request->query()]
+    );
+
+    // Selected category for the right-hand detail panel.
+    $selectedId = (int) $request->query('selected', $catTop->first()->id ?? 0);
+    $catSelected = $adminIndustries->firstWhere('id', $selectedId) ?? $catTop->first();
+    $catSelectedParent = $catSelected && $catSelected->parent_id ? $adminIndustries->firstWhere('id', $catSelected->parent_id) : null;
+    $catSelectedSubs = $catSelected ? $catByParent->get($catSelected->id, collect()) : collect();
 
     $adminRegions = DB::table('regions')
         ->leftJoin('businesses', function ($j) {
@@ -1798,7 +1864,10 @@ Route::get('/tableau-de-bord/admin/categories', function (Request $request) {
         ->select('regions.id', 'regions.name_fr', 'regions.name_en', DB::raw('COUNT(businesses.id) as business_count'))
         ->get();
 
-    return view('pages.dashboard.admin-industries', compact('lang', 'siacUser', 'adminIndustries', 'adminRegions'));
+    return view('pages.dashboard.admin-industries', compact(
+        'lang', 'siacUser', 'adminIndustries', 'adminRegions', 'catTop', 'catByParent', 'catPagedRows',
+        'catKpis', 'catLevelDist', 'catSelected', 'catSelectedParent', 'catSelectedSubs', 'catQ', 'catStatus', 'catParent'
+    ));
 })->name('admin.industries');
 
 Route::get('/tableau-de-bord/admin/siarc', function (Request $request) {
