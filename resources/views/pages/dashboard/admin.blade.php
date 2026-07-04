@@ -132,11 +132,10 @@
                     <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Centre de Commandement du Patrimoine & de l\'Artisanat Camerounais' : 'Command Centre of Cameroonian Heritage & Craftsmanship' }}</p>
                 </div>
                 <div class="shrink-0 flex flex-wrap items-center gap-3">
-                    <button type="button" class="inline-flex items-center gap-2.5 bg-white border border-[#E9E4D8] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#1B1B18]">
+                    <span class="inline-flex items-center gap-2.5 bg-white border border-[#E9E4D8] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#1B1B18]">
                         <i data-lucide="calendar-days" class="w-4 h-4 text-[#55524A]" style="stroke-width:1.7"></i>
                         01 {{ $isFr ? 'Mai' : 'May' }} 2025 - 03 {{ $isFr ? 'Juin' : 'June' }} 2025
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
-                    </button>
+                    </span>
                     <a href="{{ route('admin.reports') }}" class="inline-flex items-center gap-2.5 bg-white border border-[#DCE7DF] hover:border-[#14652F] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#14652F] transition-colors">
                         <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
                         {{ $isFr ? 'Exporter le rapport' : 'Export the report' }}
@@ -199,10 +198,9 @@
                         <section class="flex-1 min-w-0 bg-white border border-[#EFEBE2] rounded-2xl p-5">
                             <div class="flex items-center justify-between gap-3">
                                 <h2 class="text-[13px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Évolution des visites' : 'Visits over time' }}</h2>
-                                <button type="button" class="shrink-0 inline-flex items-center gap-1.5 border border-[#E9E4D8] rounded-lg px-3 py-1.5 text-[11.5px] text-[#3B382F]">
+                                <span class="shrink-0 inline-flex items-center gap-1.5 border border-[#E9E4D8] rounded-lg px-3 py-1.5 text-[11.5px] text-[#3B382F]">
                                     {{ $isFr ? 'Cette période' : 'This period' }}
-                                    <i data-lucide="chevron-down" class="w-3 h-3 text-[#8A857A]"></i>
-                                </button>
+                                </span>
                             </div>
                             <img src="{{ asset('images/landing/ad-chart.png') }}" alt="" class="mt-3 w-full object-contain" aria-hidden="true">
                             <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 sm:divide-x divide-[#F0EBE0] border-t border-[#F0EBE0] pt-3 gap-y-3">

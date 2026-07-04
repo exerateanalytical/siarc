@@ -310,7 +310,7 @@
                                     @endforeach
                                 </ul>
                             </div>
-                            <a href="#" class="block relative rounded-xl overflow-hidden group self-start" aria-label="{{ $isFr ? 'Découvrez l\'édition 2024 en vidéo' : 'Discover the 2024 edition in video' }}">
+                            <a href="https://www.youtube.com/@gvnac" target="_blank" rel="noopener" class="block relative rounded-xl overflow-hidden group self-start" aria-label="{{ $isFr ? 'Découvrez l\'édition 2024 en vidéo' : 'Discover the 2024 edition in video' }}">
                                 <img src="{{ asset('images/landing/edetail-video.png') }}" alt="" class="w-full h-auto group-hover:opacity-95 transition-opacity">
                             </a>
                         </div>
@@ -495,7 +495,7 @@
                 <ul class="mt-3.5 space-y-1">
                     @foreach($downloads as $download)
                     <li>
-                        <a href="#" class="flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-[#FAFAF8] text-[12px] text-[#3A3A35]">
+                        <a href="{{ route('contact', ['lang' => $lang]) }}" title="{{ $isFr ? 'Document disponible sur demande — contactez-nous' : 'Document available on request — contact us' }}" class="flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-[#FAFAF8] text-[12px] text-[#3A3A35]">
                             <i data-lucide="file-text" class="w-[14px] h-[14px] text-[#55524A]"></i>
                             <span class="flex-1">{{ $download }}</span>
                             <i data-lucide="download" class="w-[14px] h-[14px] text-[#55524A]"></i>

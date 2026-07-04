@@ -171,10 +171,9 @@
         <section id="apercu" class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
             <div class="flex items-center justify-between gap-2">
                 <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu de votre activité' : 'Your activity overview' }}</h2>
-                <button type="button" class="flex items-center gap-1 text-[11px] text-[#55524A] whitespace-nowrap">
+                <span class="flex items-center gap-1 text-[11px] text-[#55524A] whitespace-nowrap">
                     {{ $isFr ? 'Période : 30 derniers jours' : 'Period: last 30 days' }}
-                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
-                </button>
+                </span>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-2.5">
                 @foreach($bmKpis as [$kIcon, $kVal, $kUnit, $kLabel, $kDelta, $kTint])

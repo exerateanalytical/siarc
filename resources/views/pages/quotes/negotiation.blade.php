@@ -221,10 +221,10 @@
                             <textarea name="body" rows="3" required placeholder="{{ $isFr ? 'Écrivez votre message ici...' : 'Write your message here...' }}" class="mt-2 w-full border border-[#E5E7E5] rounded-xl px-4 py-3 text-[13px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition resize-y"></textarea>
                             <div class="mt-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
                                 @foreach([['paperclip', $isFr ? 'Joindre un fichier' : 'Attach a file'], ['file-text', $isFr ? 'Joindre un document' : 'Attach a document'], ['package', $isFr ? 'Insérer un article' : 'Insert an item']] as [$cIcon, $cLabel])
-                                <button type="button" class="inline-flex items-center gap-2 text-[12.5px] text-[#3B382F] hover:text-[#14652F]">
+                                <span class="inline-flex items-center gap-2 text-[12.5px] text-[#3B382F]">
                                     <i data-lucide="{{ $cIcon }}" class="w-4 h-4" style="stroke-width:1.7"></i>
                                     {{ $cLabel }}
-                                </button>
+                                </span>
                                 @endforeach
                                 <button type="submit" class="ml-auto inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
                                     <i data-lucide="send" class="w-4 h-4" style="stroke-width:1.8"></i>

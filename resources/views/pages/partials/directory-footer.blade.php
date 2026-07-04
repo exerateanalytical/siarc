@@ -32,6 +32,14 @@
     $dfShowPayments = $dfShowPayments ?? false;
     $dfBgColor = $dfBgColor ?? '#012B1C';
 
+    $socialProfileUrls = [
+        'Facebook'  => 'https://www.facebook.com/gvnac',
+        'Instagram' => 'https://www.instagram.com/gvnac',
+        'LinkedIn'  => 'https://www.linkedin.com/company/gvnac',
+        'YouTube'   => 'https://www.youtube.com/@gvnac',
+        'X'         => 'https://x.com/gvnac',
+        'Twitter'   => 'https://x.com/gvnac',
+    ];
     $dfSocialIcons = [
         'Facebook'  => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>',
         'Instagram' => '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>',
@@ -63,11 +71,11 @@
                 <div class="mt-5 flex items-center gap-2.5">
                     @foreach($dfSocialIcons as $socialName => $socialPath)
                     @if($dfSocialStyle === 'outline')
-                    <a href="#" aria-label="{{ $socialName }}" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    <a href="{{ $socialProfileUrls[$socialName] ?? route('contact', ['lang' => $lang]) }}" target="_blank" rel="noopener" aria-label="{{ $socialName }}" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">{!! $socialPath !!}</svg>
                     </a>
                     @else
-                    <a href="#" aria-label="{{ $socialName }}" class="w-[34px] h-[34px] rounded-full bg-white flex items-center justify-center text-[#0B2C1E] hover:bg-[#EBD8A9] transition-colors">
+                    <a href="{{ $socialProfileUrls[$socialName] ?? route('contact', ['lang' => $lang]) }}" target="_blank" rel="noopener" aria-label="{{ $socialName }}" class="w-[34px] h-[34px] rounded-full bg-white flex items-center justify-center text-[#0B2C1E] hover:bg-[#EBD8A9] transition-colors">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">{!! $socialPath !!}</svg>
                     </a>
                     @endif

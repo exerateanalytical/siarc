@@ -305,10 +305,9 @@
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                     <div class="flex items-center justify-between gap-3">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé de mes activités' : 'Summary of my activities' }}</h2>
-                        <button type="button" class="shrink-0 inline-flex items-center gap-1.5 border border-[#E5E7E5] rounded-lg px-2.5 py-1.5 text-[11.5px] text-[#3B382F]">
+                        <span class="shrink-0 inline-flex items-center gap-1.5 border border-[#E5E7E5] rounded-lg px-2.5 py-1.5 text-[11.5px] text-[#3B382F]">
                             {{ $isFr ? '30 derniers jours' : 'Last 30 days' }}
-                            <i data-lucide="chevron-down" class="w-3 h-3 text-[#8A857A]"></i>
-                        </button>
+                        </span>
                     </div>
                     <div class="mt-4 grid grid-cols-2 gap-3">
                         @foreach($resumeCards as [$rcLabel, $rcLabelColor, $rcValue, $rcDelta, $rcDeltaColor, $rcIcon, $rcIconColor, $rcBg])

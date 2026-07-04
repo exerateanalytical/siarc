@@ -559,12 +559,11 @@
                     <h1 class="text-[24px] font-bold text-[#1B1B18]">{{ $isFr ? 'Bienvenue' : 'Welcome' }}, {{ $shopName }} ! 👋</h1>
                     <p class="mt-1 text-[13px] text-[#6F6B60]">{{ $isFr ? 'Voici un aperçu complet de votre boutique aujourd\'hui.' : 'Here is a complete overview of your shop today.' }}</p>
                 </div>
-                <button type="button" class="flex items-center gap-2.5 bg-white border border-[#E7E7E5] rounded-xl px-4 h-[46px] text-[13.5px] shadow-sm">
+                <span class="flex items-center gap-2.5 bg-white border border-[#E7E7E5] rounded-xl px-4 h-[46px] text-[13.5px] shadow-sm">
                     <i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#1B1B18]"></i>
                     <span class="text-[#6F6B60]">{{ $isFr ? 'Période' : 'Period' }} :</span>
                     <span class="font-semibold text-[#1B1B18]">{{ $isFr ? '30 derniers jours' : 'Last 30 days' }}</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#8A857A]"></i>
-                </button>
+                </span>
             </div>
 
             <!-- KPI cards -->
@@ -683,10 +682,9 @@
                 <section id="performances" class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu des performances' : 'Performance overview' }}</h2>
-                        <button type="button" class="flex items-center gap-2 border border-[#E7E7E5] rounded-lg px-3 py-1.5 text-[12px] text-[#55524A]">
+                        <span class="flex items-center gap-2 border border-[#E7E7E5] rounded-lg px-3 py-1.5 text-[12px] text-[#55524A]">
                             {{ $isFr ? '30 derniers jours' : 'Last 30 days' }}
-                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
-                        </button>
+                        </span>
                     </div>
                     <div class="mt-4 flex gap-5">
                         <div class="shrink-0 space-y-5 pt-3">

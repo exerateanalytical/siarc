@@ -13,6 +13,14 @@
     ];
 
     // Filled dark-green circles in the "Suivez-nous" column (design order: FB, IG, LinkedIn, X)
+    $socialProfileUrls = [
+        'Facebook'  => 'https://www.facebook.com/gvnac',
+        'Instagram' => 'https://www.instagram.com/gvnac',
+        'LinkedIn'  => 'https://www.linkedin.com/company/gvnac',
+        'YouTube'   => 'https://www.youtube.com/@gvnac',
+        'X'         => 'https://x.com/gvnac',
+        'Twitter'   => 'https://x.com/gvnac',
+    ];
     $followIcons = [
         'Facebook'  => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>',
         'Instagram' => '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>',
@@ -149,7 +157,7 @@
                 <h3 class="mt-4 text-[16.5px] font-semibold text-[#20211D]">{{ $isFr ? 'Suivez-nous' : 'Follow us' }}</h3>
                 <div class="mt-5 flex items-center gap-3">
                     @foreach($followIcons as $socialName => $socialPath)
-                    <a href="#" aria-label="{{ $socialName }}" class="w-[38px] h-[38px] rounded-full bg-[#14472B] hover:bg-leaf flex items-center justify-center text-white transition-colors">
+                    <a href="{{ $socialProfileUrls[$socialName] ?? route('contact', ['lang' => $lang]) }}" target="_blank" rel="noopener" aria-label="{{ $socialName }}" class="w-[38px] h-[38px] rounded-full bg-[#14472B] hover:bg-leaf flex items-center justify-center text-white transition-colors">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">{!! $socialPath !!}</svg>
                     </a>
                     @endforeach

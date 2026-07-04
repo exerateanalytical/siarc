@@ -765,9 +765,9 @@
                                 @for($s = 1; $s <= 5; $s++)
                                 <img src="{{ asset('images/landing/ob3-soc-' . $s . '.png') }}" alt="" class="w-[38px] h-[42px]" aria-hidden="true">
                                 @endfor
-                                <button type="button" class="w-[38px] h-[42px] border border-[#E5E3E0] rounded-lg flex items-center justify-center text-[#3B382F] hover:border-[#14532D]">
+                                <span class="w-[38px] h-[42px] border border-[#E5E3E0] rounded-lg flex items-center justify-center text-[#3B382F]">
                                     <i data-lucide="plus" class="w-4 h-4"></i>
-                                </button>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -822,10 +822,9 @@
                             <span class="chip-off {{ $lgOn ? 'hidden' : '' }} w-[16px] h-[16px] rounded-full border border-[#C9CFC9]"></span>
                         </button>
                         @endforeach
-                        <button type="button" class="flex items-center gap-2 border border-[#E5E3E0] rounded-lg px-3.5 py-2 text-[12.5px] font-medium text-[#3B382F]">
+                        <span class="flex items-center gap-2 border border-[#E5E3E0] rounded-lg px-3.5 py-2 text-[12.5px] font-medium text-[#3B382F]">
                             {{ $isFr ? 'Autre' : 'Other' }}
-                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
-                        </button>
+                        </span>
                     </div>
                     <div class="mt-4 rounded-lg bg-[#F3F8F3] p-4 sm:mr-[120px] flex items-start gap-3">
                         <i data-lucide="lightbulb" class="w-5 h-5 shrink-0 text-[#14532D]" style="stroke-width:1.7"></i>
@@ -1053,8 +1052,8 @@
                     <p class="mt-0.5 text-[11.5px] text-[#6F6B60]">{{ $isFr ? 'Déplacez le marqueur pour indiquer la position exacte de votre atelier.' : 'Move the marker to indicate the exact position of your workshop.' }}</p>
                     <img src="{{ asset('images/landing/ob5-map.png') }}" alt="" class="mt-3 w-full rounded-xl border border-[#E5E3E0]">
                     <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
-                        <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Coordonnées :' : 'Coordinates:' }} 5.4773° N, 10.4175° E</p>
-                        <button type="button" class="inline-flex items-center gap-2 border border-[#E5E3E0] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[12.5px] font-semibold text-[#1B1B18]">
+                        <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Coordonnées :' : 'Coordinates:' }} <span id="ob-geo-coords">5.4773° N, 10.4175° E</span></p>
+                        <button type="button" id="ob-geo-btn" class="inline-flex items-center gap-2 border border-[#E5E3E0] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[12.5px] font-semibold text-[#1B1B18]">
                             <i data-lucide="locate-fixed" class="w-4 h-4"></i>
                             {{ $isFr ? 'Utiliser ma position actuelle' : 'Use my current position' }}
                         </button>
@@ -1207,15 +1206,15 @@
                 <section class="mt-5 border border-[#EDEDEB] rounded-xl p-5">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Vos services' : 'Your services' }} <span class="font-normal text-[12.5px] text-[#6F6B60]">({{ $isFr ? 'optionnel' : 'optional' }})</span></h2>
-                        <button type="button" class="inline-flex items-center gap-2 bg-obdeep hover:bg-leaf text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                        <button type="button" id="add-service" class="inline-flex items-center gap-2 bg-obdeep hover:bg-leaf text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             {{ $isFr ? 'Ajouter un service' : 'Add a service' }}
                         </button>
                     </div>
                     <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Dites-nous les services que vous proposez.' : 'Tell us the services you offer.' }}</p>
-                    <div class="mt-4 space-y-3">
+                    <div id="service-rows" class="mt-4 space-y-3">
                         @foreach($step6Services as $svIdx => [$svIcon, $svTitle, $svDesc, $svPrice])
-                        <div class="flex flex-wrap items-stretch gap-3">
+                        <div class="ob-svc-row flex flex-wrap items-stretch gap-3">
                             <div class="flex-1 min-w-[260px] flex items-start gap-3.5 border border-[#EDEDEB] rounded-xl p-4">
                                 <img src="{{ asset('images/landing/' . $svIcon) }}" alt="" class="w-[42px] h-[42px] shrink-0" aria-hidden="true">
                                 <div class="min-w-0">
@@ -1297,7 +1296,7 @@
                             <img src="{{ asset('images/landing/' . $upIcon) }}" alt="" class="w-[52px] h-[52px] mx-auto" aria-hidden="true">
                             <h3 class="mt-3 text-[13px] font-bold text-[#1B1B18]">{{ $upTitle }}</h3>
                             <p class="mt-1 text-[11.5px] text-[#6F6B60]">{{ $upSub }}</p>
-                            <button type="button" class="mt-3.5 text-[12px] font-semibold px-4 py-2 rounded-lg transition-colors {{ $upActive ? 'bg-obdeep hover:bg-leaf text-white' : 'border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18]' }}">{{ $upBtn }}</button>
+                            <button type="button" class="ob-upload mt-3.5 text-[12px] font-semibold px-4 py-2 rounded-lg transition-colors {{ $upActive ? 'bg-obdeep hover:bg-leaf text-white' : 'border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18]' }}">{{ $upBtn }}</button>
                         </div>
                         @endforeach
                     </div>
@@ -1361,7 +1360,7 @@
                 <section class="mt-4 border border-[#EDEDEB] rounded-xl p-5">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Vos vidéos' : 'Your videos' }} <span class="font-normal text-[13px]">(1/5)</span></h2>
-                        <button type="button" class="inline-flex items-center gap-1.5 border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-3.5 py-2 rounded-lg transition-colors">
+                        <button type="button" id="add-video" class="inline-flex items-center gap-1.5 border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-3.5 py-2 rounded-lg transition-colors">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             {{ $isFr ? 'Ajouter une vidéo' : 'Add a video' }}
                         </button>
@@ -1426,13 +1425,13 @@
                     <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Téléversez les documents qui prouvent votre légitimité et votre expertise.' : 'Upload the documents that prove your legitimacy and expertise.' }}</p>
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                         @foreach($step8Certs as [$ctImg, $ctName, $ctNum])
-                        <div class="border border-[#DCEBE0] rounded-xl p-3 flex flex-col">
+                        <div class="ob-del-target border border-[#DCEBE0] rounded-xl p-3 flex flex-col">
                             <img src="{{ asset('images/landing/' . $ctImg) }}" alt="{{ $ctName }}" class="w-full h-[112px] object-contain">
                             <h3 class="mt-2.5 text-[12px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $ctName }}</h3>
                             <p class="mt-1 text-[11px] text-[#6F6B60] whitespace-nowrap">{{ $ctNum }}</p>
                             <div class="mt-3 flex items-center justify-between">
-                                <button type="button" class="border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-5 py-1.5 rounded-lg transition-colors">{{ $isFr ? 'Voir' : 'View' }}</button>
-                                <button type="button" class="w-[32px] h-[32px] rounded-lg border border-[#F5D9D9] bg-[#FDF3F3] flex items-center justify-center text-[#D43C3C] hover:bg-[#FBE4E4]" aria-label="{{ $isFr ? 'Supprimer' : 'Delete' }}">
+                                <a href="{{ asset('images/landing/' . $ctImg) }}" target="_blank" rel="noopener" class="border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-5 py-1.5 rounded-lg transition-colors">{{ $isFr ? 'Voir' : 'View' }}</a>
+                                <button type="button" class="ob-card-del w-[32px] h-[32px] rounded-lg border border-[#F5D9D9] bg-[#FDF3F3] flex items-center justify-center text-[#D43C3C] hover:bg-[#FBE4E4]" aria-label="{{ $isFr ? 'Supprimer' : 'Delete' }}">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
@@ -1446,7 +1445,7 @@
                             </span>
                             <h3 class="mt-4 text-[12px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $emTitle }}</h3>
                             <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $emSub }}</p>
-                            <button type="button" class="mt-3.5 border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-5 py-2 rounded-lg transition-colors">{{ $isFr ? 'Téléverser' : 'Upload' }}</button>
+                            <button type="button" class="ob-upload mt-3.5 border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-5 py-2 rounded-lg transition-colors">{{ $isFr ? 'Téléverser' : 'Upload' }}</button>
                         </div>
                         @endif
                         @endforeach
@@ -1460,7 +1459,7 @@
                             </span>
                             <h3 class="mt-4 text-[12px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $emTitle }}</h3>
                             <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $emSub }}</p>
-                            <button type="button" class="mt-3.5 border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-5 py-2 rounded-lg transition-colors">{{ $isFr ? 'Téléverser' : 'Upload' }}</button>
+                            <button type="button" class="ob-upload mt-3.5 border border-[#9DC3AA] hover:border-[#14532D] text-[#14532D] text-[12.5px] font-semibold px-5 py-2 rounded-lg transition-colors">{{ $isFr ? 'Téléverser' : 'Upload' }}</button>
                         </div>
                         @endif
                         @endforeach
@@ -1473,7 +1472,7 @@
                             <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Autres documents utiles' : 'Other useful documents' }} <span class="font-normal text-[12.5px] text-[#6F6B60]">({{ $isFr ? 'optionnel' : 'optional' }})</span></h2>
                             <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Ajoutez tout document complémentaire qui peut aider les acheteurs à mieux vous connaître.' : 'Add any additional document that can help buyers get to know you better.' }}</p>
                         </div>
-                        <button type="button" class="inline-flex items-center gap-2 bg-obdeep hover:bg-leaf text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                        <button type="button" class="ob-upload inline-flex items-center gap-2 bg-obdeep hover:bg-leaf text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             {{ $isFr ? 'Ajouter un document' : 'Add a document' }}
                         </button>
@@ -1487,7 +1486,7 @@
                             <span>Action</span>
                         </div>
                         @foreach($step8Docs as [$fdIcon, $fdName, $fdType, $fdFile, $fdSize])
-                        <div class="grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_90px_minmax(0,1.2fr)_58px_78px] gap-2 items-center px-4 py-3 border-t border-[#F0F0EE] text-[12px] text-[#1B1B18]">
+                        <div class="ob-del-target grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_90px_minmax(0,1.2fr)_58px_78px] gap-2 items-center px-4 py-3 border-t border-[#F0F0EE] text-[12px] text-[#1B1B18]">
                             <span class="flex items-center gap-3 min-w-0">
                                 <img src="{{ asset('images/landing/' . $fdIcon) }}" alt="" class="w-[23px] h-[25px] shrink-0" aria-hidden="true">
                                 <span class="truncate">{{ $fdName }}</span>
@@ -1496,10 +1495,10 @@
                             <span class="truncate">{{ $fdFile }}</span>
                             <span>{{ $fdSize }}</span>
                             <span class="flex items-center gap-2">
-                                <button type="button" class="w-[32px] h-[32px] rounded-lg border border-[#E5E9E5] bg-white flex items-center justify-center text-[#14532D] hover:border-[#14532D]" aria-label="{{ $isFr ? 'Voir' : 'View' }}">
+                                <span class="w-[32px] h-[32px] rounded-lg border border-[#E5E9E5] bg-white flex items-center justify-center text-[#14532D]">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                                <button type="button" class="w-[32px] h-[32px] rounded-lg border border-[#F5D9D9] bg-[#FDF3F3] flex items-center justify-center text-[#D43C3C] hover:bg-[#FBE4E4]" aria-label="{{ $isFr ? 'Supprimer' : 'Delete' }}">
+                                </span>
+                                <button type="button" class="ob-card-del w-[32px] h-[32px] rounded-lg border border-[#F5D9D9] bg-[#FDF3F3] flex items-center justify-center text-[#D43C3C] hover:bg-[#FBE4E4]" aria-label="{{ $isFr ? 'Supprimer' : 'Delete' }}">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </span>
@@ -1642,7 +1641,7 @@
                             <span class="bg-[#EBF5EB] text-[#14532D] text-[11.5px] font-semibold rounded-md px-2.5 py-1">{{ $isFr ? 'Vérifié' : 'Verified' }}</span>
                             <i data-lucide="circle-check" class="w-[18px] h-[18px] text-[#157A43]" style="stroke-width:1.8"></i>
                         </span>
-                        <button type="button" class="ml-auto shrink-0 border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18] text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors">{{ $isFr ? 'Mettre à jour' : 'Update' }}</button>
+                        <button type="button" class="ob-upload ml-auto shrink-0 border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18] text-[12.5px] font-semibold px-4 py-2.5 rounded-lg transition-colors">{{ $isFr ? 'Mettre à jour' : 'Update' }}</button>
                     </div>
                     <div class="mt-3.5 rounded-lg bg-[#F3F7F3] px-4 py-3 flex items-center gap-2.5">
                         <i data-lucide="circle-check" class="w-[18px] h-[18px] shrink-0 text-[#157A43]" style="stroke-width:1.8"></i>
@@ -1716,7 +1715,7 @@
                 <section class="mt-6 border border-[#EDEDEB] rounded-xl p-5">
                     <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé de votre profil' : 'Summary of your profile' }}</h2>
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                        @foreach($step10Summary as [$smIcon, $smTitle, $smLines])
+                        @foreach($step10Summary as $smIdx => [$smIcon, $smTitle, $smLines])
                         <div class="border border-[#EFEFED] rounded-xl p-4 flex flex-col">
                             <div class="flex items-center gap-2.5">
                                 <img src="{{ asset('images/landing/' . $smIcon) }}" alt="" class="w-[38px] h-[38px] shrink-0" aria-hidden="true">
@@ -1728,7 +1727,7 @@
                                 <p class="text-[12.5px] text-[#3B382F] leading-relaxed">{{ $smLine }}</p>
                                 @endforeach
                             </div>
-                            <button type="button" class="mt-3 self-start text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir / Modifier' : 'View / Edit' }}</button>
+                            <button type="button" onclick="goToStep({{ $smIdx + 1 }})" class="mt-3 self-start text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir / Modifier' : 'View / Edit' }}</button>
                         </div>
                         @endforeach
                     </div>
@@ -1737,7 +1736,7 @@
                 <section class="mt-4 border border-[#EDEDEB] rounded-xl p-5">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu des documents clés' : 'Preview of key documents' }}</h2>
-                        <button type="button" class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">
+                        <button type="button" onclick="goToStep(8)" class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">
                             {{ $isFr ? 'Tout voir' : 'See all' }}
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </button>
@@ -1760,7 +1759,7 @@
                         <div class="border-2 border-dashed border-[#D8DED9] rounded-xl p-4 flex flex-col items-center justify-center text-center">
                             <img src="{{ asset('images/landing/ob10-docplus.png') }}" alt="" class="w-[52px] h-[52px]" aria-hidden="true">
                             <p class="mt-3 text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? '+2 autres documents' : '+2 other documents' }}</p>
-                            <button type="button" class="mt-1.5 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tous' : 'See all' }}</button>
+                            <button type="button" onclick="goToStep(8)" class="mt-1.5 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tous' : 'See all' }}</button>
                         </div>
                     </div>
                 </section>
@@ -2382,6 +2381,74 @@
         }));
     }
     bindDel();
+    // Generic client-side upload buttons: pick a file, confirm on the button
+    document.querySelectorAll('.ob-upload').forEach(btn => btn.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.addEventListener('change', () => {
+            if (!input.files.length) return;
+            const name = input.files[0].name;
+            btn.textContent = '\u2713 ' + (name.length > 24 ? name.slice(0, 21) + '\u2026' : name);
+            btn.classList.add('bg-obdeep', 'text-white');
+            btn.classList.remove('text-[#14532D]', 'text-[#1B1B18]');
+        });
+        input.click();
+    }));
+
+    // Card/row delete buttons in the documents sections
+    document.querySelectorAll('.ob-card-del').forEach(btn => btn.addEventListener('click', () => {
+        const target = btn.closest('.ob-del-target');
+        if (target) target.remove();
+    }));
+
+    // Real browser geolocation for the workshop address step
+    const geoBtn = document.getElementById('ob-geo-btn');
+    if (geoBtn) geoBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(pos => {
+            const la = pos.coords.latitude, lo = pos.coords.longitude;
+            document.getElementById('ob-geo-coords').textContent =
+                Math.abs(la).toFixed(4) + '\u00B0 ' + (la >= 0 ? 'N' : 'S') + ', ' +
+                Math.abs(lo).toFixed(4) + '\u00B0 ' + (lo >= 0 ? 'E' : 'W');
+        });
+    });
+
+    // Add a service row (mirrors the add-product pattern)
+    const addService = document.getElementById('add-service');
+    if (addService) addService.addEventListener('click', () => {
+        const rows = document.getElementById('service-rows');
+        const first = rows.querySelector('.ob-svc-row');
+        if (!first || rows.querySelectorAll('.ob-svc-row').length >= 10) return;
+        const clone = first.cloneNode(true);
+        clone.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+        rows.appendChild(clone);
+        bindDel(clone);
+        lucide.createIcons();
+    });
+
+    // Add a video: pick a file, clone the row with its name and size
+    const addVideo = document.getElementById('add-video');
+    if (addVideo) addVideo.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'video/*';
+        input.addEventListener('change', () => {
+            if (!input.files.length) return;
+            const f = input.files[0];
+            const first = document.querySelector('.ob-video-row');
+            if (!first) return;
+            const clone = first.cloneNode(true);
+            const title = clone.querySelector('p');
+            if (title) title.textContent = f.name;
+            const meta = clone.querySelectorAll('p')[1];
+            if (meta) meta.textContent = (f.name.split('.').pop() || '').toUpperCase() + ' \u00B7 ' + (f.size / 1048576).toFixed(1) + ' MB';
+            first.parentNode.insertBefore(clone, first.nextSibling);
+            clone.querySelectorAll('.vid-del').forEach(b => b.addEventListener('click', () => clone.remove()));
+            lucide.createIcons();
+        });
+        input.click();
+    });
+
     document.getElementById('add-product').addEventListener('click', () => {
         const rows = document.getElementById('product-rows');
         if (rows.querySelectorAll('.ob-prod-row').length >= 10) return;
