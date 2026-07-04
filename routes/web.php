@@ -585,6 +585,128 @@ Route::get('/partenaires/{id}', function (Request $request, $id) {
         ->cookie('lang', $lang, 60 * 24 * 30);
 })->name('partners.show');
 
+// News/article detail — admin (design: "News or article Detail page.png")
+Route::get('/tableau-de-bord/admin/actualites/{id}', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $article = DB::table('announcements')->where('id', $id)->first();
+    if (!$article) abort(404);
+    $related = DB::table('announcements')->where('id', '!=', $id)->where('status', 'published')->orderByDesc('published_at')->limit(4)->get();
+    $categoryCounts = DB::table('announcements')->select('category', DB::raw('count(*) n'))->groupBy('category')->pluck('n', 'category');
+    $totalArticles = (int) DB::table('announcements')->count();
+
+    return view('pages.dashboard.admin-news-detail', compact('lang', 'siacUser', 'article', 'related', 'categoryCounts', 'totalArticles'));
+})->name('admin.news.detail');
+
+// Toggle publish/unpublish an announcement
+Route::post('/tableau-de-bord/admin/actualites/{id}/basculer', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $a = DB::table('announcements')->where('id', $id)->first();
+    if (!$a) abort(404);
+    $new = $a->status === 'published' ? 'draft' : 'published';
+    DB::table('announcements')->where('id', $id)->update(['status' => $new, 'updated_at' => now()]);
+    return back()->with('success', $lang === 'fr' ? 'Statut de l\'article mis à jour.' : 'Article status updated.');
+})->name('admin.news.toggle')->middleware('throttle:30,1');
+
+// News/article detail — public (design: "News or article Detail page public view.png")
+Route::get('/actualites/{slug}', function (Request $request, $slug) {
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $article = DB::table('announcements')->where('slug', $slug)->where('status', 'published')->first();
+    if (!$article) abort(404);
+    DB::table('announcements')->where('id', $article->id)->increment('views_count');
+    $related = DB::table('announcements')->where('id', '!=', $article->id)->where('status', 'published')->orderByDesc('published_at')->limit(4)->get();
+    $categoryCounts = DB::table('announcements')->where('status', 'published')->select('category', DB::raw('count(*) n'))->groupBy('category')->pluck('n', 'category');
+    $totalArticles = (int) DB::table('announcements')->where('status', 'published')->count();
+
+    return response(view('pages.news-show', compact('lang', 'article', 'related', 'categoryCounts', 'totalArticles')))
+        ->cookie('lang', $lang, 60 * 24 * 30);
+})->name('news.show');
+
+// Add a heritage collection — form (design: "ajoute un collection.png")
+Route::get('/tableau-de-bord/admin/collections/creer', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $regions = DB::table('regions')->orderBy('sort_order')->get();
+    $centres = DB::table('artisan_centres')->orderBy('sort_order')->get();
+    $industries = DB::table('industries')->where('is_active', true)->orderBy('sort_order')->get();
+
+    return view('pages.dashboard.admin-collection-create', compact('lang', 'siacUser', 'regions', 'centres', 'industries'));
+})->name('admin.collections.create');
+
+// Store a new heritage collection (real insert)
+Route::post('/tableau-de-bord/admin/collections', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+
+    $data = $request->validate([
+        'name_fr'        => ['required', 'string', 'max:150'],
+        'slug'           => ['nullable', 'string', 'max:160'],
+        'description_fr' => ['nullable', 'string', 'max:5000'],
+        'region_fr'      => ['nullable', 'string', 'max:60'],
+        'category_fr'    => ['nullable', 'string', 'max:60'],
+        'status'         => ['nullable', 'in:draft,in_review,published'],
+        'visibility'     => ['nullable', 'in:public,members,private'],
+        'sort_order'     => ['nullable', 'integer'],
+        'cover'          => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+    ]);
+
+    $slug = \Illuminate\Support\Str::slug(($data['slug'] ?? '') ?: $data['name_fr']);
+    if ($slug === '' || DB::table('heritage_collections')->where('slug', $slug)->exists()) {
+        $slug = $slug . '-' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(5));
+    }
+
+    $cover = null;
+    if ($request->hasFile('cover')) {
+        $cover = $request->file('cover')->store('collections', 'public');
+    }
+
+    DB::table('heritage_collections')->insert([
+        'slug' => $slug,
+        'name_fr' => $data['name_fr'], 'name_en' => $data['name_fr'],
+        'description_fr' => $data['description_fr'] ?? null,
+        'region_fr' => $data['region_fr'] ?? null,
+        'category_fr' => $data['category_fr'] ?? null,
+        'status' => $data['status'] ?? 'draft',
+        'visibility' => $data['visibility'] === 'members' ? 'private' : ($data['visibility'] ?? 'public'),
+        'sort_order' => $data['sort_order'] ?? 0,
+        'cover_image' => $cover,
+        'artisans_count' => 0, 'visits_count' => 0,
+        'created_at' => now(), 'updated_at' => now(),
+    ]);
+
+    return redirect()->route('admin.collections', ['lang' => $lang])->with('success', $lang === 'fr'
+        ? 'Collection créée avec succès.'
+        : 'Collection created successfully.');
+})->name('admin.collections.store')->middleware('throttle:20,1');
+
+// Public heritage collections page (design: "collection heritage.png")
+Route::get('/collections-heritage', function (Request $request) {
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $hcArt = ['bronzes-royaux-bamoun'=>'hc-bronzes.png','tissus-traditionnels-bamileke'=>'hc-tissus.png','poteries-de-ladamaoua'=>'hc-poteries.png','masques-traditionnels-bassa'=>'hc-masques.png','vannerie-du-nord'=>'hc-vannerie.png','bijoux-traditionnels-grassfields'=>'hc-bijoux.png','sculptures-sur-pierre-de-lest'=>'hc-pierre.png','cuirs-et-peaux-du-sud'=>'hc-cuirs.png'];
+
+    $collections = DB::table('heritage_collections as c')
+        ->leftJoin('heritage_collection_product as hcp', 'hcp.collection_id', '=', 'c.id')
+        ->where('c.status', 'published')->where('c.visibility', 'public')
+        ->groupBy('c.id')
+        ->select('c.*', DB::raw('count(hcp.product_id) as products_count'))
+        ->orderBy('c.sort_order')->get();
+
+    $totalProducts = (int) DB::table('heritage_collection_product')->count();
+    $totalArtisans = (int) DB::table('heritage_collections')->sum('artisans_count');
+
+    return response(view('pages.collections', compact('lang', 'collections', 'hcArt', 'totalProducts', 'totalArtisans')))
+        ->cookie('lang', $lang, 60 * 24 * 30);
+})->name('collections.index');
+
 // Data Export Centre (design: "Data Export Centre.png") — real export registry;
 // every download streams a live CSV of the requested dataset.
 if (! function_exists('dataExportDatasets')) {

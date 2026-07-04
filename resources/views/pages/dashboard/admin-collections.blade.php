@@ -88,7 +88,7 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-2.5 shrink-0">
-                    <a href="{{ route('admin.cms') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                    <a href="{{ route('admin.collections.create', ['lang' => $lang]) }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Ajouter une collection' : 'Add a collection' }}
                     </a>

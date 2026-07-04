@@ -56,4 +56,42 @@ class CentresRenderTest extends TestCase
 
         $this->get('/partenaires/' . $id)->assertOk()->assertSee('Partenaire Test');
     }
+
+    public function test_news_admin_detail_and_public_pages_render(): void
+    {
+        // announcements are seeded by migration
+        $article = DB::table('announcements')->where('status', 'published')->first();
+        $this->assertNotNull($article);
+
+        $admin = $this->makeUser();
+        $this->withSession(['siac_user' => [
+            'id' => $admin->id, 'name' => 'Admin', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]])->get('/tableau-de-bord/admin/actualites/' . $article->id)
+            ->assertOk()->assertSee($article->title_fr);
+
+        $this->get('/actualites/' . $article->slug)->assertOk()->assertSee($article->title_fr);
+    }
+
+    public function test_collection_create_form_renders_and_stores(): void
+    {
+        $admin = $this->makeUser();
+        $session = ['siac_user' => [
+            'id' => $admin->id, 'name' => 'Admin', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]];
+
+        $this->withSession($session)->get('/tableau-de-bord/admin/collections/creer')
+            ->assertOk()->assertSee('Ajouter une Collection');
+
+        $before = \Illuminate\Support\Facades\DB::table('heritage_collections')->count();
+        $this->withSession($session)->post('/tableau-de-bord/admin/collections', [
+            'name_fr' => 'Collection Test Vannerie', 'status' => 'published',
+            'visibility' => 'public', 'description_fr' => 'Une collection de test.',
+        ])->assertRedirect();
+        $this->assertSame($before + 1, \Illuminate\Support\Facades\DB::table('heritage_collections')->count());
+
+        // Public collections gallery
+        $this->get('/collections-heritage')->assertOk();
+    }
 }
