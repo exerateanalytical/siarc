@@ -212,4 +212,76 @@ class QuoteFlowTest extends TestCase
             ->assertRedirect();
         $this->assertSame('unpaid', $invoice->fresh()->status);
     }
+
+    public function test_wired_pages_render_real_records_end_to_end(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+
+        // Buyer creates the RFQ
+        $this->actingAsWebUser($buyer)->post('/tableau-de-bord/demandes', [
+            'business_slug' => $business->slug,
+            'title'         => 'Mobilier en bois massif',
+            'description'   => 'Commande pour un hôtel de Douala.',
+        ]);
+        $rfq = \App\Modules\Quotes\Models\QuoteRequest::first();
+
+        // Seller opens the builder against the RFQ, then sends a proposal
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->get("/tableau-de-bord/propositions/articles?rfq={$rfq->id}")
+            ->assertOk()
+            ->assertSee($rfq->reference);
+
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/demandes/{$rfq->id}/proposition", [
+                'items' => [['name' => 'Mobilier en bois massif', 'quantity' => 10, 'unit_price' => 180000, 'discount_pct' => 5]],
+                'delivery_fee' => 250000,
+            ]);
+        $proposal = \App\Modules\Quotes\Models\QuoteProposal::first();
+
+        // Seller sees the RFQ on the quote dashboard; buyer sees it on the listing
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->get('/tableau-de-bord/devis')
+            ->assertOk()
+            ->assertSee($rfq->title);
+
+        $this->actingAsWebUser($buyer)
+            ->get('/tableau-de-bord/demandes')
+            ->assertOk()
+            ->assertSee($rfq->reference);
+
+        $this->actingAsWebUser($buyer)
+            ->get("/tableau-de-bord/propositions/detail?proposal={$proposal->id}")
+            ->assertOk()
+            ->assertSee($proposal->reference)
+            ->assertSee(number_format($proposal->total));
+
+        // A stranger gets the demo fallback — none of the real data leaks
+        $this->actingAsWebUser($this->makeUser())
+            ->get("/tableau-de-bord/propositions/detail?proposal={$proposal->id}")
+            ->assertOk()
+            ->assertDontSee($proposal->reference)
+            ->assertDontSee(number_format($proposal->total));
+
+        // Buyer accepts; PO and invoice pages render the generated records
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/propositions/{$proposal->id}/accepter");
+
+        $order   = \App\Modules\Quotes\Models\PurchaseOrder::first();
+        $invoice = \App\Modules\Quotes\Models\Invoice::first();
+
+        $this->actingAsWebUser($buyer)
+            ->get("/tableau-de-bord/commandes/bon?po={$order->id}")
+            ->assertOk()
+            ->assertSee($order->reference)
+            ->assertSee($proposal->reference)
+            ->assertSee(number_format($proposal->total));
+
+        $this->actingAsWebUser($buyer)
+            ->get("/tableau-de-bord/factures/detail?invoice={$invoice->id}")
+            ->assertOk()
+            ->assertSee($invoice->reference)
+            ->assertSee($order->reference);
+    }
 }

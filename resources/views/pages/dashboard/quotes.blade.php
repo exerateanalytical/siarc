@@ -76,6 +76,28 @@
         ['qd-req-5.png', $isFr ? 'Statue en bois' : 'Wooden statue',               'Lyon, France',                                        $isFr ? '26 Avr. 2024' : '26 Apr. 2024', $isFr ? 'CONVERTIE' : 'CONVERTED',     '#157A43', '#E2F3E8'],
     ];
 
+    // Real RFQs override the design demo rows in "Demandes récentes" when present
+    if (($realRfqs ?? collect())->isNotEmpty()) {
+        $rfqPills = [
+            'pending'     => [$isFr ? 'NOUVELLE' : 'NEW', '#3565DE', '#E8EFFB'],
+            'quoted'      => [$isFr ? 'DEVIS ENVOYÉ' : 'QUOTE SENT', '#7C4FE0', '#F0EAFB'],
+            'negotiation' => [$isFr ? 'NÉGOCIATION' : 'NEGOTIATION', '#EE7A1C', '#FDEFE0'],
+            'accepted'    => [$isFr ? 'CONVERTIE' : 'CONVERTED', '#157A43', '#E2F3E8'],
+            'refused'     => [$isFr ? 'REFUSÉE' : 'REFUSED', '#E5484D', '#FDE8E8'],
+        ];
+        $recentRequests = $realRfqs->map(function ($r) use ($rfqPills, $isFr, $lang) {
+            [$pl, $pc, $pb] = $rfqPills[$r->status] ?? $rfqPills['pending'];
+            return [
+                'qd-req-' . (($r->id % 5) + 1) . '.png',
+                $r->title,
+                $r->buyer->name ?? '—',
+                $r->created_at->format('d/m/Y'),
+                $pl, $pc, $pb,
+                route('quotes.builder', ['lang' => $lang, 'rfq' => $r->id]),
+            ];
+        })->all();
+    }
+
     // [icon, iconColor, tileBg, title, sub, time, badge, isStars]
     $activities = [
         ['message-circle', '#3B5BDB', '#E9EFFC', $isFr ? 'Nouveau message de Global Crafts Ltd' : 'New message from Global Crafts Ltd', $isFr ? 'Bonjour, nous sommes intéressés par vos sculptures...' : 'Hello, we are interested in your sculptures...', '10:30', '1', false],
@@ -304,6 +326,13 @@
     <!-- Main -->
     <main class="flex-1 min-w-0 px-3 lg:px-1 pt-4">
 
+        @if(session('success'))
+        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            {{ session('success') }}
+        </div>
+        @endif
+
         <!-- Hello row -->
         <div class="flex flex-col lg:flex-row lg:items-center gap-4">
             <div class="flex-1 min-w-0">
@@ -386,8 +415,12 @@
                     <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir toutes' : 'See all' }}</a>
                 </div>
                 <div class="mt-2 divide-y divide-[#F1F2F1]">
-                    @foreach($recentRequests as [$rqImg, $rqTitle, $rqPlace, $rqDate, $rqPill, $rqPillColor, $rqPillBg])
-                    <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="flex items-center gap-3.5 py-3 group">
+                    @foreach($recentRequests as $rqRow)
+                    @php
+                        [$rqImg, $rqTitle, $rqPlace, $rqDate, $rqPill, $rqPillColor, $rqPillBg] = $rqRow;
+                        $rqUrl = $rqRow[7] ?? route('messages.inbox', ['lang' => $lang]);
+                    @endphp
+                    <a href="{{ $rqUrl }}" class="flex items-center gap-3.5 py-3 group">
                         <img src="{{ asset('images/landing/' . $rqImg) }}" alt="" class="w-[42px] h-[42px] shrink-0 rounded-lg object-cover">
                         <span class="flex-1 min-w-0">
                             <span class="block text-[13px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ $rqTitle }}</span>

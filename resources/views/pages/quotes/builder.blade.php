@@ -24,6 +24,18 @@
         ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    'RFQ-2024-000189', $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '60,000', '0', '1,080,000'],
     ];
 
+    // Real mode: the builder answers an actual RFQ (single prefilled row)
+    $isReal = isset($builderRfq) && $builderRfq;
+    if ($isReal) {
+        $rows = [[
+            'qv-prod-' . (($builderRfq->id % 4) + 1) . '.png',
+            $builderRfq->title,
+            $builderRfq->reference,
+            \Illuminate\Support\Str::limit($builderRfq->description ?? '', 120),
+            '1', '0', '0', '0',
+        ]];
+    }
+
     // [label, value, color, bold]
     $financeRows = [
         [$isFr ? 'Sous-total' : 'Subtotal',                        '4,751,750 FCFA', '#1B1B18', false],
@@ -80,10 +92,17 @@
                     <i data-lucide="file-text" class="w-4 h-4" style="stroke-width:1.7"></i>
                     <span id="bld-draft-label">{{ $isFr ? 'Enregistrer brouillon' : 'Save draft' }}</span>
                 </button>
+                @if($isReal)
+                <button type="submit" form="bld-form" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
+                    {{ $isFr ? 'Envoyer la proposition' : 'Send the proposal' }}
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+                @else
                 <a href="{{ route('quotes.proposal', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
                     {{ $isFr ? 'Étape suivante' : 'Next step' }}
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
+                @endif
             </div>
         </div>
 
@@ -106,8 +125,25 @@
             </div>
         </div>
 
+        @if($isReal)
+        <div class="mt-4 bg-[#E9F3EC] border border-[#CFE0D4] rounded-xl px-4 py-3 flex items-center gap-3 text-[12.5px] text-[#14532D]">
+            <i data-lucide="badge-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            <span>{{ $isFr ? 'Vous répondez à la demande' : 'You are answering request' }}
+            <span class="font-bold">{{ $builderRfq->reference }}</span> — {{ $builderRfq->title }}
+            ({{ $isFr ? 'acheteur' : 'buyer' }} : {{ $builderRfq->buyer->name ?? '—' }})</span>
+        </div>
+        @endif
+        @if($errors->any())
+        <div class="mt-4 bg-[#FDE8E8] border border-[#F5C9C9] rounded-xl px-4 py-3 text-[12.5px] text-[#B42025]">{{ $errors->first() }}</div>
+        @endif
+
         <div class="mt-5 flex flex-col xl:flex-row gap-5 items-start">
             <div class="flex-1 min-w-0 w-full">
+                @if($isReal)
+                <form id="bld-form" method="POST" action="{{ route('quotes.store-proposal', ['quoteRequest' => $builderRfq->id, 'lang' => $lang]) }}">
+                @csrf
+                <input type="hidden" name="payment_terms" value="{{ $isFr ? '50% à la commande, 50% avant expédition' : '50% on order, 50% before shipment' }}">
+                @endif
 
                 <!-- Products table -->
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
@@ -130,8 +166,12 @@
                                 @endforeach
                             </div>
                             <div id="bld-rows">
-                                @foreach($rows as [$rImg, $rName, $rRef, $rSpec, $rQty, $rPrice, $rDisc, $rTotal])
+                                @foreach($rows as $rIdx => [$rImg, $rName, $rRef, $rSpec, $rQty, $rPrice, $rDisc, $rTotal])
                                 <div class="bld-row border-b border-[#F1F2F1] py-3.5">
+                                    @if($isReal)
+                                    <input type="hidden" name="items[{{ $rIdx }}][name]" value="{{ $rName }}">
+                                    <input type="hidden" name="items[{{ $rIdx }}][description]" value="{{ $rSpec }}">
+                                    @endif
                                     <div class="grid grid-cols-[minmax(220px,1.4fr)_90px_110px_120px_110px_130px_120px_80px] gap-3 items-center">
                                         <div class="flex items-center gap-3">
                                             <img src="{{ asset('images/landing/' . $rImg) }}" alt="" class="w-[46px] h-[46px] shrink-0 rounded-lg object-cover">
@@ -140,7 +180,7 @@
                                                 <p class="mt-0.5 text-[11px] text-[#6F6B60]">{{ $rRef }}</p>
                                             </div>
                                         </div>
-                                        <input type="text" value="{{ $rQty }}" class="bld-qty {{ $inputCls }} text-center">
+                                        <input type="text" @if($isReal) name="items[{{ $rIdx }}][quantity]" @endif value="{{ $rQty }}" class="bld-qty {{ $inputCls }} text-center">
                                         <div class="relative">
                                             <select class="w-full h-[44px] border border-[#E5E7E5] rounded-lg pl-3 pr-7 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none">
                                                 <option>{{ $isFr ? 'Pièces' : 'Pieces' }}</option>
@@ -149,9 +189,9 @@
                                             </select>
                                             <i data-lucide="chevron-down" class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
                                         </div>
-                                        <input type="text" value="{{ $rPrice }}" class="bld-price {{ $inputCls }} text-right">
+                                        <input type="text" @if($isReal) name="items[{{ $rIdx }}][unit_price]" @endif value="{{ $rPrice }}" class="bld-price {{ $inputCls }} text-right">
                                         <div class="flex items-center gap-1.5">
-                                            <input type="text" value="{{ $rDisc }}" class="bld-disc flex-1 min-w-0 {{ $inputCls }} text-center">
+                                            <input type="text" @if($isReal) name="items[{{ $rIdx }}][discount_pct]" @endif value="{{ $rDisc }}" class="bld-disc flex-1 min-w-0 {{ $inputCls }} text-center">
                                             <span class="shrink-0 text-[12.5px] text-[#55524A]">%</span>
                                         </div>
                                         <div class="relative">
@@ -186,7 +226,7 @@
                         <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Options de remise globale' : 'Global discount options' }}</h2>
                         <label class="{{ $panelLabel }} mt-3.5">{{ $isFr ? 'Remise globale sur tous les articles' : 'Global discount on all items' }}</label>
                         <div class="flex items-center gap-2">
-                            <input type="text" value="2" class="w-[90px] {{ $inputCls }} text-center">
+                            <input type="text" @if($isReal) name="global_discount_pct" @endif value="{{ $isReal ? 0 : 2 }}" class="w-[90px] {{ $inputCls }} text-center">
                             <span class="text-[13px] text-[#55524A]">%</span>
                             <div class="flex-1 min-w-0 ml-2">
                                 <label class="block text-[11px] text-[#6F6B60] mb-1">{{ $isFr ? 'Montant de remise' : 'Discount amount' }}</label>
@@ -275,6 +315,9 @@
                         </div>
                     </section>
                 </div>
+                @if($isReal)
+                </form>
+                @endif
             </div>
 
             <!-- Right rail -->
@@ -368,6 +411,7 @@
     }
     document.querySelectorAll('.bld-row').forEach(bindRow);
 
+    let bldCounter = document.querySelectorAll('.bld-row').length;
     document.getElementById('bld-add').addEventListener('click', () => {
         const rows = document.getElementById('bld-rows');
         const first = rows.querySelector('.bld-row');
@@ -376,10 +420,25 @@
         clone.querySelector('.bld-qty').value = '1';
         clone.querySelector('.bld-disc').value = '0';
         clone.querySelector('.bld-total').textContent = clone.querySelector('.bld-price').value;
+        clone.querySelectorAll('[name]').forEach(el => {
+            el.name = el.name.replace(/items\[\d+\]/, 'items[' + bldCounter + ']');
+        });
+        bldCounter++;
         rows.appendChild(clone);
         bindRow(clone);
         lucide.createIcons();
         recompute();
+    });
+
+    // Real mode: strip thousands separators so the server receives integers
+    const bldForm = document.getElementById('bld-form');
+    if (bldForm) bldForm.addEventListener('submit', () => {
+        document.querySelectorAll('.bld-row').forEach(row => {
+            const price = row.querySelector('.bld-price');
+            const qty = row.querySelector('.bld-qty');
+            price.value = (price.value || '0').replace(/[^0-9]/g, '') || '0';
+            qty.value = (qty.value || '1').replace(/[^0-9]/g, '') || '1';
+        });
     });
 
     document.getElementById('bld-draft').addEventListener('click', () => {

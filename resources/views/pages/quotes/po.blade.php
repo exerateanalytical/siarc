@@ -32,6 +32,29 @@
         ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '58,000', '870,000'],
     ];
 
+    // Real purchase order threading (?po=ID, authorized in the route)
+    $isReal = isset($realPo) && $realPo;
+    if ($isReal) {
+        $rpo = $realPo;
+        $rpp = $rpo->proposal;
+        $poRows = $rpp->items->map(fn ($it, $i) => [
+            'qv-prod-' . (($i % 4) + 1) . '.png',
+            $it->name,
+            $it->description ?? '',
+            (string) $it->quantity,
+            number_format($it->unit_price),
+            number_format($it->total),
+        ])->all();
+        $realPoRef     = $rpo->reference;
+        $realQuoRef    = $rpp->reference;
+        $realOrderDate = $rpo->created_at->format('d/m/Y');
+        $realBizName   = $rpp->request->business->name_fr ?? 'Art Bois Nature';
+        $realBuyerName = $rpp->request->buyer->name ?? 'Achat Pro SARL';
+        $realItemCount = $rpp->items->count();
+        $realTotalQty  = $rpp->items->sum('quantity');
+        $realTotal     = number_format($rpp->total) . ' FCFA';
+    }
+
     // [bold label, rest]
     $poConditions = $isFr ? [
         ['Livraison:', '24 Juin 2024 (± 2 jours)'],
@@ -58,6 +81,16 @@
         [$isFr ? 'Frais de livraison' : 'Delivery costs',          '150,000 FCFA',   '#1B1B18', false],
     ];
 
+    if ($isReal) {
+        $poTotals = [
+            [$isFr ? 'Sous-total' : 'Subtotal', number_format($rpp->subtotal) . ' FCFA', '#1B1B18', false],
+            [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rpp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rpp->discount_amount) . ' FCFA', '#E5484D', false],
+            [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rpp->tax_amount) . ' FCFA', '#1B1B18', false],
+            [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rpp->delivery_fee) . ' FCFA', '#1B1B18', false],
+            [$isFr ? 'Assurance' : 'Insurance', number_format($rpp->insurance_fee) . ' FCFA', '#1B1B18', false],
+        ];
+    }
+
     // [icon, title, sub, done]
     $poTimeline = [
         ['check',    $isFr ? 'Bon de commande créé' : 'Purchase order created',        '25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 16:35', true],
@@ -69,8 +102,8 @@
 
     // [icon (img|lucide), title, file]
     $poDocs = [
-        ['img',    $isFr ? 'Devis (Version 2)' : 'Quote (Version 2)',            'QUO-2024-000189-V2.pdf'],
-        ['img',    $isFr ? 'Facture proforma' : 'Proforma invoice',              'INV-2024-00056.pdf'],
+        ['img',    $isFr ? 'Devis (Version 2)' : 'Quote (Version 2)',            $isReal ? $realQuoRef . '.pdf' : 'QUO-2024-000189-V2.pdf'],
+        ['img',    $isFr ? 'Facture proforma' : 'Proforma invoice',              $isReal && $rpo->invoice ? $rpo->invoice->reference . '.pdf' : 'INV-2024-00056.pdf'],
         ['lucide', $isFr ? 'Conditions de livraison' : 'Delivery conditions',    'CDC-2024-00045.pdf'],
     ];
 
@@ -110,6 +143,16 @@
 
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
+        @if(session('success'))
+        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            {{ session('success') }}
+            @if($isReal && $realPo->invoice)
+            — <a href="{{ route('quotes.invoice', ['lang' => $lang, 'invoice' => $realPo->invoice->id]) }}" class="font-bold underline underline-offset-2">{{ $isFr ? 'Voir la facture' : 'View the invoice' }} {{ $realPo->invoice->reference }}</a>
+            @endif
+        </div>
+        @endif
+
         <!-- Breadcrumb + title -->
         <nav class="flex items-center gap-2 text-[12.5px] text-[#55524A]">
             <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Commandes' : 'Orders' }}</a>
@@ -125,9 +168,9 @@
                     <span class="bg-[#E2F3E8] rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $isFr ? 'Confirmé' : 'Confirmed' }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    PO N°: <span class="font-semibold text-[#1B1B18]">PO-2024-00045</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Basé sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">QUO-2024-000189 (Version 2)</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Date de commande' : 'Order date' }}: <span class="font-semibold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024</span>
+                    PO N°: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realPoRef : 'PO-2024-00045' }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Basé sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realQuoRef : 'QUO-2024-000189 (Version 2)' }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Date de commande' : 'Order date' }}: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realOrderDate : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024') }}</span>
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -156,7 +199,7 @@
                         <div class="min-w-0">
                             <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Fournisseur' : 'Supplier' }}</p>
                             <p class="mt-1 flex flex-wrap items-center gap-2">
-                                <span class="text-[14.5px] font-bold text-[#1B1B18]">Art Bois Nature</span>
+                                <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realBizName : 'Art Bois Nature' }}</span>
                                 <span class="inline-flex items-center gap-1 bg-[#E2F3E8] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
                             </p>
                             <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? 'Yaoundé, Centre, Cameroun' : 'Yaounde, Centre, Cameroon' }}</p>
@@ -167,7 +210,7 @@
                     </div>
                     <div>
                         <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Acheteur' : 'Buyer' }}</p>
-                        <p class="mt-1 text-[14.5px] font-bold text-[#1B1B18]">Achat Pro SARL</p>
+                        <p class="mt-1 text-[14.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realBuyerName : 'Achat Pro SARL' }}</p>
                         <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">Bonamoussadi, Douala<br>{{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
                         <p class="mt-2 text-[12.5px] text-[#3B382F]">NIU: P098765432109876</p>
                     </div>
@@ -176,7 +219,7 @@
                         <div>
                             <p class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Dates importantes' : 'Important dates' }}</p>
                             <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de commande' : 'Order date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024</p>
+                            <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realOrderDate : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024') }}</p>
                             <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de livraison prévue' : 'Expected delivery date' }}</p>
                             <p class="text-[12.5px] font-bold text-[#E5484D]">24 {{ $isFr ? 'Juin' : 'June' }} 2024 <span class="font-semibold">(30 {{ $isFr ? 'jours' : 'days' }})</span></p>
                             <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Statut' : 'Status' }}</p>
@@ -252,7 +295,7 @@
                             </dl>
                             <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
                                 <span class="text-[14.5px] font-bold text-[#157A43]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
-                                <span class="text-[15.5px] font-bold text-[#157A43]">5,368,253 FCFA</span>
+                                <span class="text-[15.5px] font-bold text-[#157A43]">{{ $isReal ? $realTotal : '5,368,253 FCFA' }}</span>
                             </div>
                         </div>
                     </div>
@@ -286,15 +329,15 @@
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Nombre d\'articles' : 'Number of items' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">4</dd>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realItemCount : 4 }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Quantité totale' : 'Total quantity' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">50 {{ $isFr ? 'Pièces' : 'Pieces' }}</dd>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realTotalQty : 50 }} {{ $isFr ? 'Pièces' : 'Pieces' }}</dd>
                         </div>
                         <div>
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Montant total' : 'Total amount' }}</dt>
-                            <dd class="mt-1 text-right text-[21px] font-bold text-[#157A43]">5,368,253 FCFA</dd>
+                            <dd class="mt-1 text-right text-[21px] font-bold text-[#157A43]">{{ $isReal ? $realTotal : '5,368,253 FCFA' }}</dd>
                         </div>
                     </dl>
                     <div class="mt-4 border-t border-[#F0F1F0] pt-4">

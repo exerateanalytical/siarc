@@ -26,6 +26,33 @@
         'waiting'  => [$isFr ? 'En attente' : 'Pending',                  '#55524A', '#F0F1F2'],
     ];
 
+    // Real RFQs of the logged-in buyer, mapped into the same row shape and
+    // rendered AHEAD of the design demo rows (index 13 = real detail URL).
+    $statusMap = ['pending' => 'waiting', 'quoted' => 'received', 'negotiation' => 'nego', 'accepted' => 'accepted', 'refused' => 'refused', 'expired' => 'waiting'];
+    $realRows = [];
+    foreach (($realRequests ?? collect()) as $rr) {
+        $latest = $rr->proposals->first();
+        $realRows[] = [
+            $rr->reference,
+            $rr->created_at->format('d/m/Y'),
+            'qp-thumb-' . (($rr->id % 8) + 1) . '.png',
+            $rr->title,
+            $rr->business->name_fr ?? '—',
+            $isFr ? 'Cameroun' : 'Cameroon',
+            $latest ? 'received' : 'sent',
+            $latest ? number_format($latest->total) . ' FCFA' : '—',
+            $latest ? 'Proposition' : ($isFr ? 'Estimation' : 'Estimate'),
+            $statusMap[$rr->status] ?? 'waiting',
+            $rr->proposals->count() . ' proposition' . ($rr->proposals->count() > 1 ? 's' : ''),
+            $rr->created_at->format('d/m/Y'),
+            $latest && $latest->valid_until ? (($isFr ? 'Expire le ' : 'Expires ') . $latest->valid_until->format('d/m/Y')) : '-',
+            $latest
+                ? route('quotes.detail', ['lang' => $lang, 'proposal' => $latest->id])
+                : route('messages.inbox', ['lang' => $lang]),
+        ];
+    }
+    $rows = array_merge($realRows, $rows);
+
     // Tabs filter the design rows (?tab=), search filters by text (?q=)
     $tabs = [
         ['toutes',       $isFr ? 'Toutes' : 'All',                          18, fn ($r) => true],
@@ -106,6 +133,13 @@
     @include('pages.partials.quotes-buyer-sidebar')
 
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
+
+        @if(session('success'))
+        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            {{ session('success') }}
+        </div>
+        @endif
 
         <!-- Title row -->
         <div class="flex flex-wrap items-start justify-between gap-4">
@@ -198,7 +232,11 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-[#F1F2F1]">
-                                @forelse($visibleRows as [$ref, $refDate, $thumb, $product, $artisan, $place, $type, $amount, $amountSub, $status, $statusSub, $dateCol, $expiry])
+                                @forelse($visibleRows as $qRow)
+                                @php
+                                    [$ref, $refDate, $thumb, $product, $artisan, $place, $type, $amount, $amountSub, $status, $statusSub, $dateCol, $expiry] = $qRow;
+                                    $rowUrl = $qRow[13] ?? route('messages.inbox', ['lang' => $lang]);
+                                @endphp
                                 <tr>
                                     <td class="pl-5 pr-2 py-4 align-top"><input type="checkbox" class="w-4 h-4 mt-1 rounded border-[#C9CFC9] accent-[#14652F]"></td>
                                     <td class="px-2 py-4 align-top whitespace-nowrap">
@@ -232,10 +270,10 @@
                                     </td>
                                     <td class="px-2 pr-5 py-4 align-top">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="w-[38px] h-[38px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F] transition-colors">
+                                            <a href="{{ $rowUrl }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="w-[38px] h-[38px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F] transition-colors">
                                                 <i data-lucide="eye" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                                             </a>
-                                            <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" title="Actions" class="w-[38px] h-[38px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F] transition-colors">
+                                            <a href="{{ $rowUrl }}" title="Actions" class="w-[38px] h-[38px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F] transition-colors">
                                                 <i data-lucide="ellipsis-vertical" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                                             </a>
                                         </div>

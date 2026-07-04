@@ -27,6 +27,34 @@
         ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '58,000', '870,000'],
     ];
 
+    // Real invoice threading (?invoice=ID, authorized in the route)
+    $isReal = isset($realInvoice) && $realInvoice;
+    if ($isReal) {
+        $rin = $realInvoice;
+        $rpp = $rin->purchaseOrder->proposal;
+        $invRows = $rpp->items->map(fn ($it, $i) => [
+            'qv-prod-' . (($i % 4) + 1) . '.png',
+            $it->name,
+            $it->description ?? '',
+            (string) $it->quantity,
+            number_format($it->unit_price),
+            number_format($it->total),
+        ])->all();
+        $realInvRef    = $rin->reference;
+        $realQuoRef    = $rpp->reference;
+        $realPoRef     = $rin->purchaseOrder->reference;
+        $realBizName   = $rpp->request->business->name_fr ?? 'Art Bois Nature';
+        $realBuyerName = $rpp->request->buyer->name ?? 'Achat Pro SARL';
+        $realInvDate   = $rin->created_at->format('d/m/Y');
+        $realDueDate   = $rin->due_date?->format('d/m/Y');
+        $realPaid      = $rin->status === 'paid';
+        $realPaidAt    = $rin->paid_at?->format('d/m/Y H:i');
+        $realMethod    = $rin->payment_method;
+        $realTotal     = number_format($rin->total) . ' FCFA';
+    } else {
+        $realPaid = true;
+    }
+
     // [label, value, color]
     $invTotals = [
         [$isFr ? 'Sous-total' : 'Subtotal',                        '4,480,000 FCFA', '#1B1B18'],
@@ -36,8 +64,18 @@
         [$isFr ? 'Frais de livraison' : 'Delivery costs',          '150,000 FCFA',   '#1B1B18'],
     ];
 
+    if ($isReal) {
+        $invTotals = [
+            [$isFr ? 'Sous-total' : 'Subtotal', number_format($rpp->subtotal) . ' FCFA', '#1B1B18'],
+            [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rpp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rpp->discount_amount) . ' FCFA', '#E5484D'],
+            [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rpp->tax_amount) . ' FCFA', '#1B1B18'],
+            [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rpp->delivery_fee) . ' FCFA', '#1B1B18'],
+            [$isFr ? 'Assurance' : 'Insurance', number_format($rpp->insurance_fee) . ' FCFA', '#1B1B18'],
+        ];
+    }
+
     $bankRows = [
-        [$isFr ? 'Titulaire' : 'Account holder', 'Art Bois Nature'],
+        [$isFr ? 'Titulaire' : 'Account holder', $isReal ? $realBizName : 'Art Bois Nature'],
         [$isFr ? 'Banque' : 'Bank',              'BICEC'],
         [$isFr ? 'Compte' : 'Account',           '10015 00023 4587 89654 23'],
         ['IBAN',                                  'CM21 10015 00023 4587 89654 23'],
@@ -52,6 +90,19 @@
         [$isFr ? 'Paiement reçu' : 'Payment received',     '25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 16:35'],
         [$isFr ? 'Facture payée' : 'Invoice paid',         '25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 16:35'],
     ];
+
+    if ($isReal) {
+        $invHistory = [
+            [$isFr ? 'Facture créée' : 'Invoice created', $rin->created_at->format('d/m/Y H:i')],
+            [$isFr ? 'Envoyée au client' : 'Sent to the client', $rin->created_at->format('d/m/Y H:i')],
+        ];
+        if ($realPaid) {
+            $invHistory[] = [$isFr ? 'Paiement reçu' : 'Payment received', $realPaidAt];
+            $invHistory[] = [$isFr ? 'Facture payée' : 'Invoice paid', $realPaidAt];
+        } else {
+            $invHistory[] = [$isFr ? 'En attente de paiement' : 'Awaiting payment', $isFr ? 'En cours' : 'Pending'];
+        }
+    }
 
     // [icon, label, print]
     $invActions = [
@@ -89,6 +140,13 @@
 
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
+        @if(session('success'))
+        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            {{ session('success') }}
+        </div>
+        @endif
+
         <!-- Breadcrumb + title -->
         <nav class="flex items-center gap-2 text-[12.5px]">
             <a href="{{ route('quotes.invoice', ['lang' => $lang]) }}" class="font-semibold text-[#3565DE] hover:text-[#14652F]">Factures</a>
@@ -99,12 +157,12 @@
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 text-[24px] font-bold text-[#1B1B18]">
                     {{ $isFr ? 'Facture' : 'Invoice' }}
-                    <span id="inv-pill" class="bg-[#E2F3E8] rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $isFr ? 'Payée' : 'Paid' }}</span>
+                    <span id="inv-pill" class="rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] uppercase" style="background:{{ $realPaid ? '#E2F3E8' : '#FDE8E8' }};color:{{ $realPaid ? '#157A43' : '#E5484D' }}">{{ $realPaid ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    {{ $isFr ? 'Facture' : 'Invoice' }} #: <span class="font-semibold text-[#1B1B18]">INV-2024-00056</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Basée sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">QUO-2024-000189 (Version 2)</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Artisan' : 'Artisan' }}: <span class="font-semibold text-[#1B1B18]">Art Bois Nature</span>
+                    {{ $isFr ? 'Facture' : 'Invoice' }} #: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realInvRef : 'INV-2024-00056' }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Basée sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realQuoRef : 'QUO-2024-000189 (Version 2)' }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Artisan' : 'Artisan' }}: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realBizName : 'Art Bois Nature' }}</span>
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -116,10 +174,20 @@
                     <i data-lucide="printer" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Imprimer' : 'Print' }}
                 </button>
+                @if($isReal)
+                <form method="POST" action="{{ route('quotes.toggle-invoice', ['invoice' => $rin->id, 'lang' => $lang]) }}">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4" style="stroke-width:1.8"></i>
+                        <span>{{ $realPaid ? ($isFr ? 'Marquer comme impayée' : 'Mark as unpaid') : ($isFr ? 'Marquer comme payée' : 'Mark as paid') }}</span>
+                    </button>
+                </form>
+                @else
                 <button type="button" id="inv-toggle" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-colors">
                     <i data-lucide="rotate-ccw" class="w-4 h-4" style="stroke-width:1.8"></i>
                     <span id="inv-toggle-label">{{ $isFr ? 'Marquer comme impayée' : 'Mark as unpaid' }}</span>
                 </button>
+                @endif
             </div>
         </div>
 
@@ -132,7 +200,7 @@
                         <img src="{{ asset('images/landing/qv-abn-logo.png') }}" alt="Art Bois Nature" class="w-[86px] shrink-0 object-contain">
                         <div class="min-w-0">
                             <p class="flex flex-wrap items-center gap-2">
-                                <span class="text-[14px] font-bold text-[#1B1B18]">Art Bois Nature</span>
+                                <span class="text-[14px] font-bold text-[#1B1B18]">{{ $isReal ? $realBizName : 'Art Bois Nature' }}</span>
                                 <span class="inline-flex items-center gap-1 bg-[#E2F3E8] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
                             </p>
                             <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? 'Yaoundé, Centre, Cameroun' : 'Yaounde, Centre, Cameroon' }}</p>
@@ -144,7 +212,7 @@
                     </div>
                     <div>
                         <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Facturé à' : 'Billed to' }}</p>
-                        <p class="mt-1.5 text-[14px] font-bold text-[#1B1B18]">Achat Pro SARL</p>
+                        <p class="mt-1.5 text-[14px] font-bold text-[#1B1B18]">{{ $isReal ? $realBuyerName : 'Achat Pro SARL' }}</p>
                         <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">Bonamoussadi, Douala<br>{{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
                         <p class="mt-2 text-[12.5px] text-[#3B382F]">NIU: P098765432109876</p>
                     </div>
@@ -152,11 +220,11 @@
                         <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
                         <div>
                             <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de facture' : 'Invoice date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024</p>
+                            <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realInvDate : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024') }}</p>
                             <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date d\'échéance' : 'Due date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#E5484D]">08 {{ $isFr ? 'Juin' : 'June' }} 2024 <span class="font-semibold">(14 {{ $isFr ? 'jours' : 'days' }})</span></p>
+                            <p class="text-[12.5px] font-bold text-[#E5484D]">{{ $isReal ? $realDueDate : ('08 ' . ($isFr ? 'Juin' : 'June') . ' 2024') }} <span class="font-semibold">(14 {{ $isFr ? 'jours' : 'days' }})</span></p>
                             <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Statut' : 'Status' }}</p>
-                            <p id="inv-statut" class="text-[12.5px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $isFr ? 'Payée' : 'Paid' }}</p>
+                            <p id="inv-statut" class="text-[12.5px] font-bold tracking-[0.03em] uppercase" style="color:{{ $realPaid ? '#157A43' : '#E5484D' }}">{{ $realPaid ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</p>
                         </div>
                     </div>
                 </section>
@@ -222,7 +290,7 @@
                             </dl>
                             <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
                                 <span class="text-[14.5px] font-bold text-[#157A43]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
-                                <span class="text-[15.5px] font-bold text-[#157A43]">5,368,253 FCFA</span>
+                                <span class="text-[15.5px] font-bold text-[#157A43]">{{ $isReal ? $realTotal : '5,368,253 FCFA' }}</span>
                             </div>
                         </div>
                     </div>
@@ -231,7 +299,7 @@
                 <!-- Invoice history -->
                 <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
                     <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Historique de la facture' : 'Invoice history' }}</h2>
-                    <div class="mt-6 grid grid-cols-5">
+                    <div class="mt-6 grid" style="grid-template-columns: repeat({{ count($invHistory) }}, minmax(0, 1fr));">
                         @foreach($invHistory as $ihIdx => [$ihTitle, $ihWhen])
                         <div class="text-center">
                             <div class="flex items-center">
@@ -254,21 +322,22 @@
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                     <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé du paiement' : 'Payment summary' }}</h2>
                     <p class="mt-3.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Montant total' : 'Total amount' }}</p>
-                    <p class="mt-0.5 text-[22px] font-bold text-[#157A43]">5,368,253 FCFA</p>
+                    <p class="mt-0.5 text-[22px] font-bold text-[#157A43]">{{ $isReal ? $realTotal : '5,368,253 FCFA' }}</p>
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Montant payé' : 'Amount paid' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">5,368,253 FCFA</dd>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? ($realPaid ? $realTotal : '0 FCFA') : '5,368,253 FCFA' }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Mode de paiement' : 'Payment method' }}</dt>
-                            <dd class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Virement bancaire' : 'Bank transfer' }}</dd>
+                            <dd class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $isReal ? ($realMethod ?? '—') : ($isFr ? 'Virement bancaire' : 'Bank transfer') }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Date de paiement' : 'Payment date' }}</dt>
-                            <dd class="text-[12.5px] font-semibold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024 16:35</dd>
+                            <dd class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $isReal ? ($realPaidAt ?? '—') : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 16:35') }}</dd>
                         </div>
                     </dl>
+                    @if($realPaid)
                     <div class="mt-4 bg-[#EFF6F1] rounded-xl px-4 py-3.5 flex items-start gap-3">
                         <i data-lucide="circle-check" class="w-[21px] h-[21px] shrink-0 text-[#1F8A4C]" style="stroke-width:1.8"></i>
                         <p class="text-[12px] leading-relaxed">
@@ -276,12 +345,21 @@
                             <span class="text-[#3B382F]">{{ $isFr ? 'Cette facture a été entièrement payée.' : 'This invoice has been fully paid.' }}</span>
                         </p>
                     </div>
+                    @else
+                    <div class="mt-4 bg-[#FDF3E0] rounded-xl px-4 py-3.5 flex items-start gap-3">
+                        <i data-lucide="clock" class="w-[21px] h-[21px] shrink-0 text-[#C97A16]" style="stroke-width:1.8"></i>
+                        <p class="text-[12px] leading-relaxed">
+                            <span class="font-bold text-[#C97A16]">{{ $isFr ? 'En attente de paiement' : 'Awaiting payment' }}</span><br>
+                            <span class="text-[#3B382F]">{{ $isFr ? 'Cette facture n\'a pas encore été réglée.' : 'This invoice has not been settled yet.' }}</span>
+                        </p>
+                    </div>
+                    @endif
                 </section>
 
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                     <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Documents associés' : 'Associated documents' }}</h2>
                     <div class="mt-3.5 space-y-3.5">
-                        @foreach([[$isFr ? 'Devis (Version 2)' : 'Quote (Version 2)', 'QUO-2024-000189-V2.pdf'], [$isFr ? 'Bon de commande' : 'Purchase order', 'PO-2024-00045.pdf']] as [$adTitle, $adFile])
+                        @foreach([[$isFr ? 'Devis' : 'Quote', $isReal ? $realQuoRef . '.pdf' : 'QUO-2024-000189-V2.pdf'], [$isFr ? 'Bon de commande' : 'Purchase order', $isReal ? $realPoRef . '.pdf' : 'PO-2024-00045.pdf']] as [$adTitle, $adFile])
                         <div class="flex items-center gap-3.5">
                             <img src="{{ asset('images/landing/qv-pdf-green.png') }}" alt="" class="w-[28px] h-[32px] shrink-0" aria-hidden="true">
                             <span class="min-w-0">
@@ -322,7 +400,8 @@
 
     // "Marquer comme impayée" toggles the paid state client-side (no invoice backend)
     let invPaid = true;
-    document.getElementById('inv-toggle').addEventListener('click', () => {
+    const invToggle = document.getElementById('inv-toggle');
+    if (invToggle) invToggle.addEventListener('click', () => {
         invPaid = !invPaid;
         const pill = document.getElementById('inv-pill');
         const statut = document.getElementById('inv-statut');

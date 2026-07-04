@@ -826,7 +826,16 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
             ->orderBy('id')->get()->groupBy('product_id')->map(fn ($imgs) => $imgs->first()->file_path)
         : collect();
 
-    return view('pages.dashboard.quotes', compact('lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent'));
+    // Real RFQs addressed to this business (shown in "Demandes récentes" when present)
+    $realRfqs = $business
+        ? \App\Modules\Quotes\Models\QuoteRequest::with(['buyer', 'proposals'])
+            ->where('business_id', $business->id)
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get()
+        : collect();
+
+    return view('pages.dashboard.quotes', compact('lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs'));
 })->name('dashboard.quotes');
 
 // Buyer RFQ wizard + listing (pixel replicas of "create un demande.png" / "quote propositions.png")
@@ -852,7 +861,14 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
 
     $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
 
-    return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount'));
+    // Real RFQs of this buyer (rendered ahead of the design demo rows)
+    $realRequests = \App\Modules\Quotes\Models\QuoteRequest::with(['business', 'proposals' => fn ($q) => $q->orderByDesc('version')])
+        ->where('buyer_id', $siacUser['id'])
+        ->orderByDesc('created_at')
+        ->limit(25)
+        ->get();
+
+    return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount', 'realRequests'));
 })->name('quotes.index');
 
 // Quotation system write-endpoints (real backend behind the replica pages)
@@ -887,7 +903,38 @@ foreach ([
         $quoteVendor = DB::table('businesses')->whereNull('deleted_at')->where('slug', 'art-bois-nature')->first();
         $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
 
-        return view($qfView, compact('lang', 'siacUser', 'quoteVendor', 'messageCount'));
+        // Real records (optional query params); pages fall back to the design demo content.
+        $canSee = function ($rfq) use ($siacUser) {
+            return $rfq && ($rfq->buyer_id === $siacUser['id']
+                || optional($rfq->business)->user_id === $siacUser['id']
+                || !empty($siacUser['is_admin']));
+        };
+
+        $realProposal = null;
+        if ($request->query('proposal')) {
+            $p = \App\Modules\Quotes\Models\QuoteProposal::with(['items', 'request.business', 'purchaseOrder.invoice'])->find($request->query('proposal'));
+            $realProposal = ($p && $canSee($p->request)) ? $p : null;
+        }
+
+        $realPo = null;
+        if ($request->query('po')) {
+            $o = \App\Modules\Quotes\Models\PurchaseOrder::with(['proposal.items', 'proposal.request.business', 'invoice'])->find($request->query('po'));
+            $realPo = ($o && $canSee($o->proposal->request)) ? $o : null;
+        }
+
+        $realInvoice = null;
+        if ($request->query('invoice')) {
+            $i = \App\Modules\Quotes\Models\Invoice::with(['purchaseOrder.proposal.items', 'purchaseOrder.proposal.request.business'])->find($request->query('invoice'));
+            $realInvoice = ($i && $canSee($i->purchaseOrder->proposal->request)) ? $i : null;
+        }
+
+        $builderRfq = null;
+        if ($request->query('rfq')) {
+            $r = \App\Modules\Quotes\Models\QuoteRequest::with('business')->find($request->query('rfq'));
+            $builderRfq = ($r && (optional($r->business)->user_id === $siacUser['id'] || !empty($siacUser['is_admin']))) ? $r : null;
+        }
+
+        return view($qfView, compact('lang', 'siacUser', 'quoteVendor', 'messageCount', 'realProposal', 'realPo', 'realInvoice', 'builderRfq'));
     })->name($qfName);
 }
 

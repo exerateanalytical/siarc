@@ -20,6 +20,27 @@
         ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '60,000', '0%', '115,500', '1,080,000'],
     ];
 
+    // Real proposal threading (?proposal=ID, authorized in the route)
+    $isReal = isset($realProposal) && $realProposal;
+    if ($isReal) {
+        $rp = $realProposal;
+        $rows = $rp->items->map(fn ($it, $i) => [
+            'qv-prod-' . (($i % 4) + 1) . '.png',
+            $it->name,
+            $it->description ?? '',
+            (string) $it->quantity,
+            number_format($it->unit_price),
+            rtrim(rtrim(number_format($it->discount_pct, 2), '0'), '.') . '%',
+            number_format((int) round($it->total * 0.1925)),
+            number_format($it->total),
+        ])->all();
+        $realRef      = $rp->reference;
+        $realBizName  = $rp->request->business->name_fr ?? 'Art Bois Nature';
+        $realSentAt   = $rp->created_at->format('d/m/Y H:i');
+        $realValid    = $rp->valid_until?->format('d/m/Y');
+        $realStatusFr = ['draft' => 'BROUILLON', 'sent' => 'EN ATTENTE DE RÉPONSE', 'accepted' => 'ACCEPTÉE', 'refused' => 'REFUSÉE'][$rp->status] ?? strtoupper($rp->status);
+    }
+
     // [label, value, color]
     $totals = [
         [$isFr ? 'Sous-total' : 'Subtotal',                        '4,751,750 FCFA', '#1B1B18'],
@@ -29,6 +50,16 @@
         [$isFr ? 'Frais de livraison (est.)' : 'Delivery costs (est.)', '250,000 FCFA', '#1B1B18'],
         [$isFr ? 'Assurance (est.)' : 'Insurance (est.)',          '150,000 FCFA',   '#1B1B18'],
     ];
+
+    if ($isReal) {
+        $totals = [
+            [$isFr ? 'Sous-total' : 'Subtotal', number_format($rp->subtotal) . ' FCFA', '#1B1B18'],
+            [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rp->discount_amount) . ' FCFA', '#E5484D'],
+            [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rp->tax_amount) . ' FCFA', '#1B1B18'],
+            [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rp->delivery_fee) . ' FCFA', '#1B1B18'],
+            [$isFr ? 'Assurance' : 'Insurance', number_format($rp->insurance_fee) . ' FCFA', '#1B1B18'],
+        ];
+    }
 
     // [icon, label]
     $importantInfo = [
@@ -67,6 +98,13 @@
 
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
+        @if(session('success'))
+        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            {{ session('success') }}
+        </div>
+        @endif
+
         <!-- Breadcrumb + title -->
         <nav class="flex items-center gap-2 text-[12.5px]">
             <a href="{{ route('quotes.index', ['lang' => $lang]) }}" class="font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Mes demandes & devis' : 'My requests & quotes' }}</a>
@@ -77,11 +115,12 @@
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">
                     {{ $isFr ? 'Proposition de devis' : 'Quote proposal' }}
-                    <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $isFr ? 'En attente de réponse' : 'Awaiting response' }}</span>
+                    <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $isReal ? $realStatusFr : ($isFr ? 'En attente de réponse' : 'Awaiting response') }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    {{ $isFr ? 'Proposée par' : 'Proposed by' }} <span class="font-semibold text-[#1B1B18]">Art Bois Nature</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Envoyée le' : 'Sent on' }} <span class="font-semibold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024 à 14:32</span>
+                    {{ $isFr ? 'Proposée par' : 'Proposed by' }} <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realBizName : 'Art Bois Nature' }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Envoyée le' : 'Sent on' }} <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realSentAt : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 à 14:32') }}</span>
+                    @if($isReal) &nbsp;•&nbsp; <span class="font-semibold text-[#1B1B18]">{{ $realRef }}</span> @endif
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -219,7 +258,7 @@
                                 </dl>
                                 <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
                                     <span class="text-[14.5px] font-bold text-[#157A43] uppercase">{{ $isFr ? 'Total général' : 'Grand total' }}</span>
-                                    <span class="text-[15.5px] font-bold text-[#157A43]">5,952,258 FCFA</span>
+                                    <span class="text-[15.5px] font-bold text-[#157A43]">{{ $isReal ? number_format($rp->total) . ' FCFA' : '5,952,258 FCFA' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -246,18 +285,43 @@
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                     <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-3.5 space-y-3">
+                        @if($isReal && in_array($rp->status, ['sent', 'draft']))
+                        <form method="POST" action="{{ route('quotes.accept-proposal', ['proposal' => $rp->id, 'lang' => $lang]) }}">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
+                                <i data-lucide="circle-check" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
+                                {{ $isFr ? 'Accepter la proposition' : 'Accept the proposal' }}
+                            </button>
+                        </form>
+                        @elseif($isReal && $rp->purchaseOrder)
+                        <a href="{{ route('quotes.po', ['lang' => $lang, 'po' => $rp->purchaseOrder->id]) }}" class="flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
+                            <i data-lucide="file-text" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
+                            {{ $isFr ? 'Voir le bon de commande' : 'View the purchase order' }}
+                        </a>
+                        @else
                         <a href="{{ route('quotes.accept', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
                             <i data-lucide="circle-check" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                             {{ $isFr ? 'Accepter la proposition' : 'Accept the proposal' }}
                         </a>
+                        @endif
                         <a href="{{ route('quotes.negotiation', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#EFCF9E] hover:border-[#C97A16] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#C97A16] transition-colors">
                             <i data-lucide="square-pen" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                             {{ $isFr ? 'Demander des modifications' : 'Request modifications' }}
                         </a>
+                        @if($isReal && in_array($rp->status, ['sent', 'draft']))
+                        <form method="POST" action="{{ route('quotes.refuse-proposal', ['proposal' => $rp->id, 'lang' => $lang]) }}">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-white border border-[#F5C9C9] hover:border-[#E5484D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#E5484D] transition-colors">
+                                <i data-lucide="x" class="w-[17px] h-[17px]" style="stroke-width:2"></i>
+                                {{ $isFr ? 'Refuser la proposition' : 'Refuse the proposal' }}
+                            </button>
+                        </form>
+                        @else
                         <a href="{{ route('quotes.index', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#F5C9C9] hover:border-[#E5484D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#E5484D] transition-colors">
                             <i data-lucide="x" class="w-[17px] h-[17px]" style="stroke-width:2"></i>
                             {{ $isFr ? 'Refuser la proposition' : 'Refuse the proposal' }}
                         </a>
+                        @endif
                         <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#1B1B18] transition-colors">
                             <i data-lucide="message-circle" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                             {{ $isFr ? 'Poser une question' : 'Ask a question' }}
