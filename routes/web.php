@@ -1174,8 +1174,37 @@ Route::post('/tableau-de-bord/admin/cms/faqs/{id}/supprimer', [CmsWebController:
 
 Route::get('/partenaires', function (Illuminate\Http\Request $request) {
     $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
-    $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->get();
-    return view('pages.partners', compact('lang', 'partners'));
+
+    $pubQ = trim((string) $request->query('q', ''));
+    $pubType = $request->query('type', '');
+    $pubSector = $request->query('sector', '');
+    $pubCountry = $request->query('country', '');
+
+    $query = \App\Modules\Cms\Models\Partner::active();
+    if ($pubQ !== '') $query->where('name_fr', 'like', "%{$pubQ}%");
+    if ($pubType !== '') $query->where('partner_type', $pubType);
+    if ($pubSector !== '') $query->where('sector_fr', $pubSector);
+    if ($pubCountry !== '') $query->where('country', $pubCountry);
+
+    $partners = $query->orderByDesc('start_date')->paginate(8)->withQueryString();
+
+    $allActive = \App\Modules\Cms\Models\Partner::active();
+    $pubKpis = [
+        'active' => (clone $allActive)->count(),
+        'international' => (clone $allActive)->where('country', '!=', 'Cameroun')->count(),
+        'national' => (clone $allActive)->where('country', 'Cameroun')->count(),
+        'premium' => (clone $allActive)->where('partnership_level', 'Premium')->count(),
+    ];
+    $pubRegionsCovered = DB::table('regions')->count();
+
+    $pubTypes = \App\Modules\Cms\Models\Partner::active()->distinct()->orderBy('partner_type')->pluck('partner_type');
+    $pubSectors = \App\Modules\Cms\Models\Partner::active()->distinct()->orderBy('sector_fr')->pluck('sector_fr');
+    $pubCountries = \App\Modules\Cms\Models\Partner::active()->distinct()->orderBy('country')->pluck('country');
+
+    return view('pages.partners', compact(
+        'lang', 'partners', 'pubKpis', 'pubRegionsCovered', 'pubTypes', 'pubSectors', 'pubCountries',
+        'pubQ', 'pubType', 'pubSector', 'pubCountry'
+    ));
 })->name('partners.index');
 
 use App\Http\Controllers\NotificationWebController;
