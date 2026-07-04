@@ -157,7 +157,140 @@ Route::post('/tableau-de-bord/admin/entreprises/{id}/statut', [AdminWebControlle
 Route::get('/tableau-de-bord/admin/verifications', [AdminWebController::class, 'verifications'])->name('admin.verifications');
 Route::post('/tableau-de-bord/admin/verifications/{id}/approuver', [AdminWebController::class, 'approveVerification'])->name('admin.verifications.approve');
 Route::post('/tableau-de-bord/admin/verifications/{id}/rejeter', [AdminWebController::class, 'rejectVerification'])->name('admin.verifications.reject');
-Route::get('/tableau-de-bord/admin/utilisateurs', [AdminWebController::class, 'users'])->name('admin.users');
+// =====================================================================
+// REPLACEMENT for the admin.users GET route in routes/web.php
+// (currently: Route::get('/tableau-de-bord/admin/utilisateurs',
+//  [AdminWebController::class, 'users'])->name('admin.users');)
+// Leave admin.users.detail / admin.users.update-status /
+// admin.users.update-role untouched — the rebuilt page still posts to them.
+// =====================================================================
+
+Route::get('/tableau-de-bord/admin/utilisateurs', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $userModel = \App\Modules\Auth\Models\User::class;
+
+    // --- Reusable correlated EXISTS fragments ---------------------------
+    $hasRole = fn (array $roles) => function ($q) use ($roles, $userModel) {
+        $q->select(DB::raw(1))
+            ->from('model_has_roles')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereColumn('model_has_roles.model_id', 'users.id')
+            ->where('model_has_roles.model_type', $userModel)
+            ->whereIn('roles.name', $roles);
+    };
+    $hasNonBuyerRole = function ($q) use ($userModel) {
+        $q->select(DB::raw(1))
+            ->from('model_has_roles')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereColumn('model_has_roles.model_id', 'users.id')
+            ->where('model_has_roles.model_type', $userModel)
+            ->where('roles.name', '!=', 'buyer');
+    };
+    $ownsCompany = function ($q) {
+        $q->select(DB::raw(1))
+            ->from('businesses')
+            ->whereColumn('businesses.user_id', 'users.id')
+            ->whereNull('businesses.deleted_at')
+            ->whereIn('businesses.vendor_type', ['entreprise', 'cooperative']);
+    };
+    $hasVerifiedBusiness = function ($q) {
+        $q->select(DB::raw(1))
+            ->from('businesses')
+            ->whereColumn('businesses.user_id', 'users.id')
+            ->whereNull('businesses.deleted_at')
+            ->whereIn('businesses.verification_tier', ['verified', 'certified']);
+    };
+
+    $base = fn () => DB::table('users')->whereNull('users.deleted_at');
+
+    // --- Real role-tab counts --------------------------------------------
+    // Artisans        = users holding the business_owner role
+    // Entreprises     = users owning a business with vendor_type entreprise/cooperative
+    // Visiteurs       = users with no role beyond the implicit buyer default
+    // Administrateurs = super_admin / admin / moderator
+    $roleCounts = [
+        'tous'            => $base()->count(),
+        'artisans'        => $base()->whereExists($hasRole(['business_owner']))->count(),
+        'entreprises'     => $base()->whereExists($ownsCompany)->count(),
+        'visiteurs'       => $base()->whereNotExists($hasNonBuyerRole)->count(),
+        'administrateurs' => $base()->whereExists($hasRole(['super_admin', 'admin', 'moderator']))->count(),
+    ];
+
+    // --- Listing query (role + owned-business info via correlated subselects)
+    $roleNameSub = DB::table('model_has_roles')
+        ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+        ->whereColumn('model_has_roles.model_id', 'users.id')
+        ->where('model_has_roles.model_type', $userModel)
+        ->orderBy('roles.id')
+        ->limit(1)
+        ->select('roles.name');
+    $vendorTypeSub = DB::table('businesses')
+        ->whereColumn('businesses.user_id', 'users.id')
+        ->whereNull('businesses.deleted_at')
+        ->orderBy('businesses.created_at')
+        ->limit(1)
+        ->select('businesses.vendor_type');
+    $tierSub = DB::table('businesses')
+        ->whereColumn('businesses.user_id', 'users.id')
+        ->whereNull('businesses.deleted_at')
+        ->orderBy('businesses.created_at')
+        ->limit(1)
+        ->select('businesses.verification_tier');
+
+    $query = $base()
+        ->select('users.*')
+        ->selectSub($roleNameSub, 'role_name')
+        ->selectSub($vendorTypeSub, 'owned_vendor_type')
+        ->selectSub($tierSub, 'owned_verification_tier')
+        ->orderByDesc('users.created_at');
+
+    // ?role= — tab + « Rôle » select
+    $roleTab = $request->query('role', 'tous');
+    if ($roleTab === 'artisans') {
+        $query->whereExists($hasRole(['business_owner']));
+    } elseif ($roleTab === 'entreprises') {
+        $query->whereExists($ownsCompany);
+    } elseif ($roleTab === 'visiteurs') {
+        $query->whereNotExists($hasNonBuyerRole);
+    } elseif ($roleTab === 'administrateurs') {
+        $query->whereExists($hasRole(['super_admin', 'admin', 'moderator']));
+    }
+
+    // ?q= — search by name or e-mail
+    if ($request->filled('q')) {
+        $search = '%' . $request->q . '%';
+        $query->where(fn ($q) => $q->where('users.name', 'like', $search)->orWhere('users.email', 'like', $search));
+    }
+
+    // ?statut= — Actif / Suspendu
+    $statut = $request->query('statut');
+    if ($statut === 'actif') {
+        $query->where('users.status', 'active');
+    } elseif ($statut === 'suspendu') {
+        $query->where('users.status', 'suspended');
+    }
+
+    // ?kyc= — mirrors the pill logic: visitors have no KYC ("-"); others are
+    // "Vérifié" when e-mail-verified or owning a verified/certified business.
+    $kyc = $request->query('kyc');
+    if ($kyc === 'verifie') {
+        $query->whereExists($hasNonBuyerRole)
+            ->where(fn ($q) => $q->where('users.is_email_verified', true)->orWhereExists($hasVerifiedBusiness));
+    } elseif ($kyc === 'en_attente') {
+        $query->whereExists($hasNonBuyerRole)
+            ->where('users.is_email_verified', false)
+            ->whereNotExists($hasVerifiedBusiness);
+    }
+
+    $users = $query->paginate(10)->withQueryString();
+    $regions = DB::table('regions')->orderBy('name_fr')->get();
+
+    return view('pages.dashboard.admin-users', compact('lang', 'siacUser', 'users', 'roleCounts', 'regions'));
+})->name('admin.users');
 Route::get('/tableau-de-bord/admin/utilisateurs/{id}', [AdminWebController::class, 'userDetail'])->name('admin.users.detail');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/role', [AdminWebController::class, 'updateUserRole'])->name('admin.users.update-role');
@@ -171,6 +304,45 @@ Route::get('/tableau-de-bord/admin/api-consommateurs', [AdminWebController::clas
 Route::post('/tableau-de-bord/admin/api-consommateurs/{id}/statut', [AdminWebController::class, 'updateApiConsumerStatus'])->name('admin.api-consumers.update-status');
 Route::get('/tableau-de-bord/admin/parametres', [AdminWebController::class, 'settings'])->name('admin.settings');
 Route::post('/tableau-de-bord/admin/parametres', [AdminWebController::class, 'updateSettings'])->name('admin.settings.update');
+// Generic platform_settings save used by the "Paramètres Généraux" sections
+Route::post('/tableau-de-bord/admin/parametres/generales', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
+
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+
+    $data = $request->validate([
+        'settings'   => ['nullable', 'array'],
+        'settings.*' => ['nullable', 'string', 'max:2000'],
+        'logo'       => ['nullable', 'file', 'mimes:png,jpg,jpeg,svg', 'max:2048'],
+        'favicon'    => ['nullable', 'file', 'mimes:png,ico,svg', 'max:1024'],
+    ]);
+
+    foreach ($data['settings'] ?? [] as $key => $value) {
+        if ($value === null) continue;
+        $key = substr(preg_replace('/[^a-z0-9_]/', '', strtolower($key)), 0, 100);
+        if ($key === '') continue;
+        DB::table('platform_settings')->updateOrInsert(
+            ['key' => $key],
+            ['value' => $value, 'updated_at' => now(), 'created_at' => now()]
+        );
+    }
+
+    foreach (['logo' => 'logo_path', 'favicon' => 'favicon_path'] as $field => $settingKey) {
+        if ($request->hasFile($field)) {
+            $path = $request->file($field)->store('branding', 'public');
+            DB::table('platform_settings')->updateOrInsert(
+                ['key' => $settingKey],
+                ['value' => $path, 'updated_at' => now(), 'created_at' => now()]
+            );
+        }
+    }
+
+    return back()->with('success', $lang === 'fr'
+        ? 'Paramètres enregistrés avec succès.'
+        : 'Settings saved successfully.');
+})->name('admin.settings.general')->middleware('throttle:30,1');
+
 Route::post('/tableau-de-bord/admin/parametres/twilio', [AdminWebController::class, 'saveTwilioSettings'])->name('admin.settings.twilio');
 Route::post('/tableau-de-bord/admin/parametres/twilio/test', [AdminWebController::class, 'testTwilio'])->name('admin.settings.twilio.test');
 Route::post('/tableau-de-bord/admin/signalements/{id}/traiter', [AdminWebController::class, 'resolveReport'])->name('admin.reports.resolve');
@@ -635,20 +807,180 @@ Route::get('/tableau-de-bord/admin', function (Request $request) {
 })->name('dashboard.admin');
 
 // New admin sections introduced with the admin-panel replica (2026-07-03)
+// REPLACEMENT for the existing admin.products closure in routes/web.php
+// (drop-in replacement for the current Route::get('/tableau-de-bord/admin/produits', ...) block).
+// Requires the same imports already present in routes/web.php: Illuminate\Http\Request, Illuminate\Support\Facades\DB.
+
 Route::get('/tableau-de-bord/admin/produits', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
-    $adminProducts = DB::table('products')
-        ->leftJoin('businesses', 'businesses.id', '=', 'products.business_id')
-        ->whereNull('products.deleted_at')
-        ->orderByDesc('products.created_at')
-        ->select('products.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug')
-        ->limit(100)->get();
+    // ---- Filters (?q=, ?statut=, ?categorie=, ?entreprise=) --------------------
+    $q          = trim((string) $request->query('q', ''));
+    $statut     = (string) $request->query('statut', '');
+    $statut     = in_array($statut, ['published', 'draft', 'suspended', 'rejected'], true) ? $statut : '';
+    $categorie  = trim((string) $request->query('categorie', ''));  // industries.slug
+    $entreprise = trim((string) $request->query('entreprise', '')); // businesses.slug
 
-    return view('pages.dashboard.admin-products', compact('lang', 'siacUser', 'adminProducts'));
+    $filtered = DB::table('products')
+        ->leftJoin('businesses', 'businesses.id', '=', 'products.business_id')
+        ->leftJoin('industries', 'industries.id', '=', 'businesses.industry_id')
+        ->whereNull('products.deleted_at');
+
+    if ($q !== '') {
+        $filtered->where(function ($w) use ($q) {
+            $w->where('products.name_fr', 'like', "%{$q}%")
+              ->orWhere('products.name_en', 'like', "%{$q}%")
+              ->orWhere('products.sku', 'like', "%{$q}%")
+              ->orWhere('products.slug', 'like', "%{$q}%")
+              ->orWhere('businesses.name_fr', 'like', "%{$q}%");
+        });
+    }
+    if ($categorie !== '')  $filtered->where('industries.slug', $categorie);
+    if ($entreprise !== '') $filtered->where('businesses.slug', $entreprise);
+
+    // ---- Status tab counts (respect q/categorie/entreprise, not statut) -------
+    $tabStatusCounts = (clone $filtered)
+        ->select('products.status', DB::raw('COUNT(*) as c'))
+        ->groupBy('products.status')
+        ->pluck('c', 'status')->all();
+    $tabCounts = [
+        'all'       => array_sum($tabStatusCounts),
+        'published' => (int) ($tabStatusCounts['published'] ?? 0),
+        'draft'     => (int) ($tabStatusCounts['draft'] ?? 0),
+        'suspended' => (int) ($tabStatusCounts['suspended'] ?? 0),
+        'rejected'  => (int) ($tabStatusCounts['rejected'] ?? 0),
+    ];
+
+    if ($statut !== '') $filtered->where('products.status', $statut);
+
+    $rowColumns = [
+        'products.id', 'products.slug', 'products.sku',
+        'products.name_fr', 'products.name_en',
+        'products.price_amount', 'products.status',
+        'products.quantity_available', 'products.quantity_unit',
+        'products.views_count', 'products.created_at',
+        'businesses.name_fr as business_name_fr', 'businesses.name_en as business_name_en',
+        'businesses.slug as business_slug', 'businesses.vendor_type',
+        'industries.name_fr as industry_fr', 'industries.name_en as industry_en',
+        'industries.slug as industry_slug',
+    ];
+
+    // ---- "Exporter" button: CSV of the currently filtered set ------------------
+    if ($request->query('export') === 'csv') {
+        $rows = (clone $filtered)->orderByDesc('products.created_at')->select($rowColumns)->limit(5000)->get();
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel
+            fputcsv($out, ['ID', 'Produit', 'Reference', 'Artisan / Entreprise', 'Type', 'Categorie', 'Prix (FCFA)', 'Statut', 'Stock', 'Vues', 'Cree le']);
+            foreach ($rows as $r) {
+                fputcsv($out, [
+                    $r->id,
+                    $r->name_fr,
+                    $r->sku ?? $r->slug,
+                    $r->business_name_fr ?? '',
+                    $r->vendor_type ?? '',
+                    $r->industry_fr ?? '',
+                    $r->price_amount !== null ? (0 + $r->price_amount) : '',
+                    $r->status,
+                    $r->quantity_available,
+                    $r->views_count,
+                    $r->created_at,
+                ]);
+            }
+            fclose($out);
+        }, 'produits-' . now()->format('Ymd-His') . '.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    // ---- Paginated rows (real paginate(10)) ------------------------------------
+    $adminProducts = (clone $filtered)
+        ->orderByDesc('products.created_at')
+        ->select($rowColumns)
+        ->selectSub(
+            DB::table('product_images')
+                ->select('file_path')
+                ->whereColumn('product_images.product_id', 'products.id')
+                ->orderByDesc('is_cover')->orderBy('sort_order')->orderBy('id')
+                ->limit(1),
+            'thumb_path'
+        )
+        ->paginate(10)
+        ->withQueryString();
+
+    // ---- "STATISTIQUES PRODUITS" chips (platform-wide, unfiltered) -------------
+    $globalStatusCounts = DB::table('products')->whereNull('deleted_at')
+        ->select('status', DB::raw('COUNT(*) as c'))
+        ->groupBy('status')->pluck('c', 'status')->all();
+    $prodStats = [
+        'total'        => array_sum($globalStatusCounts),
+        'published'    => (int) ($globalStatusCounts['published'] ?? 0),
+        'draft'        => (int) ($globalStatusCounts['draft'] ?? 0),
+        'suspended'    => (int) ($globalStatusCounts['suspended'] ?? 0),
+        'rejected'     => (int) ($globalStatusCounts['rejected'] ?? 0),
+        'new_month'    => DB::table('products')->whereNull('deleted_at')
+                            ->where('created_at', '>=', now()->startOfMonth())->count(),
+        'out_of_stock' => DB::table('products')->whereNull('deleted_at')
+                            ->where(function ($w) {
+                                $w->where('is_available', false)->orWhere('quantity_available', 0);
+                            })->count(),
+        'views'        => (int) DB::table('products')->whereNull('deleted_at')->sum('views_count'),
+    ];
+
+    // ---- "Produits par catégorie (Top 5)" ---------------------------------------
+    $topCategories = DB::table('products')
+        ->leftJoin('businesses', 'businesses.id', '=', 'products.business_id')
+        ->leftJoin('industries', 'industries.id', '=', 'businesses.industry_id')
+        ->whereNull('products.deleted_at')
+        ->groupBy('industries.id', 'industries.name_fr', 'industries.name_en', 'industries.slug')
+        ->orderByDesc('cnt')
+        ->select('industries.name_fr', 'industries.name_en', 'industries.slug', DB::raw('COUNT(products.id) as cnt'))
+        ->limit(5)
+        ->get()
+        ->map(function ($c) use ($prodStats) {
+            $c->pct = $prodStats['total'] > 0 ? round($c->cnt * 100 / $prodStats['total'], 1) : 0;
+            return $c;
+        });
+
+    // ---- "Gamme de prix" buckets over price_amount (FCFA) ------------------------
+    $priceAgg = DB::table('products')->whereNull('deleted_at')->whereNotNull('price_amount')
+        ->selectRaw('
+            SUM(CASE WHEN price_amount <= 10000 THEN 1 ELSE 0 END)                            as b1,
+            SUM(CASE WHEN price_amount > 10000  AND price_amount <= 50000  THEN 1 ELSE 0 END) as b2,
+            SUM(CASE WHEN price_amount > 50000  AND price_amount <= 100000 THEN 1 ELSE 0 END) as b3,
+            SUM(CASE WHEN price_amount > 100000 THEN 1 ELSE 0 END)                            as b4,
+            COUNT(*) as total')
+        ->first();
+    $pricedTotal = (int) ($priceAgg->total ?? 0);
+    $pct = fn ($n) => $pricedTotal > 0 ? round(((int) $n) * 100 / $pricedTotal, 1) : 0;
+    $priceRanges = [
+        ['fr' => '0 – 10 000 FCFA',        'en' => '0 – 10,000 FCFA',        'cnt' => (int) ($priceAgg->b1 ?? 0), 'pct' => $pct($priceAgg->b1 ?? 0)],
+        ['fr' => '10 001 – 50 000 FCFA',   'en' => '10,001 – 50,000 FCFA',   'cnt' => (int) ($priceAgg->b2 ?? 0), 'pct' => $pct($priceAgg->b2 ?? 0)],
+        ['fr' => '50 001 – 100 000 FCFA',  'en' => '50,001 – 100,000 FCFA',  'cnt' => (int) ($priceAgg->b3 ?? 0), 'pct' => $pct($priceAgg->b3 ?? 0)],
+        ['fr' => '100 000+ FCFA',          'en' => '100,000+ FCFA',          'cnt' => (int) ($priceAgg->b4 ?? 0), 'pct' => $pct($priceAgg->b4 ?? 0)],
+    ];
+
+    // ---- Filter dropdown options -------------------------------------------------
+    $industriesList = DB::table('industries')
+        ->orderBy('sort_order')
+        ->select('slug', 'name_fr', 'name_en')
+        ->get();
+    $businessOptions = DB::table('businesses')
+        ->whereNull('deleted_at')
+        ->whereExists(function ($s) {
+            $s->select(DB::raw(1))->from('products')
+              ->whereColumn('products.business_id', 'businesses.id')
+              ->whereNull('products.deleted_at');
+        })
+        ->orderBy('name_fr')
+        ->select('slug', 'name_fr', 'name_en', 'vendor_type')
+        ->get();
+
+    return view('pages.dashboard.admin-products', compact(
+        'lang', 'siacUser', 'adminProducts', 'tabCounts', 'prodStats',
+        'topCategories', 'priceRanges', 'industriesList', 'businessOptions'
+    ));
 })->name('admin.products');
 
 Route::get('/tableau-de-bord/admin/devis', function (Request $request) {
@@ -711,6 +1043,581 @@ Route::get('/tableau-de-bord/admin/siarc', function (Request $request) {
 
     return view('pages.dashboard.admin-siarc', compact('lang', 'siacUser', 'siarcEvent', 'siarcExhibitors'));
 })->name('admin.siarc');
+
+// ─── Admin replica pages, 2026-07-04 wave (designs: gestion dartisans / gestion de
+//     command / collection heritage / actualites / medias / payment / analytique /
+//     detail de produits). Closures gather REAL platform data; views carry the
+//     design's exact values as silent fallbacks when a concept has no data yet. ───
+Route::get('/tableau-de-bord/admin/artisans', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    // Status tab -> businesses.status mapping (?statut=)
+    $statutMap = [
+        'approuves'  => 'published',
+        'en-attente' => 'draft',
+        'suspendus'  => 'suspended',
+        'rejetes'    => 'rejected',
+    ];
+    $statut = $statutMap[$request->query('statut', '')] ?? null;
+
+    // Base: an "artisan" = a user owning at least one business.
+    $base = DB::table('businesses')
+        ->join('users', 'users.id', '=', 'businesses.user_id')
+        ->leftJoin('regions', 'regions.id', '=', 'businesses.region_id')
+        ->leftJoin('industries', 'industries.id', '=', 'businesses.industry_id')
+        ->whereNull('businesses.deleted_at')
+        ->whereNull('users.deleted_at');
+
+    // Search (?q=) on user name/email and business name.
+    if ($q = trim((string) $request->query('q', ''))) {
+        $base->where(function ($w) use ($q) {
+            $w->where('users.name', 'like', "%{$q}%")
+              ->orWhere('users.email', 'like', "%{$q}%")
+              ->orWhere('businesses.name_fr', 'like', "%{$q}%")
+              ->orWhere('businesses.name_en', 'like', "%{$q}%");
+        });
+    }
+
+    // Région filter (?region= regions.code)
+    if ($regionCode = $request->query('region')) {
+        $base->where('regions.code', $regionCode);
+    }
+
+    // Métier filter (?metier= industries.slug)
+    if ($metierSlug = $request->query('metier')) {
+        $base->where('industries.slug', $metierSlug);
+    }
+
+    // KYC filter (?kyc=) on businesses.verification_tier
+    $kyc = $request->query('kyc');
+    if ($kyc === 'verifie') {
+        $base->whereIn('businesses.verification_tier', ['verified', 'certified']);
+    } elseif ($kyc === 'en-cours') {
+        $base->where('businesses.verification_tier', 'basic');
+    } elseif ($kyc === 'en-attente') {
+        $base->where('businesses.verification_tier', 'unverified');
+    }
+
+    // Statut tab/select filter
+    if ($statut) {
+        $base->where('businesses.status', $statut);
+    }
+
+    $artisans = $base
+        ->orderByDesc('businesses.created_at')
+        ->select(
+            'businesses.id as business_id',
+            'businesses.name_fr as business_name',
+            'businesses.logo',
+            'businesses.status',
+            'businesses.verification_tier',
+            'businesses.created_at',
+            'users.name as user_name',
+            'users.email as user_email',
+            'regions.name_fr as region_fr',
+            'regions.name_en as region_en',
+            'industries.name_fr as metier_fr',
+            'industries.name_en as metier_en'
+        )
+        ->paginate(10)
+        ->withQueryString();
+
+    // Global (unfiltered) counts per status — tabs + stat chips.
+    $rawCounts = DB::table('businesses')
+        ->whereNull('deleted_at')
+        ->select('status', DB::raw('COUNT(*) as c'))
+        ->groupBy('status')
+        ->pluck('c', 'status');
+
+    $artisanStatusCounts = [
+        'all'       => (int) $rawCounts->sum(),
+        'published' => (int) ($rawCounts['published'] ?? 0),
+        'draft'     => (int) ($rawCounts['draft'] ?? 0),
+        'suspended' => (int) ($rawCounts['suspended'] ?? 0),
+        'rejected'  => (int) ($rawCounts['rejected'] ?? 0),
+    ];
+
+    // Filter select options
+    $artisanRegions = DB::table('regions')->orderBy('name_fr')->select('code', 'name_fr', 'name_en')->get();
+    $artisanMetiers = DB::table('industries')->where('is_active', true)->orderBy('sort_order')->select('slug', 'name_fr', 'name_en')->get();
+
+    // "Nouveaux artisans par mois" — businesses created per month, last 12 months.
+    // Grouped in PHP from raw created_at values so it stays DB-driver agnostic.
+    $monthStart = now()->startOfMonth()->subMonths(11);
+    $createdDates = DB::table('businesses')
+        ->whereNull('deleted_at')
+        ->where('created_at', '>=', $monthStart)
+        ->pluck('created_at');
+
+    $byMonth = [];
+    foreach ($createdDates as $d) {
+        $key = \Carbon\Carbon::parse($d)->format('Y-m');
+        $byMonth[$key] = ($byMonth[$key] ?? 0) + 1;
+    }
+
+    $moLabels = $lang === 'fr'
+        ? [1 => 'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
+        : [1 => 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    $artisansPerMonth = [];
+    $cursor = $monthStart->copy();
+    for ($i = 0; $i < 12; $i++) {
+        $artisansPerMonth[] = [
+            'label' => $moLabels[(int) $cursor->format('n')],
+            'count' => $byMonth[$cursor->format('Y-m')] ?? 0,
+        ];
+        $cursor->addMonth();
+    }
+
+    // "Artisans par métier" — top 5 industries by business count.
+    $topMetiers = DB::table('industries')
+        ->join('businesses', function ($j) {
+            $j->on('businesses.industry_id', '=', 'industries.id')->whereNull('businesses.deleted_at');
+        })
+        ->groupBy('industries.id', 'industries.name_fr', 'industries.name_en')
+        ->orderByDesc(DB::raw('COUNT(businesses.id)'))
+        ->limit(5)
+        ->select('industries.name_fr', 'industries.name_en', DB::raw('COUNT(businesses.id) as artisan_count'))
+        ->get();
+
+    return view('pages.dashboard.admin-artisans', compact(
+        'lang',
+        'siacUser',
+        'artisans',
+        'artisanStatusCounts',
+        'artisanRegions',
+        'artisanMetiers',
+        'artisansPerMonth',
+        'topMetiers'
+    ));
+})->name('admin.artisans');
+
+Route::get('/tableau-de-bord/admin/commandes', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    // Tab-band counts (design: Toutes / En attente / Confirmées / Expédiées / Livrées / Annulées).
+    // Real counts from purchase_orders — design statuses that don't exist yet simply show 0.
+    $rawCounts = DB::table('purchase_orders')
+        ->select('status', DB::raw('COUNT(*) as c'))
+        ->groupBy('status')->pluck('c', 'status');
+    $orderCounts = [
+        'all'           => (int) $rawCounts->sum(),
+        'created'       => (int) ($rawCounts['created'] ?? 0),
+        'confirmed'     => (int) ($rawCounts['confirmed'] ?? 0),
+        'in_production' => (int) ($rawCounts['in_production'] ?? 0),
+        'shipped'       => (int) ($rawCounts['shipped'] ?? 0),
+        'delivered'     => (int) ($rawCounts['delivered'] ?? 0),
+        'cancelled'     => (int) ($rawCounts['cancelled'] ?? 0),
+    ];
+
+    // Real payment methods present on invoices (feeds the "Méthode de paiement" dropdown)
+    $paymentMethods = DB::table('invoices')
+        ->whereNotNull('payment_method')
+        ->distinct()->orderBy('payment_method')->pluck('payment_method');
+
+    $orders = DB::table('purchase_orders')
+        ->join('quote_proposals', 'quote_proposals.id', '=', 'purchase_orders.quote_proposal_id')
+        ->join('quote_requests', 'quote_requests.id', '=', 'quote_proposals.quote_request_id')
+        ->leftJoin('users', 'users.id', '=', 'quote_requests.buyer_id')
+        ->leftJoin('businesses', 'businesses.id', '=', 'quote_requests.business_id')
+        ->leftJoin('invoices', 'invoices.purchase_order_id', '=', 'purchase_orders.id')
+        ->select(
+            'purchase_orders.id', 'purchase_orders.reference', 'purchase_orders.status',
+            'purchase_orders.total', 'purchase_orders.created_at',
+            'users.name as client_name', 'businesses.name_fr as business_name',
+            'invoices.payment_method', 'invoices.status as invoice_status'
+        );
+
+    // ?statut= filter (tab band + Statut dropdown share the same slugs)
+    $statutMap = [
+        'en-attente'    => 'created',
+        'confirmees'    => 'confirmed',
+        'en-production' => 'in_production',
+        'expediees'     => 'shipped',
+        'livrees'       => 'delivered',
+        'annulees'      => 'cancelled',
+    ];
+    $statut = $request->query('statut');
+    if ($statut && isset($statutMap[$statut])) {
+        $orders->where('purchase_orders.status', $statutMap[$statut]);
+    }
+
+    // ?q= search on reference / client / business
+    $q = trim((string) $request->query('q', ''));
+    if ($q !== '') {
+        $orders->where(function ($w) use ($q) {
+            $w->where('purchase_orders.reference', 'like', "%{$q}%")
+              ->orWhere('users.name', 'like', "%{$q}%")
+              ->orWhere('businesses.name_fr', 'like', "%{$q}%");
+        });
+    }
+
+    // ?paiement= filter (invoice payment method)
+    $paiement = trim((string) $request->query('paiement', ''));
+    if ($paiement !== '') {
+        $orders->where('invoices.payment_method', $paiement);
+    }
+
+    // ?date= filter (Date dropdown: aujourd'hui / 7 derniers jours / 30 derniers jours)
+    switch ($request->query('date')) {
+        case 'aujourdhui': $orders->whereDate('purchase_orders.created_at', now()->toDateString()); break;
+        case '7j':         $orders->where('purchase_orders.created_at', '>=', now()->subDays(7)); break;
+        case '30j':        $orders->where('purchase_orders.created_at', '>=', now()->subDays(30)); break;
+    }
+
+    $adminOrders = $orders->orderByDesc('purchase_orders.created_at')
+        ->orderByDesc('purchase_orders.id')
+        ->paginate(10)->withQueryString();
+
+    return view('pages.dashboard.admin-orders', compact('lang', 'siacUser', 'adminOrders', 'orderCounts', 'paymentMethods'));
+})->name('admin.orders');
+
+Route::get('/tableau-de-bord/admin/collections', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $filters = [
+        'q'          => trim((string) $request->query('q', '')),
+        'statut'     => (string) $request->query('statut', ''),
+        'categorie'  => (string) $request->query('categorie', ''),
+        'region'     => (string) $request->query('region', ''),
+        'visibilite' => (string) $request->query('visibilite', ''),
+        'date'       => (string) $request->query('date', ''),
+    ];
+
+    $all = DB::table('heritage_collections')->get();
+
+    $query = DB::table('heritage_collections')
+        ->leftJoin('heritage_collection_product as hcp', 'hcp.collection_id', '=', 'heritage_collections.id')
+        ->groupBy('heritage_collections.id')
+        ->select('heritage_collections.*', DB::raw('count(hcp.product_id) as products_count'))
+        ->orderBy('heritage_collections.sort_order');
+
+    if ($filters['q'] !== '') {
+        $query->where(fn ($w) => $w
+            ->where('heritage_collections.name_fr', 'like', '%' . $filters['q'] . '%')
+            ->orWhere('heritage_collections.name_en', 'like', '%' . $filters['q'] . '%'));
+    }
+    if ($filters['statut'] !== '')     $query->where('heritage_collections.status', $filters['statut']);
+    if ($filters['categorie'] !== '')  $query->where('heritage_collections.category_fr', $filters['categorie']);
+    if ($filters['region'] !== '')     $query->where('heritage_collections.region_fr', $filters['region']);
+    if ($filters['visibilite'] !== '') $query->where('heritage_collections.visibility', $filters['visibilite']);
+
+    $collections = $query->get();
+
+    $hcTotal     = $all->count();
+    $hcPublished = $all->where('status', 'published')->count();
+    $hcDraft     = $all->where('status', 'draft')->count();
+    $hcVisits    = (int) $all->sum('visits_count');
+    $hcArtisans  = (int) $all->sum('artisans_count');
+    $hcRegions    = $all->pluck('region_fr')->filter()->unique()->values()->all();
+    $hcCategories = $all->pluck('category_fr')->filter()->unique()->values()->all();
+    $hcBest       = $all->sortByDesc('visits_count')->first();
+
+    $hcByCategory = $all->groupBy('category_fr')
+        ->map(fn ($rows) => $rows->count())
+        ->filter(fn ($n, $k) => $k !== '' && $k !== null)
+        ->all();
+
+    return view('pages.dashboard.admin-collections', compact(
+        'lang', 'siacUser', 'filters', 'collections',
+        'hcTotal', 'hcPublished', 'hcDraft', 'hcVisits', 'hcArtisans',
+        'hcRegions', 'hcCategories', 'hcBest', 'hcByCategory'
+    ));
+})->name('admin.collections');
+
+// Admin — Actualités & Annonces (design: "gestion d'actualites et annonces.png")
+// Paste into routes/web.php next to the other admin-panel replica routes.
+Route::get('/tableau-de-bord/admin/actualites', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $statut    = $request->query('statut');
+    $categorie = $request->query('categorie');
+    $q         = trim((string) $request->query('q', ''));
+
+    // Stat chips — real counts
+    $newsStats = [
+        'total'     => DB::table('announcements')->count(),
+        'published' => DB::table('announcements')->where('status', 'published')->count(),
+        'draft'     => DB::table('announcements')->where('status', 'draft')->count(),
+        'scheduled' => DB::table('announcements')->where('status', 'scheduled')->count(),
+        'views'     => (int) DB::table('announcements')->sum('views_count'),
+    ];
+
+    // "Répartition par catégorie" donut
+    $newsByCategory = DB::table('announcements')
+        ->selectRaw("COALESCE(category, 'Autres') as category, COUNT(*) as total")
+        ->groupBy(DB::raw("COALESCE(category, 'Autres')"))
+        ->orderByDesc('total')
+        ->get();
+
+    // "Top articles par vues"
+    $topAnnouncements = DB::table('announcements')
+        ->where('status', 'published')
+        ->orderByDesc('views_count')
+        ->limit(5)
+        ->get();
+
+    // Category filter options
+    $newsCategories = DB::table('announcements')
+        ->whereNotNull('category')
+        ->distinct()
+        ->orderBy('category')
+        ->pluck('category');
+
+    // Table — ?statut=, ?categorie= and ?q= filters
+    $query = DB::table('announcements');
+    if (in_array($statut, ['published', 'draft', 'scheduled'], true)) {
+        $query->where('status', $statut);
+    }
+    if ($categorie !== null && $categorie !== '') {
+        $query->where('category', $categorie);
+    }
+    if ($q !== '') {
+        $query->where(function ($w) use ($q) {
+            $w->where('title_fr', 'like', "%{$q}%")
+              ->orWhere('title_en', 'like', "%{$q}%")
+              ->orWhere('excerpt_fr', 'like', "%{$q}%")
+              ->orWhere('author_name', 'like', "%{$q}%")
+              ->orWhere('category', 'like', "%{$q}%");
+        });
+    }
+    $announcements = $query->orderByDesc('created_at')->paginate(10)->withQueryString();
+
+    return view('pages.dashboard.admin-news', compact(
+        'lang', 'siacUser', 'announcements', 'newsStats', 'newsByCategory', 'topAnnouncements', 'newsCategories'
+    ));
+})->name('admin.news');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Médias & Documents (admin) — paste into routes/web.php next to the other
+// admin.* closures (after admin.products). Facades not already imported at the
+// top of web.php (Schema, Storage, LengthAwarePaginator, Carbon) are referenced
+// fully-qualified, so NO new `use` statements are required.
+// ─────────────────────────────────────────────────────────────────────────────
+
+Route::get('/tableau-de-bord/admin/medias', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    $isFr = $lang === 'fr';
+
+    // ── Query params ─────────────────────────────────────────────────────────
+    $mediaType = $request->query('type', 'all');
+    $mediaType = in_array($mediaType, ['all', 'image', 'document', 'video', 'audio']) ? $mediaType : 'all';
+    $mediaFolder = (string) $request->query('folder', '');
+    $mediaQ      = trim((string) $request->query('q', ''));
+    $perPage     = (int) $request->query('per_page', 10);
+    $perPage     = in_array($perPage, [10, 20, 50], true) ? $perPage : 10;
+    $page        = max(1, (int) $request->query('page', 1));
+
+    // ── Merge every real media source on the platform into one collection ────
+    // Item shape: kind (image|document|video|audio), badge, name, path (public
+    // disk relative, null when external), external_url, owner, created_at, folder.
+    $mediaAll = collect();
+
+    foreach (DB::table('product_images')
+        ->join('products', 'products.id', '=', 'product_images.product_id')
+        ->whereNull('products.deleted_at')
+        ->select('product_images.file_path', 'product_images.created_at', 'product_images.is_cover', 'products.name_fr as owner')
+        ->get() as $row) {
+        $mediaAll->push((object) [
+            'kind'         => 'image',
+            'badge'        => $isFr ? 'Image' : 'Image',
+            'type_label'   => $isFr ? 'Image produit' : 'Product image',
+            'name'         => basename($row->file_path),
+            'path'         => $row->file_path,
+            'external_url' => null,
+            'owner'        => $row->owner,
+            'created_at'   => $row->created_at ? \Carbon\Carbon::parse($row->created_at) : null,
+            'folder'       => Str::before($row->file_path, '/'),
+        ]);
+    }
+
+    foreach (DB::table('businesses')
+        ->whereNull('deleted_at')
+        ->where(function ($w) { $w->whereNotNull('logo')->orWhereNotNull('cover_image'); })
+        ->select('logo', 'cover_image', 'name_fr as owner', 'created_at')
+        ->get() as $row) {
+        foreach ([['logo', $isFr ? 'Logo' : 'Logo'], ['cover_image', $isFr ? 'Couverture' : 'Cover']] as [$col, $badge]) {
+            if (empty($row->{$col})) continue;
+            $mediaAll->push((object) [
+                'kind'         => 'image',
+                'badge'        => $badge,
+                'type_label'   => $col === 'logo' ? ($isFr ? 'Logo d\'entreprise' : 'Business logo') : ($isFr ? 'Image de couverture' : 'Cover image'),
+                'name'         => basename($row->{$col}),
+                'path'         => $row->{$col},
+                'external_url' => null,
+                'owner'        => $row->owner,
+                'created_at'   => $row->created_at ? \Carbon\Carbon::parse($row->created_at) : null,
+                'folder'       => Str::before($row->{$col}, '/'),
+            ]);
+        }
+    }
+
+    if (\Illuminate\Support\Facades\Schema::hasTable('product_documents')) {
+        foreach (DB::table('product_documents')
+            ->join('products', 'products.id', '=', 'product_documents.product_id')
+            ->whereNull('products.deleted_at')
+            ->select('product_documents.file_path', 'product_documents.name_fr', 'product_documents.name_en', 'product_documents.type', 'product_documents.created_at', 'products.name_fr as owner')
+            ->get() as $row) {
+            $ext = strtoupper(pathinfo($row->file_path, PATHINFO_EXTENSION) ?: 'DOC');
+            $mediaAll->push((object) [
+                'kind'         => 'document',
+                'badge'        => $ext,
+                'type_label'   => $isFr ? 'Document' : 'Document',
+                'name'         => ($isFr ? $row->name_fr : ($row->name_en ?? $row->name_fr)) ?: basename($row->file_path),
+                'path'         => $row->file_path,
+                'external_url' => null,
+                'owner'        => $row->owner,
+                'created_at'   => $row->created_at ? \Carbon\Carbon::parse($row->created_at) : null,
+                'folder'       => Str::before($row->file_path, '/'),
+            ]);
+        }
+    }
+
+    if (\Illuminate\Support\Facades\Schema::hasTable('product_videos')) {
+        foreach (DB::table('product_videos')
+            ->join('products', 'products.id', '=', 'product_videos.product_id')
+            ->whereNull('products.deleted_at')
+            ->select('product_videos.url', 'product_videos.type', 'product_videos.caption_fr', 'product_videos.caption_en', 'product_videos.created_at', 'products.name_fr as owner')
+            ->get() as $row) {
+            $isUpload = $row->type === 'upload';
+            $mediaAll->push((object) [
+                'kind'         => 'video',
+                'badge'        => $isFr ? 'Vidéo' : 'Video',
+                'type_label'   => $isFr ? 'Vidéo' : 'Video',
+                'name'         => ($isFr ? $row->caption_fr : ($row->caption_en ?? $row->caption_fr)) ?: basename(parse_url($row->url, PHP_URL_PATH) ?: $row->url),
+                'path'         => $isUpload ? $row->url : null,
+                'external_url' => $isUpload ? null : $row->url,
+                'owner'        => $row->owner,
+                'created_at'   => $row->created_at ? \Carbon\Carbon::parse($row->created_at) : null,
+                'folder'       => $isUpload ? Str::before($row->url, '/') : ucfirst($row->type),
+            ]);
+        }
+    }
+    // NOTE: the platform stores no audio files today — the "Audio" chip counts
+    // whatever lands in an audio kind (currently 0), it is never hardcoded.
+
+    $mediaAll = $mediaAll->sortByDesc(fn ($m) => $m->created_at?->timestamp ?? 0)->values();
+
+    // ── Platform-wide stats (per kind + this-month-vs-last-month trend) ──────
+    $monthStart     = now()->startOfMonth();
+    $lastMonthStart = now()->subMonthNoOverflow()->startOfMonth();
+    $mediaStats = [];
+    foreach (['all', 'image', 'document', 'video', 'audio'] as $k) {
+        $subset = $k === 'all' ? $mediaAll : $mediaAll->where('kind', $k);
+        $thisM  = $subset->filter(fn ($m) => $m->created_at && $m->created_at->gte($monthStart))->count();
+        $lastM  = $subset->filter(fn ($m) => $m->created_at && $m->created_at->gte($lastMonthStart) && $m->created_at->lt($monthStart))->count();
+        $mediaStats[$k] = [
+            'count' => $subset->count(),
+            'trend' => $lastM > 0 ? round(($thisM - $lastM) / $lastM * 100, 1) : null,
+            'this_month' => $thisM,
+        ];
+    }
+
+    // ── Folders (real top-level storage segments) ────────────────────────────
+    $mediaFolders = $mediaAll->groupBy('folder')
+        ->map(fn ($g, $f) => (object) ['folder' => $f, 'count' => $g->count()])
+        ->sortByDesc('count')->values();
+
+    // ── Uploads per month (last 6 calendar months, real counts) ──────────────
+    $mediaMonths = collect(range(5, 0))->map(function ($i) use ($mediaAll, $isFr) {
+        $m = now()->subMonthsNoOverflow($i);
+        return (object) [
+            'label' => $m->locale($isFr ? 'fr' : 'en')->isoFormat('MMM'),
+            'count' => $mediaAll->filter(fn ($x) => $x->created_at && $x->created_at->isSameMonth($m))->count(),
+        ];
+    });
+
+    // ── Recent activity = latest real uploads ────────────────────────────────
+    $mediaRecent = $mediaAll->take(4);
+
+    // ── Filters + pagination ─────────────────────────────────────────────────
+    $mediaFiltered = $mediaAll
+        ->when($mediaType !== 'all', fn ($c) => $c->where('kind', $mediaType))
+        ->when($mediaFolder !== '', fn ($c) => $c->where('folder', $mediaFolder))
+        ->when($mediaQ !== '', fn ($c) => $c->filter(fn ($m) =>
+            stripos($m->name, $mediaQ) !== false || stripos((string) $m->owner, $mediaQ) !== false))
+        ->values();
+
+    $pageItems = $mediaFiltered->forPage($page, $perPage)->values();
+
+    // Real file sizes — current page ONLY (never scan the whole disk).
+    $fmtBytes = function (?int $b) use ($isFr): string {
+        if ($b === null) return '—';
+        if ($b >= 1073741824) return number_format($b / 1073741824, 1) . ($isFr ? ' Go' : ' GB');
+        if ($b >= 1048576)    return number_format($b / 1048576, 1) . ($isFr ? ' Mo' : ' MB');
+        if ($b >= 1024)       return number_format($b / 1024, 1) . ($isFr ? ' Ko' : ' KB');
+        return $b . ($isFr ? ' o' : ' B');
+    };
+    $pageBytes = 0;
+    $pageItems->each(function ($m) use (&$pageBytes, $fmtBytes) {
+        $bytes = null;
+        if ($m->path) {
+            try { $bytes = \Illuminate\Support\Facades\Storage::disk('public')->size($m->path); } catch (\Throwable) { $bytes = null; }
+        }
+        $m->size_label = $fmtBytes($bytes);
+        $m->ext = strtoupper(pathinfo($m->path ?? ($m->external_url ?? ''), PATHINFO_EXTENSION) ?: ($m->kind === 'video' ? 'URL' : '—'));
+        if ($bytes) $pageBytes += $bytes;
+    });
+
+    $mediaItems = new \Illuminate\Pagination\LengthAwarePaginator(
+        $pageItems, $mediaFiltered->count(), $perPage, $page,
+        ['path' => $request->url(), 'query' => $request->query()]
+    );
+
+    $quotaBytes = 200 * 1073741824; // 200 GB quota (design chrome — sizes themselves are real)
+    $storage = [
+        'page_bytes'      => $pageBytes,
+        'page_label'      => $fmtBytes($pageBytes ?: null),
+        'quota_label'     => $isFr ? '200 Go' : '200 GB',
+        'pct'             => $pageBytes > 0 ? round($pageBytes / $quotaBytes * 100, 1) : 0.0,
+        'available_label' => $pageBytes > 0 ? $fmtBytes($quotaBytes - $pageBytes) : '—',
+    ];
+
+    return view('pages.dashboard.admin-media', compact(
+        'lang', 'siacUser', 'mediaItems', 'mediaStats', 'mediaFolders', 'mediaMonths',
+        'mediaRecent', 'mediaType', 'mediaFolder', 'mediaQ', 'perPage', 'storage'
+    ));
+})->name('admin.media');
+
+Route::get('/tableau-de-bord/admin/paiements', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+    return view('pages.dashboard.admin-payments', compact('lang', 'siacUser'));
+})->name('admin.payments');
+
+Route::get('/tableau-de-bord/admin/analytique', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+    return view('pages.dashboard.admin-analytics', compact('lang', 'siacUser'));
+})->name('admin.analytics');
+
+Route::get('/tableau-de-bord/admin/produits/{id}', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+    $adminProduct = DB::table('products')
+        ->leftJoin('businesses', 'businesses.id', '=', 'products.business_id')
+        ->whereNull('products.deleted_at')->where('products.id', $id)
+        ->select('products.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug', 'businesses.verification_tier as business_tier', 'businesses.created_at as business_since')
+        ->first();
+    return view('pages.dashboard.admin-product-detail', compact('lang', 'siacUser', 'adminProduct'));
+})->name('admin.products.detail');
 
 Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
     $siacUser = session('siac_user');
