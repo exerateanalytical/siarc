@@ -157,6 +157,76 @@ Route::post('/tableau-de-bord/admin/entreprises/{id}/statut', [AdminWebControlle
 Route::get('/tableau-de-bord/admin/verifications', [AdminWebController::class, 'verifications'])->name('admin.verifications');
 Route::post('/tableau-de-bord/admin/verifications/{id}/approuver', [AdminWebController::class, 'approveVerification'])->name('admin.verifications.approve');
 Route::post('/tableau-de-bord/admin/verifications/{id}/rejeter', [AdminWebController::class, 'rejectVerification'])->name('admin.verifications.reject');
+
+// KYC Centre (design: "KYC Centre.png") — real verification_applications
+Route::get('/tableau-de-bord/admin/kyc', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $filters = [
+        'q'      => trim((string) $request->query('q', '')),
+        'statut' => (string) $request->query('statut', ''),
+        'role'   => (string) $request->query('role', ''),
+    ];
+
+    $base = DB::table('verification_applications as va')
+        ->join('businesses as b', 'b.id', '=', 'va.business_id')
+        ->leftJoin('users as u', 'u.id', '=', 'b.user_id')
+        ->whereNull('b.deleted_at');
+
+    // Real stat counts
+    $byStatus = (clone $base)->select('va.status', DB::raw('count(*) as n'))->groupBy('va.status')->pluck('n', 'status');
+    $total    = (int) $byStatus->sum();
+    $pending  = (int) (($byStatus['submitted'] ?? 0) + ($byStatus['draft'] ?? 0));
+    $approved = (int) ($byStatus['approved'] ?? 0);
+    $rejected = (int) ($byStatus['rejected'] ?? 0);
+    $review   = (int) ($byStatus['under_review'] ?? 0);
+    $pct = fn ($n) => $total ? round($n / $total * 100, 1) : 0;
+    $thisMonth = (int) (clone $base)->where('va.created_at', '>=', now()->startOfMonth())->count();
+
+    $kycStats = [
+        'total' => $total, 'pending' => $pending, 'approved' => $approved,
+        'rejected' => $rejected, 'in_review' => $review, 'this_month' => $thisMonth,
+        'pct_pending' => $pct($pending), 'pct_approved' => $pct($approved),
+        'pct_rejected' => $pct($rejected), 'pct_review' => $pct($review),
+    ];
+
+    // Filtered, paginated rows
+    $rows = (clone $base)->select(
+        'va.id', 'va.status', 'va.submitted_at', 'va.created_at', 'va.updated_at',
+        'b.name_fr as business_name', 'b.vendor_type', 'b.logo',
+        'u.name as owner_name', 'u.email as owner_email'
+    );
+    if ($filters['q'] !== '') {
+        $rows->where(fn ($w) => $w
+            ->where('b.name_fr', 'like', '%' . $filters['q'] . '%')
+            ->orWhere('u.name', 'like', '%' . $filters['q'] . '%')
+            ->orWhere('u.email', 'like', '%' . $filters['q'] . '%'));
+    }
+    if ($filters['statut'] !== '') $rows->where('va.status', $filters['statut']);
+    if ($filters['role'] !== '')   $rows->where('b.vendor_type', $filters['role']);
+    $applications = $rows->orderByDesc('va.created_at')->paginate(5)->withQueryString();
+
+    // Real role distribution across platform users
+    $artisanUsers  = DB::table('businesses')->whereNull('deleted_at')->where('vendor_type', 'artisan')->distinct()->count('user_id');
+    $boutiqueUsers = DB::table('businesses')->whereNull('deleted_at')->whereIn('vendor_type', ['entreprise', 'cooperative'])->distinct()->count('user_id');
+    $ownerIds      = DB::table('businesses')->whereNull('deleted_at')->pluck('user_id')->unique();
+    $roleUserIds   = fn ($names) => DB::table('model_has_roles as mr')->join('roles as r', 'r.id', '=', 'mr.role_id')->whereIn('r.name', $names)->pluck('mr.model_id')->unique();
+    $modIds        = $roleUserIds(['moderator']);
+    $adminIds      = $roleUserIds(['super_admin', 'admin']);
+    $visiteurs     = DB::table('users')->whereNotIn('id', $ownerIds->merge($modIds)->merge($adminIds)->all())->count();
+
+    $kycRoleDist = [
+        ['fr' => 'Artisans',    'en' => 'Artisans',    'count' => $artisanUsers,  'color' => '#157A43'],
+        ['fr' => 'Boutiques',   'en' => 'Shops',       'count' => $boutiqueUsers, 'color' => '#C9942E'],
+        ['fr' => 'Visiteurs',   'en' => 'Visitors',    'count' => $visiteurs,     'color' => '#3565DE'],
+        ['fr' => 'Modérateurs', 'en' => 'Moderators',  'count' => $modIds->count(), 'color' => '#7C4FE0'],
+        ['fr' => 'Super Admins','en' => 'Super Admins','count' => $adminIds->count(), 'color' => '#DC2626'],
+    ];
+
+    return view('pages.dashboard.admin-kyc', compact('lang', 'siacUser', 'filters', 'applications', 'kycStats', 'kycRoleDist'));
+})->name('admin.kyc');
 // =====================================================================
 // REPLACEMENT for the admin.users GET route in routes/web.php
 // (currently: Route::get('/tableau-de-bord/admin/utilisateurs',
