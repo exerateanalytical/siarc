@@ -40,6 +40,7 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/parametres',
             '/tableau-de-bord/admin/paiements',
             '/tableau-de-bord/admin/analytique',
+            '/tableau-de-bord/admin/rapports',
         ] as $path) {
             $this->withSession($session)->get($path)->assertOk();
         }

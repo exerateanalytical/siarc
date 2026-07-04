@@ -382,16 +382,51 @@ class AdminWebController extends Controller
             ->orderByDesc('total')->limit(5)->get();
 
         $topProducts = Product::where('status', 'published')
-            ->with('business')
+            ->with('business.region')
             ->orderByDesc('views_count')
             ->limit(5)->get();
 
+        // Group in PHP (not SQL DATE_FORMAT) so this works on MySQL and SQLite alike.
         $registrationsOverTime = User::where('created_at', '>=', now()->subMonths(6))
-            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, count(*) as total")
-            ->groupBy('month')->orderBy('month')->get();
+            ->pluck('created_at')
+            ->groupBy(fn ($d) => \Illuminate\Support\Carbon::parse($d)->format('Y-m'))
+            ->map->count();
+
+        // Real revenue backbone: active subscription payments + paid invoices.
+        $repKpis = [
+            'revenue'    => (float) \DB::table('business_subscriptions')->where('status', 'active')->sum('amount')
+                           + (float) \DB::table('invoices')->where('status', 'paid')->sum('total'),
+            'orders'     => \DB::table('purchase_orders')->count(),
+            'artisans'   => $stats['published'],
+            'views'      => (int) Product::sum('views_count') + (int) Business::sum('views_count'),
+            'avg_order'  => \DB::table('purchase_orders')->count() > 0 ? (float) \DB::table('purchase_orders')->avg('total') : null,
+            'conversion' => \DB::table('quote_requests')->count() > 0
+                ? round(\DB::table('purchase_orders')->count() / \DB::table('quote_requests')->count() * 100, 1) : null,
+        ];
+
+        // Monthly revenue trend (6 months) from real subscription start dates.
+        $revRows = \DB::table('business_subscriptions')
+            ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
+            ->select('created_at', 'amount')->get()
+            ->groupBy(fn ($r) => \Illuminate\Support\Carbon::parse($r->created_at)->format('Y-m'))
+            ->map(fn ($rows) => (float) $rows->sum('amount'));
+        $repRevenueSeries = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->subMonths($i);
+            $repRevenueSeries[] = ['label' => $m->translatedFormat('M'), 'value' => (float) ($revRows[$m->format('Y-m')] ?? 0)];
+        }
+
+        // Real business breakdown by craft category (count-based — no per-category
+        // revenue is tracked, so this is honestly a distribution, not a revenue split).
+        $repCategoryDist = Business::where('status', 'published')
+            ->join('industries', 'industries.id', '=', 'businesses.industry_id')
+            ->selectRaw('industries.name_fr, count(*) as total')
+            ->groupBy('industries.id', 'industries.name_fr')
+            ->orderByDesc('total')->limit(6)->get();
 
         return view('pages.dashboard.admin-reports', compact(
-            'lang', 'stats', 'verificationFunnel', 'topRegions', 'topIndustries', 'topProducts', 'registrationsOverTime'
+            'lang', 'stats', 'verificationFunnel', 'topRegions', 'topIndustries', 'topProducts',
+            'registrationsOverTime', 'repKpis', 'repRevenueSeries', 'repCategoryDist'
         ));
     }
 
