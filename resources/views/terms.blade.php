@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-$title = ($lang === 'fr' ? 'Conditions d\'utilisation' : 'Terms of Service') . ' — Galerie Artisanat SIAC';
+$title = ($lang === 'fr' ? 'Conditions d\'utilisation' : 'Terms of Service') . ' — Galerie Artisanat SIARC';
 @endphp
 
 @section('content')

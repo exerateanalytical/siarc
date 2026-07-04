@@ -576,9 +576,9 @@
                 <div class="mt-4 flex flex-col sm:flex-row gap-3 items-stretch">
                     <div class="flex-[1.35] bg-[#EBF2FC] rounded-xl p-4">
                         <div class="flex items-start gap-3.5">
-                            <img src="{{ asset('images/landing/qd-siac.png') }}" alt="SIAC" class="w-[44px] h-[54px] shrink-0 rounded-md bg-white object-contain">
+                            <img src="{{ asset('images/landing/qd-siac.png') }}" alt="SIARC" class="w-[44px] h-[54px] shrink-0 rounded-md bg-white object-contain">
                             <div class="min-w-0">
-                                <p class="text-[14.5px] font-bold text-[#1B1B18]">SIAC Cameroun 2024</p>
+                                <p class="text-[14.5px] font-bold text-[#1B1B18]">SIARC Cameroun 2024</p>
                                 <p class="mt-1 text-[11.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? "Participez au Salon International de l'Aquaculture et de l'Artisanat" : 'Take part in the International Aquaculture and Crafts Fair' }}</p>
                                 <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-[#3565DE]"></i> 05 - 10 {{ $isFr ? 'Juin' : 'June' }} 2024</p>
                                 <p class="mt-1 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $isFr ? 'Douala, Cameroun' : 'Douala, Cameroon' }}</p>

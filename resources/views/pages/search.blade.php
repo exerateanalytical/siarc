@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-$title = ($lang === 'fr' ? 'Recherche' : 'Search') . ' — SIAC Galerie';
+$title = ($lang === 'fr' ? 'Recherche' : 'Search') . ' — SIARC Galerie';
 $totalResults = $businesses->count() + $products->count();
 @endphp
 

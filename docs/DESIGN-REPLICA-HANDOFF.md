@@ -505,7 +505,7 @@ overview sheets kept as references only.
   shop name/logo, generated `ART-CM-{year}-{id}` (design ART-CM-2024-000158
   as guest-of fallback), member-since, real Messages badge, top-5 products by
   views_count with real covers in Performance des produits (design's 5 rows
-  when no products), SIAC card → the real siac% event. Design-static verbatim:
+  when no products), SIARC card → the real siac% event. Design-static verbatim:
   KPI row 18/12/7/7/23, pipeline dots 18/7/12/5/7/7 (colored rings + segment
   lines), 23% / 12,450,000 FCFA + `qd-spark.png`, 5 Demandes récentes with
   pills NOUVELLE/EN DISCUSSION/DEVIS ENVOYÉ/NÉGOCIATION/CONVERTIE, activity

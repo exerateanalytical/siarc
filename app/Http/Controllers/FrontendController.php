@@ -51,11 +51,11 @@ class FrontendController extends Controller
 
         $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->limit(9)->get();
 
-        // Spotlight: prefer the flagship SIAC event, else the next upcoming one
+        // Spotlight: prefer the flagship SIARC event, else the next upcoming one
         $currentEvent = \App\Modules\Events\Models\Event::published()
             ->with('industry')
             ->where('ends_at', '>=', now())
-            ->where('slug', 'like', 'siac%')
+            ->where('slug', 'like', 'siarc%')
             ->orderBy('starts_at')
             ->first()
             ?? \App\Modules\Events\Models\Event::published()

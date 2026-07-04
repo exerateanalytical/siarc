@@ -743,7 +743,7 @@ Route::get('/tableau-de-bord/admin/siarc', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
-    $siarcEvent = DB::table('events')->where('slug', 'like', 'siac%')->first();
+    $siarcEvent = DB::table('events')->where('slug', 'like', 'siarc%')->first();
     $siarcExhibitors = $siarcEvent
         ? DB::table('event_exhibitors')
             ->leftJoin('businesses', 'businesses.id', '=', 'event_exhibitors.business_id')
@@ -819,7 +819,7 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
         ->orWhere('business_id', $business->id ?? 0)
         ->count();
 
-    $siacEvent = DB::table('events')->where('slug', 'like', 'siac%')->first();
+    $siacEvent = DB::table('events')->where('slug', 'like', 'siarc%')->first();
 
     $topProductImages = $topProducts->isNotEmpty()
         ? DB::table('product_images')->whereIn('product_id', $topProducts->pluck('id'))

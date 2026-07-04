@@ -21,12 +21,12 @@
     ];
 
     $demoAccounts = [
-        ['email' => 'admin@artisanatcameroun.cm', 'password' => 'Admin@SIAC2026', 'label' => ['fr' => 'Admin', 'en' => 'Admin']],
-        ['email' => 'entrepreneur@siac2026.cm',   'password' => 'Demo@SIAC2026',  'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
-        ['email' => 'acheteur@siac2026.cm',       'password' => 'Demo@SIAC2026',  'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
-        ['email' => 'regional@siac2026.cm',       'password' => 'Demo@SIAC2026',  'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
-        ['email' => 'ministry@siac2026.cm',       'password' => 'Demo@SIAC2026',  'label' => ['fr' => 'Ministère', 'en' => 'Ministry']],
-        ['email' => 'technique@siac2026.cm',      'password' => 'Demo@SIAC2026',  'label' => ['fr' => 'Technique', 'en' => 'Technical']],
+        ['email' => 'admin@artisanatcameroun.cm', 'password' => 'Admin@SIARC2026', 'label' => ['fr' => 'Admin', 'en' => 'Admin']],
+        ['email' => 'entrepreneur@siarc2026.cm',   'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
+        ['email' => 'acheteur@siarc2026.cm',       'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
+        ['email' => 'regional@siarc2026.cm',       'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
+        ['email' => 'ministry@siarc2026.cm',       'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Ministère', 'en' => 'Ministry']],
+        ['email' => 'technique@siarc2026.cm',      'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Technique', 'en' => 'Technical']],
     ];
 @endphp
 <!DOCTYPE html>

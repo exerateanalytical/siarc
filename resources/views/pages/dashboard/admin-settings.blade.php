@@ -5,7 +5,7 @@ $pageTitle = $lang === 'fr' ? 'Paramètres & Intégrations' : 'Settings & Integr
 $groupMeta = [
     'general' => ['icon' => 'sliders-horizontal', 'fr' => 'Général',            'en' => 'General'],
     'limits'  => ['icon' => 'gauge',              'fr' => 'Limites plateforme', 'en' => 'Platform limits'],
-    'siac'    => ['icon' => 'calendar-days',      'fr' => 'Événement SIAC',     'en' => 'SIAC event'],
+    'siac'    => ['icon' => 'calendar-days',      'fr' => 'Événement SIARC',     'en' => 'SIARC event'],
     'auth'    => ['icon' => 'shield-check',       'fr' => 'Authentification',   'en' => 'Authentication'],
 ];
 $labelize = fn ($key) => ucfirst(str_replace('_', ' ', $key));

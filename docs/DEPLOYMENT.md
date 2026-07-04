@@ -80,8 +80,8 @@ Nothing currently requires the scheduler.
   (`public/vendor/tailwindcss.js`) — there is no npm build step; deploys
   need no Node.js.
 - **Demo accounts** (change or remove before real launch):
-  `admin@artisanatcameroun.cm`, `entrepreneur@siac2026.cm`,
-  `acheteur@siac2026.cm`.
+  `admin@artisanatcameroun.cm`, `entrepreneur@siarc2026.cm`,
+  `acheteur@siarc2026.cm`.
 
 ## Verifying a deployment
 

@@ -14,9 +14,9 @@ class SiacAdminSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@artisanatcameroun.cm'],
             [
-                'name'                => 'Administrateur SIAC',
+                'name'                => 'Administrateur SIARC',
                 'phone'               => '+237 699 00 00 01',
-                'password'            => Hash::make('Admin@SIAC2026'),
+                'password'            => Hash::make('Admin@SIARC2026'),
                 'status'              => 'active',
                 'is_email_verified'   => true,
                 'language_preference' => 'fr',
@@ -27,9 +27,9 @@ class SiacAdminSeeder extends Seeder
         $moderator = User::firstOrCreate(
             ['email' => 'moderateur@artisanatcameroun.cm'],
             [
-                'name'                => 'Modérateur SIAC',
+                'name'                => 'Modérateur SIARC',
                 'phone'               => '+237 699 00 00 02',
-                'password'            => Hash::make('Modo@SIAC2026'),
+                'password'            => Hash::make('Modo@SIARC2026'),
                 'status'              => 'active',
                 'is_email_verified'   => true,
                 'language_preference' => 'fr',
@@ -84,7 +84,7 @@ class SiacAdminSeeder extends Seeder
             ]));
         }
 
-        $this->command->info("  Admin: admin@artisanatcameroun.cm / Admin@SIAC2026");
-        $this->command->info("  Moderator: moderateur@artisanatcameroun.cm / Modo@SIAC2026");
+        $this->command->info("  Admin: admin@artisanatcameroun.cm / Admin@SIARC2026");
+        $this->command->info("  Moderator: moderateur@artisanatcameroun.cm / Modo@SIARC2026");
     }
 }
