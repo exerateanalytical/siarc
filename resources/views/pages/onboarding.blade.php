@@ -3,7 +3,7 @@
     $siacUser = session('siac_user');
 
     // Where the wizard exits into the real flow ("Soumettre mon dossier" on step 10)
-    $nextUrl = $siacUser ? route('business.create') : '/inscription?lang=' . $lang;
+    $nextUrl = $siacUser ? route('business.create') : route('onboarding', ['lang' => $lang]);
 
     $accountTypes = [
         [
@@ -547,12 +547,12 @@
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Prénom(s)' : 'First name(s)' }} *</label>
                             <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
-                                <input type="text" value="Aristide" class="{{ $fieldCls }}"></div>
+                                <input type="text" id="ob-first-name" name="first_name" value="{{ old('first_name') }}" placeholder="Aristide" class="{{ $fieldCls }}"></div>
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Nom' : 'Last name' }} *</label>
                             <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
-                                <input type="text" value="Ndop" class="{{ $fieldCls }}"></div>
+                                <input type="text" id="ob-last-name" name="last_name" value="{{ old('last_name') }}" placeholder="Ndop" class="{{ $fieldCls }}"></div>
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Date de naissance' : 'Date of birth' }} *</label>
@@ -603,7 +603,7 @@
                                     <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
                                 </span>
                                 <div class="relative flex-1">
-                                    <input type="tel" value="6 90 12 34 56" class="w-full h-[46px] border border-[#E5E3E0] rounded-lg px-4 pr-10 text-[13px] focus:outline-none focus:border-[#14532D]">
+                                    <input type="tel" id="ob-phone" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="w-full h-[46px] border border-[#E5E3E0] rounded-lg px-4 pr-10 text-[13px] focus:outline-none focus:border-[#14532D]">
                                     <i data-lucide="circle-check" class="absolute right-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white pointer-events-none" style="fill:#157A43"></i>
                                 </div>
                             </div>
@@ -611,8 +611,27 @@
                         <div>
                             <label class="{{ $labelCls }}">Email *</label>
                             <div class="relative"><i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
-                                <input type="email" value="aristide.ndop@gmail.com" class="{{ $fieldCls }}">
+                                <input type="email" id="ob-email" name="email" value="{{ old('email') }}" placeholder="aristide.ndop@gmail.com" class="{{ $fieldCls }}">
                                 <i data-lucide="circle-check" class="absolute right-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white pointer-events-none" style="fill:#157A43"></i></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mt-5 border border-[#EDEDEB] rounded-xl p-5">
+                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Sécurité du compte' : 'Account security' }}</h2>
+                    <p class="mt-1 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Choisissez le mot de passe qui protégera votre compte.' : 'Choose the password that will protect your account.' }}</p>
+                    @if($errors->any())
+                    <div class="mt-3 bg-[#FDE8E8] border border-[#F5C9C9] rounded-lg px-4 py-3 text-[12.5px] text-[#B42025]">{{ $errors->first() }}</div>
+                    @endif
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Mot de passe' : 'Password' }} *</label>
+                            <input type="password" id="ob-password" name="password" autocomplete="new-password" placeholder="********" class="{{ $fieldCls }}">
+                            <p class="mt-1.5 text-[11px] text-[#8A857A]">{{ $isFr ? '8 caractères minimum.' : 'At least 8 characters.' }}</p>
+                        </div>
+                        <div>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Confirmer le mot de passe' : 'Confirm password' }} *</label>
+                            <input type="password" id="ob-password-confirm" name="password_confirmation" autocomplete="new-password" placeholder="********" class="{{ $fieldCls }}">
                         </div>
                     </div>
                 </section>
@@ -1810,7 +1829,7 @@
                             </span>
                         </label>
                     </div>
-                    <button type="button" onclick="goToStep(11)" class="lg:absolute lg:right-0 lg:top-[26px] mt-3 lg:mt-0 inline-flex items-center gap-3 bg-[#025127] hover:bg-leaf text-white text-[14px] font-semibold px-7 py-3.5 rounded-lg shadow-md transition-colors">
+                    <button type="button" id="ob-submit" class="lg:absolute lg:right-0 lg:top-[26px] mt-3 lg:mt-0 inline-flex items-center gap-3 bg-[#025127] hover:bg-leaf text-white text-[14px] font-semibold px-7 py-3.5 rounded-lg shadow-md transition-colors">
                         {{ $isFr ? 'Soumettre mon dossier' : 'Submit my file' }}
                         <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
@@ -2238,6 +2257,31 @@
     refreshRadios();
 
     let currentStep = 1;
+    // ── Real signup: "Soumettre mon dossier" creates the account ──
+    const obAlready = @json((bool) $siacUser);
+    document.getElementById('ob-submit').addEventListener('click', () => {
+        if (obAlready) { goToStep(11); return; }
+        const fields = ['ob-first-name', 'ob-last-name', 'ob-email', 'ob-password', 'ob-password-confirm'];
+        let firstMissing = null;
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.remove('border-[#E5484D]');
+            if (!el.value.trim()) { el.classList.add('border-[#E5484D]'); firstMissing = firstMissing || el; }
+        });
+        if (firstMissing) { goToStep(2); firstMissing.focus(); return; }
+
+        const form = document.getElementById('ob-signup-form');
+        form.querySelector('[name="first_name"]').value = document.getElementById('ob-first-name').value;
+        form.querySelector('[name="last_name"]').value = document.getElementById('ob-last-name').value;
+        form.querySelector('[name="email"]').value = document.getElementById('ob-email').value;
+        form.querySelector('[name="phone"]').value = document.getElementById('ob-phone').value;
+        form.querySelector('[name="password"]').value = document.getElementById('ob-password').value;
+        form.querySelector('[name="password_confirmation"]').value = document.getElementById('ob-password-confirm').value;
+        const chosen = document.querySelector('input[name="account_type"]:checked');
+        form.querySelector('[name="account_type"]').value = chosen ? chosen.value : '';
+        form.submit();
+    });
+
     function goToStep(n) {
         currentStep = n;
 
@@ -2289,7 +2333,15 @@
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    // Initial step: success screen after signup, identity step on validation
+    // errors, otherwise the wizard start.
+    @if(request('submitted') && $siacUser)
+    goToStep(11);
+    @elseif($errors->any())
+    goToStep(2);
+    @else
     goToStep(1);
+    @endif
 
     // Steps 9-10: compliance checkboxes
     document.querySelectorAll('.ob9-check').forEach(c => c.addEventListener('change', () => {
@@ -2461,5 +2513,14 @@
         refreshProdCount();
     });
 </script>
+
+<form id="ob-signup-form" method="POST" action="{{ route('onboarding.store') }}" class="hidden" aria-hidden="true">
+    @csrf
+    <input type="hidden" name="lang" value="{{ $lang }}">
+    <input type="hidden" name="first_name"><input type="hidden" name="last_name">
+    <input type="hidden" name="email"><input type="hidden" name="phone">
+    <input type="hidden" name="password"><input type="hidden" name="password_confirmation">
+    <input type="hidden" name="account_type">
+</form>
 </body>
 </html>

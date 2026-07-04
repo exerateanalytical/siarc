@@ -500,15 +500,24 @@ Route::post('/login/verification', function (Request $request) {
 })->name('login.challenge.verify');
 
 // ─────────────────────────────────────────────
-// Register (legacy — kept for backward compat)
+// Sign-up: the full onboarding wizard at /creer-mon-compte is THE signup.
+// The old quick-register form was removed (2026-07-04); its routes redirect.
 // ─────────────────────────────────────────────
 Route::get('/register', function (Request $request) {
     if (session('siac_user')) return redirect('/tableau-de-bord');
-    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
-    return response(view('auth.register', ['lang' => $lang]))->cookie('lang', $lang, 60 * 24 * 30);
+    return redirect()->route('onboarding', array_filter(['lang' => $request->query('lang')]));
 })->name('register');
 
-Route::post('/register', function (Request $request) {
+Route::get('/inscription', function (Request $request) {
+    if (session('siac_user')) return redirect('/tableau-de-bord');
+    return redirect()->route('onboarding', array_filter(['lang' => $request->query('lang')]));
+})->name('inscription');
+
+// Real account creation behind the wizard's "Soumettre mon dossier"
+Route::post('/creer-mon-compte', function (Request $request) {
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $isFr = $lang === 'fr';
+
     $data = $request->validate([
         'first_name'            => ['required', 'string', 'max:50'],
         'last_name'             => ['required', 'string', 'max:50'],
@@ -516,13 +525,18 @@ Route::post('/register', function (Request $request) {
         'phone'                 => ['nullable', 'string', 'max:30'],
         'password'              => ['required', 'min:8', 'confirmed'],
         'password_confirmation' => ['required'],
+        'account_type'          => ['nullable', 'string', 'max:30'],
     ]);
 
     $email = strtolower(trim($data['email']));
     $name  = trim($data['first_name'] . ' ' . $data['last_name']);
 
+    $emailTakenError = $isFr
+        ? 'Un compte avec cet email existe déjà. Essayez de vous connecter.'
+        : 'An account with this email already exists. Try logging in instead.';
+
     if (DB::table('users')->where('email', $email)->exists()) {
-        return back()->withErrors(['email' => 'An account with this email already exists. Try logging in instead.'])->withInput();
+        return back()->withErrors(['email' => $emailTakenError])->withInput();
     }
 
     $userId = Str::uuid()->toString();
@@ -534,94 +548,37 @@ Route::post('/register', function (Request $request) {
             'phone'               => $data['phone'] ?? null,
             'password'            => Hash::make($data['password']),
             'status'              => 'active',
-            'language_preference' => 'fr',
+            'language_preference' => $lang,
             'is_email_verified'   => 0,
             'is_phone_verified'   => 0,
             'created_at'          => now(),
             'updated_at'          => now(),
         ]);
     } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
-        // Race condition (e.g. double form submit) — the email was taken between
-        // the check above and this insert. Fail gracefully instead of a 500.
-        return back()->withErrors(['email' => 'An account with this email already exists. Try logging in instead.'])->withInput();
+        // Race condition (double submit): fail gracefully instead of a 500
+        return back()->withErrors(['email' => $emailTakenError])->withInput();
+    }
+
+    // Wizard signups are artisan/business onboardings
+    $roleRecord = DB::table('roles')->where('name', 'business_owner')->where('guard_name', 'sanctum')->first();
+    if ($roleRecord) {
+        DB::table('model_has_roles')->insert([
+            'role_id'    => $roleRecord->id,
+            'model_type' => 'App\Modules\Auth\Models\User',
+            'model_id'   => $userId,
+        ]);
     }
 
     session(['siac_user' => [
         'id'       => $userId,
         'name'     => $name,
         'email'    => $email,
-        'role'     => null,
+        'role'     => 'business_owner',
         'is_admin' => false,
     ]]);
 
-    return redirect('/tableau-de-bord');
-})->name('register.post');
-
-// ─────────────────────────────────────────────
-// SIAC — Inscription (Register)
-// ─────────────────────────────────────────────
-Route::get('/inscription', function (Request $request) {
-    if (session('siac_user')) return redirect('/tableau-de-bord');
-    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
-    return response(view('auth.register', ['lang' => $lang]))->cookie('lang', $lang, 60 * 24 * 30);
-})->name('inscription');
-
-Route::post('/inscription', function (Request $request) {
-    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
-
-    $data = $request->validate([
-        'name'                  => ['required', 'string', 'max:255'],
-        'email'                 => ['required', 'email', 'max:255'],
-        'phone'                 => ['nullable', 'string', 'max:30'],
-        'password'              => ['required', 'min:8', 'confirmed'],
-        'password_confirmation' => ['required'],
-        'role'                  => ['nullable', 'in:buyer,business_owner'],
-    ]);
-
-    $email = strtolower(trim($data['email']));
-
-    if (DB::table('users')->where('email', $email)->exists()) {
-        return back()->withErrors(['email' => $lang === 'en' ? 'An account with this email already exists.' : 'Un compte avec cet email existe déjà.'])->withInput();
-    }
-
-    $userId = Str::uuid()->toString();
-    DB::table('users')->insert([
-        'id'                  => $userId,
-        'name'                => $data['name'],
-        'email'               => $email,
-        'phone'               => $data['phone'] ?? null,
-        'password'            => Hash::make($data['password']),
-        'status'              => 'active',
-        'language_preference' => $lang,
-        'is_email_verified'   => 0,
-        'is_phone_verified'   => 0,
-        'created_at'          => now(),
-        'updated_at'          => now(),
-    ]);
-
-    // Assign Spatie role if business_owner
-    $role = $data['role'] ?? 'buyer';
-    if ($role === 'business_owner') {
-        $roleRecord = DB::table('roles')->where('name', 'business_owner')->where('guard_name', 'sanctum')->first();
-        if ($roleRecord) {
-            DB::table('model_has_roles')->insert([
-                'role_id'    => $roleRecord->id,
-                'model_type' => 'App\\Modules\\Auth\\Models\\User',
-                'model_id'   => $userId,
-            ]);
-        }
-    }
-
-    session(['siac_user' => [
-        'id'       => $userId,
-        'name'     => $data['name'],
-        'email'    => $email,
-        'role'     => $role === 'business_owner' ? 'business_owner' : null,
-        'is_admin' => false,
-    ]]);
-
-    return redirect('/tableau-de-bord');
-})->name('inscription.post');
+    return redirect('/creer-mon-compte?submitted=1');
+})->name('onboarding.store')->middleware('throttle:10,1');
 
 // ─────────────────────────────────────────────
 // SIAC — Dashboards
