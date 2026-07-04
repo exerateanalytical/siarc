@@ -31,7 +31,7 @@
             ['orders',        'shopping-cart', $isFr ? 'Commandes' : 'Orders',                  route('admin.orders'), null],
             ['payments',      'credit-card',   $isFr ? 'Paiements & Retraits' : 'Payments & Withdrawals', route('admin.payments'), null],
             ['quotes',        'file-text',     $isFr ? 'Devis & Propositions' : 'Quotes & Proposals', route('admin.quotes'), null],
-            ['subscriptions', 'repeat',        $isFr ? 'Abonnements' : 'Subscriptions',         route('admin.api-consumers'), null],
+            ['subscriptions', 'repeat',        $isFr ? 'Abonnements' : 'Subscriptions',         route('admin.subscriptions'), null],
             ['commissions',   'percent',       'Commissions',                                    route('admin.reports'), null],
         ]],
         [$isFr ? 'Analyses & Rapports' : 'Analytics & Reports', [

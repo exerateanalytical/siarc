@@ -320,6 +320,89 @@ Route::post('/tableau-de-bord/admin/roles/{id}/permissions', function (Request $
         ? 'Permissions du rôle mises à jour.'
         : 'Role permissions updated.');
 })->name('admin.roles.update')->middleware('throttle:30,1');
+
+// Subscriptions / Abonnements (design: "Subscriptions.png") — real subscription backend
+Route::get('/tableau-de-bord/admin/abonnements', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $filters = [
+        'q'      => trim((string) $request->query('q', '')),
+        'statut' => (string) $request->query('statut', ''),
+        'plan'   => (string) $request->query('plan', ''),
+        'role'   => (string) $request->query('role', ''),
+    ];
+
+    $base = DB::table('business_subscriptions as bs')
+        ->join('businesses as b', 'b.id', '=', 'bs.business_id')
+        ->join('subscription_plans as p', 'p.id', '=', 'bs.subscription_plan_id')
+        ->leftJoin('users as u', 'u.id', '=', 'b.user_id')
+        ->whereNull('b.deleted_at');
+
+    // Real stat counts
+    $byStatus  = (clone $base)->select('bs.status', DB::raw('count(*) as n'))->groupBy('bs.status')->pluck('n', 'status');
+    $active    = (int) ($byStatus['active'] ?? 0);
+    $pending   = (int) ($byStatus['pending'] ?? 0);
+    $expired   = (int) ($byStatus['expired'] ?? 0);
+    $cancelled = (int) ($byStatus['cancelled'] ?? 0);
+    $expiringThisMonth = (int) (clone $base)->where('bs.status', 'active')
+        ->whereBetween('bs.next_payment_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
+    $totalRevenue  = (int) (clone $base)->where('bs.status', 'active')->sum('bs.amount');
+    $renewalBase   = $active + $expired + $cancelled;
+    $renewalRate   = $renewalBase ? round($active / $renewalBase * 100, 1) : 0;
+
+    $subStats = [
+        'active' => $active, 'pending' => $pending, 'expiring' => $expiringThisMonth,
+        'revenue' => $totalRevenue, 'renewal' => $renewalRate,
+    ];
+
+    // Financial summary (real)
+    $revenueThisMonth = (int) (clone $base)->where('bs.status', 'active')
+        ->where('bs.started_at', '>=', now()->startOfMonth())->sum('bs.amount');
+    $revenuePending   = (int) (clone $base)->where('bs.status', 'pending')->sum('bs.amount');
+    $refunds          = (int) (clone $base)->where('bs.status', 'cancelled')->sum('bs.amount');
+    $finance = [
+        'this_month' => $revenueThisMonth,
+        'pending'    => $revenuePending,
+        'refunds'    => $refunds,
+        'net'        => $totalRevenue - $refunds,
+        'year'       => $totalRevenue,
+    ];
+
+    // Plan distribution (real)
+    $planDist = DB::table('business_subscriptions as bs')
+        ->join('subscription_plans as p', 'p.id', '=', 'bs.subscription_plan_id')
+        ->select('p.name_fr', 'p.name_en', 'p.color', DB::raw('count(*) as n'))
+        ->groupBy('p.name_fr', 'p.name_en', 'p.color')->orderByDesc('n')->get();
+    // Include zero-count plans (e.g. Personnalisé) so the legend matches the design
+    $shownPlans = $planDist->pluck('name_fr')->all();
+    foreach (DB::table('subscription_plans')->orderBy('sort_order')->get() as $p) {
+        if (! in_array($p->name_fr, $shownPlans, true)) {
+            $planDist->push((object) ['name_fr' => $p->name_fr, 'name_en' => $p->name_en, 'color' => $p->color, 'n' => 0]);
+        }
+    }
+
+    // Filtered, paginated rows
+    $rows = (clone $base)->select(
+        'bs.id', 'bs.status', 'bs.amount', 'bs.started_at', 'bs.next_payment_at',
+        'b.name_fr as business_name', 'b.vendor_type', 'b.logo', 'b.id as business_id',
+        'u.name as owner_name', 'u.email as owner_email',
+        'p.name_fr as plan_fr', 'p.name_en as plan_en', 'p.icon as plan_icon', 'p.color as plan_color'
+    );
+    if ($filters['q'] !== '') {
+        $rows->where(fn ($w) => $w->where('b.name_fr', 'like', '%' . $filters['q'] . '%')
+            ->orWhere('u.name', 'like', '%' . $filters['q'] . '%')->orWhere('u.email', 'like', '%' . $filters['q'] . '%'));
+    }
+    if ($filters['statut'] !== '') $rows->where('bs.status', $filters['statut']);
+    if ($filters['plan'] !== '')   $rows->where('p.slug', $filters['plan']);
+    if ($filters['role'] !== '')   $rows->where('b.vendor_type', $filters['role']);
+    $subscriptions = $rows->orderByDesc('bs.started_at')->paginate(10)->withQueryString();
+
+    $plans = DB::table('subscription_plans')->orderBy('sort_order')->get();
+
+    return view('pages.dashboard.admin-subscriptions', compact('lang', 'siacUser', 'filters', 'subscriptions', 'subStats', 'finance', 'planDist', 'plans'));
+})->name('admin.subscriptions');
 // =====================================================================
 // REPLACEMENT for the admin.users GET route in routes/web.php
 // (currently: Route::get('/tableau-de-bord/admin/utilisateurs',
