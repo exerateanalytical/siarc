@@ -420,6 +420,78 @@ Route::get('/tableau-de-bord/admin/abonnements', function (Request $request) {
     return view('pages.dashboard.admin-subscriptions', compact('lang', 'siacUser', 'filters', 'subscriptions', 'subStats', 'finance', 'planDist', 'plans', 'isDefaultView', 'perPage'));
 })->name('admin.subscriptions');
 
+// Regions & Artisan Centres (design: "Regions & Artisan Centres.png")
+Route::get('/tableau-de-bord/admin/regions-centres', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $bizByRegion  = DB::table('businesses')->whereNull('deleted_at')->whereNotNull('region_id')->select('region_id', DB::raw('count(*) n'))->groupBy('region_id')->pluck('n', 'region_id');
+    $prodByRegion = DB::table('products')->join('businesses', 'businesses.id', '=', 'products.business_id')
+        ->whereNull('products.deleted_at')->where('products.status', 'published')->whereNotNull('businesses.region_id')
+        ->select('businesses.region_id', DB::raw('count(*) n'))->groupBy('businesses.region_id')->pluck('n', 'businesses.region_id');
+    $centreByRegion = DB::table('artisan_centres')->select('region_id', DB::raw('count(*) n'))->groupBy('region_id')->pluck('n', 'region_id');
+
+    $regions = DB::table('regions')->orderBy('sort_order')->get()->map(function ($r) use ($bizByRegion, $prodByRegion, $centreByRegion) {
+        $r->centres  = (int) ($centreByRegion[$r->id] ?? 0);
+        $r->artisans = (int) ($bizByRegion[$r->id] ?? 0);
+        $r->products = (int) ($prodByRegion[$r->id] ?? 0);
+        return $r;
+    });
+
+    $stats = [
+        'regions'  => $regions->count(),
+        'centres'  => (int) DB::table('artisan_centres')->count(),
+        'artisans' => (int) DB::table('businesses')->whereNull('deleted_at')->count(),
+        'products' => (int) DB::table('products')->where('status', 'published')->count(),
+    ];
+
+    // Selected region for the detail rail (?region=code)
+    $selCode  = (string) $request->query('region', 'CE');
+    $selected = $regions->firstWhere('code', $selCode) ?: $regions->first();
+
+    $centres = DB::table('artisan_centres as c')->leftJoin('regions as r', 'r.id', '=', 'c.region_id')
+        ->select('c.*', 'r.name_fr as region_fr', 'r.name_en as region_en')
+        ->orderByDesc('c.created_at')->paginate(5)->withQueryString();
+
+    return view('pages.dashboard.admin-regions', compact('lang', 'siacUser', 'regions', 'stats', 'selected', 'centres'));
+})->name('admin.regions');
+
+// Artisan Centre admin detail (design: "Artisan Centre detail view in admin.png")
+Route::get('/tableau-de-bord/admin/centres/{id}', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $centre = DB::table('artisan_centres as c')->leftJoin('regions as r', 'r.id', '=', 'c.region_id')
+        ->select('c.*', 'r.name_fr as region_fr', 'r.name_en as region_en', 'r.code as region_code', 'r.chef_lieu')
+        ->where('c.id', $id)->first();
+    if (!$centre) abort(404);
+
+    // Real businesses of the centre's region
+    $businesses = DB::table('businesses')->where('status', 'published')->whereNull('deleted_at')
+        ->where('region_id', $centre->region_id)->orderByDesc('views_count')->limit(6)->get();
+
+    return view('pages.dashboard.admin-centre-detail', compact('lang', 'siacUser', 'centre', 'businesses'));
+})->name('admin.centres.detail');
+
+// Public Artisan Centre page (design: "Artisan Centre detail view public.png")
+Route::get('/centres-artisanat/{slug}', function (Request $request, $slug) {
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $centre = DB::table('artisan_centres as c')->leftJoin('regions as r', 'r.id', '=', 'c.region_id')
+        ->select('c.*', 'r.name_fr as region_fr', 'r.name_en as region_en', 'r.code as region_code', 'r.chef_lieu')
+        ->where('c.slug', $slug)->first();
+    if (!$centre) abort(404);
+
+    $businesses = \App\Modules\Businesses\Models\Business::with(['industry', 'region'])
+        ->where('status', 'published')->whereNull('deleted_at')
+        ->where('region_id', $centre->region_id)->orderByDesc('views_count')->limit(8)->get();
+
+    return response(view('pages.centre-show', compact('lang', 'centre', 'businesses')))
+        ->cookie('lang', $lang, 60 * 24 * 30);
+})->name('centres.show');
+
 // Data Export Centre (design: "Data Export Centre.png") — real export registry;
 // every download streams a live CSV of the requested dataset.
 if (! function_exists('dataExportDatasets')) {

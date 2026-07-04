@@ -15,7 +15,7 @@
             ['artisans',    'side-ic-artisans',    'Artisans',                                              route('admin.artisans'), null],
             ['products',    'side-ic-products',    $isFr ? 'Produits & Services' : 'Products & Services',   route('admin.products'), null],
             ['industries',  'side-ic-industries',  $isFr ? 'Catégories d\'Artisanat' : 'Craft Categories',  route('admin.industries'), null],
-            ['regions',     'side-ic-regions',     $isFr ? 'Régions & Centres' : 'Regions & Centres',       route('admin.industries') . '#regions', null],
+            ['regions',     'map-pin',     $isFr ? 'Régions & Centres' : 'Regions & Centres',       route('admin.regions'), null],
             ['collections', 'side-ic-collections', 'Collections',                                           route('admin.collections'), null],
             ['news',        'side-ic-news',        $isFr ? 'Actualités & Annonces' : 'News & Announcements', route('admin.news'), null],
             ['media',       'side-ic-media',       $isFr ? 'Médias & Ressources' : 'Media & Resources',     route('admin.media'), null],
