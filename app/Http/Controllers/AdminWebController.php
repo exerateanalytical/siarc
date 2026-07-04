@@ -238,9 +238,53 @@ class AdminWebController extends Controller
         $admin = $this->requireAdmin($request);
         if ($admin instanceof RedirectResponse) return $admin;
 
-        $partners = Partner::orderBy('tier')->orderBy('sort_order')->get();
+        $q = trim((string) $request->query('q', ''));
+        $status = $request->query('status', '');
+        $type = $request->query('type', '');
+        $country = $request->query('country', '');
 
-        return view('pages.dashboard.admin-partners', compact('lang', 'partners'));
+        $query = Partner::query();
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('name_fr', 'like', "%{$q}%")
+                    ->orWhere('sector_fr', 'like', "%{$q}%")
+                    ->orWhere('country', 'like', "%{$q}%");
+            });
+        }
+        if ($status !== '') $query->where('status', $status);
+        if ($type !== '') $query->where('partner_type', $type);
+        if ($country !== '') $query->where('country', $country);
+
+        $partners = $query->orderByDesc('start_date')->paginate(8)->withQueryString();
+
+        // KPI cards — computed from real rows, never hardcoded.
+        $all = Partner::query();
+        $partnerKpis = [
+            'active' => (clone $all)->where('status', 'active')->count(),
+            'pending' => (clone $all)->where('status', 'pending')->count(),
+            'international' => (clone $all)->where('country', '!=', 'Cameroun')->count(),
+            'national' => (clone $all)->where('country', 'Cameroun')->count(),
+            'premium' => (clone $all)->where('partnership_level', 'Premium')->count(),
+        ];
+        $partnerTotal = max(1, (clone $all)->count());
+        $partnerKpis['international_pct'] = round($partnerKpis['international'] / $partnerTotal * 100, 1);
+        $partnerKpis['national_pct'] = round($partnerKpis['national'] / $partnerTotal * 100, 1);
+
+        $byType = (clone $all)->select('partner_type', \DB::raw('count(*) as c'))
+            ->groupBy('partner_type')->orderByDesc('c')->pluck('c', 'partner_type');
+        $byTypePct = $byType->map(fn ($c) => round($c / $partnerTotal * 100, 1));
+
+        $bySector = (clone $all)->select('sector_fr', \DB::raw('count(*) as c'))
+            ->groupBy('sector_fr')->orderByDesc('c')->limit(5)->pluck('c', 'sector_fr');
+        $bySectorPct = $bySector->map(fn ($c) => round($c / $partnerTotal * 100, 1));
+
+        $partnerCountries = Partner::query()->distinct()->orderBy('country')->pluck('country');
+        $partnerTypes = Partner::query()->distinct()->orderBy('partner_type')->pluck('partner_type');
+
+        return view('pages.dashboard.admin-partners', compact(
+            'lang', 'partners', 'partnerKpis', 'byType', 'byTypePct', 'bySector', 'bySectorPct',
+            'partnerCountries', 'partnerTypes', 'q', 'status', 'type', 'country'
+        ));
     }
 
     public function storePartner(Request $request): RedirectResponse
