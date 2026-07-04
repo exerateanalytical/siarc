@@ -247,12 +247,15 @@
             <i data-lucide="chevron-right" class="w-7 h-7"></i>
         </button>
 
-        <div id="sector-track" class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x">
+        {{-- Cards match the featured-business card footprint; the fractional
+             widths always show EXACTLY 2 columns on mobile, 3 on tablet and
+             5 on desktop, and the chevrons page a full view at a time. --}}
+        <div id="sector-track" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory">
             @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
             <a href="{{ $scHref }}"
-                class="relative snap-start shrink-0 w-[57.5%] sm:w-[175px] lg:w-[108px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-5 pb-4 px-1.5 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center">
-                <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-11 h-11 object-contain" aria-hidden="true">
-                <p class="mt-2.5 text-[11px] font-medium text-[#1D1B16] leading-[1.35] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
+                class="relative snap-start shrink-0 w-[calc((100%-1rem)/2)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)] min-h-[218px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-7 pb-6 px-3 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center">
+                <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-20 h-20 object-contain" aria-hidden="true">
+                <p class="mt-4 text-[13px] font-medium text-[#1D1B16] leading-[1.4] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
                 <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
                     <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
                 </span>
@@ -550,13 +553,14 @@
         bizNext.addEventListener('click', () => track.scrollBy({ left: 440, behavior: 'smooth' }));
     }
 
-    // Sector cards carousel (same behaviour as the featured businesses row)
+    // Sector cards carousel: the chevrons page one full view (5/3/2 columns)
     const sectorTrack = document.getElementById('sector-track');
     const sectorPrev = document.getElementById('sector-prev');
     const sectorNext = document.getElementById('sector-next');
     if (sectorTrack && sectorPrev && sectorNext) {
-        sectorPrev.addEventListener('click', () => sectorTrack.scrollBy({ left: -440, behavior: 'smooth' }));
-        sectorNext.addEventListener('click', () => sectorTrack.scrollBy({ left: 440, behavior: 'smooth' }));
+        const sectorPage = () => sectorTrack.clientWidth + 16; // view width + one gap
+        sectorPrev.addEventListener('click', () => sectorTrack.scrollBy({ left: -sectorPage(), behavior: 'smooth' }));
+        sectorNext.addEventListener('click', () => sectorTrack.scrollBy({ left: sectorPage(), behavior: 'smooth' }));
     }
 </script>
 </body>
