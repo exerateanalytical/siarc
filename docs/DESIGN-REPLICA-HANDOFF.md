@@ -775,6 +775,50 @@ newsletter, `throttle:30,1` on quote writes, `docs/DEPLOYMENT.md` (note:
 **route:cache is impossible** — closure routes; config/view cache are fine).
 Suite: **47 tests / 168 assertions green**.
 
+## Subscriptions pixel pass + NEW admin sidebar (2026-07-04)
+
+The Subscriptions page (`Subscriptions.png`) was rebuilt to full pixel fidelity
+and the SHARED admin sidebar was re-replicated to the CURRENT admin design
+family's sidebar (the one drawn in Subscriptions/KYC/User Management/…):
+
+- **Layout discovery**: the page is a 2-col grid from the TOP — 4 KPI cards +
+  table in the main column, the 5th KPI (98.6%) heads the 300px right rail.
+- **8 design subscribers SEEDED as real rows** (`DesignSubscriptionsSeeder`,
+  idempotent): users (uuid set manually — User model int-casts its uuid key,
+  read ids back via DB::table) + draft businesses (logo = `sub-av-1..8.png`
+  crops copied to storage) + subscriptions with the design's exact
+  dates/times. New `business_subscriptions.sort_order` column (migration
+  …000015) pins design order; route orders `sort_order NULLS LAST, started_at
+  desc`, paginates 8/page (design's own math: 1,254/8 = 157 pages).
+- **Design-verbatim display on the default view** (`$isDefaultView`): stat
+  values 1,254/248/32/45,678,900/98.6%, colored deltas, donut (drawn segment
+  colors ≠ legend dot colors — replicated as drawn), finance figures incl.
+  the design's "vs année denrière" [sic], "Affichage de 1 à 8 sur 1,254",
+  pagination « ‹ 1 2 3 … 157 » (157 = real last page), "10 par page" select
+  (?per=10/25/50 real). Any filter/page/per → real numbers in same chrome.
+  Filters gained the design's **Période** control (?periode=mois/trimestre/
+  annee on started_at). Design rows' "Dans X mois" lines are verbatim via a
+  sort_order map (recomputing from 2026 would go negative).
+- **Assets**: `sub-kpi-1..5` (icon tiles), `sub-spark-1..5` (dot-marker
+  sparklines), `sub-plan-{premium,standard,entreprise,basic}.png` (diamond
+  icons, stored in subscription_plans.icon — view renders <img> when icon
+  ends .png), `sub-av-1..8`, `sub-qa-1..5` (quick-action icons),
+  `sub-heritage-card.png` (bottom card w/ statue + kente frame, baked text
+  patched flat, HTML text overlay for FR/EN).
+- **NEW shared sidebar** (`admin-sidebar.blade.php`, affects ALL admin pages —
+  same "one chrome" call as the public consolidation): 290px, dark green
+  `#042B15→#03200E`, groups TABLEAU DE BORD / GESTION DU CONTENU (9 items) /
+  GESTION DES UTILISATEURS (5) / COMMERCIAL & FINANCE (5) / SYSTÈME (5), gold
+  labels `#E6B201`, active = light-green pill `#0D5A30` white text, orange
+  badges `#DE8E14` (Artisans & Boutiques 248, KYC 36, Notifications 12),
+  icons = 25 alpha-keyed crops `side-ic-*.png` (dark pixels → transparent so
+  they work on rows AND the active pill), bottom `ad-side-vases.png` quote
+  card (text patched, HTML overlay). Old keys kept; orphaned keys (quotes,
+  analytics, siarc*, partners, moderation, adminsupport, pending-biz) simply
+  show no active row; their routes stay reachable via layouts/dashboard menu.
+- Suite 60 green. Cream card chrome on this page: bg `#FEFAF4`, border
+  `#F3E5D0`, page bg `#FDF8F1`.
+
 ## The replication process (repeat for each new page)
 
 1. Read the PNG with the Read tool; note pixel dimensions (most are 1536×1024 —

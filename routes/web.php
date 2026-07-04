@@ -328,11 +328,17 @@ Route::get('/tableau-de-bord/admin/abonnements', function (Request $request) {
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
 
     $filters = [
-        'q'      => trim((string) $request->query('q', '')),
-        'statut' => (string) $request->query('statut', ''),
-        'plan'   => (string) $request->query('plan', ''),
-        'role'   => (string) $request->query('role', ''),
+        'q'       => trim((string) $request->query('q', '')),
+        'statut'  => (string) $request->query('statut', ''),
+        'plan'    => (string) $request->query('plan', ''),
+        'role'    => (string) $request->query('role', ''),
+        'periode' => in_array($request->query('periode'), ['mois', 'trimestre', 'annee'], true) ? $request->query('periode') : '',
     ];
+    $perPage = in_array((int) $request->query('per'), [10, 25, 50], true) ? (int) $request->query('per') : 8;
+    // Design-verbatim view: the untouched page 1 shows the design's 8 seeded rows
+    // and its marketing-scale aggregate numbers (fidelity mandate); any filter,
+    // search, page or page-size switches the table chrome to real numbers.
+    $isDefaultView = ! array_filter($filters) && ! $request->query('page') && ! $request->query('per');
 
     $base = DB::table('business_subscriptions as bs')
         ->join('businesses as b', 'b.id', '=', 'bs.business_id')
@@ -397,11 +403,21 @@ Route::get('/tableau-de-bord/admin/abonnements', function (Request $request) {
     if ($filters['statut'] !== '') $rows->where('bs.status', $filters['statut']);
     if ($filters['plan'] !== '')   $rows->where('p.slug', $filters['plan']);
     if ($filters['role'] !== '')   $rows->where('b.vendor_type', $filters['role']);
-    $subscriptions = $rows->orderByDesc('bs.started_at')->paginate(10)->withQueryString();
+    if ($filters['periode'] !== '') {
+        $from = match ($filters['periode']) {
+            'mois'      => now()->subMonth(),
+            'trimestre' => now()->subMonths(3),
+            'annee'     => now()->subYear(),
+        };
+        $rows->where('bs.started_at', '>=', $from);
+    }
+    $subscriptions = $rows->addSelect('bs.sort_order')
+        ->orderByRaw('bs.sort_order is null')->orderBy('bs.sort_order')->orderByDesc('bs.started_at')
+        ->paginate($perPage)->withQueryString();
 
     $plans = DB::table('subscription_plans')->orderBy('sort_order')->get();
 
-    return view('pages.dashboard.admin-subscriptions', compact('lang', 'siacUser', 'filters', 'subscriptions', 'subStats', 'finance', 'planDist', 'plans'));
+    return view('pages.dashboard.admin-subscriptions', compact('lang', 'siacUser', 'filters', 'subscriptions', 'subStats', 'finance', 'planDist', 'plans', 'isDefaultView', 'perPage'));
 })->name('admin.subscriptions');
 // =====================================================================
 // REPLACEMENT for the admin.users GET route in routes/web.php
