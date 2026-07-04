@@ -32,7 +32,7 @@ $statusLabels = [
 
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
         @forelse($tickets as $ticket)
-        <a href="{{ route('support.show', ['id' => $ticket->id]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+        <a href="{{ route('admin.support.ticket', ['id' => $ticket->id, 'lang' => $lang]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
             <div class="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
                 <i data-lucide="life-buoy" class="w-4 h-4 text-gray-400"></i>
             </div>

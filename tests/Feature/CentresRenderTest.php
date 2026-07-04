@@ -94,4 +94,48 @@ class CentresRenderTest extends TestCase
         // Public collections gallery
         $this->get('/collections-heritage')->assertOk();
     }
+
+    public function test_batch_d_admin_detail_pages_render(): void
+    {
+        $admin = $this->makeUser();
+        $session = ['siac_user' => [
+            'id' => $admin->id, 'name' => 'Admin', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]];
+
+        // Create a support ticket (migration seed needs pre-existing users)
+        $ticketId = DB::table('support_tickets')->insertGetId([
+            'uuid' => (string) \Illuminate\Support\Str::uuid(), 'user_id' => $admin->id,
+            'subject_fr' => 'Ticket Test', 'subject_en' => 'Ticket Test',
+            'status' => 'in_progress', 'priority' => 'high',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        DB::table('support_ticket_replies')->insert([
+            'ticket_id' => $ticketId, 'user_id' => $admin->id, 'body_fr' => 'Bonjour', 'body_en' => 'Hello',
+            'is_staff' => false, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->withSession($session)->get('/tableau-de-bord/admin/support/' . $ticketId)->assertOk()->assertSee('Ticket Test');
+
+        // Verification detail — build a business + application
+        $biz = $this->makeBusiness();
+        $appId = DB::table('verification_applications')->insertGetId([
+            'business_id' => $biz->id, 'tier_requested' => 'verified', 'status' => 'under_review',
+            'submitted_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->withSession($session)->get('/tableau-de-bord/admin/verifications/' . $appId . '/detail')->assertOk();
+        $this->withSession($session)->get('/tableau-de-bord/admin/verifications/' . $appId . '/revue')->assertOk();
+
+        // Notifications centre + detail
+        $notifId = DB::table('user_notifications')->insertGetId([
+            'user_id' => $admin->id, 'type' => 'support', 'title' => 'Notif Test', 'body' => 'Corps',
+            'link' => '/actualites', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $this->withSession($session)->get('/tableau-de-bord/admin/notifications')->assertOk();
+        $this->withSession($session)->get('/tableau-de-bord/admin/notifications/' . $notifId)->assertOk()->assertSee('Notif Test');
+
+        // Staff reply persists
+        $before = DB::table('support_ticket_replies')->where('ticket_id', $ticketId)->count();
+        $this->withSession($session)->post('/tableau-de-bord/admin/support/' . $ticketId . '/repondre', ['body' => 'Réponse de test.'])->assertRedirect();
+        $this->assertSame($before + 1, DB::table('support_ticket_replies')->where('ticket_id', $ticketId)->count());
+    }
 }

@@ -707,6 +707,90 @@ Route::get('/collections-heritage', function (Request $request) {
         ->cookie('lang', $lang, 60 * 24 * 30);
 })->name('collections.index');
 
+// Support ticket detail (design: "support ticket detail page.png")
+Route::get('/tableau-de-bord/admin/support/{id}', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $ticket = DB::table('support_tickets as t')->leftJoin('users as u', 'u.id', '=', 't.user_id')
+        ->select('t.*', 'u.name as user_name', 'u.email as user_email', 'u.phone as user_phone', 'u.created_at as user_since')
+        ->where('t.id', $id)->whereNull('t.deleted_at')->first();
+    if (!$ticket) abort(404);
+
+    $replies = DB::table('support_ticket_replies as r')->leftJoin('users as u', 'u.id', '=', 'r.user_id')
+        ->select('r.*', 'u.name as author_name')->where('r.ticket_id', $id)->orderBy('r.created_at')->get();
+
+    return view('pages.dashboard.admin-support-ticket', compact('lang', 'siacUser', 'ticket', 'replies'));
+})->name('admin.support.ticket');
+
+// Post a staff reply to a ticket (real)
+Route::post('/tableau-de-bord/admin/support/{id}/repondre', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $data = $request->validate(['body' => ['required', 'string', 'max:5000']]);
+
+    $ticket = DB::table('support_tickets')->where('id', $id)->first();
+    if (!$ticket) abort(404);
+    DB::table('support_ticket_replies')->insert([
+        'ticket_id' => $id, 'user_id' => $siacUser['id'],
+        'body_fr' => $data['body'], 'body_en' => $data['body'], 'is_staff' => true,
+        'created_at' => now(), 'updated_at' => now(),
+    ]);
+    DB::table('support_tickets')->where('id', $id)->update(['updated_at' => now()]);
+    return back()->with('success', $lang === 'fr' ? 'Réponse envoyée.' : 'Reply sent.');
+})->name('admin.support.reply')->middleware('throttle:30,1');
+
+// Artisan verification detail + review (designs: "artisan verification detail page.png",
+// "verification review flow page.png" — same review screen)
+$verifDetail = function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $app = DB::table('verification_applications as va')->join('businesses as b', 'b.id', '=', 'va.business_id')
+        ->leftJoin('users as u', 'u.id', '=', 'b.user_id')
+        ->leftJoin('regions as r', 'r.id', '=', 'b.region_id')
+        ->leftJoin('industries as i', 'i.id', '=', 'b.industry_id')
+        ->select('va.*', 'b.name_fr as business_name', 'b.vendor_type', 'b.logo', 'b.slug as business_slug', 'b.id as business_id',
+            'u.name as owner_name', 'u.email as owner_email', 'u.phone as owner_phone',
+            'r.name_fr as region_fr', 'i.name_fr as industry_fr')
+        ->where('va.id', $id)->first();
+    if (!$app) abort(404);
+
+    $documents = DB::table('verification_documents')->where('application_id', $id)->get();
+    return view('pages.dashboard.admin-verification-detail', compact('lang', 'siacUser', 'app', 'documents'));
+};
+Route::get('/tableau-de-bord/admin/verifications/{id}/detail', $verifDetail)->name('admin.verifications.detail');
+Route::get('/tableau-de-bord/admin/verifications/{id}/revue', $verifDetail)->name('admin.verifications.review');
+
+// Notifications centre (design: "Notifications branded with our identity and heritage.png")
+Route::get('/tableau-de-bord/admin/notifications', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $notifications = DB::table('user_notifications')->orderByDesc('created_at')->paginate(6)->withQueryString();
+    $stats = [
+        'total'   => (int) DB::table('user_notifications')->count(),
+        'unread'  => (int) DB::table('user_notifications')->whereNull('read_at')->count(),
+        'read'    => (int) DB::table('user_notifications')->whereNotNull('read_at')->count(),
+    ];
+    return view('pages.dashboard.admin-notifications', compact('lang', 'siacUser', 'notifications', 'stats'));
+})->name('admin.notifications');
+
+// Notification detail (design: "heritage bbranded notification detail page.png")
+Route::get('/tableau-de-bord/admin/notifications/{id}', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $notification = DB::table('user_notifications')->where('id', $id)->first();
+    if (!$notification) abort(404);
+    return view('pages.dashboard.admin-notification-detail', compact('lang', 'siacUser', 'notification'));
+})->name('notifications.show');
+
 // Data Export Centre (design: "Data Export Centre.png") — real export registry;
 // every download streams a live CSV of the requested dataset.
 if (! function_exists('dataExportDatasets')) {

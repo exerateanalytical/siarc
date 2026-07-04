@@ -53,6 +53,9 @@ $docTypeLabels = [
                 @endforeach
             </div>
 
+            <a href="{{ route('admin.verifications.detail', ['id' => $app->id, 'lang' => $lang]) }}" class="mt-2 mb-1 flex items-center justify-center gap-1.5 w-full border border-[#CFE0D4] text-[#157A43] text-sm font-medium py-2 rounded-lg hover:bg-[#E2F3E8]">
+                <i data-lucide="eye" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Voir le détail de vérification' : 'View verification detail' }}
+            </a>
             <div class="flex items-center gap-2">
                 <form method="POST" action="{{ route('admin.verifications.approve', ['id' => $app->id]) }}" class="flex-1">
                     @csrf

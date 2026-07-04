@@ -39,7 +39,7 @@
         [$isFr ? 'Système' : 'System', [
             ['settings',      'side-ic-settings',      $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
             ['logs',          'side-ic-journal',       $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
-            ['notifications', 'side-ic-notifications', 'Notifications',                                     route('notifications.index'), '12'],
+            ['notifications', 'bell', 'Notifications',                                     route('admin.notifications'), '12'],
             ['backups',       'database',   $isFr ? 'Sauvegardes & Logs' : 'Backups & Logs',                   route('admin.backups'), null],
             ['exports',       'side-ic-exports',       'Data Export Centre',                                route('admin.exports'), null],
             ['pages',         'side-ic-outils',        $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
