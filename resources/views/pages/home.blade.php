@@ -237,17 +237,28 @@
         {{ $isFr ? 'Industry Sectors' : 'Industry Sectors' }}
     </h2>
 
-    <div class="mt-8 flex flex-wrap justify-center gap-2">
-        @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
-        <a href="{{ $scHref }}"
-            class="relative w-[46%] sm:w-[140px] lg:w-[86px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-5 pb-4 px-1.5 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center">
-            <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-11 h-11 object-contain" aria-hidden="true">
-            <p class="mt-2.5 text-[11px] font-medium text-[#1D1B16] leading-[1.35] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
-            <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
-                <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
-            </span>
-        </a>
-        @endforeach
+    <div class="relative mt-8">
+        <button id="sector-prev" aria-label="{{ $isFr ? 'Précédent' : 'Previous' }}"
+            class="hidden lg:flex absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] hover:text-[#1D1B16]">
+            <i data-lucide="chevron-left" class="w-7 h-7"></i>
+        </button>
+        <button id="sector-next" aria-label="{{ $isFr ? 'Suivant' : 'Next' }}"
+            class="hidden lg:flex absolute -right-7 top-1/2 -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] hover:text-[#1D1B16]">
+            <i data-lucide="chevron-right" class="w-7 h-7"></i>
+        </button>
+
+        <div id="sector-track" class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x">
+            @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
+            <a href="{{ $scHref }}"
+                class="relative snap-start shrink-0 w-[57.5%] sm:w-[175px] lg:w-[108px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-5 pb-4 px-1.5 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center">
+                <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-11 h-11 object-contain" aria-hidden="true">
+                <p class="mt-2.5 text-[11px] font-medium text-[#1D1B16] leading-[1.35] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
+                <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
+                    <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
+                </span>
+            </a>
+            @endforeach
+        </div>
     </div>
 
     <div class="mt-8 text-center">
@@ -537,6 +548,15 @@
     if (track && bizPrev && bizNext) {
         bizPrev.addEventListener('click', () => track.scrollBy({ left: -440, behavior: 'smooth' }));
         bizNext.addEventListener('click', () => track.scrollBy({ left: 440, behavior: 'smooth' }));
+    }
+
+    // Sector cards carousel (same behaviour as the featured businesses row)
+    const sectorTrack = document.getElementById('sector-track');
+    const sectorPrev = document.getElementById('sector-prev');
+    const sectorNext = document.getElementById('sector-next');
+    if (sectorTrack && sectorPrev && sectorNext) {
+        sectorPrev.addEventListener('click', () => sectorTrack.scrollBy({ left: -440, behavior: 'smooth' }));
+        sectorNext.addEventListener('click', () => sectorTrack.scrollBy({ left: 440, behavior: 'smooth' }));
     }
 </script>
 </body>
