@@ -560,6 +560,31 @@ Route::get('/tableau-de-bord/admin/sauvegardes/{id}', function (Request $request
     return view('pages.dashboard.admin-backup-detail', compact('lang', 'siacUser', 'backup', 'settings', 'logs'));
 })->name('admin.backups.detail');
 
+// Partner admin detail (design: "Partner detail view admin panel.png")
+Route::get('/tableau-de-bord/admin/partenaires/{id}/detail', function (Request $request, $id) {
+    $siacUser = session('siac_user');
+    if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $partner = DB::table('partners')->where('id', $id)->first();
+    if (!$partner) abort(404);
+    $otherPartners = DB::table('partners')->where('id', '!=', $id)->where('is_active', true)->orderBy('sort_order')->limit(4)->get();
+
+    return view('pages.dashboard.admin-partner-detail', compact('lang', 'siacUser', 'partner', 'otherPartners'));
+})->name('admin.partners.detail');
+
+// Public partner page (design: "Partner detail view public view for public.png")
+Route::get('/partenaires/{id}', function (Request $request, $id) {
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $partner = DB::table('partners')->where('id', $id)->where('is_active', true)->first();
+    if (!$partner) abort(404);
+    $otherPartners = DB::table('partners')->where('id', '!=', $id)->where('is_active', true)->orderBy('sort_order')->limit(6)->get();
+
+    return response(view('pages.partner-show', compact('lang', 'partner', 'otherPartners')))
+        ->cookie('lang', $lang, 60 * 24 * 30);
+})->name('partners.show');
+
 // Data Export Centre (design: "Data Export Centre.png") — real export registry;
 // every download streams a live CSV of the requested dataset.
 if (! function_exists('dataExportDatasets')) {

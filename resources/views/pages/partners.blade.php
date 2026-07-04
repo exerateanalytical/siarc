@@ -60,16 +60,20 @@ $partnerTiles = [
                         <i data-lucide="building-2" class="w-7 h-7 text-[#D9CFBB]"></i>
                         @endif
                     </div>
-                    <p class="text-[13px] font-bold text-[#1D1B16]">{{ $lang === 'fr' ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</p>
+                    <a href="{{ route('partners.show', ['id' => $partner->id, 'lang' => $lang]) }}" class="text-[13px] font-bold text-[#1D1B16] hover:text-[#14652F]">{{ $lang === 'fr' ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</a>
                     @if($partner->description_fr)
                     <p class="text-[11.5px] text-[#6F6B60] mt-1 line-clamp-2">{{ $lang === 'fr' ? $partner->description_fr : ($partner->description_en ?? $partner->description_fr) }}</p>
                     @endif
-                    @if($partner->website)
-                    <a href="{{ $partner->website }}" target="_blank" rel="noopener" class="text-[11.5px] font-semibold text-[#14652F] hover:text-[#14532D] mt-2 flex items-center gap-1">
-                        {{ $lang === 'fr' ? 'Visiter le site' : 'Visit website' }}
-                        <i data-lucide="external-link" class="w-3 h-3"></i>
-                    </a>
-                    @endif
+                    <div class="mt-2 flex items-center gap-3">
+                        <a href="{{ route('partners.show', ['id' => $partner->id, 'lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#14652F] hover:text-[#14532D] flex items-center gap-1">
+                            {{ $lang === 'fr' ? 'Voir le profil' : 'View profile' }}<i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                        @if($partner->website)
+                        <a href="{{ $partner->website }}" target="_blank" rel="noopener" class="text-[11.5px] font-semibold text-[#8A857A] hover:text-[#14652F] flex items-center gap-1">
+                            {{ $lang === 'fr' ? 'Site' : 'Website' }}<i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>

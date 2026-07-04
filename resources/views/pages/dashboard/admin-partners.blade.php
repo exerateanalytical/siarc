@@ -40,6 +40,9 @@ $tierLabels = [
                 <p class="text-sm font-medium text-gray-900 truncate">{{ $lang === 'fr' ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</p>
                 <p class="text-xs text-gray-400">{{ $tierLabels[$partner->tier] ?? $partner->tier }} @if(!$partner->is_active) · {{ $lang === 'fr' ? 'Inactif' : 'Inactive' }} @endif</p>
             </div>
+            <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}" class="p-2 rounded-lg hover:bg-green-50 text-[#157A43] shrink-0" title="{{ $lang === 'fr' ? 'Voir le détail' : 'View detail' }}">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+            </a>
             <form method="POST" action="{{ route('admin.partners.destroy', ['id' => $partner->id]) }}" onsubmit="return confirm('{{ $lang === 'fr' ? 'Supprimer ce partenaire ?' : 'Remove this partner?' }}')">
                 @csrf
                 <button type="submit" class="p-2 rounded-lg hover:bg-red-50 text-red-500 shrink-0">
