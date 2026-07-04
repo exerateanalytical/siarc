@@ -807,7 +807,7 @@ Suite: **47 tests / 168 assertions green**.
    via preview_eval.
 7. Check FR (`?lang=fr`) and EN (`?lang=en`), mobile (375px, no horizontal
    overflow, bottom nav present).
-8. Run `php artisan test` (47 tests must stay green), then commit
+8. Run `php artisan test` (55 tests must stay green), then commit
    (PowerShell 5.1: multiline commit messages need `git commit -F <file>`).
 
 ## Shared design system

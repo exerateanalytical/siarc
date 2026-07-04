@@ -86,7 +86,7 @@ Nothing currently requires the scheduler.
 ## Verifying a deployment
 
 ```bash
-php artisan test          # full suite must be green (47 tests)
+php artisan test          # full suite must be green (55 tests)
 curl -I https://your-domain.cm/robots.txt
 curl -I https://your-domain.cm/sitemap.xml
 ```

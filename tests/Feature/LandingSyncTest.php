@@ -94,6 +94,34 @@ class LandingSyncTest extends TestCase
             ->assertDontSee('Masque Sculpte Fang');
     }
 
+    public function test_events_page_lists_real_events_with_working_type_filter(): void
+    {
+        $this->makeEvent([
+            'name_fr'    => 'Salon Test des Tisserands',
+            'event_type' => 'salons',
+            'city_fr'    => 'Bafoussam, Ouest',
+            'price_fr'   => 'Entrée libre',
+            'starts_at'  => now()->addDays(5),
+            'ends_at'    => now()->addDays(5)->addHours(8),
+        ]);
+        $this->makeEvent([
+            'name_fr'    => 'Atelier Test du Cuir',
+            'event_type' => 'ateliers',
+            'starts_at'  => now()->addDays(9),
+            'ends_at'    => now()->addDays(9)->addHours(6),
+        ]);
+
+        $this->get('/evenements')
+            ->assertOk()
+            ->assertSee('Salon Test des Tisserands')
+            ->assertSee('Atelier Test du Cuir');
+
+        $this->get('/evenements?type=salons')
+            ->assertOk()
+            ->assertSee('Salon Test des Tisserands')
+            ->assertDontSee('Atelier Test du Cuir');
+    }
+
     public function test_featured_businesses_on_landing_come_from_the_database(): void
     {
         $ind = $this->makeIndustry();

@@ -14,65 +14,56 @@
         ['autres',        $isFr ? 'Autres' : 'Other'],
     ];
 
-    // The design's 6 event tickets, verbatim (all seeded as real events — DesignEventsSeeder)
-    $designEvents = [
-        ['slug' => 'journees-nationales-artisanat-camerounais-2025', 'type' => 'salons', 'regionKey' => 'centre',
-         'color' => 'green', 'icon' => 'event-icon-1.png',
-         'day' => '20', 'month' => $isFr ? 'AOÛT' : 'AUG', 'year' => '2025', 'from' => '09:00', 'to' => '18:00',
-         'badge' => $isFr ? 'Événement national' : 'National event', 'badgeColor' => 'red',
-         'title' => $isFr ? 'Journées Nationales de l\'Artisanat Camerounais 2025' : 'National Days of Cameroonian Craftsmanship 2025',
-         'city' => 'Yaoundé, Centre', 'venue' => 'Palais des Congrès de Yaoundé',
-         'desc' => $isFr ? "Un événement national pour promouvoir l'excellence artisanale camerounaise et valoriser nos savoir-faire." : "A national event to promote Cameroonian artisanal excellence and showcase our know-how.",
-         'tags' => [['calendar-days', 'Expositions'], ['message-square', $isFr ? 'Conférences' : 'Conferences'], ['users', 'Ateliers'], ['share-2', 'Networking']],
-         'price' => $isFr ? 'Entrée libre' : 'Free entry'],
-        ['slug' => 'festival-arts-traditions-bamoun', 'type' => 'festivals', 'regionKey' => 'ouest',
-         'color' => 'red', 'icon' => 'event-icon-2.png',
-         'day' => '24', 'month' => $isFr ? 'AOÛT' : 'AUG', 'year' => '2025', 'from' => '10:00', 'to' => '20:00',
-         'badge' => $isFr ? 'Festival culturel' : 'Cultural festival', 'badgeColor' => 'gold',
-         'title' => $isFr ? 'Festival des Arts et Traditions Bamoun' : 'Bamoun Arts and Traditions Festival',
-         'city' => 'Foumban, Ouest', 'venue' => 'Palais Royal de Foumban',
-         'desc' => $isFr ? "Célébration de la richesse culturelle Bamoun à travers l'art, la musique, la danse et l'artisanat traditionnel." : "A celebration of Bamoun cultural wealth through art, music, dance and traditional craftsmanship.",
-         'tags' => [['palette', 'Arts'], ['music', 'Musique'], ['sparkles', $isFr ? 'Danse' : 'Dance'], ['hand', 'Artisanat']],
-         'price' => '2 000 FCFA'],
-        ['slug' => 'atelier-poterie-traditionnelle', 'type' => 'ateliers', 'regionKey' => 'extreme-nord',
-         'color' => 'green', 'icon' => 'event-icon-3.png',
-         'day' => '05', 'month' => 'SEPT', 'year' => '2025', 'from' => '09:00', 'to' => '16:00',
-         'badge' => $isFr ? 'Atelier & Formation' : 'Workshop & Training', 'badgeColor' => 'greenb',
-         'title' => $isFr ? 'Atelier de Poterie Traditionnelle' : 'Traditional Pottery Workshop',
-         'city' => 'Maroua, Extrême-Nord', 'venue' => 'Centre d\'Artisanat de Maroua',
-         'desc' => $isFr ? "Apprenez les techniques ancestrales de la poterie avec des maîtres artisans." : "Learn ancestral pottery techniques with master artisans.",
-         'tags' => [['graduation-cap', 'Formation'], ['hand', 'Pratique'], ['layers', $isFr ? 'Matériaux' : 'Materials'], ['badge-check', 'Certification']],
-         'price' => '5 000 FCFA'],
-        ['slug' => 'marche-createurs-eco-responsables', 'type' => 'marches', 'regionKey' => 'littoral',
-         'color' => 'gold', 'icon' => 'event-icon-4.png',
-         'day' => '12', 'month' => 'SEPT', 'year' => '2025', 'from' => '08:00', 'to' => '17:00',
-         'badge' => $isFr ? 'Marché & Foire' : 'Market & Fair', 'badgeColor' => 'gold',
-         'title' => $isFr ? 'Marché des Créateurs Éco-responsables' : 'Eco-responsible Creators Market',
-         'city' => 'Douala, Littoral', 'venue' => 'Place des Fêtes de Douala',
-         'desc' => $isFr ? "Rencontrez des créateurs engagés pour un artisanat durable et respectueux de l'environnement." : "Meet creators committed to sustainable, environmentally friendly craftsmanship.",
-         'tags' => [['leaf', $isFr ? 'Produits Éco' : 'Eco products'], ['users', 'Rencontres'], ['hand', 'Ateliers'], ['shopping-bag', 'Ventes']],
-         'price' => $isFr ? 'Entrée libre' : 'Free entry'],
-        ['slug' => 'conference-artisanat-developpement-durable', 'type' => 'conferences', 'regionKey' => 'centre',
-         'color' => 'green', 'icon' => 'event-icon-5.png',
-         'day' => '28', 'month' => 'SEPT', 'year' => '2025', 'from' => '14:00', 'to' => '19:00',
-         'badge' => $isFr ? 'Conférence' : 'Conference', 'badgeColor' => 'red',
-         'title' => $isFr ? 'Conférence : L\'artisanat au cœur du développement durable' : 'Conference: Craftsmanship at the heart of sustainable development',
-         'city' => 'Yaoundé, Centre', 'venue' => 'Institut Français du Cameroun',
-         'desc' => $isFr ? "Échanges et réflexions sur le rôle de l'artisanat dans le développement économique et social du Cameroun." : "Discussions on the role of craftsmanship in Cameroon's economic and social development.",
-         'tags' => [['message-square', $isFr ? 'Conférence' : 'Conference'], ['users', 'Panel'], ['repeat', 'Échanges'], ['share-2', 'Réseautage']],
-         'price' => '3 000 FCFA'],
-        ['slug' => 'prix-national-jeune-artisan-2025', 'type' => 'concours', 'regionKey' => 'centre',
-         'color' => 'red', 'icon' => 'event-icon-6.png',
-         'day' => '10', 'month' => 'OCT', 'year' => '2025', 'from' => '09:00', 'to' => '18:00',
-         'badge' => $isFr ? 'Concours & Prix' : 'Competition & Award', 'badgeColor' => 'gold',
-         'title' => $isFr ? 'Prix National du Jeune Artisan 2025' : 'National Young Artisan Award 2025',
-         'city' => 'Yaoundé, Centre', 'venue' => 'Palais des Congrès de Yaoundé',
-         'desc' => $isFr ? "Valorisons la jeunesse et l'innovation dans l'artisanat. À vos créations !" : "Let's celebrate youth and innovation in craftsmanship. Get creating!",
-         'tags' => [['trophy', 'Compétition'], ['lightbulb', 'Innovation'], ['users', $isFr ? 'Jeunes Talents' : 'Young talents'], ['award', 'Récompenses']],
-         'price' => $isFr ? 'Entrée libre' : 'Free entry'],
+    // Event tickets come from the real events table; the design's ticket
+    // artwork (icon / stub colour / badge / tags) is keyed by event_type.
+    $typeMeta = [
+        //             icon                stub     badge   badge label FR / EN                                  tags
+        'salons'      => ['event-icon-1.png', 'green', 'red',    $isFr ? 'Événement national' : 'National event',
+                          [['calendar-days', 'Expositions'], ['message-square', $isFr ? 'Conférences' : 'Conferences'], ['users', 'Ateliers'], ['share-2', 'Networking']]],
+        'festivals'   => ['event-icon-2.png', 'red',   'gold',   $isFr ? 'Festival culturel' : 'Cultural festival',
+                          [['palette', 'Arts'], ['music', 'Musique'], ['sparkles', $isFr ? 'Danse' : 'Dance'], ['hand', 'Artisanat']]],
+        'ateliers'    => ['event-icon-3.png', 'green', 'greenb', $isFr ? 'Atelier & Formation' : 'Workshop & Training',
+                          [['graduation-cap', 'Formation'], ['hand', 'Pratique'], ['layers', $isFr ? 'Matériaux' : 'Materials'], ['badge-check', 'Certification']]],
+        'marches'     => ['event-icon-4.png', 'gold',  'gold',   $isFr ? 'Marché & Foire' : 'Market & Fair',
+                          [['leaf', $isFr ? 'Produits Éco' : 'Eco products'], ['users', 'Rencontres'], ['hand', 'Ateliers'], ['shopping-bag', 'Ventes']]],
+        'conferences' => ['event-icon-5.png', 'green', 'red',    $isFr ? 'Conférence' : 'Conference',
+                          [['message-square', $isFr ? 'Conférence' : 'Conference'], ['users', 'Panel'], ['repeat', 'Échanges'], ['share-2', 'Réseautage']]],
+        'concours'    => ['event-icon-6.png', 'red',   'gold',   $isFr ? 'Concours & Prix' : 'Competition & Award',
+                          [['trophy', 'Compétition'], ['lightbulb', 'Innovation'], ['users', $isFr ? 'Jeunes Talents' : 'Young talents'], ['award', 'Récompenses']]],
+        'autres'      => ['event-icon-1.png', 'green', 'red',    $isFr ? 'Événement' : 'Event',
+                          [['calendar-days', 'Programme'], ['users', 'Rencontres'], ['share-2', 'Networking']]],
     ];
+    $monthShort = $isFr
+        ? [1 => 'JAN', 'FÉV', 'MARS', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEPT', 'OCT', 'NOV', 'DÉC']
+        : [1 => 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-    // ?type= and ?region= narrow the static ticket list (sidebar/pill links)
+    $allEvents = $upcoming->concat($past);
+    $designEvents = $allEvents->map(function ($ev) use ($isFr, $typeMeta, $monthShort) {
+        [$icon, $stub, $badgeColor, $badge, $tags] = $typeMeta[$ev->event_type] ?? $typeMeta['autres'];
+        $ends = $ev->ends_at ?? $ev->starts_at->copy()->addHours(8);
+        return [
+            'slug'      => $ev->slug,
+            'type'      => $ev->event_type ?? 'autres',
+            'regionKey' => $ev->region_key ?? '',
+            'color'     => $stub,
+            'icon'      => $icon,
+            'day'       => $ev->starts_at->format('d'),
+            'month'     => $monthShort[(int) $ev->starts_at->format('n')],
+            'year'      => $ev->starts_at->format('Y'),
+            'from'      => $ev->starts_at->format('H:i'),
+            'to'        => $ends->format('H:i'),
+            'badge'     => $badge,
+            'badgeColor'=> $badgeColor,
+            'title'     => $isFr ? $ev->name_fr : ($ev->name_en ?? $ev->name_fr),
+            'city'      => $ev->city_fr ?? \Illuminate\Support\Str::afterLast($ev->location_fr ?? '', ', ') ?: 'Cameroun',
+            'venue'     => $isFr ? ($ev->location_fr ?? '') : ($ev->location_en ?? $ev->location_fr ?? ''),
+            'desc'      => \Illuminate\Support\Str::limit($isFr ? ($ev->description_fr ?? '') : ($ev->description_en ?? $ev->description_fr ?? ''), 140),
+            'tags'      => $tags,
+            'price'     => $isFr ? ($ev->price_fr ?? 'Entrée libre') : ($ev->price_en ?? 'Free entry'),
+        ];
+    })->all();
+
+    // ?type= and ?region= narrow the real ticket list (sidebar/pill links)
     $activeType = (string) request('type', '');
     $activeRegion = (string) request('region', '');
     $shownEvents = array_values(array_filter($designEvents, fn ($e) =>
@@ -82,24 +73,27 @@
         usort($shownEvents, fn ($a, $b) => strcoll($a['title'], $b['title']));
     }
 
+    // Real counts per type / region for the browse rails
+    $typeTally = $allEvents->countBy('event_type');
+    $regionTally = $allEvents->countBy('region_key');
+
     $stubColors = ['green' => '#06301A', 'red' => '#C1272D', 'gold' => '#EFA912'];
     $badgeColors = ['red' => '#C1272D', 'gold' => '#E9A825', 'greenb' => '#0E5A2F'];
 
     $browseCats = [
-        ['calendar-days', $isFr ? 'Salons & Expositions' : 'Fairs & Exhibitions', '(32)', 'salons'],
-        ['sparkles',      $isFr ? 'Festivals Culturels' : 'Cultural Festivals', '(28)', 'festivals'],
-        ['hand',          $isFr ? 'Ateliers & Formations' : 'Workshops & Training', '(24)', 'ateliers'],
-        ['message-square',$isFr ? 'Conférences & Séminaires' : 'Conferences & Seminars', '(16)', 'conferences'],
-        ['store',         $isFr ? 'Marchés & Foires' : 'Markets & Fairs', '(18)', 'marches'],
-        ['monitor',       $isFr ? 'Événements en ligne' : 'Online events', '(10)', 'autres'],
-        ['trophy',        $isFr ? 'Concours & Prix' : 'Competitions & Awards', '(8)', 'concours'],
-        ['layout-grid',   $isFr ? 'Autres' : 'Other', '12', 'autres'],
+        ['calendar-days', $isFr ? 'Salons & Expositions' : 'Fairs & Exhibitions', '(' . ($typeTally['salons'] ?? 0) . ')', 'salons'],
+        ['sparkles',      $isFr ? 'Festivals Culturels' : 'Cultural Festivals', '(' . ($typeTally['festivals'] ?? 0) . ')', 'festivals'],
+        ['hand',          $isFr ? 'Ateliers & Formations' : 'Workshops & Training', '(' . ($typeTally['ateliers'] ?? 0) . ')', 'ateliers'],
+        ['message-square',$isFr ? 'Conférences & Séminaires' : 'Conferences & Seminars', '(' . ($typeTally['conferences'] ?? 0) . ')', 'conferences'],
+        ['store',         $isFr ? 'Marchés & Foires' : 'Markets & Fairs', '(' . ($typeTally['marches'] ?? 0) . ')', 'marches'],
+        ['trophy',        $isFr ? 'Concours & Prix' : 'Competitions & Awards', '(' . ($typeTally['concours'] ?? 0) . ')', 'concours'],
+        ['layout-grid',   $isFr ? 'Autres' : 'Other', '(' . ($typeTally['autres'] ?? 0) . ')', 'autres'],
     ];
-    $browseRegions = [
-        ['Centre', '(38)', 'centre'], ['Littoral', '(25)', 'littoral'], ['Ouest', '(18)', 'ouest'],
-        ['Nord-Ouest', '(14)', 'nord-ouest'], ['Sud-Ouest', '(10)', 'sud-ouest'], ['Extrême-Nord', '(8)', 'extreme-nord'],
-        ['Nord', '(7)', 'nord'], ['Est', '(5)', 'est'], ['Sud', '(3)', 'sud'], ['Adamaoua', '(3)', 'adamaoua'],
-    ];
+    $browseRegions = collect([
+        ['Centre', 'centre'], ['Littoral', 'littoral'], ['Ouest', 'ouest'],
+        ['Nord-Ouest', 'nord-ouest'], ['Sud-Ouest', 'sud-ouest'], ['Extrême-Nord', 'extreme-nord'],
+        ['Nord', 'nord'], ['Est', 'est'], ['Sud', 'sud'], ['Adamaoua', 'adamaoua'],
+    ])->map(fn ($r) => [$r[0], '(' . ($regionTally[$r[1]] ?? 0) . ')', $r[1]])->all();
 
     $regions = ['Centre','Littoral','Ouest','Nord-Ouest','Sud-Ouest','Nord','Adamaoua','Est','Sud','Extrême-Nord'];
 
