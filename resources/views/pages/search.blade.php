@@ -9,11 +9,11 @@ $totalResults = $businesses->count() + $products->count();
 <div class="max-w-6xl mx-auto px-4 py-8">
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2 mb-2">
+        <h1 class="text-xl font-bold text-[#1B1B18] flex items-center gap-2 mb-2">
             <i data-lucide="search" class="w-5 h-5 text-forest-500"></i>
             {{ $lang === 'fr' ? 'Résultats pour' : 'Results for' }} "{{ $q }}"
         </h1>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-[#8A857A]">
             @if(strlen($q) < 2)
                 {{ $lang === 'fr' ? 'Entrez au moins 2 caractères pour rechercher.' : 'Enter at least 2 characters to search.' }}
             @else
@@ -23,19 +23,19 @@ $totalResults = $businesses->count() + $products->count();
     </div>
 
     @if(strlen($q) >= 2 && $totalResults === 0)
-    <div class="text-center py-16 text-gray-400">
+    <div class="text-center py-16 text-[#A8A296]">
         <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-40"></i>
-        <p class="font-medium text-gray-600">{{ $lang === 'fr' ? 'Aucun résultat trouvé' : 'No results found' }}</p>
+        <p class="font-medium text-[#6F6B60]">{{ $lang === 'fr' ? 'Aucun résultat trouvé' : 'No results found' }}</p>
         <p class="text-sm mt-1">{{ $lang === 'fr' ? 'Essayez un autre mot-clé.' : 'Try a different keyword.' }}</p>
     </div>
     @endif
 
     @if($businesses->isNotEmpty())
     <div class="mb-8">
-        <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 class="text-base font-semibold text-[#1B1B18] mb-4 flex items-center gap-2">
             <i data-lucide="building-2" class="w-4 h-4 text-forest-500"></i>
             {{ $lang === 'fr' ? 'Entreprises' : 'Businesses' }}
-            <span class="text-sm font-normal text-gray-400">({{ $businesses->count() }})</span>
+            <span class="text-sm font-normal text-[#A8A296]">({{ $businesses->count() }})</span>
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
             @foreach($businesses as $business)
@@ -47,10 +47,10 @@ $totalResults = $businesses->count() + $products->count();
 
     @if($products->isNotEmpty())
     <div class="mb-8">
-        <h2 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 class="text-base font-semibold text-[#1B1B18] mb-4 flex items-center gap-2">
             <i data-lucide="package" class="w-4 h-4 text-forest-500"></i>
             {{ $lang === 'fr' ? 'Produits' : 'Products' }}
-            <span class="text-sm font-normal text-gray-400">({{ $products->count() }})</span>
+            <span class="text-sm font-normal text-[#A8A296]">({{ $products->count() }})</span>
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             @foreach($products as $product)

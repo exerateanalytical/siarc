@@ -25,39 +25,39 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
 
     <form method="POST" action="{{ route('notifications.settings.save') }}">
         @csrf
-        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div class="bg-white border border-[#EFEBE2] rounded-xl overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#F1EDE4]">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
                         <i data-lucide="bell-ring" class="w-4 h-4 text-forest-600"></i>
                     </div>
-                    <h2 class="text-sm font-semibold text-gray-900">{{ $lang === 'fr' ? 'Canaux par type de notification' : 'Channels per notification type' }}</h2>
+                    <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Canaux par type de notification' : 'Channels per notification type' }}</h2>
                 </div>
                 <div class="hidden sm:flex items-center gap-6 pr-1">
                     @foreach($channels as $key => $label)
-                    <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide w-10 text-center">{{ $label }}</span>
+                    <span class="text-[10px] font-semibold text-[#A8A296] uppercase tracking-wide w-10 text-center">{{ $label }}</span>
                     @endforeach
                 </div>
             </div>
 
             @foreach($categories as $catKey => $cat)
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-gray-50 last:border-0">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-[#FBF9F4] last:border-0">
                 <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
-                        <i data-lucide="{{ $cat['icon'] }}" class="w-4 h-4 text-gray-500"></i>
+                    <div class="w-8 h-8 rounded-lg bg-[#FBF9F4] flex items-center justify-center shrink-0">
+                        <i data-lucide="{{ $cat['icon'] }}" class="w-4 h-4 text-[#8A857A]"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-sm font-medium text-gray-900">{{ $cat[$lang] }}</p>
-                        <p class="text-xs text-gray-400 truncate">{{ $cat['desc_' . $lang] }}</p>
+                        <p class="text-sm font-medium text-[#1B1B18]">{{ $cat[$lang] }}</p>
+                        <p class="text-xs text-[#A8A296] truncate">{{ $cat['desc_' . $lang] }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-6 pl-11 sm:pl-0">
                     @foreach($channels as $chKey => $chLabel)
                     <label class="flex flex-col items-center gap-1 w-10 cursor-pointer">
-                        <span class="sm:hidden text-[9px] font-semibold text-gray-400 uppercase">{{ $chLabel }}</span>
+                        <span class="sm:hidden text-[9px] font-semibold text-[#A8A296] uppercase">{{ $chLabel }}</span>
                         <input type="checkbox" name="prefs[{{ $catKey }}][{{ $chKey }}]" value="1"
                             {{ $isOn($catKey, $chKey) ? 'checked' : '' }}
-                            class="w-4 h-4 rounded border-gray-300 text-forest-500 focus:ring-forest-400">
+                            class="w-4 h-4 rounded border-[#E4DECF] text-forest-500 focus:ring-forest-400">
                     </label>
                     @endforeach
                 </div>

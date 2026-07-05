@@ -28,16 +28,16 @@ $docTypeLabels = [
 
     <!-- Verification applications -->
     <div class="flex items-center gap-2 mb-3">
-        <h2 class="text-sm font-semibold text-gray-900">{{ $lang === 'fr' ? 'Demandes de vérification' : 'Verification applications' }}</h2>
+        <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Demandes de vérification' : 'Verification applications' }}</h2>
         <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{{ $applications->count() }}</span>
     </div>
     <div class="space-y-4 mb-8">
         @forelse($applications as $app)
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="bg-white border border-[#EFEBE2] rounded-xl p-5">
             <div class="flex items-start justify-between mb-3">
                 <div>
-                    <p class="text-sm font-semibold text-gray-900">{{ $app->business->name_fr }}</p>
-                    <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-medium text-gray-600">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
+                    <p class="text-sm font-semibold text-[#1B1B18]">{{ $app->business->name_fr }}</p>
+                    <p class="text-xs text-[#A8A296]">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-medium text-[#6F6B60]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
                 </div>
                 <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $app->business->slug]) }}" target="_blank" class="text-xs text-forest-600 hover:underline flex items-center gap-1 shrink-0">
                     <i data-lucide="external-link" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Voir profil' : 'View profile' }}
@@ -46,8 +46,8 @@ $docTypeLabels = [
 
             <div class="flex flex-wrap gap-2 mb-4">
                 @foreach($app->documents as $doc)
-                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs bg-gray-50 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-gray-400"></i>
+                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs bg-[#FBF9F4] border border-[#EFEBE2] px-2.5 py-1.5 rounded-lg hover:bg-[#F1EDE4]">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#A8A296]"></i>
                     {{ $docTypeLabels[$doc->type] ?? $doc->type }}
                 </a>
                 @endforeach
@@ -65,34 +65,34 @@ $docTypeLabels = [
                 </button>
             </div>
 
-            <div id="reject-v-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+            <div id="reject-v-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-[#F1EDE4]">
                 <form method="POST" action="{{ route('technical.verifications.reject', ['id' => $app->id]) }}">
                     @csrf
-                    <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 mb-2 resize-none"></textarea>
+                    <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 mb-2 resize-none"></textarea>
                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg">{{ $lang === 'fr' ? 'Confirmer le rejet' : 'Confirm rejection' }}</button>
                 </form>
             </div>
         </div>
         @empty
-        <div class="bg-white border border-gray-200 rounded-xl text-center py-8">
-            <i data-lucide="inbox" class="w-8 h-8 text-gray-200 mx-auto mb-2"></i>
-            <p class="text-sm text-gray-400">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
+        <div class="bg-white border border-[#EFEBE2] rounded-xl text-center py-8">
+            <i data-lucide="inbox" class="w-8 h-8 text-[#EFEBE2] mx-auto mb-2"></i>
+            <p class="text-sm text-[#A8A296]">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
         </div>
         @endforelse
     </div>
 
     <!-- Certifications -->
     <div class="flex items-center gap-2 mb-3">
-        <h2 class="text-sm font-semibold text-gray-900">{{ $lang === 'fr' ? 'Certifications à vérifier' : 'Certifications to review' }}</h2>
+        <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Certifications à vérifier' : 'Certifications to review' }}</h2>
         <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">{{ $certifications->count() }}</span>
     </div>
     <div class="space-y-4">
         @forelse($certifications as $cert)
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="bg-white border border-[#EFEBE2] rounded-xl p-5">
             <div class="flex items-start justify-between mb-3">
                 <div>
-                    <p class="text-sm font-semibold text-gray-900">{{ $cert->business->name_fr }}</p>
-                    <p class="text-xs text-gray-400">{{ $lang === 'fr' ? $cert->certification->name_fr : ($cert->certification->name_en ?? '') }} — {{ $cert->created_at->diffForHumans() }}</p>
+                    <p class="text-sm font-semibold text-[#1B1B18]">{{ $cert->business->name_fr }}</p>
+                    <p class="text-xs text-[#A8A296]">{{ $lang === 'fr' ? $cert->certification->name_fr : ($cert->certification->name_en ?? '') }} — {{ $cert->created_at->diffForHumans() }}</p>
                 </div>
                 @if($cert->certificate_file)
                 <a href="{{ \Storage::url($cert->certificate_file) }}" target="_blank" class="text-xs text-forest-600 hover:underline flex items-center gap-1 shrink-0">
@@ -111,18 +111,18 @@ $docTypeLabels = [
                     <i data-lucide="x" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Rejeter' : 'Reject' }}
                 </button>
             </div>
-            <div id="reject-c-{{ $cert->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+            <div id="reject-c-{{ $cert->id }}" class="hidden mt-3 pt-3 border-t border-[#F1EDE4]">
                 <form method="POST" action="{{ route('technical.certifications.reject', ['id' => $cert->id]) }}">
                     @csrf
-                    <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 mb-2 resize-none"></textarea>
+                    <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 mb-2 resize-none"></textarea>
                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg">{{ $lang === 'fr' ? 'Confirmer le rejet' : 'Confirm rejection' }}</button>
                 </form>
             </div>
         </div>
         @empty
-        <div class="bg-white border border-gray-200 rounded-xl text-center py-8">
-            <i data-lucide="inbox" class="w-8 h-8 text-gray-200 mx-auto mb-2"></i>
-            <p class="text-sm text-gray-400">{{ $lang === 'fr' ? 'Aucune certification en attente.' : 'No pending certifications.' }}</p>
+        <div class="bg-white border border-[#EFEBE2] rounded-xl text-center py-8">
+            <i data-lucide="inbox" class="w-8 h-8 text-[#EFEBE2] mx-auto mb-2"></i>
+            <p class="text-sm text-[#A8A296]">{{ $lang === 'fr' ? 'Aucune certification en attente.' : 'No pending certifications.' }}</p>
         </div>
         @endforelse
     </div>
