@@ -47,8 +47,10 @@
          $isFr ? "Boostez votre activité et touchez\nplus de clients" : "Boost your activity and reach\nmore customers"],
     ];
 
-    // Category filter options come from the industries table
+    // Category filter options — the illustrated official categories (same tiles
+    // as the landing/products), so the dropdown stays curated, not all 349 trades.
     $searchCats = $industries
+        ->filter(fn ($ind) => $ind->image_icon)
         ->sortBy('sort_order')
         ->map(fn ($ind) => [$ind->slug, $isFr ? $ind->name_fr : ($ind->name_en ?? $ind->name_fr)])
         ->values()->all();
