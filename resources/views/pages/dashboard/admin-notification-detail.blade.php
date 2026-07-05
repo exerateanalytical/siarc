@@ -1,6 +1,11 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'notifications';
+    $pageTitle = $isFr?'DÉTAIL DE LA NOTIFICATION':'NOTIFICATION DETAIL';
+    $pageBreadcrumb = [['Accueil', route('dashboard.admin')],['Notifications', route('admin.notifications')],[$isFr?'Détail':'Detail', null]];
+    $pageSearchPlaceholder = $isFr?'Rechercher une notification...':'Search a notification...';
     $ref = '#NTF-' . \Carbon\Carbon::parse($notification->created_at)->format('Y') . '-' . str_pad((string)$notification->id, 5, '0', STR_PAD_LEFT);
     $dtf = fn($v)=> $v ? \Carbon\Carbon::parse($v)->format('d M Y, H:i') : '—';
     $infos = [
@@ -16,20 +21,8 @@
         [$isFr?'Dernière mise à jour':'Last update', $dtf($notification->updated_at), 'Admin Super'],
     ];
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ $notification->title }} — Notification</title>
-<script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-<script>tailwind.config={theme:{extend:{colors:{leaf:'#14652F'},fontFamily:{sans:['Poppins','system-ui','sans-serif']}}}}</script>
-<script src="{{ asset('vendor/lucide.min.js') }}"></script><link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-<style>body{font-family:'Poppins',system-ui,sans-serif}html,body{overflow-x:clip}#ad-sidebar{display:none}#ad-sidebar.ad-open{display:flex;position:fixed;inset:0 auto 0 0;width:270px;z-index:60;overflow-y:auto}@media(min-width:1024px){#ad-sidebar,#ad-sidebar.ad-open{display:flex;position:sticky;top:0;height:100vh;width:250px}}</style></head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-heritage-header', ['pageTitle' => $isFr?'DÉTAIL DE LA NOTIFICATION':'NOTIFICATION DETAIL', 'pageBreadcrumb'=>[['Accueil', route('dashboard.admin')],['Notifications', route('admin.notifications')],[$isFr?'Détail':'Detail', null]], 'pageSearchPlaceholder'=>$isFr?'Rechercher une notification...':'Search a notification...'])
-        <main class="px-5 lg:px-7 pt-5 pb-8">
+
+@section('content')
             <a href="{{ route('admin.notifications', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12px] font-semibold text-[#3B382F]"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour':'Back' }}</a>
 
             <div class="mt-4 grid grid-cols-1 2xl:grid-cols-[1fr_320px] gap-5 items-start">
@@ -90,7 +83,4 @@
                 </aside>
             </div>
             <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script></body></html>
+@endsection

@@ -1,7 +1,12 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'partners';
     $pName = $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr);
+    $pageTitle = $isFr ? 'DÉTAIL DU PARTENAIRE' : 'PARTNER DETAIL';
+    $pageBreadcrumb = [['Dashboard', route('dashboard.admin')], ['Partners', route('admin.partners')], [$pName, null]];
+    $pageSearchPlaceholder = $isFr ? 'Rechercher un partenaire, email, pays...' : 'Search a partner, email, country...';
     $monthsFr = [1=>'Jan',2=>'Fév',3=>'Mars',4=>'Avr',5=>'Mai',6=>'Juin',7=>'Juil',8=>'Août',9=>'Sept',10=>'Oct',11=>'Nov',12=>'Déc'];
     $dt = function ($v) use ($isFr, $monthsFr) { if(!$v) return '—'; $d=\Carbon\Carbon::parse($v); return $isFr ? sprintf('%02d %s %d', $d->day, $monthsFr[$d->month], $d->year) : $d->format('d M Y'); };
 
@@ -50,29 +55,7 @@
         ['bar-chart-3', 'Rapports & Analytics', $isFr?'Rapports détaillés sur l\'impact et la visibilité':'Detailed impact and visibility reports'],
     ];
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pName }} — Administration</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf:'#14652F' }, fontFamily: { sans:['Poppins','system-ui','sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>body{font-family:'Poppins',system-ui,sans-serif}html,body{overflow-x:clip}#ad-sidebar{display:none}#ad-sidebar.ad-open{display:flex;position:fixed;inset:0 auto 0 0;width:270px;z-index:60;overflow-y:auto}@media(min-width:1024px){#ad-sidebar,#ad-sidebar.ad-open{display:flex;position:sticky;top:0;height:100vh;width:250px}}</style>
-</head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-heritage-header', [
-            'pageTitle' => $isFr ? 'DÉTAIL DU PARTENAIRE' : 'PARTNER DETAIL',
-            'pageBreadcrumb' => [['Dashboard', route('dashboard.admin')], ['Partners', route('admin.partners')], [$pName, null]],
-            'pageSearchPlaceholder' => $isFr ? 'Rechercher un partenaire, email, pays...' : 'Search a partner, email, country...',
-        ])
-
-        <main class="px-5 lg:px-7 pt-5 pb-8">
+@section('content')
             @if(session('success'))<div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}</div>@endif
 
             {{-- Actions row --}}
@@ -209,9 +192,4 @@
                 </aside>
             </div>
             <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection

@@ -1,6 +1,12 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'exports';
+    $pageTitle = 'DATA EXPORT CENTRE';
+    $pageSubtitle = $isFr ? 'Exportez vos données en toute sécurité. Transparence & Contrôle.' : 'Export your data safely. Transparency & Control.';
+    $pageBreadcrumb = [[$isFr ? 'Accueil' : 'Home', route('dashboard.admin', ['lang' => $lang])], ['Data Export Centre', null]];
+    $pageSearchPlaceholder = $isFr ? 'Rechercher un export, un rapport...' : 'Search an export, a report...';
     $adSideQuote = $isFr
         ? 'L\'artisanat est le miroir de notre âme collective. Préservons-le, transmettons-le, faisons le rayonner.'
         : 'Craftsmanship mirrors our collective soul. Let\'s preserve it, pass it on, make it shine.';
@@ -87,39 +93,8 @@
     $perOptions = [10, 25, 50];
     $perUrl = fn ($n) => request()->fullUrlWithQuery(['per' => $n, 'page' => 1]);
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Data Export Centre — Administration' : 'Data Export Centre — Administration' }}</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf: '#14652F' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }
-        #ad-sidebar { display: none; }
-        #ad-sidebar.ad-open { display: flex; position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 60; overflow-y: auto; }
-        @media (min-width: 1024px) { #ad-sidebar, #ad-sidebar.ad-open { display: flex; position: sticky; top: 0; height: 100vh; width: 290px; } }
-        .sub-card { background-color: #FEFAF4; border: 1px solid #F3E5D0; border-radius: 16px; box-shadow: 0 1px 2px rgba(90, 70, 30, 0.04); }
-        select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233B382F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; }
-    </style>
-</head>
-<body class="bg-[#FDF8F1] text-[#23231F] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
 
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-heritage-header', [
-            'pageTitle' => 'DATA EXPORT CENTRE',
-            'pageSubtitle' => $isFr ? 'Exportez vos données en toute sécurité. Transparence & Contrôle.' : 'Export your data safely. Transparency & Control.',
-            'pageBreadcrumb' => [[$isFr ? 'Accueil' : 'Home', route('dashboard.admin', ['lang' => $lang])], ['Data Export Centre', null]],
-            'pageSearchPlaceholder' => $isFr ? 'Rechercher un export, un rapport...' : 'Search an export, a report...',
-        ])
-
-        <main class="px-5 lg:px-7 pt-6 pb-8">
+@section('content')
             @if(session('status'))
             <div class="mb-4 bg-[#E9F3DE] border border-[#BFDCAA] text-[#2E6B34] text-[12.5px] font-medium rounded-xl px-4 py-2.5">{{ session('status') }}</div>
             @endif
@@ -347,9 +322,4 @@
                     </section>
                 </aside>
             </div>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection
