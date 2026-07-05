@@ -476,6 +476,29 @@ Route::get('/tableau-de-bord/admin/centres/{id}', function (Request $request, $i
 })->name('admin.centres.detail');
 
 // Public Artisan Centre page (design: "Artisan Centre detail view public.png")
+Route::get('/centres-artisanat', function (Request $request) {
+    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
+
+    $q = trim((string) $request->query('q', ''));
+    $type = $request->query('type', '');
+
+    $query = DB::table('artisan_centres as c')->leftJoin('regions as r', 'r.id', '=', 'c.region_id')
+        ->select('c.*', 'r.name_fr as region_fr', 'r.name_en as region_en')
+        ->where('c.status', 'active');
+    if ($q !== '') $query->where('c.name_fr', 'like', "%{$q}%");
+    if ($type !== '') $query->where('c.type', $type);
+    $centres = $query->orderBy('c.sort_order')->orderBy('c.name_fr')->get();
+
+    $centreStats = [
+        'total'    => (int) DB::table('artisan_centres')->where('status', 'active')->count(),
+        'artisans' => (int) DB::table('artisan_centres')->where('status', 'active')->sum('artisans_count'),
+        'regions'  => (int) DB::table('artisan_centres')->where('status', 'active')->distinct()->count('region_id'),
+    ];
+
+    return response(view('pages.centres', compact('lang', 'centres', 'centreStats', 'q', 'type')))
+        ->cookie('lang', $lang, 60 * 24 * 30);
+})->name('centres.index');
+
 Route::get('/centres-artisanat/{slug}', function (Request $request, $slug) {
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
 
