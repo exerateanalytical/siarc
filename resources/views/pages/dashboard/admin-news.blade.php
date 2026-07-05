@@ -1,6 +1,10 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'news';
+    $pageTitle = $isFr ? 'Gestion des Actualités & Annonces' : 'News & Announcements Management';
+    $pageBreadcrumb = [['Accueil', route('dashboard.admin', ['lang' => $lang])], [$isFr ? 'Actualités & Annonces' : 'News & Announcements', null]];
 
     // Category pill colours (table) — from "gestion d'actualites et annonces.png"
     $newsCatPill = [
@@ -55,42 +59,11 @@
     }
     $donutCss = 'conic-gradient(' . implode(', ', $donutStops) . ')';
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Actualités & Annonces — Administration' : 'News & Announcements — Administration' }}</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf: '#14652F' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }
-        #ad-sidebar { display: none; }
-        #ad-sidebar.ad-open { display: flex; position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 60; overflow-y: auto; }
-        @media (min-width: 1024px) { #ad-sidebar, #ad-sidebar.ad-open { display: flex; position: sticky; top: 0; height: 100vh; width: 250px; } }
-    </style>
-</head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
 
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
-
-        <main class="px-5 lg:px-7 pb-8">
-            {{-- Title + breadcrumb + primary actions --}}
+@section('content')
+            {{-- Primary actions --}}
             <div class="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                    <h1 class="text-[20px] font-bold text-[#1B1B18]">{{ $isFr ? 'Gestion des Actualités & Annonces' : 'News & Announcements Management' }}</h1>
-                    <p class="mt-1 text-[12px] text-[#6F6B60]">
-                        <a href="{{ route('dashboard.admin') }}" class="hover:text-[#14652F]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-                        <span class="mx-1 text-[#B8B2A4]">›</span>
-                        <span class="text-[#3B382F] font-medium">{{ $isFr ? 'Actualités & Annonces' : 'News & Announcements' }}</span>
-                    </p>
-                </div>
+                <div></div>
                 <div class="flex flex-wrap items-center gap-2.5">
                     <a href="{{ route('news.index') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
                         <i data-lucide="plus" class="w-4 h-4"></i>
@@ -359,9 +332,4 @@
                     <a href="{{ route('contact') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
                 </div>
             </div>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection

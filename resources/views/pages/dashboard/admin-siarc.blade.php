@@ -1,38 +1,14 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'siarc';
+    $pageTitle = $isFr ? 'Gestion SIARC 2026' : 'SIARC 2026 management';
+    $pageSubtitle = $isFr ? 'Salon International de l\'Artisanat du Cameroun — exposants, programme, visiteurs et rendez-vous B2B.' : 'International Craft Fair of Cameroon — exhibitors, programme, visitors and B2B meetings.';
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIARC 2026 — Administration</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf: '#14652F' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }
-        #ad-sidebar { display: none; }
-        #ad-sidebar.ad-open { display: flex; position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 60; overflow-y: auto; }
-        @media (min-width: 1024px) { #ad-sidebar, #ad-sidebar.ad-open { display: flex; position: sticky; top: 0; height: 100vh; width: 250px; } }
-    </style>
-</head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
 
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
-
-        <main class="px-5 lg:px-7 pb-8">
+@section('content')
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-[20px] font-bold text-[#1B1B18]">{{ $isFr ? 'Gestion SIARC 2026' : 'SIARC 2026 management' }}</h1>
-                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Salon International de l\'Artisanat du Cameroun — exposants, programme, visiteurs et rendez-vous B2B.' : 'International Craft Fair of Cameroon — exhibitors, programme, visitors and B2B meetings.' }}</p>
-                </div>
                 <a href="{{ route('admin.events') }}" class="shrink-0 inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
                     <i data-lucide="calendar-days" class="w-4 h-4"></i>
                     {{ $isFr ? 'Gérer les événements' : 'Manage events' }}
@@ -110,9 +86,4 @@
                 </section>
                 @endforeach
             </div>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection

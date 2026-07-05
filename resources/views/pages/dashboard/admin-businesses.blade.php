@@ -1,6 +1,14 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'businesses';
+
+    $pageTitle = $isFr ? 'Gestion des Entreprises & Boutiques (Vendeurs)' : 'Businesses & Shops Management (Vendors)';
+    $pageBreadcrumb = [
+        [$isFr ? 'Accueil' : 'Home', route('dashboard.admin', ['lang' => $lang])],
+        [$isFr ? 'Entreprises & Boutiques' : 'Businesses & Shops', null],
+    ];
 
     // Numbers rendered like the design ("1,245")
     $fmtNum = fn ($n) => number_format((int) $n);
@@ -125,42 +133,10 @@
     $vbStatutMap = ['actifs' => 'published', 'en-attente' => 'draft', 'suspendus' => 'suspended', 'rejetes' => 'rejected'];
     $vbCurStatus = request('status', $vbStatutMap[request('statut')] ?? '');
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Gestion des Entreprises & Boutiques (Vendeurs) — Administration' : 'Businesses & Shops Management (Vendors) — Administration' }}</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf: '#14652F' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }
-        #ad-sidebar { display: none; }
-        #ad-sidebar.ad-open { display: flex; position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 60; overflow-y: auto; }
-        @media (min-width: 1024px) { #ad-sidebar, #ad-sidebar.ad-open { display: flex; position: sticky; top: 0; height: 100vh; width: 250px; } }
-    </style>
-</head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
 
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
-
-        <main class="px-5 lg:px-7 pb-8">
-            {{-- Title / breadcrumb + header actions (design topbar buttons live here, chrome is canonical) --}}
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-[20px] font-bold text-[#1B1B18]">{{ $isFr ? 'Gestion des Entreprises & Boutiques (Vendeurs)' : 'Businesses & Shops Management (Vendors)' }}</h1>
-                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">
-                        <a href="{{ route('dashboard.admin', ['lang' => $lang]) }}" class="hover:text-[#157A43]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-                        <span class="mx-1 text-[#B9B4A9]">&rsaquo;</span>
-                        <span>{{ $isFr ? 'Entreprises & Boutiques' : 'Businesses & Shops' }}</span>
-                    </p>
-                </div>
+@section('content')
+            {{-- Header actions (design topbar buttons live here, chrome is canonical) --}}
+            <div class="flex flex-wrap items-center justify-end gap-3">
                 <div class="flex items-center gap-2.5 shrink-0">
                     <a href="{{ route('business.create') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
                         <i data-lucide="plus" class="w-4 h-4"></i>
@@ -525,9 +501,4 @@
                     <a href="{{ route('contact', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
                 </div>
             </div>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection

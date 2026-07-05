@@ -1,6 +1,10 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'backups';
+    $pageTitle = $isFr?'Détail de la sauvegarde':'Backup detail';
+    $pageBreadcrumb = [['Accueil', route('dashboard.admin', ['lang' => $lang])], [$isFr?'Détail':'Detail', null]];
     $monthsFr = [1=>'Jan',2=>'Fév',3=>'Mars',4=>'Avr',5=>'Mai',6=>'Juin',7=>'Juil',8=>'Août',9=>'Sept',10=>'Oct',11=>'Nov',12=>'Déc'];
     $dt = function ($v) use ($isFr, $monthsFr) { if(!$v) return '—'; $d=\Carbon\Carbon::parse($v); return $isFr ? sprintf('%02d %s %d, %s', $d->day, $monthsFr[$d->month], $d->year, $d->format('H:i:s')) : $d->format('d M Y, H:i:s'); };
     $created = \Carbon\Carbon::parse($backup->created_at);
@@ -62,24 +66,8 @@
         [$isFr?'Fuseau horaire':'Timezone', 'Africa/Douala (UTC+1)'],
     ];
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $backup->filename }} — Administration</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf:'#14652F' }, fontFamily: { sans:['Poppins','system-ui','sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>body{font-family:'Poppins',system-ui,sans-serif}html,body{overflow-x:clip}#ad-sidebar{display:none}#ad-sidebar.ad-open{display:flex;position:fixed;inset:0 auto 0 0;width:270px;z-index:60;overflow-y:auto}@media(min-width:1024px){#ad-sidebar,#ad-sidebar.ad-open{display:flex;position:sticky;top:0;height:100vh;width:250px}}</style>
-</head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
-        <main class="px-5 lg:px-7 pb-8">
+
+@section('content')
             @if(session('success'))
             <div class="mt-1 mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}</div>
             @endif
@@ -87,10 +75,6 @@
             <div class="flex items-start justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <a href="{{ route('admin.backups', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-3.5 h-[38px] text-[12px] font-semibold text-[#3B382F]"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour':'Back' }}</a>
-                    <div>
-                        <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr?'Détail de la sauvegarde':'Backup detail' }}</h1>
-                        <p class="mt-0.5 text-[12px] text-[#6F6B60]"><a href="{{ route('admin.backups', ['lang'=>$lang]) }}" class="hover:text-[#157A43]">Backups &amp; Logs</a> <span class="mx-1">/</span> {{ $isFr?'Sauvegardes':'Backups' }} <span class="mx-1">/</span> <span class="text-[#1B1B18]">{{ $isFr?'Détail':'Detail' }}</span></p>
-                    </div>
                 </div>
                 <img src="{{ asset('images/landing/hh-statue.png') }}" alt="" class="hidden lg:block w-[120px] h-[100px] object-cover rounded-xl opacity-95" aria-hidden="true">
             </div>
@@ -201,9 +185,4 @@
                 </aside>
             </div>
             <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection

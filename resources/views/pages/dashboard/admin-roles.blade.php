@@ -1,6 +1,10 @@
+@extends('layouts.admin')
+
 @php
     $isFr = $lang === 'fr';
     $adminActive = 'roles';
+    $pageTitle = $isFr ? 'Rôles & Permissions' : 'Roles & Permissions';
+    $pageBreadcrumb = [['Accueil', route('dashboard.admin', ['lang' => $lang])], [$isFr ? 'Paramètres' : 'Settings', route('admin.settings')], [$isFr ? 'Rôles & Permissions' : 'Roles & Permissions', null]];
 
     // Tabs (Rôles active; others land on real destinations)
     $roleTabs = [
@@ -27,32 +31,8 @@
         'settings' => [$isFr ? 'Paramètres' : 'Settings'],
     ];
 @endphp
-<!DOCTYPE html>
-<html lang="{{ $lang }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Rôles & Permissions — Administration' : 'Roles & Permissions — Administration' }}</title>
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf: '#14652F' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }
-        #ad-sidebar { display: none; }
-        #ad-sidebar.ad-open { display: flex; position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 60; overflow-y: auto; }
-        @media (min-width: 1024px) { #ad-sidebar, #ad-sidebar.ad-open { display: flex; position: sticky; top: 0; height: 100vh; width: 250px; } }
-    </style>
-</head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
-<img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
 
-<div class="flex items-stretch min-h-screen">
-    @include('pages.partials.admin-sidebar')
-    <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
-
-        <main class="px-5 lg:px-7 pb-8">
+@section('content')
 
             @if(session('success'))
             <div class="mt-1 mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
@@ -62,14 +42,6 @@
 
             {{-- Header --}}
             <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <h1 class="text-[21px] font-bold text-[#1B1B18]">{{ $isFr ? 'Rôles & Permissions' : 'Roles & Permissions' }}</h1>
-                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">
-                        <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-                        <span class="mx-1">/</span><a href="{{ route('admin.settings') }}" class="hover:text-[#157A43]">{{ $isFr ? 'Paramètres' : 'Settings' }}</a>
-                        <span class="mx-1">/</span><span class="text-[#1B1B18]">{{ $isFr ? 'Rôles & Permissions' : 'Roles & Permissions' }}</span>
-                    </p>
-                </div>
                 <div class="bg-white border border-[#EFF0EF] rounded-xl px-4 py-2.5 flex items-center gap-2 text-[12px] text-[#6F6B60]">
                     <i data-lucide="info" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Gérez les rôles d\'utilisateur et attribuez des permissions' : 'Manage user roles and assign permissions' }}
                 </div>
@@ -183,9 +155,4 @@
             </div>
 
             <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
-        </main>
-    </div>
-</div>
-<script>lucide.createIcons();</script>
-</body>
-</html>
+@endsection
