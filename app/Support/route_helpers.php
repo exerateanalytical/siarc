@@ -175,3 +175,38 @@ if (! function_exists('siarcEvent')) {
         return $event;
     }
 }
+
+if (! function_exists('certNumberFor')) {
+    /** Deterministic membership-certificate number for a business (single source of truth). */
+    function certNumberFor(int $businessId, $createdAt = null): string
+    {
+        $year = $createdAt ? \Illuminate\Support\Carbon::parse($createdAt)->year : (int) date('Y');
+        $seed = md5('gvn-cert-' . $businessId);
+        return 'GVN-' . $year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT);
+    }
+}
+
+if (! function_exists('ensureCertificate')) {
+    /** Issue + persist a certificate for a business if it doesn't have one yet; returns the fresh row. */
+    function ensureCertificate(object $business): object
+    {
+        if (empty($business->certificate_no)) {
+            $issued = $business->created_at ? \Illuminate\Support\Carbon::parse($business->created_at) : \Illuminate\Support\Carbon::now();
+            $no = certNumberFor((int) $business->id, $issued);
+            $expires = $issued->copy()->addYear();
+            while ($expires->isPast()) {
+                $expires->addYear();
+            }
+            DB::table('businesses')->where('id', $business->id)->update([
+                'certificate_no' => $no,
+                'certificate_issued_at' => $issued,
+                'certificate_expires_at' => $expires,
+                'updated_at' => \Illuminate\Support\Carbon::now(),
+            ]);
+            $business->certificate_no = $no;
+            $business->certificate_issued_at = $issued;
+            $business->certificate_expires_at = $expires;
+        }
+        return $business;
+    }
+}

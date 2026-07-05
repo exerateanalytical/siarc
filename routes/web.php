@@ -2970,7 +2970,32 @@ Route::get('/verification-certificat', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     $numero = trim((string) $request->query('numero', ''));
-    return response(view('pages.certificate-verify', compact('lang', 'numero')))->cookie('lang', $lang, 60 * 24 * 30);
+
+    // Real lookup: resolve the entered number to the actual artisan + validity.
+    $cert = null;
+    if ($numero !== '') {
+        $b = DB::table('businesses as b')
+            ->leftJoin('industries as i', 'i.id', '=', 'b.industry_id')
+            ->leftJoin('regions as r', 'r.id', '=', 'b.region_id')
+            ->whereNull('b.deleted_at')
+            ->where('b.certificate_no', $numero)
+            ->first([
+                'b.name_fr', 'b.name_en', 'b.slug', 'b.vendor_type', 'b.status',
+                'b.certificate_no', 'b.certificate_issued_at', 'b.certificate_expires_at', 'b.certificate_revoked_at',
+                'i.name_fr as industry_fr', 'i.name_en as industry_en', 'r.name_fr as region_fr', 'r.name_en as region_en',
+            ]);
+        if ($b) {
+            $expired   = $b->certificate_expires_at && \Illuminate\Support\Carbon::parse($b->certificate_expires_at)->isPast();
+            $revoked   = (bool) $b->certificate_revoked_at;
+            $suspended = in_array($b->status, ['suspended', 'rejected', 'draft']);
+            $status    = $revoked ? 'revoked' : ($expired ? 'expired' : ($suspended ? 'suspended' : 'active'));
+            $cert = (object) ['found' => true, 'valid' => ! $revoked && ! $expired && ! $suspended, 'status' => $status, 'b' => $b];
+        } else {
+            $cert = (object) ['found' => false, 'valid' => false, 'status' => 'notfound', 'b' => null];
+        }
+    }
+
+    return response(view('pages.certificate-verify', compact('lang', 'numero', 'cert')))->cookie('lang', $lang, 60 * 24 * 30);
 })->name('certificate.verify');
 Route::get('/certificat-adhesion', function (Request $request) {
     $siacUser = session('siac_user');
@@ -2984,8 +3009,61 @@ Route::get('/certificat-adhesion', function (Request $request) {
         ->where('user_id', $siacUser['id'])
         ->first();
 
+    // Issue + persist the certificate number on first view so it is verifiable.
+    if ($business) {
+        $business = ensureCertificate($business);
+    }
+
     return view('pages.membership-certificate', compact('lang', 'siacUser', 'business'));
 })->name('membership.certificate');
+
+// Admin certificate registry — every artisan's membership certificate in one place.
+Route::get('/tableau-de-bord/admin/certificats', function (Request $request) {
+    if ($x = requireAdmin($request)) return $x;
+    $siacUser = session('siac_user');
+    $lang = webLang($request);
+    $q = trim((string) $request->query('q', ''));
+    $filter = $request->query('status', '');
+
+    $rows = DB::table('businesses as b')
+        ->leftJoin('industries as i', 'i.id', '=', 'b.industry_id')
+        ->whereNull('b.deleted_at')->whereNotNull('b.certificate_no')
+        ->when($q !== '', fn ($qq) => $qq->where(fn ($w) => $w->where('b.name_fr', 'like', "%{$q}%")->orWhere('b.certificate_no', 'like', "%{$q}%")))
+        ->orderByDesc('b.certificate_issued_at')
+        ->get(['b.id', 'b.name_fr', 'b.status', 'b.certificate_no', 'b.certificate_issued_at', 'b.certificate_expires_at', 'b.certificate_revoked_at', 'i.name_fr as trade'])
+        ->map(function ($r) {
+            $expired = $r->certificate_expires_at && \Illuminate\Support\Carbon::parse($r->certificate_expires_at)->isPast();
+            $r->state = $r->certificate_revoked_at ? 'revoked' : ($expired ? 'expired' : (in_array($r->status, ['suspended', 'rejected', 'draft']) ? 'suspended' : 'active'));
+            return $r;
+        });
+    if (in_array($filter, ['active', 'expired', 'revoked', 'suspended'], true)) {
+        $rows = $rows->where('state', $filter)->values();
+    }
+
+    $allCerts = DB::table('businesses')->whereNull('deleted_at')->whereNotNull('certificate_no')
+        ->get(['status', 'certificate_expires_at', 'certificate_revoked_at']);
+    $counts = ['active' => 0, 'expired' => 0, 'revoked' => 0, 'suspended' => 0];
+    foreach ($allCerts as $x) {
+        $exp = $x->certificate_expires_at && \Illuminate\Support\Carbon::parse($x->certificate_expires_at)->isPast();
+        $st = $x->certificate_revoked_at ? 'revoked' : ($exp ? 'expired' : (in_array($x->status, ['suspended', 'rejected', 'draft']) ? 'suspended' : 'active'));
+        $counts[$st]++;
+    }
+    $kpis = ['total' => $allCerts->count()] + $counts;
+
+    return view('pages.dashboard.admin-certificates', compact('lang', 'siacUser', 'rows', 'kpis', 'q', 'filter'));
+})->name('admin.certificates');
+
+Route::post('/tableau-de-bord/admin/certificats/{id}/revoquer', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+    $b = DB::table('businesses')->where('id', $id)->whereNull('deleted_at')->first();
+    if ($b && $b->certificate_no) {
+        DB::table('businesses')->where('id', $id)->update([
+            'certificate_revoked_at' => $b->certificate_revoked_at ? null : now(),
+            'updated_at' => now(),
+        ]);
+    }
+    return back()->with('cert_updated', true);
+})->name('admin.certificates.revoke')->middleware('throttle:30,1');
 Route::get('/creer-mon-compte', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';

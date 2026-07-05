@@ -13,10 +13,10 @@
     if ($personalized) {
         $certName    = mb_strtoupper($business->name_fr);
         $seed        = md5('gvn-cert-' . $business->id);
-        $certNumber  = 'GVN-' . \Illuminate\Support\Carbon::parse($business->created_at)->year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT);
+        $certNumber  = $business->certificate_no ?? ('GVN-' . \Illuminate\Support\Carbon::parse($business->created_at)->year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT));
         $certCode    = strtoupper(substr($seed, 6, 4) . '-' . substr($seed, 10, 4) . '-' . substr($seed, 14, 4));
-        $certStart   = $fmtDate($business->created_at);
-        $certEnd     = $fmtDate(\Illuminate\Support\Carbon::parse($business->created_at)->addYear()->subDay());
+        $certStart   = $fmtDate($business->certificate_issued_at ?? $business->created_at);
+        $certEnd     = $fmtDate($business->certificate_expires_at ?? \Illuminate\Support\Carbon::parse($business->created_at)->addYear()->subDay());
     } else {
         $certNumber  = 'GVN-2025-0002587';
     }

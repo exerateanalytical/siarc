@@ -14,16 +14,35 @@
         ['Contact',                            route('contact')],
     ];
 
-    $certInfo = [
-        ['file-text',      $isFr ? 'Numéro de certificat' : 'Certificate number',   'GVN-2025-0002587', false],
-        ['user-round',     $isFr ? 'Nom de l\'entrepreneur' : 'Entrepreneur name',  'Artisan Ndop', false],
-        ['file-check',     $isFr ? 'Type d\'entreprise' : 'Business type',          'Entreprise Individuelle', false],
-        ['shield-check',   $isFr ? 'Catégorie principale' : 'Main category',        'Sculpture & Art traditionnel', false],
-        ['briefcase',      $isFr ? 'Secteur d\'activité' : 'Activity sector',       "Artisanat d'Art / Arts & Crafts", false],
-        ['calendar',       $isFr ? 'Date d\'adhésion' : 'Membership date',          '15 Mai 2025', false],
-        ['calendar-clock', $isFr ? 'Date d\'expiration' : 'Expiry date',            '14 Mai 2026', false],
-        ['shield-check',   $isFr ? 'Statut' : 'Status',                             $isFr ? 'MEMBRE ACTIF' : 'ACTIVE MEMBER', true],
+    // Real verification result (from the certificate.verify route).
+    $searched = ! empty($cert);
+    $found    = $searched && $cert->found;
+    $b        = $found ? $cert->b : null;
+    $fmtD = fn ($d) => $d ? \Illuminate\Support\Carbon::parse($d)->translatedFormat($isFr ? 'd F Y' : 'd M Y') : '—';
+
+    // [text color, tile bg, border, title, status label, icon]
+    $statusStates = [
+        'active'    => ['#157A43', '#DFF2E2', '#BEE3C5', $isFr ? 'Certificat valide' : 'Valid certificate',        $isFr ? 'ACTIF' : 'ACTIVE',       'check'],
+        'expired'   => ['#C97A16', '#FBF1DE', '#EAD9AC', $isFr ? 'Certificat expiré' : 'Expired certificate',       $isFr ? 'EXPIRÉ' : 'EXPIRED',     'clock'],
+        'revoked'   => ['#DC2626', '#FDE8E8', '#F3C7C7', $isFr ? 'Certificat révoqué' : 'Revoked certificate',      $isFr ? 'RÉVOQUÉ' : 'REVOKED',    'x'],
+        'suspended' => ['#DC2626', '#FDE8E8', '#F3C7C7', $isFr ? 'Membre suspendu' : 'Suspended member',            $isFr ? 'SUSPENDU' : 'SUSPENDED', 'x'],
+        'notfound'  => ['#DC2626', '#FDE8E8', '#F3C7C7', $isFr ? 'Certificat introuvable' : 'Certificate not found', $isFr ? 'INTROUVABLE' : 'NOT FOUND', 'x'],
     ];
+    $state = $searched ? ($statusStates[$cert->status] ?? $statusStates['notfound']) : null;
+
+    $vendorTypes = ['artisan' => 'Artisan', 'entreprise' => $isFr ? 'Entreprise' : 'Business', 'cooperative' => $isFr ? 'Coopérative' : 'Cooperative'];
+    $certName = $b ? ($isFr ? $b->name_fr : ($b->name_en ?? $b->name_fr)) : '';
+
+    $certInfo = $found ? [
+        ['file-text',      $isFr ? 'Numéro de certificat' : 'Certificate number', $b->certificate_no, false],
+        ['user-round',     $isFr ? 'Nom de l\'artisan' : 'Artisan name',          $certName, false],
+        ['file-check',     $isFr ? 'Type' : 'Type',                               $vendorTypes[$b->vendor_type] ?? ucfirst((string) $b->vendor_type), false],
+        ['shield-check',   $isFr ? 'Métier / Catégorie' : 'Trade / Category',     ($isFr ? $b->industry_fr : ($b->industry_en ?? $b->industry_fr)) ?? '—', false],
+        ['map-pin',        $isFr ? 'Région' : 'Region',                           ($isFr ? $b->region_fr : ($b->region_en ?? $b->region_fr)) ?? '—', false],
+        ['calendar',       $isFr ? 'Date d\'adhésion' : 'Membership date',        $fmtD($b->certificate_issued_at), false],
+        ['calendar-clock', $isFr ? 'Date d\'expiration' : 'Expiry date',          $fmtD($b->certificate_expires_at), false],
+        ['shield-check',   $isFr ? 'Statut' : 'Status',                           $state[4], true],
+    ] : [];
 
     $securityChecks = $isFr
         ? ['Filigrane invisible', 'Hologramme 3D GVN', 'Encre UV invisible', 'Microtexte de sécurité', 'Numéro unique infalsifiable']
@@ -129,28 +148,36 @@
         </div>
     </section>
 
-    <!-- Result card -->
+    <!-- Result card (only after a number is submitted) -->
+    @if($searched)
     <section class="mt-6 bg-white border border-[#EDEDEB] rounded-2xl shadow-sm overflow-hidden">
-        <div class="flex flex-wrap items-center justify-between gap-3 px-6 sm:px-8 py-4 bg-[#F7FAF6] border-b border-[#EDEFEA]">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-6 sm:px-8 py-4 border-b border-[#EDEFEA]" style="background-color: {{ $state[1] }}">
             <div class="flex items-center gap-4">
-                <span class="w-[46px] h-[46px] rounded-full bg-[#157A43] flex items-center justify-center shrink-0">
-                    <i data-lucide="check" class="w-6 h-6 text-white" style="stroke-width:3.2"></i>
+                <span class="w-[46px] h-[46px] rounded-full flex items-center justify-center shrink-0" style="background-color: {{ $state[0] }}">
+                    <i data-lucide="{{ $state[5] }}" class="w-6 h-6 text-white" style="stroke-width:3.2"></i>
                 </span>
                 <div>
-                    <h2 class="text-[17px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $isFr ? 'Certificat valide' : 'Valid certificate' }}</h2>
-                    <p class="text-[13px] text-[#2E7D4F]">This certificate is authentic and verified</p>
+                    <h2 class="text-[17px] font-bold tracking-[0.03em] uppercase" style="color: {{ $state[0] }}">{{ $state[3] }}</h2>
+                    <p class="text-[13px]" style="color: {{ $state[0] }}">
+                        {{ $found
+                            ? ($isFr ? 'Ce certificat est authentique et vérifié.' : 'This certificate is authentic and verified.')
+                            : ($isFr ? 'Aucun certificat ne correspond à ce numéro.' : 'No certificate matches this number.') }}
+                    </p>
                 </div>
             </div>
+            @if($found)
             <div class="text-right">
                 <p class="flex items-center justify-end gap-2 text-[12px] text-[#55524A]">
-                    {{ $isFr ? 'Vérifié le 15 Mai 2025 à 14:35' : 'Verified on 15 May 2025 at 14:35' }}
-                    <span class="w-2 h-2 rounded-full bg-[#157A43]"></span>
+                    {{ $isFr ? 'Vérifié le' : 'Verified on' }} {{ now()->translatedFormat('d F Y - H:i') }}
+                    <span class="w-2 h-2 rounded-full" style="background-color: {{ $state[0] }}"></span>
                 </p>
-                <span class="mt-1.5 inline-block bg-[#DFF2E2] border border-[#BEE3C5] text-[#14532D] text-[12px] font-semibold px-3 py-1 rounded-md">
-                    {{ $isFr ? 'Statut :' : 'Status:' }} <span class="font-bold">{{ $isFr ? 'ACTIF' : 'ACTIVE' }}</span>
+                <span class="mt-1.5 inline-block text-[12px] font-semibold px-3 py-1 rounded-md" style="background-color: {{ $state[1] }}; border: 1px solid {{ $state[2] }}; color: {{ $state[0] }}">
+                    {{ $isFr ? 'Statut :' : 'Status:' }} <span class="font-bold">{{ $state[4] }}</span>
                 </span>
             </div>
+            @endif
         </div>
+        @if($found)
         <div class="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-8 px-6 sm:px-8 py-7">
             <img src="{{ asset('images/landing/cert-image.png') }}" alt="{{ $isFr ? 'Certificat d\'adhésion' : 'Membership certificate' }}" class="w-full rounded-lg shadow-md self-start">
             <div>
@@ -162,7 +189,7 @@
                         <div>
                             <dt class="text-[12px] text-[#8A857A]">{{ $ciLabel }}</dt>
                             @if($ciPill)
-                            <dd class="mt-1"><span class="inline-block bg-[#DFF2E2] text-[#14532D] text-[12.5px] font-bold px-3 py-1 rounded-md">{{ $ciValue }}</span></dd>
+                            <dd class="mt-1"><span class="inline-block text-[12.5px] font-bold px-3 py-1 rounded-md" style="background-color: {{ $state[1] }}; color: {{ $state[0] }}">{{ $ciValue }}</span></dd>
                             @else
                             <dd class="text-[14.5px] font-semibold text-[#1B1B18]">{{ $ciValue }}</dd>
                             @endif
@@ -172,7 +199,13 @@
                 </dl>
             </div>
         </div>
+        @else
+        <div class="px-6 sm:px-8 py-10 text-center">
+            <p class="text-[14px] text-[#55524A] max-w-[480px] mx-auto">{{ $isFr ? 'Vérifiez le numéro saisi et réessayez. Un certificat authentique porte un numéro au format GVN-AAAA-XXXXXXX.' : 'Check the number entered and try again. A genuine certificate has a number in the GVN-YYYY-XXXXXXX format.' }}</p>
+        </div>
+        @endif
     </section>
+    @endif
 
     <!-- Info cards -->
     <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">

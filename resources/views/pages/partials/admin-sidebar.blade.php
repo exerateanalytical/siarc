@@ -36,6 +36,7 @@
             ['pending-art', 'side-ic-inscription', $isFr ? 'Demandes d\'Inscription' : 'Registration Requests', route('admin.artisans') . '?statut=en-attente', null],
             ['businesses',  'side-ic-boutiques',   $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), '248'],
             ['kyc',         'side-ic-kyc',         $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), '36'],
+            ['certificates','side-ic-kyc',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
         ]],
         [$isFr ? 'Commercial & Finance' : 'Commercial & Finance', [
             ['subscriptions', 'side-ic-subscriptions', $isFr ? 'Abonnements' : 'Subscriptions',             route('admin.subscriptions'), null],
