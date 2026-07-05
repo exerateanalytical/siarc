@@ -1285,7 +1285,9 @@ Route::post('/login', function (Request $request) {
 
     \Illuminate\Support\Facades\RateLimiter::clear($limiterKey);
 
+    // Only allow same-site relative paths as the post-login redirect (block open redirects).
     $next = $request->get('next', '/tableau-de-bord');
+    $next = (is_string($next) && str_starts_with($next, '/') && ! str_starts_with($next, '//')) ? $next : '/tableau-de-bord';
 
     // Second factor required? Password alone no longer grants a session.
     $hasTotp    = $user->two_factor_confirmed_at && $user->two_factor_secret;

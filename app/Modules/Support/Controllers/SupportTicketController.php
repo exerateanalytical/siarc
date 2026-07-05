@@ -67,8 +67,8 @@ class SupportTicketController extends Controller
         SupportTicketReply::create([
             'ticket_id'      => $ticket->id,
             'user_id'        => $request->user()->id,
-            'body'           => $request->body,
-            'is_staff_reply' => false,
+            'body_fr'        => $request->body,
+            'is_staff'       => false,
         ]);
 
         return response()->json(['data' => ['id' => $ticket->id, 'status' => $ticket->status]], 201);
@@ -91,8 +91,8 @@ class SupportTicketController extends Controller
             'category' => $ticket->category ? $pick($ticket->category->name_fr, $ticket->category->name_en) : null,
             'replies'  => $ticket->replies->map(fn ($r) => [
                 'id'             => $r->id,
-                'body'           => $r->body,
-                'is_staff_reply' => $r->is_staff_reply,
+                'body'           => $r->body_fr,
+                'is_staff_reply' => $r->is_staff,
                 'author'         => $r->user?->name,
                 'created_at'     => $r->created_at?->toIso8601String(),
             ]),
@@ -105,17 +105,17 @@ class SupportTicketController extends Controller
         $request->validate(['body' => ['required', 'string', 'max:5000']]);
 
         $ticket = SupportTicket::where('user_id', $request->user()->id)
-            ->whereIn('status', ['open', 'pending'])
+            ->whereIn('status', ['open', 'in_progress'])
             ->findOrFail($id);
 
         $reply = SupportTicketReply::create([
             'ticket_id'      => $ticket->id,
             'user_id'        => $request->user()->id,
-            'body'           => $request->body,
-            'is_staff_reply' => false,
+            'body_fr'        => $request->body,
+            'is_staff'       => false,
         ]);
 
-        $ticket->update(['status' => 'pending']);
+        $ticket->update(['status' => 'in_progress']);
 
         return response()->json(['data' => ['id' => $reply->id, 'created_at' => $reply->created_at?->toIso8601String()]], 201);
     }

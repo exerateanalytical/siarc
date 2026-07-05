@@ -626,7 +626,7 @@ class AdminWebController extends Controller
         }
 
         $consumers = $query
-            ->orderByRaw("FIELD(status, 'pending', 'approved', 'suspended')")
+            ->orderByRaw("CASE status WHEN 'pending' THEN 0 WHEN 'approved' THEN 1 WHEN 'suspended' THEN 2 ELSE 3 END")
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();

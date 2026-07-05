@@ -57,11 +57,16 @@ class MinistryWebController extends Controller
             ->orderByDesc('total')
             ->get();
 
-        $growth = Business::where('created_at', '>=', now()->subMonths(6))
-            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, count(*) as total")
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
+        // Group in PHP (not SQL DATE_FORMAT) so it works on MySQL and SQLite alike.
+        $growthCounts = Business::where('created_at', '>=', now()->subMonths(6))
+            ->pluck('created_at')
+            ->groupBy(fn ($d) => \Illuminate\Support\Carbon::parse($d)->format('Y-m'))
+            ->map->count();
+        $growth = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->subMonths($i)->format('Y-m');
+            $growth->push((object) ['month' => $m, 'total' => (int) ($growthCounts[$m] ?? 0)]);
+        }
 
         $events = Event::withCount(['exhibitors', 'attendees'])->orderByDesc('starts_at')->limit(5)->get();
 

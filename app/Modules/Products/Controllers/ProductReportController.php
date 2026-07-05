@@ -32,7 +32,7 @@ class ProductReportController extends Controller
             'reporter_id' => $request->user()->id,
             'reason'      => $request->reason,
             'details'     => $request->details,
-            'status'      => 'pending',
+            'status'      => 'open',
         ]);
 
         return response()->json(['message' => 'Report submitted.'], 201);

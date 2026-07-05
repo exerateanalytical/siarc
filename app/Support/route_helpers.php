@@ -45,7 +45,7 @@ if (! function_exists('establishSiacSession')) {
         $siacRole = DB::table('model_has_roles')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('model_has_roles.model_id', $user->id)
-            ->orderByRaw("FIELD(roles.name,'super_admin','admin','ministry','technical_reviewer','regional_rep','moderator','business_owner') DESC")
+            ->orderByRaw("CASE roles.name WHEN 'super_admin' THEN 1 WHEN 'admin' THEN 2 WHEN 'ministry' THEN 3 WHEN 'technical_reviewer' THEN 4 WHEN 'regional_rep' THEN 5 WHEN 'moderator' THEN 6 WHEN 'business_owner' THEN 7 ELSE 8 END ASC")
             ->value('roles.name');
 
         $displayName = $user->name ?? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
