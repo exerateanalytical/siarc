@@ -39,8 +39,8 @@
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     $isFr = $lang === 'fr';
 
-    // Derive the sidebar active key from the current route
-    $adminActive = collect([
+    // Sidebar active key: a page may set $adminActive itself; otherwise derive from the route.
+    $adminActive = ($adminActive ?? null) ?: (collect([
         'dashboard.admin'      => 'dashboard',
         'admin.businesses'     => 'businesses',
         'admin.businesses.*'   => 'businesses',
@@ -65,7 +65,7 @@
         'admin.moderation'     => 'moderation',
         'admin.support'        => 'adminsupport',
         'admin.support.*'      => 'adminsupport',
-    ])->first(fn ($key, $pattern) => request()->routeIs($pattern)) ?? 'dashboard';
+    ])->first(fn ($key, $pattern) => request()->routeIs($pattern)) ?? 'dashboard');
 @endphp
 
 <img src="{{ asset('images/landing/ad-kente-top.png') }}" alt="" class="w-full h-[8px] object-cover" aria-hidden="true">
@@ -74,12 +74,14 @@
     @include('pages.partials.admin-sidebar')
 
     <div class="flex-1 min-w-0">
-        @include('pages.partials.admin-topbar')
+        @include('pages.partials.admin-heritage-header', [
+            'pageTitle' => $pageTitle ?? ($isFr ? 'Tableau de Bord' : 'Dashboard'),
+            'pageSubtitle' => $pageSubtitle ?? '',
+            'pageSearchPlaceholder' => $pageSearchPlaceholder ?? ($isFr ? 'Rechercher un artisan, un produit, une commande...' : 'Search an artisan, a product, an order...'),
+            'pageBreadcrumb' => $pageBreadcrumb ?? null,
+        ])
 
-        <main class="px-5 lg:px-7 pb-8">
-            @isset($pageTitle)
-            <h1 class="text-[20px] font-bold text-[#1B1B18] mb-4">{{ $pageTitle }}</h1>
-            @endisset
+        <main class="px-5 lg:px-7 pt-5 pb-8">
             @yield('content')
         </main>
     </div>
