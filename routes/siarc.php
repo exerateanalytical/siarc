@@ -103,7 +103,7 @@ Route::get('/tableau-de-bord/admin/siarc/exposants/{id}', function (Request $r, 
     $stand = DB::table('stands')->where('exhibitor_id', $id)->first();
     $meetings = DB::table('b2b_meetings')->where('host_exhibitor_id', $id)->count();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-exh', 'sTitle' => ($fr ? 'Exposant · ' : 'Exhibitor · ') . ($x->name_fr ?? '—'),
+        'lang' => $lang, 'sActive' => 'siarc-exh', 'sTitle' => $fr ? 'Détail de l\'exposant' : 'Exhibitor detail',
         'sIntro' => $fr ? 'Fiche exposant (données salon) reliée à la fiche entreprise/vendeur.' : 'Exhibitor record (salon data) linked to the business/vendor record.',
         'sStats' => [
             ['layout-grid', '#3565DE', '#E8EFFB', $x->pavilion ?? '—', $fr ? 'Pavillon' : 'Pavilion', null],
@@ -154,7 +154,7 @@ Route::get('/tableau-de-bord/admin/siarc/pavillons/{id}', function (Request $r, 
         ->leftJoin('businesses as b', 'b.id', '=', 'ee.business_id')->where('s.pavilion_id', $id)->orderBy('s.code')
         ->get(['s.id', 's.code', 's.status', 'b.name_fr']);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-plan', 'sTitle' => ($fr ? 'Pavillon · ' : 'Pavilion · ') . $p->name_fr,
+        'lang' => $lang, 'sActive' => 'siarc-plan', 'sTitle' => $fr ? 'Détail du pavillon' : 'Pavilion detail',
         'sStats' => [
             ['grid-3x3', '#7C4FE0', '#F0EAFB', $stands->count(), 'Stands', null],
             ['check-circle-2', '#157A43', '#E2F3E8', $stands->where('status', 'allocated')->count(), $fr ? 'Alloués' : 'Allocated', null],
@@ -336,7 +336,7 @@ Route::get('/tableau-de-bord/admin/siarc/b2b', function (Request $r) use ($tone)
         ->leftJoin('event_exhibitors as ee', 'ee.id', '=', 'm.host_exhibitor_id')->leftJoin('businesses as b', 'b.id', '=', 'ee.business_id')
         ->where('m.event_id', $eid)->orderByDesc('m.scheduled_at')->get(['m.id', 'v.first_name', 'v.last_name', 'b.name_fr as host', 'm.scheduled_at', 'm.status']);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-b2b', 'sTitle' => $fr ? 'Rendez-vous B2B' : 'B2B Meeting Dashboard',
+        'lang' => $lang, 'sActive' => 'siarc-b2b', 'sTitle' => 'Business Matchmaking',
         'sIntro' => $fr ? 'S\'appuie sur la messagerie et le moteur de devis (RFQ) existants.' : 'Built on the existing messaging + quote (RFQ) engine.',
         'sStats' => [
             ['handshake', '#0D9488', '#E1F4F1', $rows->count(), $fr ? 'Rendez-vous' : 'Meetings', null],
@@ -426,7 +426,7 @@ Route::get('/tableau-de-bord/admin/siarc/programme/{id}', function (Request $r, 
     $speakers = DB::table('session_speaker as ss')->join('speakers as sp', 'sp.id', '=', 'ss.speaker_id')->where('ss.session_id', $id)->pluck('sp.name');
     $regs = DB::table('session_registrations')->where('session_id', $id)->count();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $s->title_fr,
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Détail de la session' : 'Session detail',
         'sStats' => [
             ['tag', '#7C4FE0', '#F0EAFB', ucfirst($s->type), 'Type', null],
             ['calendar-clock', '#C97A16', '#FDF3E0', (string) $s->starts_at, $fr ? 'Début' : 'Start', null],
@@ -445,7 +445,7 @@ Route::get('/tableau-de-bord/admin/siarc/ateliers/{id}', function (Request $r, $
     abort_if(! $s, 404);
     $regs = DB::table('session_registrations')->where('session_id', $id)->orderByDesc('id')->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => ($fr ? 'Atelier · ' : 'Workshop · ') . $s->title_fr,
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Détail de l\'atelier' : 'Workshop detail',
         'sStats' => [
             ['users', '#157A43', '#E2F3E8', $regs->count() . '/' . ($s->capacity ?? '∞'), $fr ? 'Inscriptions' : 'Registrations', null],
             ['calendar-clock', '#C97A16', '#FDF3E0', (string) $s->starts_at, $fr ? 'Horaire' : 'Time', null],
@@ -483,7 +483,7 @@ Route::get('/tableau-de-bord/admin/siarc/intervenants/{id}', function (Request $
     abort_if(! $s, 404);
     $sessions = DB::table('session_speaker as ss')->join('programme_sessions as p', 'p.id', '=', 'ss.session_id')->where('ss.speaker_id', $id)->get(['p.id', 'p.title_fr', 'p.starts_at']);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => ($fr ? 'Intervenant · ' : 'Speaker · ') . $s->name,
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Détails de l\'intervenant' : 'Speaker details',
         'sIntro' => ($s->role_fr ?? '') . ($s->organization ? ' — ' . $s->organization : ''),
         'sTables' => [[
             'title' => $fr ? 'Interventions' : 'Sessions',
@@ -511,7 +511,7 @@ Route::get('/tableau-de-bord/admin/siarc/calendrier', function (Request $r) {
         ];
     }
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Calendrier de l\'événement' : 'Event Calendar',
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Calendrier des événements' : 'Event Calendar',
         'sStats' => [['calendar', '#3565DE', '#E8EFFB', $byDay->count(), $fr ? 'Jours' : 'Days', null], ['calendar-days', '#7C4FE0', '#F0EAFB', $sessions->count(), 'Sessions', null]],
         'sTables' => $tables ?: [['title' => 'Sessions', 'cols' => ['—'], 'rows' => [], 'empty' => $fr ? 'Aucune session.' : 'No sessions.']],
     ]);
@@ -558,7 +558,7 @@ Route::get('/tableau-de-bord/admin/siarc/direct', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $recent = DB::table('check_ins')->where('event_id', $eid)->orderByDesc('id')->limit(20)->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Suivi en Direct' : 'Live Event Monitoring',
+        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => 'Live Event Monitoring',
         'sIntro' => $fr ? 'Affluence en temps réel (l\'infrastructure websocket Reverb est configurée).' : 'Real-time attendance (Reverb websocket infrastructure is configured).',
         'sStats' => [
             ['activity', '#DC2626', '#FDE8E8', DB::table('visitors')->where('event_id', $eid)->where('status', 'checked_in')->count(), $fr ? 'Présents' : 'On site', null],
