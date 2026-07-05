@@ -1,8 +1,18 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang' => $lang], $params)) : '#';
     $programme = $h('siarc.programme');
+    $pavilions = $h('siarc.pavilions');
+    $register  = $h('siarc.register');
+
+    // ── Real IDs so detail links never 404 ──────────────────────────────────
+    $eid = siarcEvent()?->id ?? 0;
+    $sessionId = DB::table('programme_sessions')->where('event_id', $eid)->value('id');
+    $sessionUrl = ($sessionId && R::has('siarc.admin.session'))
+        ? route('siarc.admin.session', ['lang' => $lang, 'id' => $sessionId])
+        : $programme;
 
     // ── Header stat cards (verbatim from design) ─────────────────────────────
     $stats = [
@@ -130,38 +140,40 @@
         <div>
             {{-- View toggle + export --}}
             <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div class="inline-flex items-center gap-2">
-                    <button type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold bg-siarc-dark text-white"><i data-lucide="calendar-days" class="w-4 h-4"></i>Vue par jour</button>
-                    <button type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-[#55524A] border border-[#E4E0D6] bg-white hover:bg-[#F7F5EF]"><i data-lucide="clipboard-list" class="w-4 h-4"></i>Vue par piste</button>
-                    <button type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-[#55524A] border border-[#E4E0D6] bg-white hover:bg-[#F7F5EF]"><i data-lucide="map-pin" class="w-4 h-4"></i>Vue par lieu</button>
+                <div data-tabs="progView" class="inline-flex items-center gap-2">
+                    <button type="button" class="si-tab is-active inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold bg-siarc-dark text-white" data-tab="day"><i data-lucide="calendar-days" class="w-4 h-4"></i>Vue par jour</button>
+                    <button type="button" class="si-tab inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-[#55524A] border border-[#E4E0D6] bg-white hover:bg-[#F7F5EF]" data-tab="track"><i data-lucide="clipboard-list" class="w-4 h-4"></i>Vue par piste</button>
+                    <button type="button" class="si-tab inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-[#55524A] border border-[#E4E0D6] bg-white hover:bg-[#F7F5EF]" data-tab="room"><i data-lucide="map-pin" class="w-4 h-4"></i>Vue par lieu</button>
                 </div>
-                <button type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-[#55524A] border border-[#E4E0D6] bg-white hover:bg-[#F7F5EF]"><i data-lucide="download" class="w-4 h-4"></i>Exporter le programme</button>
+                <button type="button" data-toast="Export du programme en préparation…" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-[#55524A] border border-[#E4E0D6] bg-white hover:bg-[#F7F5EF]"><i data-lucide="download" class="w-4 h-4"></i>Exporter le programme</button>
             </div>
 
             {{-- Day tabs row --}}
             <div class="flex items-stretch gap-2 mb-4 overflow-x-auto siarc-scroll">
-                <button type="button" class="shrink-0 w-9 rounded-xl border border-[#E4E0D6] bg-white flex items-center justify-center text-[#8A857A] hover:bg-[#F7F5EF]"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
+                <button type="button" data-toast="Jour précédent" class="shrink-0 w-9 rounded-xl border border-[#E4E0D6] bg-white flex items-center justify-center text-[#8A857A] hover:bg-[#F7F5EF]"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
                 @foreach($days as [$dnum, $dname, $active])
-                    <button type="button" class="shrink-0 min-w-[74px] px-4 py-2 rounded-xl text-center leading-tight border {{ $active ? 'bg-siarc-dark border-siarc-dark text-white' : 'bg-white border-[#E4E0D6] text-[#2A271F] hover:bg-[#F7F5EF]' }}">
+                    <button type="button" data-toast="Programme du {{ $dnum }}" class="shrink-0 min-w-[74px] px-4 py-2 rounded-xl text-center leading-tight border {{ $active ? 'bg-siarc-dark border-siarc-dark text-white' : 'bg-white border-[#E4E0D6] text-[#2A271F] hover:bg-[#F7F5EF]' }}">
                         <span class="block text-[13px] font-bold">{{ $dnum }}</span>
                         <span class="block text-[11px] {{ $active ? 'text-white/75' : 'text-[#8A857A]' }}">{{ $dname }}</span>
                     </button>
                 @endforeach
-                <button type="button" class="shrink-0 w-9 rounded-xl border border-[#E4E0D6] bg-white flex items-center justify-center text-[#8A857A] hover:bg-[#F7F5EF]"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                <button type="button" data-toast="Jour suivant" class="shrink-0 w-9 rounded-xl border border-[#E4E0D6] bg-white flex items-center justify-center text-[#8A857A] hover:bg-[#F7F5EF]"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
             </div>
 
             {{-- Filter row --}}
             <div class="flex flex-wrap items-center gap-3 mb-5">
-                <button type="button" class="inline-flex items-center justify-between gap-6 px-3.5 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] min-w-[150px]"><span>Toutes les pistes</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i></button>
-                <button type="button" class="inline-flex items-center justify-between gap-6 px-3.5 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] min-w-[180px]"><span>Tous les types de session</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i></button>
-                <button type="button" class="inline-flex items-center justify-between gap-6 px-3.5 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] min-w-[130px]"><span>Tous les lieux</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i></button>
-                <button type="button" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#2A271F]"><i data-lucide="star" class="w-4 h-4 text-siarc-gold"></i>Mes favoris</button>
+                <button type="button" data-toast="Filtre : toutes les pistes" class="inline-flex items-center justify-between gap-6 px-3.5 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] min-w-[150px]"><span>Toutes les pistes</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i></button>
+                <button type="button" data-toast="Filtre : tous les types de session" class="inline-flex items-center justify-between gap-6 px-3.5 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] min-w-[180px]"><span>Tous les types de session</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i></button>
+                <button type="button" data-toast="Filtre : tous les lieux" class="inline-flex items-center justify-between gap-6 px-3.5 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] min-w-[130px]"><span>Tous les lieux</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i></button>
+                <button type="button" data-toast="Affichage de vos favoris" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#2A271F]"><i data-lucide="star" class="w-4 h-4 text-siarc-gold"></i>Mes favoris</button>
                 <div class="flex-1 min-w-[220px] relative">
                     <i data-lucide="search" class="w-4 h-4 text-[#A8A498] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                    <input type="text" placeholder="Rechercher une session, un intervenant…" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] placeholder-[#A8A498] focus:outline-none focus:border-[#CDBE8F]">
+                    <input type="text" data-filter="#progGrid" placeholder="Rechercher une session, un intervenant…" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E4E0D6] bg-white text-[13px] text-[#55524A] placeholder-[#A8A498] focus:outline-none focus:border-[#CDBE8F]">
                 </div>
             </div>
 
+            {{-- ── Panel: Vue par jour ── --}}
+            <div data-panel="day" data-tabs-for="progView">
             {{-- Schedule board --}}
             <div class="siarc-card siarc-shadow overflow-hidden">
                 <div class="overflow-x-auto siarc-scroll">
@@ -203,7 +215,7 @@
                         ];
                     @endphp
 
-                    <div class="grid grid-cols-[52px_repeat(5,1fr)]">
+                    <div id="progGrid" class="grid grid-cols-[52px_repeat(5,1fr)]">
                         {{-- Hour gutter --}}
                         <div class="relative border-r border-[#F0EEE7]" style="height:{{ $gridH }}px">
                             @foreach($hours as $hi => $hh)
@@ -220,7 +232,7 @@
                             @endforeach
                             @foreach($cards as [$time, $title, $sub])
                                 @php [$top, $ht] = $place($time); @endphp
-                                <div class="absolute left-2 right-2 rounded-xl px-3 py-2.5 overflow-hidden" style="top:{{ $top + 3 }}px;height:{{ $ht }}px;background:{{ $cbg }};border:1px solid {{ $cac }}20">
+                                <a href="{{ $sessionUrl }}" data-filter-item data-filter-text="{{ $title }} {{ $sub }} {{ $time }}" class="absolute left-2 right-2 rounded-xl px-3 py-2.5 overflow-hidden block" style="top:{{ $top + 3 }}px;height:{{ $ht }}px;background:{{ $cbg }};border:1px solid {{ $cac }}20">
                                     <div class="flex items-start justify-between gap-1.5">
                                         <span class="text-[11px] font-semibold text-[#55524A]">{{ $time }}</span>
                                         <i data-lucide="star" class="w-3.5 h-3.5 text-[#C7C2B6] shrink-0"></i>
@@ -229,7 +241,7 @@
                                     @if($sub)
                                         <p class="text-[11px] text-[#8A857A] mt-1 leading-tight">{{ $sub }}</p>
                                     @endif
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                         @endforeach
@@ -245,6 +257,27 @@
                     @endforeach
                 </div>
             </div>
+            </div>
+
+            {{-- ── Panel: Vue par piste ── --}}
+            <div data-panel="track" data-tabs-for="progView" hidden>
+                <div class="siarc-card siarc-shadow px-5 py-8 text-center">
+                    <span class="w-12 h-12 rounded-xl bg-[#F0EAFB] inline-flex items-center justify-center mb-3"><i data-lucide="clipboard-list" class="w-6 h-6 text-[#7C4FE0]"></i></span>
+                    <p class="text-[14px] font-bold text-[#1A1712]">Vue par piste</p>
+                    <p class="text-[12.5px] text-[#8A857A] mt-1.5">Le programme regroupé par piste thématique s'affiche ici.</p>
+                    <a href="{{ $programme }}" class="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-[#2A271F] border border-[#E4E0D6] hover:bg-[#F7F5EF]">Voir le programme complet</a>
+                </div>
+            </div>
+
+            {{-- ── Panel: Vue par lieu ── --}}
+            <div data-panel="room" data-tabs-for="progView" hidden>
+                <div class="siarc-card siarc-shadow px-5 py-8 text-center">
+                    <span class="w-12 h-12 rounded-xl bg-[#E6F0FB] inline-flex items-center justify-center mb-3"><i data-lucide="map-pin" class="w-6 h-6 text-[#1E6FD0]"></i></span>
+                    <p class="text-[14px] font-bold text-[#1A1712]">Vue par lieu</p>
+                    <p class="text-[12.5px] text-[#8A857A] mt-1.5">Le programme organisé par salle et espace s'affiche ici.</p>
+                    <a href="{{ $pavilions }}" class="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-[#2A271F] border border-[#E4E0D6] hover:bg-[#F7F5EF]">Voir le plan du salon</a>
+                </div>
+            </div>
         </div>
 
         {{-- ────────── RIGHT: rail ────────── --}}
@@ -254,9 +287,9 @@
             <div class="siarc-card siarc-shadow p-5">
                 <h3 class="text-[14px] font-bold text-[#1A1712] mb-4">Calendrier</h3>
                 <div class="flex items-center justify-between mb-3">
-                    <button type="button" class="w-7 h-7 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Mois précédent" class="w-7 h-7 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                     <span class="text-[13px] font-semibold text-[#2A271F]">Juillet – Août 2026</span>
-                    <button type="button" class="w-7 h-7 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Mois suivant" class="w-7 h-7 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
                 <div class="grid grid-cols-7 gap-y-2 text-center">
                     @foreach(['L', 'M', 'M', 'J', 'V', 'S', 'D'] as $dow)
@@ -284,13 +317,13 @@
             <div class="siarc-card siarc-shadow p-5">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-[14px] font-bold text-[#1A1712]">Filtres rapides</h3>
-                    <button type="button" class="text-[12.5px] font-semibold text-[#1E6FD0] hover:underline">Réinitialiser</button>
+                    <button type="button" data-toast="Filtres réinitialisés" class="text-[12.5px] font-semibold text-[#1E6FD0] hover:underline">Réinitialiser</button>
                 </div>
                 <ul class="space-y-3.5">
                     @foreach($quickFilters as [$qicon, $qlabel])
                     <li class="flex items-center justify-between">
                         <span class="inline-flex items-center gap-2.5 text-[13px] text-[#3B382F]"><i data-lucide="{{ $qicon }}" class="w-4 h-4 text-[#8A857A]"></i>{{ $qlabel }}</span>
-                        <span class="w-9 h-5 rounded-full bg-[#E4E0D6] relative shrink-0"><span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm"></span></span>
+                        <button type="button" data-toast="{{ $qlabel }} : filtre activé" class="w-9 h-5 rounded-full bg-[#E4E0D6] relative shrink-0"><span class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm"></span></button>
                     </li>
                     @endforeach
                 </ul>
@@ -304,7 +337,8 @@
                 </div>
                 <ul class="space-y-4">
                     @foreach($notMiss as [$mcolor, $mtile, $micon, $mtitle, $mtime, $mroom])
-                    <li class="flex gap-3">
+                    <li>
+                    <a href="{{ $sessionUrl }}" class="flex gap-3 group">
                         <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:{{ $mtile }}"><i data-lucide="{{ $micon }}" class="w-4 h-4" style="color:{{ $mcolor }}"></i></span>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-2">
@@ -314,13 +348,15 @@
                             <p class="text-[11px] text-[#8A857A] mt-1">{{ $mtime }}</p>
                             <p class="text-[11px] text-[#8A857A]">{{ $mroom }}</p>
                         </div>
+                    </a>
                     </li>
                     @endforeach
                 </ul>
-                <a href="{{ $programme }}" class="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-[#2A271F] border border-[#E4E0D6] hover:bg-[#F7F5EF]">Voir le programme complet (PDF)<i data-lucide="download" class="w-4 h-4"></i></a>
+                <button type="button" data-toast="Téléchargement du programme (PDF) en préparation…" class="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-[#2A271F] border border-[#E4E0D6] hover:bg-[#F7F5EF]">Voir le programme complet (PDF)<i data-lucide="download" class="w-4 h-4"></i></button>
             </div>
 
         </aside>
     </div>
+</div>
 </div>
 </div>

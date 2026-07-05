@@ -1,16 +1,25 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
 
+    // Real IDs so detail links never 404
+    $eid = siarcEvent()?->id ?? 0;
+    $pavilionId = DB::table('pavilions')->where('event_id',$eid)->value('id');
+
+    // Per-KPI destination (admin list routes)
+    $kpiRoute = fn($name) => R::has($name) ? route($name, ['lang'=>$lang]) : route('siarc.admin.dashboard', ['lang'=>$lang]);
+
     // KPI cards — approved design figures (verbatim, comma thousands separators)
+    // 7th element = admin list route target for "Voir détails"
     $kpis = [
-        ['users-round','#157A43','#E2F3E8','Exposants','842','+18%'],
-        ['users','#C97A16','#FDF3E0','Visiteurs inscrits','20,458','+24%'],
-        ['presentation','#3565DE','#E8EFFB','Réunions B2B planifiées','1,248','+31%'],
-        ['users-round','#7C4FE0','#F0EAFB','Ateliers & Conférences','48','+14%'],
-        ['store','#C97A16','#FDF3E0','Stands occupés','78%','+12%'],
-        ['banknote','#157A43','#E2F3E8','Revenus générés','128,450,000','+22%'],
+        ['users-round','#157A43','#E2F3E8','Exposants','842','+18%','siarc.admin.exhibitors'],
+        ['users','#C97A16','#FDF3E0','Visiteurs inscrits','20,458','+24%','siarc.admin.visitors'],
+        ['presentation','#3565DE','#E8EFFB','Réunions B2B planifiées','1,248','+31%','siarc.admin.b2b'],
+        ['users-round','#7C4FE0','#F0EAFB','Ateliers & Conférences','48','+14%','siarc.admin.programme'],
+        ['store','#C97A16','#FDF3E0','Stands occupés','78%','+12%','siarc.admin.stands'],
+        ['banknote','#157A43','#E2F3E8','Revenus générés','128,450,000','+22%','siarc.admin.reports'],
     ];
     $activities = [
         ['user-plus','#157A43','#E2F3E8','Nouvel exposant inscrit','Art Bois Précieux (Pavillon Centre)','Il y a 15 min'],
@@ -61,7 +70,7 @@
 
 {{-- ══ KPI CARDS ══ --}}
 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-5">
-    @foreach($kpis as [$icon,$color,$tile,$label,$val,$trend])
+    @foreach($kpis as [$icon,$color,$tile,$label,$val,$trend,$to])
     <div class="siarc-card siarc-shadow p-4">
         <span class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:{{ $tile }}"><i data-lucide="{{ $icon }}" class="w-5 h-5" style="color:{{ $color }}"></i></span>
         <p class="mt-3 text-[11.5px] text-[#8A857A] font-medium">{{ $label }}</p>
@@ -69,7 +78,7 @@
         <div class="flex items-center justify-between mt-2">
             <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-siarc-green"><i data-lucide="arrow-up" class="w-3 h-3"></i>{{ $trend }}<span class="text-[#B0AB9F] font-normal">vs dernier mois</span></span>
         </div>
-        <a href="{{ route('siarc.home', ['lang' => $lang ?? 'fr']) }}" class="inline-flex items-center gap-1 text-[11px] font-semibold text-siarc-ochre mt-2 hover:gap-1.5 transition-all">Voir détails <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
+        <a href="{{ $kpiRoute($to) }}" class="inline-flex items-center gap-1 text-[11px] font-semibold text-siarc-ochre mt-2 hover:gap-1.5 transition-all">Voir détails <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
     </div>
     @endforeach
 </div>
@@ -80,7 +89,7 @@
     <div class="lg:col-span-1 xl:col-span-1 siarc-card siarc-shadow p-5">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-[13.5px] font-bold text-[#1A1712]">Aperçu des inscriptions</h3>
-            <span class="inline-flex items-center gap-1 text-[11px] font-medium text-[#8A857A] border border-[#EFEDE6] rounded-lg px-2.5 py-1">10 derniers jours <i data-lucide="chevron-down" class="w-3 h-3"></i></span>
+            <button type="button" data-toast="Filtre de période bientôt disponible" class="inline-flex items-center gap-1 text-[11px] font-medium text-[#8A857A] border border-[#EFEDE6] rounded-lg px-2.5 py-1">10 derniers jours <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
         </div>
         <div class="flex items-center gap-4 mb-2 text-[11px]">
             <span class="inline-flex items-center gap-1.5"><span class="w-3 h-0.5 bg-siarc-green"></span>Visiteurs</span>
@@ -138,7 +147,7 @@
     <div class="siarc-card siarc-shadow p-5">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-[13.5px] font-bold text-[#1A1712]">Activités récentes</h3>
-            <a href="{{ route('siarc.home', ['lang' => $lang ?? 'fr']) }}" class="inline-flex items-center gap-1 text-[11.5px] font-semibold text-siarc-green hover:underline">Voir toutes <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
+            <a href="{{ $h('siarc.admin.reports') }}" class="inline-flex items-center gap-1 text-[11.5px] font-semibold text-siarc-green hover:underline">Voir toutes <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
         </div>
         <ul class="space-y-3.5">
             @foreach($activities as [$icon,$color,$tile,$title,$sub,$time])

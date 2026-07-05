@@ -1,10 +1,22 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang  = $lang ?? 'fr'; $isFr = $isFr ?? ($lang === 'fr');
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang' => $lang], $params)) : null;
 
-    // Navigational fallback for the manual-allocation / detail actions.
-    $planLink = $h('siarc.admin.pavilions') ?? $h('siarc.admin.dashboard') ?? null;
+    // ── Real ids so detail links never 404 ────────────────────────────────────
+    $eid         = siarcEvent()?->id ?? 0;
+    $standId     = DB::table('stands')->where('event_id', $eid)->value('id');
+    $exhibitorId = DB::table('event_exhibitors')->where('event_id', $eid)->value('id');
+    $pavilionId  = DB::table('pavilions')->where('event_id', $eid)->value('id');
+
+    // Route helpers (all admin routes exist; guard optional platform names).
+    $floorLink = $h('siarc.admin.floorplan') ?? $h('siarc.admin.pavilions') ?? $h('siarc.admin.dashboard');
+    $standsLink = $h('siarc.admin.stands') ?? $floorLink;
+    // Detail routes fall back to list routes when the id is null.
+    $standDetail     = $standId ? $h('siarc.admin.stand', ['id' => $standId]) : $standsLink;
+    $exhibitorDetail = $exhibitorId ? $h('siarc.admin.exhibitor', ['id' => $exhibitorId]) : $h('siarc.admin.exhibitors');
+    $pavilionDetail  = $pavilionId ? $h('siarc.admin.pavilion', ['id' => $pavilionId]) : $h('siarc.admin.pavilions');
 
     // ── Hall-map zones (transcribed verbatim from the approved design) ──────────
     // tone => [tileBg, ink] (matches legend chips)
@@ -16,6 +28,8 @@
         'blue'  => ['#DCE8FB', '#3565DE'],   // Réservé
         'grey'  => ['#EDEBE6', '#9A958A'],   // Non attribué
     ];
+    // Searchable/filter tag per tone (for the pavilion/status filters).
+    $toneTag = ['green'=>'attribué', 'white'=>'disponible', 'gold'=>'en attente', 'red'=>'maintenance', 'blue'=>'réservé', 'grey'=>'non attribué'];
     // Each hall zone: label, header colour, orientation, and its stand chips.
     $nord = ['N-01'=>'white','N-02'=>'green','N-03'=>'white','N-04'=>'white','N-05'=>'green','N-06'=>'gold','N-07'=>'white','N-08'=>'green','N-09'=>'white','N-10'=>'white'];
     $ouest = ['O-01'=>'blue','O-02'=>'blue','O-03'=>'blue','O-04'=>'green','O-05'=>'white','O-06'=>'white','O-07'=>'green','O-07b'=>'blue','O-09'=>'blue','O-10'=>'blue'];
@@ -127,9 +141,9 @@
         <div class="min-w-[160px]">
             <label class="block text-[10.5px] font-semibold text-[#8A857A] mb-1">Pavillon</label>
             <div class="relative">
-                <select class="w-full appearance-none px-3 pr-8 py-2 rounded-xl border border-[#ECEAE3] text-[12.5px] text-[#3B382F] bg-[#FBFAF6] focus:outline-none focus:border-[#D7E4DB]">
-                    <option>Tous les pavillons</option>
-                    <option>Pavillon Centre</option><option>Pavillon Nord</option><option>Pavillon Sud</option><option>Pavillon Ouest</option><option>Pavillon Est</option>
+                <select data-filter-select="#standScope" class="w-full appearance-none px-3 pr-8 py-2 rounded-xl border border-[#ECEAE3] text-[12.5px] text-[#3B382F] bg-[#FBFAF6] focus:outline-none focus:border-[#D7E4DB]">
+                    <option value="tous">Tous les pavillons</option>
+                    <option value="pav-centre">Pavillon Centre</option><option value="pav-nord">Pavillon Nord</option><option value="pav-sud">Pavillon Sud</option><option value="pav-ouest">Pavillon Ouest</option><option value="pav-est">Pavillon Est</option>
                 </select>
                 <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             </div>
@@ -148,8 +162,9 @@
         <div class="min-w-[140px]">
             <label class="block text-[10.5px] font-semibold text-[#8A857A] mb-1">Statut d'attribution</label>
             <div class="relative">
-                <select class="w-full appearance-none px-3 pr-8 py-2 rounded-xl border border-[#ECEAE3] text-[12.5px] text-[#3B382F] bg-[#FBFAF6] focus:outline-none focus:border-[#D7E4DB]">
-                    <option>Tous</option>
+                <select data-filter-select="#standScope" class="w-full appearance-none px-3 pr-8 py-2 rounded-xl border border-[#ECEAE3] text-[12.5px] text-[#3B382F] bg-[#FBFAF6] focus:outline-none focus:border-[#D7E4DB]">
+                    <option value="tous">Tous</option>
+                    <option value="attribué">Attribué</option><option value="disponible">Disponible</option><option value="en attente">En attente</option><option value="maintenance">Maintenance</option><option value="réservé">Réservé</option><option value="non attribué">Non attribué</option>
                 </select>
                 <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             </div>
@@ -167,15 +182,15 @@
         {{-- Search --}}
         <div class="relative flex-1 min-w-[200px]">
             <label class="block text-[10.5px] font-semibold text-transparent mb-1">.</label>
-            <input type="text" placeholder="Rechercher un stand ou exposant…" class="w-full pl-3.5 pr-9 py-2 rounded-xl border border-[#ECEAE3] text-[12.5px] text-[#3B382F] placeholder:text-[#B0AB9F] focus:outline-none focus:border-[#D7E4DB] bg-[#FBFAF6]">
+            <input type="text" data-filter="#standScope" placeholder="Rechercher un stand ou exposant…" class="w-full pl-3.5 pr-9 py-2 rounded-xl border border-[#ECEAE3] text-[12.5px] text-[#3B382F] placeholder:text-[#B0AB9F] focus:outline-none focus:border-[#D7E4DB] bg-[#FBFAF6]">
             <i data-lucide="search" class="w-4 h-4 text-[#B0AB9F] absolute right-3 top-[30px]"></i>
         </div>
         {{-- Filtres --}}
-        <button type="button" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2 text-[12.5px] bg-white"><i data-lucide="filter" class="w-4 h-4 text-[#6F6B60]"></i>Filtres</button>
+        <button type="button" data-toast="Filtres avancés à venir" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2 text-[12.5px] bg-white"><i data-lucide="filter" class="w-4 h-4 text-[#6F6B60]"></i>Filtres</button>
         {{-- Réinitialiser --}}
-        <button type="button" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2 text-[12.5px] bg-white"><i data-lucide="rotate-ccw" class="w-4 h-4 text-[#6F6B60]"></i>Réinitialiser</button>
+        <button type="button" data-toast="Filtres réinitialisés" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2 text-[12.5px] bg-white"><i data-lucide="rotate-ccw" class="w-4 h-4 text-[#6F6B60]"></i>Réinitialiser</button>
         {{-- Attribution manuelle --}}
-        <a @if($planLink)href="{{ $planLink }}"@endif class="siarc-btn siarc-btn-green px-4 py-2 text-[12.5px]"><i data-lucide="plus" class="w-4 h-4"></i>Attribution manuelle</a>
+        <a href="{{ $floorLink }}" class="siarc-btn siarc-btn-green px-4 py-2 text-[12.5px]"><i data-lucide="plus" class="w-4 h-4"></i>Attribution manuelle</a>
     </div>
 </div>
 
@@ -198,16 +213,16 @@
         <div class="rounded-2xl border border-[#ECEAE3] bg-[#FBFAF6] p-4 overflow-x-auto relative">
             {{-- Zoom / pan controls (left rail) --}}
             <div class="absolute left-6 top-6 flex flex-col gap-2 z-10">
-                <button type="button" title="Déplacer" class="w-9 h-9 rounded-lg bg-siarc-green text-white flex items-center justify-center siarc-shadow"><i data-lucide="hand" class="w-4 h-4"></i></button>
+                <button type="button" data-toast="Mode déplacement activé" title="Déplacer" class="w-9 h-9 rounded-lg bg-siarc-green text-white flex items-center justify-center siarc-shadow"><i data-lucide="hand" class="w-4 h-4"></i></button>
                 <div class="rounded-lg border border-[#ECEAE3] bg-white flex flex-col overflow-hidden siarc-shadow">
-                    <button type="button" title="Zoom avant" class="w-9 h-9 flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6] border-b border-[#ECEAE3]"><i data-lucide="plus" class="w-4 h-4"></i></button>
-                    <button type="button" title="Zoom arrière" class="w-9 h-9 flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6]"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Zoom avant" title="Zoom avant" class="w-9 h-9 flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6] border-b border-[#ECEAE3]"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Zoom arrière" title="Zoom arrière" class="w-9 h-9 flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6]"><i data-lucide="minus" class="w-4 h-4"></i></button>
                 </div>
-                <button type="button" title="Ajuster" class="w-9 h-9 rounded-lg border border-[#ECEAE3] bg-white flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6] siarc-shadow"><i data-lucide="maximize" class="w-4 h-4"></i></button>
-                <button type="button" title="Réinitialiser" class="w-9 h-9 rounded-lg border border-[#ECEAE3] bg-white flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6] siarc-shadow"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+                <button type="button" data-toast="Plan ajusté à l'écran" title="Ajuster" class="w-9 h-9 rounded-lg border border-[#ECEAE3] bg-white flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6] siarc-shadow"><i data-lucide="maximize" class="w-4 h-4"></i></button>
+                <button type="button" data-toast="Vue réinitialisée" title="Réinitialiser" class="w-9 h-9 rounded-lg border border-[#ECEAE3] bg-white flex items-center justify-center text-[#6F6B60] hover:bg-[#FBFAF6] siarc-shadow"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
             </div>
 
-            <div class="min-w-[640px] relative rounded-xl bg-white border border-[#E8E6DF] p-3">
+            <div id="standScope" class="min-w-[640px] relative rounded-xl bg-white border border-[#E8E6DF] p-3">
                 {{-- ENTRÉE PRINCIPALE --}}
                 <div class="flex flex-col items-center text-[9.5px] font-bold tracking-wide text-[#8A857A] mb-2">
                     <span>ENTRÉE PRINCIPALE</span><i data-lucide="arrow-down" class="w-3.5 h-3.5 text-siarc-green"></i>
@@ -220,7 +235,7 @@
                         <div class="grid grid-cols-10 gap-1">
                             @foreach($nord as $code => $t)
                             @php $c = $tone[$t]; @endphp
-                            <div class="h-8 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</div>
+                            <a href="{{ $standDetail }}" data-filter-item data-filter-text="{{ $code }} nord {{ $toneTag[$t] }}" data-filter-tags="pav-nord {{ $toneTag[$t] }}" class="h-8 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -240,7 +255,7 @@
                         <div class="grid grid-cols-1 gap-1">
                             @foreach($ouestLabels as $i => $code)
                             @php $t = array_values($ouest)[$i]; $c = $tone[$t]; @endphp
-                            <div class="w-14 h-6 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</div>
+                            <a href="{{ $standDetail }}" data-filter-item data-filter-text="{{ $code }} ouest {{ $toneTag[$t] }}" data-filter-tags="pav-ouest {{ $toneTag[$t] }}" class="w-14 h-6 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -251,7 +266,7 @@
                         <div class="grid grid-cols-6 gap-1.5">
                             @foreach($centre as $code => $t)
                             @php $c = $tone[$t]; @endphp
-                            <div class="h-8 rounded flex items-center justify-center text-[9.5px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</div>
+                            <a href="{{ $standDetail }}" data-filter-item data-filter-text="{{ $code }} centre {{ $toneTag[$t] }}" data-filter-tags="pav-centre {{ $toneTag[$t] }}" class="h-8 rounded flex items-center justify-center text-[9.5px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -261,7 +276,7 @@
                         <div class="grid grid-cols-1 gap-1">
                             @foreach($estLabels as $i => $code)
                             @php $t = array_values($est)[$i]; $c = $tone[$t]; @endphp
-                            <div class="w-14 h-6 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</div>
+                            <a href="{{ $standDetail }}" data-filter-item data-filter-text="{{ $code }} est {{ $toneTag[$t] }}" data-filter-tags="pav-est {{ $toneTag[$t] }}" class="w-14 h-6 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</a>
                             @endforeach
                         </div>
                         <div class="w-6 rounded-md bg-[#7C4FE0] flex items-center justify-center">
@@ -281,7 +296,7 @@
                         <div class="grid grid-cols-10 gap-1">
                             @foreach($sud as $code => $t)
                             @php $c = $tone[$t]; @endphp
-                            <div class="h-8 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</div>
+                            <a href="{{ $standDetail }}" data-filter-item data-filter-text="{{ $code }} sud {{ $toneTag[$t] }}" data-filter-tags="pav-sud {{ $toneTag[$t] }}" class="h-8 rounded flex items-center justify-center text-[9px] font-semibold border" style="background:{{ $c[0] }};color:{{ $c[1] }};border-color:{{ $c[1] }}66">{{ $code }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -359,7 +374,7 @@
         <div class="siarc-card siarc-shadow p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[14px] font-bold text-[#1A1712]">Activités récentes</h3>
-                <a @if($planLink)href="{{ $planLink }}"@endif class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
+                <a href="{{ $standsLink }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
             </div>
             <ul class="space-y-4">
                 @php $actTone = ['green'=>['#E2F3E8','#157A43'],'blue'=>['#E8EFFB','#3565DE'],'purple'=>['#F0EAFB','#7C4FE0']]; @endphp
@@ -427,7 +442,7 @@
         <div>
             <div class="flex items-center justify-between mb-3">
                 <p class="text-[13px] font-bold text-[#1A1712]">Informations financières</p>
-                <button type="button" class="w-7 h-7 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]"><i data-lucide="ellipsis-vertical" class="w-4 h-4"></i></button>
+                <button type="button" data-toast="Options du stand" class="w-7 h-7 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]"><i data-lucide="ellipsis-vertical" class="w-4 h-4"></i></button>
             </div>
             <div class="space-y-2.5 text-[12px]">
                 <div class="flex items-center justify-between">
@@ -448,9 +463,9 @@
 
     {{-- Action row --}}
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-5 pt-5 border-t border-[#ECEAE3]">
-        <a @if($planLink)href="{{ $planLink }}"@endif class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="eye" class="w-4 h-4 text-[#6F6B60]"></i>Voir le détail du stand</a>
-        <a @if($planLink)href="{{ $planLink }}"@endif class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="users-round" class="w-4 h-4 text-[#6F6B60]"></i>Changer d'exposant</a>
-        <a @if($planLink)href="{{ $planLink }}"@endif class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="rotate-ccw" class="w-4 h-4 text-[#6F6B60]"></i>Historique</a>
-        <button type="button" class="siarc-btn border border-[#F2C7C9] text-siarc-red px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="trash-2" class="w-4 h-4"></i>Libérer le stand</button>
+        <a href="{{ $standDetail }}" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="eye" class="w-4 h-4 text-[#6F6B60]"></i>Voir le détail du stand</a>
+        <a href="{{ $exhibitorDetail }}" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="users-round" class="w-4 h-4 text-[#6F6B60]"></i>Changer d'exposant</a>
+        <a href="{{ $standDetail }}" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="rotate-ccw" class="w-4 h-4 text-[#6F6B60]"></i>Historique</a>
+        <button type="button" data-toast="Stand libéré" class="siarc-btn border border-[#F2C7C9] text-siarc-red px-3.5 py-2.5 text-[12.5px] justify-center bg-white"><i data-lucide="trash-2" class="w-4 h-4"></i>Libérer le stand</button>
     </div>
 </div>

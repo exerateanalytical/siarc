@@ -66,7 +66,7 @@
         <div class="relative siarc-in">
             <img src="{{ asset('images/siarc/home4-hero.png') }}" alt="SIARC 2026 — Artisanat & Musée National de Yaoundé" class="w-full rounded-2xl siarc-shadow-lg">
             {{-- video play overlay --}}
-            <div class="absolute left-5 bottom-5 flex items-center gap-3.5">
+            <button type="button" data-toast="Vidéo bientôt disponible" class="absolute left-5 bottom-5 flex items-center gap-3.5 text-left">
                 <span class="w-12 h-12 rounded-full bg-[#0B3A1E]/85 backdrop-blur flex items-center justify-center ring-2 ring-white/25">
                     <i data-lucide="play" class="w-5 h-5 text-white ml-0.5" style="fill:#fff"></i>
                 </span>
@@ -74,12 +74,12 @@
                     <span class="block text-[13px] font-bold tracking-wide">DÉCOUVRIR LE SIARC 2026</span>
                     <span class="block text-[12px] text-white/85">Regarder la vidéo</span>
                 </span>
-            </div>
+            </button>
             {{-- carousel dots --}}
             <div class="absolute left-5 bottom-2 flex items-center gap-1.5">
-                <span class="w-4 h-1.5 rounded-full bg-siarc-gold"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-siarc-green"></span>
+                <button type="button" data-toast="Diapositive 1" class="w-4 h-1.5 rounded-full bg-siarc-gold"></button>
+                <button type="button" data-toast="Diapositive 2" class="w-1.5 h-1.5 rounded-full bg-white/60"></button>
+                <button type="button" data-toast="Diapositive 3" class="w-1.5 h-1.5 rounded-full bg-siarc-green"></button>
             </div>
         </div>
     </div>

@@ -134,7 +134,7 @@
                             <p class="text-[11.5px] text-[#8A857A] mt-1">{{ $by }}</p>
                         </div>
                         <div class="shrink-0 flex flex-col items-end gap-2 text-right">
-                            <button type="button" aria-label="{{ $isFr ? 'Favori' : 'Favourite' }}">
+                            <button type="button" aria-label="{{ $isFr ? 'Favori' : 'Favourite' }}" data-toast="{{ $isFr ? 'Ajouté à vos favoris' : 'Added to favourites' }}">
                                 <i data-lucide="star" class="w-[18px] h-[18px]" style="{{ $fav ? 'color:#E6B201;fill:#E6B201' : 'color:#C9C4B8' }}"></i>
                             </button>
                             <span class="hidden sm:inline-flex items-center gap-1 text-[11.5px] text-[#8A857A] whitespace-nowrap"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>{{ $venue }}</span>
@@ -176,7 +176,7 @@
                         </a>
                         @endforeach
                     </div>
-                    <button type="button" aria-label="{{ $isFr ? 'Suivant' : 'Next' }}" class="hidden xl:flex shrink-0 self-center w-9 h-9 rounded-full bg-white border border-[#ECEAE3] siarc-shadow items-center justify-center text-[#55524A] hover:bg-[#F1EFE8]">
+                    <button type="button" aria-label="{{ $isFr ? 'Suivant' : 'Next' }}" data-toast="{{ $isFr ? 'Voir tous les exposants recommandés' : 'View all recommended exhibitors' }}" class="hidden xl:flex shrink-0 self-center w-9 h-9 rounded-full bg-white border border-[#ECEAE3] siarc-shadow items-center justify-center text-[#55524A] hover:bg-[#F1EFE8]">
                         <i data-lucide="chevron-right" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -251,7 +251,7 @@
                             </div>
                             <p class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#C0010C]"><span class="w-1.5 h-1.5 rounded-full bg-[#C0010C]"></span>{{ $isFr ? 'En cours maintenant' : 'Happening now' }}</p>
                         </div>
-                        <button type="button" aria-label="{{ $isFr ? 'Regarder' : 'Watch' }}" class="shrink-0 w-8 h-8 rounded-full bg-[#0B3A1E] text-white flex items-center justify-center">
+                        <button type="button" aria-label="{{ $isFr ? 'Regarder' : 'Watch' }}" data-toast="{{ $isFr ? 'La diffusion en direct démarrera bientôt' : 'Live stream starting soon' }}" class="shrink-0 w-8 h-8 rounded-full bg-[#0B3A1E] text-white flex items-center justify-center">
                             <i data-lucide="play" class="w-4 h-4" style="fill:#fff"></i>
                         </button>
                     </div>

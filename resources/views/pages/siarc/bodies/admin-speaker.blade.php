@@ -1,8 +1,23 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
-    $backHref = $h('siarc.admin.speakers');
+
+    $eid = siarcEvent()?->id ?? 0;
+    $speakerId  = DB::table('speakers')->where('event_id',$eid)->value('id');
+    $sessionId  = DB::table('programme_sessions')->where('event_id',$eid)->value('id');
+    $panelId    = DB::table('programme_sessions')->where('event_id',$eid)->where('type','panel')->value('id') ?: $sessionId;
+    $standId    = DB::table('stands')->where('event_id',$eid)->value('id');
+
+    // Robust route helpers with real fallbacks
+    $speakersList = $h('siarc.admin.speakers');
+    $programmeList = $h('siarc.admin.programme');
+    $exhibitorsList = $h('siarc.admin.exhibitors');
+    $editHref = $speakerId ? $h('siarc.admin.speaker', ['id'=>$speakerId]) : $speakersList;
+    $session1Href = $sessionId ? $h('siarc.admin.session', ['id'=>$sessionId]) : $programmeList;
+    $session2Href = $panelId ? $h('siarc.admin.session', ['id'=>$panelId]) : $programmeList;
+    $backHref = $speakersList;
 @endphp
 
 <div class="siarc-in">
@@ -12,13 +27,13 @@
         <a href="{{ $backHref }}" class="siarc-btn bg-white border border-[#ECEAE3] text-[#3B382F] text-[13px] px-4 py-2.5 hover:bg-[#FBFAF6]">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr ? 'Retour à la liste' : 'Back to list' }}
         </a>
-        <button type="button" class="siarc-btn bg-white border border-[#ECEAE3] text-[#3B382F] text-[13px] px-4 py-2.5 hover:bg-[#FBFAF6]">
+        <button type="button" data-toast="{{ $isFr ? 'Téléchargement du badge en préparation…' : 'Badge download in preparation…' }}" class="siarc-btn bg-white border border-[#ECEAE3] text-[#3B382F] text-[13px] px-4 py-2.5 hover:bg-[#FBFAF6]">
             <i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Télécharger le badge' : 'Download badge' }}
         </button>
-        <button type="button" class="siarc-btn bg-[#0B3A1E] text-white text-[13px] px-4 py-2.5 hover:bg-[#0F4824]">
+        <a href="{{ $editHref }}" class="siarc-btn bg-[#0B3A1E] text-white text-[13px] px-4 py-2.5 hover:bg-[#0F4824]">
             <i data-lucide="square-pen" class="w-4 h-4"></i>{{ $isFr ? "Modifier l'intervenant" : 'Edit speaker' }}
-        </button>
-        <button type="button" class="siarc-btn bg-white border border-[#ECEAE3] text-[#8A857A] w-10 h-10 justify-center px-0 hover:bg-[#FBFAF6]">
+        </a>
+        <button type="button" data-toast="{{ $isFr ? 'Plus d\'actions' : 'More actions' }}" class="siarc-btn bg-white border border-[#ECEAE3] text-[#8A857A] w-10 h-10 justify-center px-0 hover:bg-[#FBFAF6]">
             <i data-lucide="ellipsis-vertical" class="w-4 h-4"></i>
         </button>
     </div>
@@ -74,16 +89,16 @@
             </div>
 
             {{-- ── TABS ── --}}
-            <div class="siarc-card siarc-shadow px-6">
+            <div class="siarc-card siarc-shadow px-6" data-tabs="spk-detail">
                 <nav class="flex items-center gap-6 overflow-x-auto text-[13px] font-medium text-[#8A857A]">
-                    @foreach(['Aperçu'=>true,'Sessions (2)'=>false,'Biographie'=>false,'Médias'=>false,'Documents'=>false,'Informations pratiques'=>false,'Historique'=>false] as $tab=>$active)
-                        <button type="button" class="py-4 whitespace-nowrap border-b-2 {{ $active ? 'border-siarc-green text-siarc-green font-semibold' : 'border-transparent hover:text-[#3B382F]' }}">{{ $tab }}</button>
+                    @foreach(['apercu'=>'Aperçu','sessions'=>'Sessions (2)','bio'=>'Biographie','medias'=>'Médias','documents'=>'Documents','pratique'=>'Informations pratiques','historique'=>'Historique'] as $key=>$label)
+                        <button type="button" class="si-tab py-4 whitespace-nowrap {{ $loop->first ? 'is-active' : '' }}" data-tab="{{ $key }}">{{ $label }}</button>
                     @endforeach
                 </nav>
             </div>
 
-            {{-- ── APERÇU: À propos + Sessions assignées ── --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {{-- ── APERÇU PANEL: À propos + Sessions assignées ── --}}
+            <div data-panel="apercu" data-tabs-for="spk-detail" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
                 {{-- À propos --}}
                 <div class="siarc-card siarc-shadow p-6">
@@ -107,16 +122,16 @@
 
                     <h4 class="text-[14px] font-bold text-[#1A1712] mt-6 mb-3">Réseaux sociaux</h4>
                     <div class="flex items-center gap-2.5">
-                        <span class="w-9 h-9 rounded-lg bg-[#0A66C2] text-white flex items-center justify-center">
+                        <button type="button" data-toast="{{ $isFr ? 'Ouverture du profil LinkedIn…' : 'Opening LinkedIn profile…' }}" class="w-9 h-9 rounded-lg bg-[#0A66C2] text-white flex items-center justify-center">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.24 8h4.52v14H.24V8zm7.5 0h4.33v1.92h.06c.6-1.14 2.08-2.34 4.28-2.34 4.58 0 5.42 3.02 5.42 6.95V22h-4.5v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.54 1.72-2.54 3.49V22h-4.5V8z"/></svg>
-                        </span>
-                        <span class="w-9 h-9 rounded-lg bg-[#161513] text-white flex items-center justify-center">
+                        </button>
+                        <button type="button" data-toast="{{ $isFr ? 'Ouverture du profil X…' : 'Opening X profile…' }}" class="w-9 h-9 rounded-lg bg-[#161513] text-white flex items-center justify-center">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M18.244 2H21.5l-7.5 8.57L22.5 22h-6.75l-5.28-6.9L4.4 22H1.14l8.02-9.17L1 2h6.9l4.78 6.32L18.244 2zm-1.18 18h1.83L7.02 3.9H5.06l12 16.1z"/></svg>
-                        </span>
-                        <span class="w-9 h-9 rounded-lg bg-[#E2F3E8] flex items-center justify-center"><i data-lucide="globe" class="w-4 h-4 text-siarc-green"></i></span>
-                        <span class="w-9 h-9 rounded-lg bg-[#FF0000] text-white flex items-center justify-center">
+                        </button>
+                        <button type="button" data-toast="{{ $isFr ? 'Ouverture du site web…' : 'Opening website…' }}" class="w-9 h-9 rounded-lg bg-[#E2F3E8] flex items-center justify-center"><i data-lucide="globe" class="w-4 h-4 text-siarc-green"></i></button>
+                        <button type="button" data-toast="{{ $isFr ? 'Ouverture de la chaîne YouTube…' : 'Opening YouTube channel…' }}" class="w-9 h-9 rounded-lg bg-[#FF0000] text-white flex items-center justify-center">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.6 15.6V8.4l6.24 3.6-6.24 3.6z"/></svg>
-                        </span>
+                        </button>
                     </div>
                 </div>
 
@@ -126,7 +141,7 @@
 
                     <div class="space-y-3">
                         {{-- Session 1: CONFÉRENCE --}}
-                        <a href="{{ $h('siarc.admin.programme') }}" class="block rounded-xl border border-[#ECEAE3] p-4 siarc-lift">
+                        <a href="{{ $session1Href }}" class="block rounded-xl border border-[#ECEAE3] p-4 siarc-lift">
                             <div class="flex items-start gap-3">
                                 <span class="w-9 h-9 rounded-lg bg-[#F0EAFB] flex items-center justify-center shrink-0"><i data-lucide="presentation" class="w-4 h-4 text-[#7C4FE0]"></i></span>
                                 <div class="min-w-0 flex-1">
@@ -140,7 +155,7 @@
                         </a>
 
                         {{-- Session 2: PANEL --}}
-                        <a href="{{ $h('siarc.admin.programme') }}" class="block rounded-xl border border-[#ECEAE3] p-4 siarc-lift">
+                        <a href="{{ $session2Href }}" class="block rounded-xl border border-[#ECEAE3] p-4 siarc-lift">
                             <div class="flex items-start gap-3">
                                 <span class="w-9 h-9 rounded-lg bg-[#E8EFFB] flex items-center justify-center shrink-0"><i data-lucide="presentation" class="w-4 h-4 text-[#3565DE]"></i></span>
                                 <div class="min-w-0 flex-1">
@@ -154,10 +169,58 @@
                         </a>
                     </div>
 
-                    <a href="{{ $h('siarc.admin.programme') }}" class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#ECEAE3] py-3 text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
+                    <a href="{{ $programmeList }}" class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#ECEAE3] py-3 text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
                         Voir toutes les sessions <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>
+            </div>
+
+            {{-- ── SESSIONS PANEL ── --}}
+            <div data-panel="sessions" data-tabs-for="spk-detail" hidden class="siarc-card siarc-shadow p-6">
+                <h3 class="text-[15px] font-bold text-[#1A1712] mb-4">Sessions assignées (2)</h3>
+                <div class="space-y-3">
+                    <a href="{{ $session1Href }}" class="block rounded-xl border border-[#ECEAE3] p-4 siarc-lift">
+                        <p class="text-[12.5px] font-semibold text-[#1A1712] leading-tight">L'artisanat africain à l'ère de l'innovation et du numérique</p>
+                        <p class="text-[11.5px] text-[#8A857A] mt-2 inline-flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>29 Juil. 2026 &nbsp;·&nbsp; 10:30 – 12:00 &nbsp;·&nbsp; Salle de Conférence A</p>
+                    </a>
+                    <a href="{{ $session2Href }}" class="block rounded-xl border border-[#ECEAE3] p-4 siarc-lift">
+                        <p class="text-[12.5px] font-semibold text-[#1A1712] leading-tight">Financement et accompagnement des artisans innovants</p>
+                        <p class="text-[11.5px] text-[#8A857A] mt-2 inline-flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>31 Juil. 2026 &nbsp;·&nbsp; 16:00 – 17:30 &nbsp;·&nbsp; Salle de Conférence B</p>
+                    </a>
+                </div>
+                <a href="{{ $programmeList }}" class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#ECEAE3] py-3 text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
+                    Voir toutes les sessions <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            {{-- ── BIOGRAPHIE PANEL ── --}}
+            <div data-panel="bio" data-tabs-for="spk-detail" hidden class="siarc-card siarc-shadow p-6">
+                <h3 class="text-[15px] font-bold text-[#1A1712] mb-3">Biographie</h3>
+                <p class="text-[12.5px] text-[#55524A] leading-relaxed">Dr. Alain Mbarga est expert en innovation et transformation digitale avec plus de 15 ans d'expérience dans l'accompagnement des PME africaines vers la digitalisation. Fondateur et CEO de TechCraft Africa, il conseille des gouvernements et organisations sur les stratégies d'innovation et le développement de l'écosystème numérique en Afrique.</p>
+            </div>
+
+            {{-- ── MÉDIAS PANEL ── --}}
+            <div data-panel="medias" data-tabs-for="spk-detail" hidden class="siarc-card siarc-shadow p-6">
+                <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Médias</h3>
+                <p class="text-[12.5px] text-[#55524A]">Aucun média supplémentaire n'est associé à cet intervenant pour le moment.</p>
+            </div>
+
+            {{-- ── DOCUMENTS PANEL ── --}}
+            <div data-panel="documents" data-tabs-for="spk-detail" hidden class="siarc-card siarc-shadow p-6">
+                <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Documents</h3>
+                <p class="text-[12.5px] text-[#55524A]">Les documents de l'intervenant sont listés dans la colonne latérale.</p>
+            </div>
+
+            {{-- ── INFORMATIONS PRATIQUES PANEL ── --}}
+            <div data-panel="pratique" data-tabs-for="spk-detail" hidden class="siarc-card siarc-shadow p-6">
+                <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Informations pratiques</h3>
+                <p class="text-[12.5px] text-[#55524A]">Arrivée prévue le 27 juillet. Besoin d'une assistance technique pour la présentation (vidéo + slides).</p>
+            </div>
+
+            {{-- ── HISTORIQUE PANEL ── --}}
+            <div data-panel="historique" data-tabs-for="spk-detail" hidden class="siarc-card siarc-shadow p-6">
+                <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Historique</h3>
+                <p class="text-[12.5px] text-[#55524A]">Inscription le 12 Mai 2026 · Badge généré · Confirmé.</p>
             </div>
 
             {{-- ── NOTES ADMIN ── --}}
@@ -170,7 +233,7 @@
                         </p>
                         <p class="text-[11px] text-[#B0AB9F] mt-3">Ajoutée par Jean Dupont · 12 Mai 2026</p>
                     </div>
-                    <button type="button" class="w-9 h-9 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6] shrink-0"><i data-lucide="square-pen" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="{{ $isFr ? 'Édition de la note…' : 'Edit note…' }}" class="w-9 h-9 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6] shrink-0"><i data-lucide="square-pen" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </div>
@@ -204,7 +267,7 @@
                         <span class="w-9 h-9 rounded-lg bg-[#E2F3E8] flex items-center justify-center shrink-0"><i data-lucide="building-2" class="w-4 h-4 text-siarc-green"></i></span>
                         <span class="text-[13px] font-semibold text-[#2B2822] truncate">TechCraft Africa</span>
                     </div>
-                    <a href="{{ $h('siarc.admin.exhibitors') }}" class="text-[11.5px] font-semibold text-[#3B382F] border border-[#ECEAE3] rounded-lg px-3 py-1.5 hover:bg-[#FBFAF6] whitespace-nowrap">Voir l'entreprise</a>
+                    <a href="{{ $exhibitorsList }}" class="text-[11.5px] font-semibold text-[#3B382F] border border-[#ECEAE3] rounded-lg px-3 py-1.5 hover:bg-[#FBFAF6] whitespace-nowrap">Voir l'entreprise</a>
                 </div>
             </div>
 
@@ -224,11 +287,11 @@
                             <p class="text-[12.5px] font-semibold text-[#2B2822] truncate">{{ $title }}</p>
                             <p class="text-[11px] text-[#8A857A]">{{ $meta }}</p>
                         </div>
-                        <button type="button" class="text-[#8A857A] hover:text-siarc-green shrink-0"><i data-lucide="download" class="w-4 h-4"></i></button>
+                        <button type="button" data-toast="{{ $isFr ? 'Téléchargement en préparation…' : 'Download in preparation…' }}" class="text-[#8A857A] hover:text-siarc-green shrink-0"><i data-lucide="download" class="w-4 h-4"></i></button>
                     </li>
                     @endforeach
                 </ul>
-                <a href="{{ $h('siarc.admin.speakers') }}" class="mt-4 flex items-center justify-end gap-1.5 text-[12px] font-semibold text-siarc-green hover:gap-2 transition-all">Voir tous les documents <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                <a href="{{ $speakersList }}" class="mt-4 flex items-center justify-end gap-1.5 text-[12px] font-semibold text-siarc-green hover:gap-2 transition-all">Voir tous les documents <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
             </div>
 
             {{-- Badge & Accréditation --}}
@@ -252,7 +315,7 @@
                         <span class="inline-flex items-center gap-1.5 font-semibold text-siarc-green"><i data-lucide="check-circle-2" class="w-4 h-4"></i>Badge généré</span>
                     </li>
                 </ul>
-                <button type="button" class="mt-5 w-full siarc-btn bg-[#F6F4EF] border border-[#ECEAE3] text-[#3B382F] text-[12.5px] py-3 justify-center hover:bg-[#EFEDE6]">
+                <button type="button" data-toast="{{ $isFr ? 'Téléchargement du badge en préparation…' : 'Badge download in preparation…' }}" class="mt-5 w-full siarc-btn bg-[#F6F4EF] border border-[#ECEAE3] text-[#3B382F] text-[12.5px] py-3 justify-center hover:bg-[#EFEDE6]">
                     <i data-lucide="download" class="w-4 h-4"></i>Voir / Télécharger le badge
                 </button>
             </div>

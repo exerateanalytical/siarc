@@ -1,7 +1,18 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
+
+    // ── Real IDs so detail links never 404 ──────────────────────────────────
+    $eid       = siarcEvent()?->id ?? 0;
+    $sessionId = DB::table('programme_sessions')->where('event_id',$eid)->value('id');
+    $speakerId = DB::table('speakers')->where('event_id',$eid)->value('id');
+
+    // detail route for a session (fallback to programme list if no id / route)
+    $sessionHref = ($sessionId && R::has('siarc.admin.session'))
+        ? route('siarc.admin.session', ['lang'=>$lang, 'id'=>$sessionId])
+        : $h('siarc.admin.programme');
 
     // ── KPI row — verbatim from approved design ─────────────────────────────
     $kpis = [
@@ -108,52 +119,54 @@
 
             {{-- View tabs + primary actions --}}
             <div class="flex flex-wrap items-center gap-3 px-5 pt-4 border-b border-[#F1EFE8]">
-                <div class="flex flex-wrap items-center gap-7 flex-1 min-w-0">
-                    @foreach([['Vue calendrier',true],['Vue liste',false],['Par lieu',false]] as [$t,$active])
-                    <button class="relative pb-3 text-[13px] font-semibold transition-colors {{ $active ? 'text-siarc-green' : 'text-[#8A857A] hover:text-[#3B382F]' }}">
+                <div data-tabs="prog-views" class="flex flex-wrap items-center gap-7 flex-1 min-w-0">
+                    @foreach([['Vue calendrier','cal'],['Vue liste','list'],['Par lieu','venue']] as [$t,$key])
+                    <button class="si-tab relative pb-3 text-[13px] font-semibold transition-colors {{ $loop->first ? 'is-active' : '' }}" data-tab="{{ $key }}">
                         {{ $t }}
-                        @if($active)<span class="absolute left-0 -bottom-px h-[2.5px] w-full rounded-full bg-siarc-green"></span>@endif
                     </button>
                     @endforeach
                 </div>
                 <div class="flex items-center gap-2.5 pb-3">
-                    <button class="siarc-btn siarc-btn-outline !border-[#E1DED5] !text-[#3B382F] text-[12.5px] px-3.5 py-2 hover:bg-[#FBFAF6]"><i data-lucide="download" class="w-4 h-4"></i>Exporter le programme</button>
+                    <button data-toast="Export en préparation…" class="siarc-btn siarc-btn-outline !border-[#E1DED5] !text-[#3B382F] text-[12.5px] px-3.5 py-2 hover:bg-[#FBFAF6]"><i data-lucide="download" class="w-4 h-4"></i>Exporter le programme</button>
                     <a href="{{ $h('siarc.admin.programme') }}" class="siarc-btn siarc-btn-green text-[12.5px] px-4 py-2"><i data-lucide="plus" class="w-4 h-4"></i>Ajouter une activité</a>
                 </div>
             </div>
 
+            {{-- ── Panel: Vue calendrier (default) ── --}}
+            <div data-panel="cal" data-tabs-for="prog-views">
+
             {{-- Filters: day / date-range / category / venue / search --}}
             <div class="flex flex-wrap items-center gap-2.5 px-5 py-4 border-b border-[#F1EFE8]">
-                <button class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">Tous les jours <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></button>
-                <button class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">27 Juillet – 05 Août 2026 <i data-lucide="calendar" class="w-4 h-4 text-[#B0AB9F]"></i></button>
-                <button class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">Toutes catégories <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></button>
-                <button class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">Tous les lieux <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></button>
+                <button data-toast="Filtre par jour" class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">Tous les jours <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></button>
+                <button data-toast="Période : 27 Juillet – 05 Août 2026" class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">27 Juillet – 05 Août 2026 <i data-lucide="calendar" class="w-4 h-4 text-[#B0AB9F]"></i></button>
+                <button data-toast="Filtre par catégorie" class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">Toutes catégories <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></button>
+                <button data-toast="Filtre par lieu" class="h-[38px] flex items-center gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[12.5px] text-[#3B382F] hover:border-[#D8E5DC]">Tous les lieux <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></button>
                 <label class="relative flex-1 min-w-[160px]">
                     <i data-lucide="search" class="w-4 h-4 text-[#B0AB9F] absolute left-3 top-1/2 -translate-y-1/2"></i>
-                    <input type="text" placeholder="Rechercher une activité..." class="w-full h-[38px] rounded-xl border border-[#ECEAE3] bg-white pl-9 pr-3 text-[12.5px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-[#D8E5DC]">
+                    <input type="text" data-filter="#prog-timeline" placeholder="Rechercher une activité..." class="w-full h-[38px] rounded-xl border border-[#ECEAE3] bg-white pl-9 pr-3 text-[12.5px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-[#D8E5DC]">
                 </label>
             </div>
 
             {{-- Day strip --}}
             <div class="flex items-center gap-2 px-5 py-3.5 border-b border-[#F1EFE8] overflow-x-auto">
-                <button class="w-9 h-[52px] shrink-0 rounded-xl border border-[#ECEAE3] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
+                <button data-toast="Jour précédent" class="w-9 h-[52px] shrink-0 rounded-xl border border-[#ECEAE3] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
                 @foreach($days as [$dow,$dt,$active])
-                <button class="w-[62px] shrink-0 rounded-xl px-2 py-2 text-center transition-colors {{ $active ? 'bg-siarc-green text-white' : 'border border-[#ECEAE3] text-[#3B382F] hover:bg-[#FBFAF6]' }}">
+                <button data-toast="{{ $dow }} {{ $dt }}" class="w-[62px] shrink-0 rounded-xl px-2 py-2 text-center transition-colors {{ $active ? 'bg-siarc-green text-white' : 'border border-[#ECEAE3] text-[#3B382F] hover:bg-[#FBFAF6]' }}">
                     <span class="block text-[10px] font-bold tracking-wide {{ $active ? 'text-white/80' : 'text-[#B0AB9F]' }}">{{ $dow }}</span>
                     <span class="block text-[12px] font-semibold leading-tight mt-0.5">{{ $dt }}</span>
                 </button>
                 @endforeach
-                <button class="w-9 h-[52px] shrink-0 rounded-xl border border-[#ECEAE3] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                <button data-toast="Jour suivant" class="w-9 h-[52px] shrink-0 rounded-xl border border-[#ECEAE3] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
             </div>
 
             {{-- ── Timeline of sessions (verbatim) ── --}}
-            <div class="px-5 py-2">
+            <div id="prog-timeline" class="px-5 py-2">
                 @foreach($activities as $i => $a)
                     @php
                         [$start,$end,$badge,$bBg,$bFg,$dot,$title,$venue,$avatar,$speaker,$role,$pill,$pBg,$pFg] = $a;
                         $isLast = $i === array_key_last($activities);
                     @endphp
-                    <div class="flex gap-4 py-5 {{ $isLast ? '' : 'border-b border-[#F4F2EC]' }}">
+                    <a href="{{ $sessionHref }}" data-filter-item data-filter-text="{{ $title }} {{ $badge }} {{ $venue }} {{ $speaker }}" class="flex gap-4 py-5 {{ $isLast ? '' : 'border-b border-[#F4F2EC]' }}">
                         {{-- time rail --}}
                         <div class="w-[46px] shrink-0 pt-0.5 leading-tight">
                             <p class="text-[13px] font-semibold text-[#161513]">{{ $start }}</p>
@@ -192,13 +205,31 @@
                                 <span class="inline-flex items-center rounded-md px-3 py-1 text-[11.5px] font-semibold whitespace-nowrap" style="background:{{ $pBg }};color:{{ $pFg }}">{{ $pill }}</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
 
             {{-- footer --}}
             <div class="px-5 py-4 border-t border-[#F1EFE8] text-center">
-                <button class="siarc-btn text-[12.5px] px-5 py-2.5 rounded-full border border-[#ECEAE3] text-[#3B382F] hover:bg-[#FBFAF6] mx-auto">Voir plus d'activités <i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+                <a href="{{ $h('siarc.admin.programme') }}" class="siarc-btn text-[12.5px] px-5 py-2.5 rounded-full border border-[#ECEAE3] text-[#3B382F] hover:bg-[#FBFAF6] mx-auto">Voir plus d'activités <i data-lucide="chevron-down" class="w-4 h-4"></i></a>
+            </div>
+
+            </div>{{-- /panel cal --}}
+
+            {{-- ── Panel: Vue liste ── --}}
+            <div data-panel="list" data-tabs-for="prog-views" hidden>
+                <div class="px-5 py-8 text-center">
+                    <p class="text-[13px] text-[#8A857A]">La vue liste affiche l'ensemble des activités du programme.</p>
+                    <a href="{{ $h('siarc.admin.programme') }}" class="mt-3 inline-flex siarc-btn siarc-btn-outline !border-[#E1DED5] !text-[#3B382F] text-[12.5px] px-4 py-2 hover:bg-[#FBFAF6]">Ouvrir la liste des activités</a>
+                </div>
+            </div>
+
+            {{-- ── Panel: Par lieu ── --}}
+            <div data-panel="venue" data-tabs-for="prog-views" hidden>
+                <div class="px-5 py-8 text-center">
+                    <p class="text-[13px] text-[#8A857A]">Regroupez les activités par salle et espace via le plan du salon.</p>
+                    <a href="{{ $h('siarc.admin.floorplan') }}" class="mt-3 inline-flex siarc-btn siarc-btn-outline !border-[#E1DED5] !text-[#3B382F] text-[12.5px] px-4 py-2 hover:bg-[#FBFAF6]"><i data-lucide="map" class="w-4 h-4"></i>Voir le plan du salon</a>
+                </div>
             </div>
         </div>
 
@@ -253,7 +284,7 @@
             {{-- Activité à ne pas manquer (featured) --}}
             <div>
                 <h3 class="text-[14px] font-bold text-[#1A1712] mb-3">Activité à ne pas manquer</h3>
-                <div class="rounded-2xl siarc-adire siarc-shadow p-5 text-white relative overflow-hidden">
+                <a href="{{ $sessionHref }}" class="block rounded-2xl siarc-adire siarc-shadow p-5 text-white relative overflow-hidden">
                     <div class="flex items-start gap-4">
                         <img src="{{ asset('images/siarc/programme-featured-1.png') }}" alt="Dr. Christian Tchana" class="w-14 h-14 rounded-full object-cover shrink-0 ring-2 ring-white/25">
                         <div class="min-w-0 flex-1">
@@ -273,7 +304,7 @@
                         <span class="inline-flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i>10:00 – 11:30</span>
                         <span class="inline-flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>Salle A</span>
                     </div>
-                </div>
+                </a>
             </div>
 
             {{-- Téléchargements --}}
@@ -282,11 +313,11 @@
                 <ul class="space-y-2.5">
                     @foreach($downloads as $label)
                     <li>
-                        <a href="{{ route('siarc.home', ['lang' => $lang]) }}" class="flex items-center gap-3 rounded-xl border border-[#EFEDE6] px-3 py-2.5 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors">
+                        <button type="button" data-toast="Téléchargement : {{ $label }}" class="w-full flex items-center gap-3 rounded-xl border border-[#EFEDE6] px-3 py-2.5 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors text-left">
                             <span class="w-8 h-8 rounded-lg bg-[#FDE8E8] flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4 h-4 text-siarc-red"></i></span>
                             <span class="text-[12.5px] font-medium text-[#3B382F] flex-1 min-w-0 truncate">{{ $label }}</span>
                             <i data-lucide="download" class="w-4 h-4 text-[#B0AB9F]"></i>
-                        </a>
+                        </button>
                     </li>
                     @endforeach
                 </ul>

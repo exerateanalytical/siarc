@@ -1,8 +1,17 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
     $exhUrl = $h('siarc.admin.exhibitors');
+
+    // ── Real detail id (guard 404: fall back to list route when null) ───────────
+    $eid = siarcEvent()?->id ?? 0;
+    $exhibitorId = DB::table('event_exhibitors')->where('event_id', $eid)->value('id');
+    $floorUrl = $h('siarc.admin.floorplan');
+    $detailUrl = ($exhibitorId && R::has('siarc.admin.exhibitor'))
+        ? route('siarc.admin.exhibitor', ['lang'=>$lang, 'id'=>$exhibitorId])
+        : $exhUrl;
 
     // ── KPI row (approved design figures — verbatim) ───────────────────────────
     $kpis = [
@@ -16,11 +25,11 @@
 
     // ── Tabs ───────────────────────────────────────────────────────────────────
     $tabs = [
-        ['Tous les exposants','842', true],
-        ['Confirmés','715', false],
-        ['En attente','47', false],
-        ["En liste d'attente",'32', false],
-        ['Annulés','8', false],
+        ['all',       'Tous les exposants','842'],
+        ['confirmed', 'Confirmés','715'],
+        ['pending',   'En attente','47'],
+        ['waitlist',  "En liste d'attente",'32'],
+        ['cancelled', 'Annulés','8'],
     ];
 
     // ── Country flag SVGs (inline) ─────────────────────────────────────────────
@@ -82,36 +91,38 @@
 
         {{-- Tabs + primary actions --}}
         <div class="flex flex-wrap items-center gap-3 px-5 pt-4 border-b border-[#F1EFE8]">
-            <div class="flex flex-wrap items-center gap-6 flex-1 min-w-0">
-                @foreach($tabs as [$t,$n,$active])
-                <button class="relative pb-3 text-[13px] font-semibold transition-colors {{ $active ? 'text-siarc-green' : 'text-[#8A857A] hover:text-[#3B382F]' }}">
+            <div data-tabs="exhStatus" class="flex flex-wrap items-center gap-6 flex-1 min-w-0">
+                @foreach($tabs as [$key,$t,$n])
+                <button class="si-tab relative pb-3 text-[13px] font-semibold transition-colors {{ $loop->first ? 'is-active' : '' }}" data-tab="{{ $key }}">
                     {{ $t }} ({{ $n }})
-                    @if($active)<span class="absolute left-0 -bottom-px h-[2.5px] w-full rounded-full bg-siarc-green"></span>@endif
                 </button>
                 @endforeach
             </div>
             <div class="flex items-center gap-2.5 pb-3">
-                <button class="siarc-btn text-[12.5px] px-3.5 py-2 border border-[#E1DED5] text-[#3B382F] hover:bg-[#FBFAF6]"><i data-lucide="download" class="w-4 h-4"></i>Exporter</button>
+                <button data-toast="Export en préparation…" class="siarc-btn text-[12.5px] px-3.5 py-2 border border-[#E1DED5] text-[#3B382F] hover:bg-[#FBFAF6]"><i data-lucide="download" class="w-4 h-4"></i>Exporter</button>
                 <a href="{{ $exhUrl }}" class="siarc-btn siarc-btn-green text-[12.5px] px-4 py-2"><i data-lucide="plus" class="w-4 h-4"></i>Ajouter un exposant</a>
             </div>
         </div>
+
+        {{-- Tab panels: first tab shows the full working table; others honest placeholders --}}
+        <div data-panel="all" data-tabs-for="exhStatus">
 
         {{-- Search + filters --}}
         <div class="flex flex-wrap items-end gap-3 px-5 py-4">
             <label class="relative flex-1 min-w-[220px]">
                 <i data-lucide="search" class="w-4 h-4 text-[#B0AB9F] absolute left-3 top-1/2 -translate-y-1/2"></i>
-                <input type="text" placeholder="Rechercher un exposant, entreprise, pays..." class="w-full h-[44px] rounded-xl border border-[#ECEAE3] bg-[#FBFAF7] pl-9 pr-3 text-[13px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-[#D8E5DC] focus:bg-white">
+                <input type="text" data-filter="#exhTable" placeholder="Rechercher un exposant, entreprise, pays..." class="w-full h-[44px] rounded-xl border border-[#ECEAE3] bg-[#FBFAF7] pl-9 pr-3 text-[13px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-[#D8E5DC] focus:bg-white">
             </label>
             @foreach(['Pavillon','Catégorie','Pays','Statut'] as $f)
             <div class="min-w-[130px]">
                 <p class="text-[10.5px] font-semibold text-[#8A857A] mb-1.5">{{ $f }}</p>
-                <button class="w-full h-[44px] flex items-center justify-between gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[13px] text-[#3B382F] hover:border-[#D8E5DC]">
+                <button data-toast="Filtre {{ $f }} — bientôt disponible" class="w-full h-[44px] flex items-center justify-between gap-2 rounded-xl border border-[#ECEAE3] bg-white px-3 text-[13px] text-[#3B382F] hover:border-[#D8E5DC]">
                     Tous <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i>
                 </button>
             </div>
             @endforeach
-            <button class="h-[44px] siarc-btn text-[12.5px] px-3.5 border border-[#ECEAE3] text-[#3B382F] hover:bg-[#FBFAF6]"><i data-lucide="filter" class="w-4 h-4"></i>Filtres</button>
-            <button class="h-[44px] siarc-btn text-[12.5px] px-3.5 text-siarc-green hover:bg-[#E2F3E8] rounded-xl"><i data-lucide="rotate-cw" class="w-4 h-4"></i>Réinitialiser</button>
+            <button data-toast="Filtres avancés — bientôt disponible" class="h-[44px] siarc-btn text-[12.5px] px-3.5 border border-[#ECEAE3] text-[#3B382F] hover:bg-[#FBFAF6]"><i data-lucide="filter" class="w-4 h-4"></i>Filtres</button>
+            <button data-toast="Filtres réinitialisés" class="h-[44px] siarc-btn text-[12.5px] px-3.5 text-siarc-green hover:bg-[#E2F3E8] rounded-xl"><i data-lucide="rotate-cw" class="w-4 h-4"></i>Réinitialiser</button>
         </div>
 
         {{-- Table --}}
@@ -126,18 +137,18 @@
                         <th class="px-3 py-3 text-[10.5px] font-bold tracking-wide uppercase text-[#8A857A] whitespace-nowrap text-right pr-5">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="exhTable">
                     @foreach($rows as $r)
                     @php
                         [$img,$name,$contact,$org,$pays,$pav,$stand,$cat,$stLabel,$stTone,$date] = $r;
                         [$bBg,$bFg] = $toneMap[$stTone] ?? $toneMap['grey'];
                         $flag = $flags[$pays] ?? $flagCM;
                     @endphp
-                    <tr class="border-b border-[#F4F2EC] hover:bg-[#FBFAF6] transition-colors group">
+                    <tr data-filter-item data-filter-text="{{ $name }} {{ $contact }} {{ $org }} {{ $pays }} {{ $pav }} {{ $stand }} {{ $cat }} {{ $stLabel }}" class="border-b border-[#F4F2EC] hover:bg-[#FBFAF6] transition-colors group">
                         <td class="pl-5 py-3.5"><span class="w-4 h-4 inline-block rounded border border-[#D8D5CC] align-middle group-hover:border-siarc-green"></span></td>
                         {{-- Exposant (image + name + contact) --}}
                         <td class="px-3 py-3.5">
-                            <a href="{{ $exhUrl }}" class="flex items-center gap-3">
+                            <a href="{{ $detailUrl }}" class="flex items-center gap-3">
                                 <img src="{{ asset('images/siarc/exh-'.$img.'.png') }}" alt="" class="w-9 h-9 rounded-lg object-cover shrink-0">
                                 <span class="min-w-0">
                                     <span class="block text-[13px] font-semibold text-[#161513] leading-tight group-hover:text-siarc-green">{{ $name }}</span>
@@ -167,9 +178,9 @@
                         {{-- Actions --}}
                         <td class="px-3 py-3.5 pr-5">
                             <div class="flex items-center justify-end gap-1.5">
-                                <a href="{{ $exhUrl }}" title="Voir" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:text-siarc-green hover:bg-[#E2F3E8]"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                <a href="{{ $exhUrl }}" title="Modifier" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:text-siarc-ochre hover:bg-[#FDF3E0]"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
-                                <button title="Plus" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:text-[#3B382F] hover:bg-[#F1F1EF]"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                                <a href="{{ $detailUrl }}" title="Voir" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:text-siarc-green hover:bg-[#E2F3E8]"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                <a href="{{ $detailUrl }}" title="Modifier" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:text-siarc-ochre hover:bg-[#FDF3E0]"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
+                                <button data-toast="Plus d'actions — bientôt disponible" title="Plus" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:text-[#3B382F] hover:bg-[#F1F1EF]"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -179,22 +190,39 @@
         </div>
 
         {{-- Pagination --}}
-        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-[#F1EFE8]">
-            <p class="text-[12px] text-[#8A857A]">Affichage de 1 à 10 sur <span class="font-semibold text-[#3B382F]">842</span> exposants</p>
+        <div data-page="#exhTable" data-page-size="10" class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-[#F1EFE8]">
+            <p class="text-[12px] text-[#8A857A]"><span data-page-info>Affichage de 1 à 10 sur <span class="font-semibold text-[#3B382F]">842</span> exposants</span></p>
             <div class="flex items-center gap-1.5">
-                <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#CFC9C0] hover:bg-[#FBFAF6]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                <button class="w-8 h-8 rounded-lg bg-siarc-green text-white text-[12.5px] font-semibold">1</button>
-                <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">2</button>
-                <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">3</button>
+                <button data-page-prev class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#CFC9C0] hover:bg-[#FBFAF6]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                <button data-page-num="1" class="w-8 h-8 rounded-lg bg-siarc-green text-white text-[12.5px] font-semibold">1</button>
+                <button data-page-num="2" class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">2</button>
+                <button data-page-num="3" class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">3</button>
                 <span class="px-1 text-[13px] text-[#B0AB9F]">...</span>
-                <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">85</button>
-                <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#3B382F] hover:bg-[#FBFAF6]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                <button data-page-num="85" class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">85</button>
+                <button data-page-next class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#3B382F] hover:bg-[#FBFAF6]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
             </div>
             <div class="flex items-center gap-2 text-[12px] text-[#8A857A]">
                 <span>Lignes par page</span>
-                <button class="h-8 flex items-center gap-1.5 rounded-lg border border-[#ECEAE3] px-2.5 text-[#3B382F] hover:bg-[#FBFAF6]">10 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                <button data-toast="Modifier le nombre de lignes — bientôt disponible" class="h-8 flex items-center gap-1.5 rounded-lg border border-[#ECEAE3] px-2.5 text-[#3B382F] hover:bg-[#FBFAF6]">10 <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
             </div>
         </div>
+
+        </div>{{-- /panel all --}}
+
+        {{-- Placeholder panels for the remaining status tabs --}}
+        @foreach($tabs as [$key,$t,$n])
+        @if(!$loop->first)
+        <div data-panel="{{ $key }}" data-tabs-for="exhStatus" hidden>
+            <div class="px-5 py-14 text-center">
+                <span class="mx-auto w-12 h-12 rounded-xl bg-[#F1F1EF] flex items-center justify-center mb-3"><i data-lucide="filter" class="w-5 h-5 text-[#8A857A]"></i></span>
+                <p class="text-[14px] font-semibold text-[#161513]">{{ $t }} ({{ $n }})</p>
+                <p class="text-[12.5px] text-[#8A857A] mt-1 mb-4">Filtrez la liste complète pour retrouver ces exposants.</p>
+                <a href="{{ $exhUrl }}" class="siarc-btn siarc-btn-green text-[12.5px] px-4 py-2 inline-flex"><i data-lucide="list" class="w-4 h-4"></i>Voir tous les exposants</a>
+            </div>
+        </div>
+        @endif
+        @endforeach
+
     </div>
 
 </section>

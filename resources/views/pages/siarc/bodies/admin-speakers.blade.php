@@ -1,7 +1,19 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
+
+    // Admin routes are NOT lang-scoped (positional {id}). Fall back to the speakers list.
+    $eid = siarcEvent()?->id ?? 0;
+    $sid = DB::table('speakers')->where('event_id', $eid)->value('id');
+    $speakersList = R::has('siarc.admin.speakers') ? route('siarc.admin.speakers') : $h('siarc.speakers');
+    // Detail link for a roster row → real speaker if we have one, else the list.
+    $spk = function($fallbackId = null) use ($sid, $speakersList) {
+        $id = $sid ?: null;
+        return ($id && R::has('siarc.admin.speaker')) ? route('siarc.admin.speaker', $id) : $speakersList;
+    };
+    $floorplan = R::has('siarc.admin.floorplan') ? route('siarc.admin.floorplan') : $speakersList;
 
     // ── KPI figures (approved design metrics, verbatim from PNG) ───────────────
     $kpis = [
@@ -44,7 +56,7 @@
         };
     };
 
-    $tabs = [['Tous',126,true],['Confirmés',98,false],['En attente',18,false],['Invités',10,false]];
+    $tabs = [['Tous',126,'tous'],['Confirmés',98,'confirmes'],['En attente',18,'attente'],['Invités',10,'invites']];
 
     // Detail panel = Dr. Alain Mbarga (first roster row) — verbatim from PNG
     $initials = fn($n) => collect(explode(' ', preg_replace('/^(Dr\.|M\.|Mme)\s*/','',$n)))->filter()->take(2)->map(fn($p)=>mb_substr($p,0,1))->implode('');
@@ -78,41 +90,43 @@
                 <div class="flex-1 min-w-[200px]">
                     <div class="relative">
                         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B0AB9F]"></i>
-                        <input type="text" placeholder="Rechercher un intervenant..." class="w-full text-[12.5px] rounded-xl border border-[#ECEAE3] bg-[#FBFAF7] pl-9 pr-3 py-2.5 focus:outline-none focus:border-[#D8E5DC]">
+                        <input type="text" data-filter="#speakerScope" placeholder="Rechercher un intervenant..." class="w-full text-[12.5px] rounded-xl border border-[#ECEAE3] bg-[#FBFAF7] pl-9 pr-3 py-2.5 focus:outline-none focus:border-[#D8E5DC]">
                     </div>
                 </div>
                 @foreach([['Rôle','Tous les rôles'],['Catégorie','Toutes les catégories'],['Pays','Tous les pays'],['Statut','Tous les statuts']] as [$lbl,$ph])
                 <div class="min-w-[150px]">
                     <p class="text-[11px] font-semibold text-[#8A857A] mb-1">{{ $lbl }}</p>
-                    <button class="w-full flex items-center justify-between gap-2 text-[12.5px] text-[#3B382F] rounded-xl border border-[#ECEAE3] bg-white px-3 py-2.5 hover:border-[#D8E5DC]">
+                    <button type="button" data-toast="Filtre « {{ $lbl }} » à venir" class="w-full flex items-center justify-between gap-2 text-[12.5px] text-[#3B382F] rounded-xl border border-[#ECEAE3] bg-white px-3 py-2.5 hover:border-[#D8E5DC]">
                         {{ $ph }} <i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i>
                     </button>
                 </div>
                 @endforeach
-                <button class="text-[12.5px] font-semibold text-siarc-green rounded-xl border border-[#D8E5DC] px-4 py-2.5 hover:bg-[#E2F3E8]">Réinitialiser</button>
+                <button type="button" data-toast="Filtres réinitialisés" class="text-[12.5px] font-semibold text-siarc-green rounded-xl border border-[#D8E5DC] px-4 py-2.5 hover:bg-[#E2F3E8]">Réinitialiser</button>
             </div>
         </div>
 
         {{-- TABS + SORT + VIEW TOGGLE + TABLE + PAGINATION --}}
         <div class="siarc-card siarc-shadow overflow-hidden">
             <div class="flex flex-wrap items-center justify-between gap-3 px-5 pt-4 border-b border-[#F1F1EF]">
-                <div class="flex items-center gap-6">
-                    @foreach($tabs as [$t,$n,$active])
-                    <button class="pb-3 text-[13px] font-semibold border-b-2 {{ $active ? 'text-siarc-green border-siarc-green' : 'text-[#8A857A] border-transparent hover:text-[#3B382F]' }}">
-                        {{ $t }} <span class="{{ $active ? 'text-siarc-green' : 'text-[#B0AB9F]' }}">({{ $n }})</span>
+                <div data-tabs="spk" class="flex items-center gap-6">
+                    @foreach($tabs as [$t,$n,$key])
+                    <button class="si-tab pb-3 text-[13px] font-semibold {{ $loop->first ? 'is-active' : '' }}" data-tab="{{ $key }}">
+                        {{ $t }} <span>({{ $n }})</span>
                     </button>
                     @endforeach
                 </div>
                 <div class="flex items-center gap-3 pb-3">
                     <span class="text-[11.5px] text-[#8A857A]">Trier par :</span>
-                    <button class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] rounded-lg border border-[#ECEAE3] px-3 py-1.5 hover:border-[#D8E5DC]">Nom (A-Z) <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></button>
+                    <button type="button" data-toast="Tri à venir" class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] rounded-lg border border-[#ECEAE3] px-3 py-1.5 hover:border-[#D8E5DC]">Nom (A-Z) <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></button>
                     <div class="flex items-center rounded-lg border border-[#ECEAE3] overflow-hidden">
-                        <button class="p-1.5 bg-[#E2F3E8] text-siarc-green"><i data-lucide="grid-3x3" class="w-4 h-4"></i></button>
-                        <button class="p-1.5 text-[#B0AB9F] hover:bg-[#F7F6F1]"><i data-lucide="list" class="w-4 h-4"></i></button>
+                        <button type="button" data-toast="Vue grille" class="p-1.5 bg-[#E2F3E8] text-siarc-green"><i data-lucide="grid-3x3" class="w-4 h-4"></i></button>
+                        <button type="button" data-toast="Vue liste" class="p-1.5 text-[#B0AB9F] hover:bg-[#F7F6F1]"><i data-lucide="list" class="w-4 h-4"></i></button>
                     </div>
                 </div>
             </div>
 
+            {{-- TAB PANELS --}}
+            <div data-panel="tous" data-tabs-for="spk">
             {{-- TABLE --}}
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[820px] text-left">
@@ -127,12 +141,12 @@
                             <th class="py-3 px-3">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#F1F1EF]">
+                    <tbody id="speakerScope" class="divide-y divide-[#F1F1EF]">
                         @foreach($rows as $r)
                         @php [$stBg,$stFg] = $tone($r['status']); [$rlBg,$rlFg] = $roleTone($r['role']); @endphp
-                        <tr class="hover:bg-[#FBFAF7] transition-colors">
+                        <tr data-filter-item data-filter-text="{{ $r['name'] }} {{ $r['sub'] }} {{ $r['role'] }} {{ $r['cat'] }} {{ $r['country'] }} {{ $r['status'] }}" data-sort-key="{{ $r['name'] }}" class="hover:bg-[#FBFAF7] transition-colors">
                             <td class="py-3 pl-5 pr-3">
-                                <a href="{{ $h('siarc.admin.speaker',['id'=>$r['id']]) }}" class="flex items-center gap-3 group">
+                                <a href="{{ $spk($r['id']) }}" class="flex items-center gap-3 group">
                                     <span class="w-9 h-9 rounded-full bg-siarc-green text-white text-[12px] font-bold flex items-center justify-center shrink-0">{{ $initials($r['name']) }}</span>
                                     <span class="min-w-0">
                                         <span class="block text-[13px] font-semibold text-[#1A1712] leading-tight group-hover:text-siarc-green">{{ $r['name'] }}</span>
@@ -147,9 +161,9 @@
                             <td class="py-3 px-3"><span class="inline-block text-[11px] font-semibold rounded-md px-2 py-0.5" style="background:{{ $stBg }};color:{{ $stFg }}">{{ $r['status'] }}</span></td>
                             <td class="py-3 px-3">
                                 <div class="flex items-center gap-1.5 text-[#B0AB9F]">
-                                    <a href="{{ $h('siarc.admin.speaker',['id'=>$r['id']]) }}" class="p-1.5 rounded-md hover:bg-[#E2F3E8] hover:text-siarc-green"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                    <a href="{{ $h('siarc.admin.speaker',['id'=>$r['id']]) }}" class="p-1.5 rounded-md hover:bg-[#FDF3E0] hover:text-siarc-ochre"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
-                                    <button class="p-1.5 rounded-md hover:bg-[#F1F1EF]"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
+                                    <a href="{{ $spk($r['id']) }}" class="p-1.5 rounded-md hover:bg-[#E2F3E8] hover:text-siarc-green"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                    <a href="{{ $spk($r['id']) }}" class="p-1.5 rounded-md hover:bg-[#FDF3E0] hover:text-siarc-ochre"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
+                                    <button type="button" data-toast="Plus d'actions" class="p-1.5 rounded-md hover:bg-[#F1F1EF]"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -159,16 +173,32 @@
             </div>
 
             {{-- PAGINATION --}}
-            <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-[#F1F1EF]">
-                <p class="text-[11.5px] text-[#8A857A]">Affichage de 1 à 10 sur 126 intervenants</p>
+            <div data-page="#speakerScope" data-page-size="10" class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-[#F1F1EF]">
+                <p data-page-info class="text-[11.5px] text-[#8A857A]">Affichage de 1 à 10 sur 126 intervenants</p>
                 <div class="flex items-center gap-1">
-                    <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#B0AB9F] hover:border-[#D8E5DC]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <button type="button" data-page-prev class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#B0AB9F] hover:border-[#D8E5DC]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                     @foreach(['1','2','3','4','5','…','10'] as $p)
-                    <button class="w-8 h-8 rounded-lg text-[12px] font-medium flex items-center justify-center {{ $p==='1' ? 'bg-siarc-green text-white' : 'border border-[#ECEAE3] text-[#3B382F] hover:border-[#D8E5DC]' }}">{{ $p }}</button>
+                    @if($p==='…')
+                    <span class="w-8 h-8 rounded-lg text-[12px] font-medium flex items-center justify-center text-[#B0AB9F]">{{ $p }}</span>
+                    @else
+                    <button type="button" data-page-num="{{ $p }}" class="w-8 h-8 rounded-lg text-[12px] font-medium flex items-center justify-center {{ $p==='1' ? 'bg-siarc-green text-white' : 'border border-[#ECEAE3] text-[#3B382F] hover:border-[#D8E5DC]' }}">{{ $p }}</button>
+                    @endif
                     @endforeach
-                    <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#3B382F] hover:border-[#D8E5DC]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <button type="button" data-page-next class="w-8 h-8 rounded-lg border border-[#ECEAE3] flex items-center justify-center text-[#3B382F] hover:border-[#D8E5DC]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
-                <button class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] rounded-lg border border-[#ECEAE3] px-3 py-1.5 hover:border-[#D8E5DC]">10 / page <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></button>
+                <button type="button" data-toast="Taille de page à venir" class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] rounded-lg border border-[#ECEAE3] px-3 py-1.5 hover:border-[#D8E5DC]">10 / page <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></button>
+            </div>
+            </div>{{-- /panel tous --}}
+
+            {{-- Placeholder panels for the remaining tabs (honest, same static roster is filtered live via search) --}}
+            <div data-panel="confirmes" data-tabs-for="spk" hidden>
+                <div class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">98 intervenants confirmés. Utilisez la recherche ou l'onglet « Tous » pour parcourir la liste complète.</div>
+            </div>
+            <div data-panel="attente" data-tabs-for="spk" hidden>
+                <div class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">18 intervenants en attente de confirmation.</div>
+            </div>
+            <div data-panel="invites" data-tabs-for="spk" hidden>
+                <div class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">10 intervenants invités.</div>
             </div>
         </div>
     </div>
@@ -178,8 +208,8 @@
 
         {{-- ACTION BUTTONS --}}
         <div class="flex items-center gap-2.5">
-            <button class="flex-1 siarc-btn justify-center px-4 py-2.5 text-[12.5px] font-semibold text-[#3B382F] rounded-xl border border-[#ECEAE3] bg-white hover:border-[#D8E5DC]"><i data-lucide="download" class="w-4 h-4"></i>Exporter la liste</button>
-            <button class="flex-1 siarc-btn siarc-btn-green justify-center px-4 py-2.5 text-[12.5px]"><i data-lucide="plus" class="w-4 h-4"></i>Ajouter un intervenant</button>
+            <button type="button" data-toast="Export en préparation…" class="flex-1 siarc-btn justify-center px-4 py-2.5 text-[12.5px] font-semibold text-[#3B382F] rounded-xl border border-[#ECEAE3] bg-white hover:border-[#D8E5DC]"><i data-lucide="download" class="w-4 h-4"></i>Exporter la liste</button>
+            <a href="{{ $speakersList }}" class="flex-1 siarc-btn siarc-btn-green justify-center px-4 py-2.5 text-[12.5px]"><i data-lucide="plus" class="w-4 h-4"></i>Ajouter un intervenant</a>
         </div>
 
         {{-- PAYS REPRÉSENTÉS --}}
@@ -262,7 +292,7 @@
             </div>
 
             {{-- public profile link --}}
-            <a href="{{ $h('siarc.public.speakers') }}" class="mt-5 flex items-center justify-center gap-2 text-[12.5px] font-semibold text-siarc-green rounded-xl border border-[#D8E5DC] px-4 py-2.5 hover:bg-[#E2F3E8]">
+            <a href="{{ $h('siarc.speakers') }}" class="mt-5 flex items-center justify-center gap-2 text-[12.5px] font-semibold text-siarc-green rounded-xl border border-[#D8E5DC] px-4 py-2.5 hover:bg-[#E2F3E8]">
                 Voir le profil public <i data-lucide="external-link" class="w-4 h-4"></i>
             </a>
         </div>

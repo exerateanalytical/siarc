@@ -1,8 +1,16 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang' => $lang], $params)) : '#';
-    // Small Cameroon flag chip (no brand/flag icon in lucide — inline emoji-style gradient)
+    // ── real IDs so detail links never 404 ──
+    $eid = siarcEvent()?->id ?? 0;
+    $sessionId  = DB::table('programme_sessions')->where('event_id', $eid)->value('id');
+    $speakerId  = DB::table('speakers')->where('event_id', $eid)->value('id');
+    // route helpers with graceful fallbacks
+    $speakerLink   = $speakerId && R::has('siarc.admin.speaker') ? route('siarc.admin.speaker', ['lang'=>$lang,'id'=>$speakerId]) : $h('siarc.speakers');
+    $speakersList  = $h('siarc.admin.speakers') !== '#' ? $h('siarc.admin.speakers') : $h('siarc.speakers');
+    $sessionEdit   = $sessionId && R::has('siarc.admin.session') ? route('siarc.admin.session', ['lang'=>$lang,'id'=>$sessionId]) : $h('siarc.admin.programme');
 @endphp
 
 {{-- ══ TOP: BACK LINK + PAGE TITLE + BADGES + RIGHT META/ACTIONS ══ --}}
@@ -34,13 +42,13 @@
 
 {{-- action buttons row (right aligned under the header, matching PNG) --}}
 <div class="flex items-center justify-end gap-2.5 mb-5 -mt-1">
-    <button class="inline-flex items-center gap-2 rounded-xl bg-white border border-[#E1DFD8] px-3.5 py-2 text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6] siarc-shadow">
+    <button data-toast="Ajouté à votre calendrier" class="inline-flex items-center gap-2 rounded-xl bg-white border border-[#E1DFD8] px-3.5 py-2 text-[12.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6] siarc-shadow">
         <i data-lucide="calendar-days" class="w-4 h-4"></i>Ajouter au calendrier
     </button>
-    <button class="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-[12.5px] font-semibold text-white siarc-shadow" style="background:#157A43">
+    <a href="{{ $sessionEdit }}" class="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-[12.5px] font-semibold text-white siarc-shadow" style="background:#157A43">
         <i data-lucide="square-pen" class="w-4 h-4"></i>Modifier la session
-    </button>
-    <button class="w-9 h-9 rounded-xl bg-white border border-[#E1DFD8] flex items-center justify-center text-[#55524A] hover:bg-[#FBFAF6] siarc-shadow" aria-label="Plus d'actions">
+    </a>
+    <button data-toast="Plus d'actions" class="w-9 h-9 rounded-xl bg-white border border-[#E1DFD8] flex items-center justify-center text-[#55524A] hover:bg-[#FBFAF6] siarc-shadow" aria-label="Plus d'actions">
         <i data-lucide="ellipsis-vertical" class="w-4 h-4"></i>
     </button>
 </div>
@@ -68,7 +76,7 @@
 
     {{-- title + description + meta --}}
     <div class="lg:col-span-6 siarc-card siarc-shadow p-6 relative">
-        <button class="absolute top-5 right-5 w-9 h-9 rounded-xl border border-[#EFEDE6] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]" aria-label="Enregistrer">
+        <button data-toast="Session enregistrée" class="absolute top-5 right-5 w-9 h-9 rounded-xl border border-[#EFEDE6] flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6]" aria-label="Enregistrer">
             <i data-lucide="bookmark" class="w-4 h-4"></i>
         </button>
         <h2 class="font-display text-[23px] font-extrabold text-[#161513] leading-snug pr-12">L'artisanat africain à l'ère de l'innovation et du numérique</h2>
@@ -96,22 +104,23 @@
             </div>
         </div>
         <p class="text-[12px] text-[#55524A] leading-relaxed mt-4">Spécialiste de la transformation digitale et de l'innovation dans les PME en Afrique.</p>
-        <a href="{{ $h('siarc.speakers') }}" class="inline-flex items-center gap-1 text-[12px] font-semibold text-siarc-green mt-4 hover:gap-1.5 transition-all">
+        <a href="{{ $speakerLink }}" class="inline-flex items-center gap-1 text-[12px] font-semibold text-siarc-green mt-4 hover:gap-1.5 transition-all">
             Voir le profil complet <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </a>
     </div>
 </div>
 
 {{-- ══ TABS ══ --}}
-<div class="border-b border-[#EAE7DF] mb-5">
+<div class="border-b border-[#EAE7DF] mb-5" data-tabs="sessionDetail">
     <nav class="flex flex-wrap items-center gap-8 text-[13px]">
-        @foreach([['Aperçu',true],['Intervenants (3)',false],['Informations pratiques',false],['Documents',false],['Statistiques',false]] as [$tab,$active])
-        <button class="py-3.5 -mb-px border-b-2 {{ $active ? 'border-siarc-green text-siarc-green font-semibold' : 'border-transparent text-[#8A857A] hover:text-[#3B382F]' }}">{{ $tab }}</button>
+        @foreach([['apercu','Aperçu'],['intervenants','Intervenants (3)'],['infos','Informations pratiques'],['documents','Documents'],['stats','Statistiques']] as [$key,$tab])
+        <button class="si-tab py-3.5 -mb-px {{ $loop->first ? 'is-active' : '' }}" data-tab="{{ $key }}">{{ $tab }}</button>
         @endforeach
     </nav>
 </div>
 
-{{-- ══ MAIN GRID: DESCRIPTION + INFOS PRATIQUES + INTERVENANTS ══ --}}
+{{-- ══ PANEL: APERÇU — MAIN GRID: DESCRIPTION + INFOS PRATIQUES + INTERVENANTS ══ --}}
+<div data-panel="apercu" data-tabs-for="sessionDetail">
 <div class="grid lg:grid-cols-12 gap-5 mb-5">
     {{-- Description détaillée --}}
     <div class="lg:col-span-5 siarc-card siarc-shadow p-6">
@@ -172,20 +181,20 @@
                 ['Paul Tchameni','CEO, TechCraft Africa','Cameroun','🇨🇲'],
                 ['Fatou Diop','Fondatrice, Digital Artisans Hub','Sénégal','🇸🇳'],
             ] as [$name,$role,$country,$flag])
-            <div class="flex items-start gap-3">
+            <a href="{{ $speakerLink }}" class="flex items-start gap-3 group">
                 <span class="w-11 h-11 rounded-full siarc-adire flex items-center justify-center shrink-0"></span>
                 <div class="min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <p class="text-[13px] font-bold text-[#161513]">{!! $name !!}</p>
+                        <p class="text-[13px] font-bold text-[#161513] group-hover:text-siarc-green transition-colors">{!! $name !!}</p>
                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold" style="background:#E7F0FB;color:#2563EB">Panéliste</span>
                     </div>
                     <p class="text-[11.5px] text-[#55524A] mt-0.5">{!! $role !!}</p>
                     <p class="text-[11.5px] text-[#55524A] inline-flex items-center gap-1 mt-0.5">{{ $country }} <span>{{ $flag }}</span></p>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
-        <a href="{{ $h('siarc.speakers') }}" class="inline-flex items-center gap-1 text-[12px] font-semibold text-siarc-green mt-5 hover:gap-1.5 transition-all">
+        <a href="{{ $speakersList }}" class="inline-flex items-center gap-1 text-[12px] font-semibold text-siarc-green mt-5 hover:gap-1.5 transition-all">
             Voir tous les intervenants (3) <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </a>
     </div>
@@ -210,7 +219,7 @@
                     <p class="text-[12.5px] font-semibold text-[#161513] truncate">{{ $dtitle }}</p>
                     <p class="text-[11px] text-[#8A857A] mt-0.5">{{ $meta }}</p>
                 </div>
-                <button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6] shrink-0" aria-label="Télécharger">
+                <button data-toast="Téléchargement en préparation…" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6] shrink-0" aria-label="Télécharger">
                     <i data-lucide="download" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -236,16 +245,16 @@
         <h3 class="font-display text-[16px] font-bold text-[#161513] mb-4">Actions rapides</h3>
         <div class="space-y-2.5">
             @foreach([
-                ['layers','Dupliquer la session'],
-                ['share-2','Partager la session'],
-                ['download','Exporter la session (PDF)'],
-            ] as [$icon,$label])
-            <button class="w-full flex items-center gap-3 rounded-xl border border-[#EFEDE6] px-4 py-3 text-left hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors">
+                ['layers','Dupliquer la session','Session dupliquée'],
+                ['share-2','Partager la session','Lien de partage copié'],
+                ['download','Exporter la session (PDF)','Export en préparation…'],
+            ] as [$icon,$label,$toast])
+            <button data-toast="{{ $toast }}" class="w-full flex items-center gap-3 rounded-xl border border-[#EFEDE6] px-4 py-3 text-left hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors">
                 <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px] text-[#8A857A]"></i>
                 <span class="text-[12.5px] font-semibold text-[#3B382F]">{{ $label }}</span>
             </button>
             @endforeach
-            <button class="w-full flex items-center gap-3 rounded-xl border border-[#F4D5D5] px-4 py-3 text-left hover:bg-[#FDF4F4] transition-colors">
+            <button data-toast="Session annulée" class="w-full flex items-center gap-3 rounded-xl border border-[#F4D5D5] px-4 py-3 text-left hover:bg-[#FDF4F4] transition-colors">
                 <i data-lucide="x" class="w-[18px] h-[18px] text-siarc-red"></i>
                 <span class="text-[12.5px] font-semibold text-siarc-red">Annuler la session</span>
             </button>
@@ -267,17 +276,121 @@
             ] as [$img,$badge,$bcol,$bbg,$stitle,$sdate,$sroom])
             <div class="flex items-start gap-3 rounded-xl border border-[#EFEDE6] p-3 relative">
                 <img src="{{ asset('images/siarc/'.$img) }}" alt="{{ $stitle }}" class="w-16 h-14 rounded-lg object-cover shrink-0">
-                <div class="min-w-0 flex-1 pr-7">
+                <a href="{{ $sessionEdit }}" class="min-w-0 flex-1 pr-7 group">
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wide mb-1.5" style="background:{{ $bbg }};color:{{ $bcol }}">{{ $badge }}</span>
-                    <p class="text-[13px] font-bold text-[#161513] leading-tight">{{ $stitle }}</p>
+                    <p class="text-[13px] font-bold text-[#161513] leading-tight group-hover:text-siarc-green transition-colors">{{ $stitle }}</p>
                     <p class="text-[11.5px] text-[#8A857A] mt-1">{{ $sdate }}</p>
                     <p class="text-[11.5px] text-[#8A857A]">{{ $sroom }}</p>
-                </div>
-                <button class="absolute top-3 right-3 text-[#B8B3A8] hover:text-siarc-green" aria-label="Enregistrer">
+                </a>
+                <button data-toast="Session enregistrée" class="absolute top-3 right-3 text-[#B8B3A8] hover:text-siarc-green" aria-label="Enregistrer">
                     <i data-lucide="bookmark" class="w-4 h-4"></i>
                 </button>
             </div>
             @endforeach
         </div>
+    </div>
+</div>
+</div>{{-- /panel apercu --}}
+
+{{-- ══ PANEL: INTERVENANTS ══ --}}
+<div data-panel="intervenants" data-tabs-for="sessionDetail" hidden>
+    <div class="siarc-card siarc-shadow p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="font-display text-[16px] font-bold text-[#161513]">Intervenants de la session</h3>
+            <a href="{{ $speakersList }}" class="text-[12px] font-semibold text-siarc-green hover:underline">Voir tous les intervenants</a>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+            @foreach([
+                ['Dr. Alain Mbarga','Modérateur','Expert en Innovation &amp; Transformation Digitale','Cameroun','🇨🇲'],
+                ['Marie Claire Nguimatsia','Panéliste','Designer &amp; Consultante','Cameroun','🇨🇲'],
+                ['Paul Tchameni','Panéliste','CEO, TechCraft Africa','Cameroun','🇨🇲'],
+                ['Fatou Diop','Panéliste','Fondatrice, Digital Artisans Hub','Sénégal','🇸🇳'],
+            ] as [$name,$badge,$role,$country,$flag])
+            <a href="{{ $speakerLink }}" class="flex items-start gap-3 rounded-xl border border-[#EFEDE6] p-4 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors group">
+                <span class="w-11 h-11 rounded-full siarc-adire flex items-center justify-center shrink-0"></span>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <p class="text-[13px] font-bold text-[#161513] group-hover:text-siarc-green transition-colors">{!! $name !!}</p>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold" style="background:#E7F0FB;color:#2563EB">{{ $badge }}</span>
+                    </div>
+                    <p class="text-[11.5px] text-[#55524A] mt-0.5">{!! $role !!}</p>
+                    <p class="text-[11.5px] text-[#55524A] inline-flex items-center gap-1 mt-0.5">{{ $country }} <span>{{ $flag }}</span></p>
+                </div>
+            </a>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+{{-- ══ PANEL: INFORMATIONS PRATIQUES ══ --}}
+<div data-panel="infos" data-tabs-for="sessionDetail" hidden>
+    <div class="siarc-card siarc-shadow p-6">
+        <h3 class="font-display text-[16px] font-bold text-[#161513] mb-4">Informations pratiques</h3>
+        <dl class="text-[12.5px] max-w-xl">
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-[#F2F0EA]">
+                <dt class="text-[#8A857A] shrink-0">Catégorie</dt>
+                <dd class="text-right"><span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold" style="background:#E7F0FB;color:#2563EB">Innovation &amp; Technologie</span></dd>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-[#F2F0EA]">
+                <dt class="text-[#8A857A] shrink-0">Niveau</dt>
+                <dd class="text-[#3B382F] font-medium text-right">Intermédiaire</dd>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5 border-b border-[#F2F0EA]">
+                <dt class="text-[#8A857A] shrink-0">Type de session</dt>
+                <dd class="text-[#3B382F] font-medium text-right">Conférence</dd>
+            </div>
+            <div class="flex items-start justify-between gap-4 py-2.5">
+                <dt class="text-[#8A857A] shrink-0">Public cible</dt>
+                <dd class="text-[#3B382F] font-medium text-right">Artisans, Entrepreneurs, Étudiants, Institutions</dd>
+            </div>
+        </dl>
+        <a href="{{ $h('siarc.admin.floorplan') }}" class="inline-flex items-center gap-1 text-[12px] font-semibold text-siarc-green mt-5 hover:gap-1.5 transition-all">
+            Voir le plan du salon <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+    </div>
+</div>
+
+{{-- ══ PANEL: DOCUMENTS ══ --}}
+<div data-panel="documents" data-tabs-for="sessionDetail" hidden>
+    <div class="siarc-card siarc-shadow p-6">
+        <h3 class="font-display text-[16px] font-bold text-[#161513] mb-4">Documents associés</h3>
+        <div class="space-y-3 max-w-2xl">
+            @foreach([
+                ['#E7352C','PDF','Présentation de la session','PDF · 2.4 Mo'],
+                ['#E6801A','PPT','Supports de présentation','PPTX · 5.8 Mo'],
+                ['#157A43','DOC','Étude de cas - Artisans numériques','PDF · 3.1 Mo'],
+            ] as [$col,$ext,$dtitle,$meta])
+            <div class="flex items-center gap-3 rounded-xl border border-[#EFEDE6] px-4 py-3">
+                <span class="w-9 h-11 rounded-md flex flex-col items-center justify-center text-white text-[8px] font-bold shrink-0" style="background:{{ $col }}">
+                    <i data-lucide="file-text" class="w-4 h-4 mb-0.5"></i>{{ $ext }}
+                </span>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[12.5px] font-semibold text-[#161513] truncate">{{ $dtitle }}</p>
+                    <p class="text-[11px] text-[#8A857A] mt-0.5">{{ $meta }}</p>
+                </div>
+                <button data-toast="Téléchargement en préparation…" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8A857A] hover:bg-[#FBFAF6] shrink-0" aria-label="Télécharger">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                </button>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+{{-- ══ PANEL: STATISTIQUES ══ --}}
+<div data-panel="stats" data-tabs-for="sessionDetail" hidden>
+    <div class="siarc-card siarc-shadow p-6">
+        <h3 class="font-display text-[16px] font-bold text-[#161513] mb-4">Statistiques de la session</h3>
+        <div class="grid sm:grid-cols-3 gap-4">
+            @foreach([['Places réservées','87 / 120'],['Taux de remplissage','72 %'],['Intervenants','4']] as [$slabel,$sval])
+            <div class="rounded-xl border border-[#EFEDE6] p-5">
+                <p class="text-[12px] text-[#8A857A]">{{ $slabel }}</p>
+                <p class="text-[22px] font-extrabold text-[#161513] mt-1">{{ $sval }}</p>
+            </div>
+            @endforeach
+        </div>
+        <a href="{{ $h('siarc.admin.analytics') }}" class="inline-flex items-center gap-1 text-[12px] font-semibold text-siarc-green mt-5 hover:gap-1.5 transition-all">
+            Voir les analyses détaillées <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
     </div>
 </div>

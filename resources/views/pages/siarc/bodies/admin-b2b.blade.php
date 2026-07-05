@@ -1,7 +1,16 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
+
+    // ── Real ids so detail links never 404 ──────────────────────────────────────
+    $eid       = siarcEvent()?->id ?? 0;
+    $meetingId = DB::table('b2b_meetings')->where('event_id',$eid)->value('id');
+
+    // Action-route fallbacks (guard optional platform routes) ────────────────────
+    $rdvUrl     = R::has('messages.compose') ? route('messages.compose', ['lang'=>$lang]) : $h('siarc.admin.matchmaking');
+    $meetingUrl = $meetingId ? $h('siarc.admin.meeting', ['id'=>$meetingId]) : $h('siarc.admin.matchmaking');
 
     // ── KPI row — approved design figures (verbatim) ────────────────────────────
     $kpis = [
@@ -96,14 +105,11 @@
         {{-- ── Tabs + search panel ─────────────────────────────────────────────── --}}
         <div class="siarc-card siarc-shadow siarc-in overflow-hidden">
             {{-- Tabs --}}
-            <div class="flex items-center gap-7 px-6 pt-4 border-b border-[#EFEDE6]">
-                <button class="relative text-[13.5px] font-bold text-siarc-green pb-3">
-                    Recherche de partenaires
-                    <span class="absolute left-0 -bottom-px w-full h-[3px] rounded-full bg-siarc-green"></span>
-                </button>
-                <button class="text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]">Entreprises recommandées</button>
-                <button class="text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]">Requêtes reçues</button>
-                <button class="text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]">Disponibilités</button>
+            <div data-tabs="b2b" class="flex items-center gap-7 px-6 pt-4 border-b border-[#EFEDE6]">
+                <button class="si-tab is-active relative text-[13.5px] font-bold pb-3" data-tab="search">Recherche de partenaires</button>
+                <button class="si-tab text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]" data-tab="recommended">Entreprises recommandées</button>
+                <button class="si-tab text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]" data-tab="requests">Requêtes reçues</button>
+                <button class="si-tab text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]" data-tab="availability">Disponibilités</button>
             </div>
 
             {{-- Search row --}}
@@ -111,7 +117,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end">
                     <div>
                         <label class="block text-[11.5px] font-semibold text-[#8A857A] mb-1.5">Que recherchez-vous ?</label>
-                        <input type="text" placeholder="Produit, service, compétence..." class="w-full rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-siarc-green">
+                        <input type="text" data-filter="#b2bResults" placeholder="Produit, service, compétence..." class="w-full rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-siarc-green">
                     </div>
                     <div>
                         <label class="block text-[11.5px] font-semibold text-[#8A857A] mb-1.5">Catégorie</label>
@@ -121,13 +127,16 @@
                         <label class="block text-[11.5px] font-semibold text-[#8A857A] mb-1.5">Pays / Région</label>
                         <div class="flex items-center justify-between rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] bg-white">Tous les pays<i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></div>
                     </div>
-                    <button class="siarc-btn siarc-btn-green px-5 py-2.5 text-[12.5px] justify-center whitespace-nowrap"><i data-lucide="search" class="w-4 h-4"></i>Rechercher</button>
+                    <button data-toast="Recherche en cours…" class="siarc-btn siarc-btn-green px-5 py-2.5 text-[12.5px] justify-center whitespace-nowrap"><i data-lucide="search" class="w-4 h-4"></i>Rechercher</button>
                 </div>
                 <div class="flex justify-end mt-3">
-                    <button class="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-siarc-green hover:underline"><i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>Recherche avancée</button>
+                    <button data-toast="Recherche avancée bientôt disponible" class="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-siarc-green hover:underline"><i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>Recherche avancée</button>
                 </div>
             </div>
         </div>
+
+        {{-- ── TAB PANEL: Recherche de partenaires ─────────────────────────────── --}}
+        <div data-panel="search" data-tabs-for="b2b" class="space-y-5">
 
         {{-- ── Result count + sort ─────────────────────────────────────────────── --}}
         <div class="flex items-center justify-between px-1">
@@ -138,17 +147,17 @@
                     <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#EFEDE6] px-2.5 py-1.5 text-[12px] font-semibold text-[#3B382F] bg-white">Pertinence<i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></span>
                 </div>
                 <div class="flex items-center gap-1">
-                    <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-[#E2F3E8] text-siarc-green"><i data-lucide="grid-3x3" class="w-4 h-4"></i></button>
-                    <button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#B0AB9F] hover:bg-[#FBFAF6]"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
-                    <button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#B0AB9F] hover:bg-[#FBFAF6]"><i data-lucide="menu" class="w-4 h-4"></i></button>
+                    <button data-toast="Vue grille" class="w-8 h-8 rounded-lg flex items-center justify-center bg-[#E2F3E8] text-siarc-green"><i data-lucide="grid-3x3" class="w-4 h-4"></i></button>
+                    <button data-toast="Vue mosaïque" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#B0AB9F] hover:bg-[#FBFAF6]"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                    <button data-toast="Vue liste" class="w-8 h-8 rounded-lg flex items-center justify-center text-[#B0AB9F] hover:bg-[#FBFAF6]"><i data-lucide="menu" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </div>
 
         {{-- ── Result cards ────────────────────────────────────────────────────── --}}
-        <div class="siarc-card siarc-shadow siarc-in overflow-hidden divide-y divide-[#F1EFE9]">
+        <div id="b2bResults" class="siarc-card siarc-shadow siarc-in overflow-hidden divide-y divide-[#F1EFE9]">
             @foreach($cards as $c)
-            <div class="p-5 hover:bg-[#FCFBF8] transition-colors">
+            <div data-filter-item data-filter-text="{{ $c['name'].' '.$c['loc'].' '.$c['desc'].' '.implode(' ',$c['chips']).' '.$c['interest'].' '.$c['partnership'] }}" class="p-5 hover:bg-[#FCFBF8] transition-colors">
                 <div class="flex gap-5">
                     {{-- Logo --}}
                     <span class="w-14 h-14 rounded-full border border-[#ECEAE3] bg-white flex items-center justify-center shrink-0 overflow-hidden">
@@ -193,9 +202,9 @@
 
                     {{-- Actions --}}
                     <div class="w-[150px] shrink-0 flex flex-col gap-2 pt-0.5">
-                        <a href="{{ $h('siarc.admin.matchmaking') }}" class="siarc-btn siarc-btn-green justify-center py-2.5 text-[12px]">Demander un RDV</a>
-                        <a href="{{ $h('siarc.admin.matchmaking') }}" class="siarc-btn justify-center py-2.5 text-[12px] border border-[#EFEDE6] text-[#3B382F] hover:bg-[#FBFAF6]">Voir le profil</a>
-                        <button class="self-end w-8 h-8 rounded-full flex items-center justify-center text-[#B0AB9F] hover:text-siarc-red hover:bg-[#FBE3E3]"><i data-lucide="heart" class="w-4 h-4"></i></button>
+                        <a href="{{ $rdvUrl }}" class="siarc-btn siarc-btn-green justify-center py-2.5 text-[12px]">Demander un RDV</a>
+                        <a href="{{ $meetingUrl }}" class="siarc-btn justify-center py-2.5 text-[12px] border border-[#EFEDE6] text-[#3B382F] hover:bg-[#FBFAF6]">Voir le profil</a>
+                        <button data-toast="Ajouté à vos favoris" class="self-end w-8 h-8 rounded-full flex items-center justify-center text-[#B0AB9F] hover:text-siarc-red hover:bg-[#FBE3E3]"><i data-lucide="heart" class="w-4 h-4"></i></button>
                     </div>
                 </div>
             </div>
@@ -204,7 +213,32 @@
 
         {{-- ── Load more ───────────────────────────────────────────────────────── --}}
         <div class="flex justify-center">
-            <button class="siarc-btn px-6 py-2.5 text-[12.5px] font-semibold border border-[#EFEDE6] text-[#3B382F] bg-white siarc-shadow hover:bg-[#FBFAF6]">Charger plus de résultats <i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+            <button data-toast="Chargement des résultats suivants…" class="siarc-btn px-6 py-2.5 text-[12.5px] font-semibold border border-[#EFEDE6] text-[#3B382F] bg-white siarc-shadow hover:bg-[#FBFAF6]">Charger plus de résultats <i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+        </div>
+        </div>{{-- /panel: search --}}
+
+        {{-- ── TAB PANEL: Entreprises recommandées ─────────────────────────────── --}}
+        <div data-panel="recommended" data-tabs-for="b2b" hidden>
+            <div class="siarc-card siarc-shadow p-8 siarc-in text-center">
+                <p class="text-[13px] text-[#55524A]">Consultez les entreprises que notre moteur de correspondance recommande spécialement pour votre profil.</p>
+                <a href="{{ $h('siarc.admin.matchmaking') }}" class="siarc-btn siarc-btn-green px-6 py-2.5 text-[12.5px] justify-center mt-4 inline-flex">Ouvrir le matchmaking</a>
+            </div>
+        </div>
+
+        {{-- ── TAB PANEL: Requêtes reçues ──────────────────────────────────────── --}}
+        <div data-panel="requests" data-tabs-for="b2b" hidden>
+            <div class="siarc-card siarc-shadow p-8 siarc-in text-center">
+                <p class="text-[13px] text-[#55524A]">Gérez les demandes de rendez-vous que d'autres entreprises vous ont adressées.</p>
+                <a href="{{ $h('siarc.admin.b2b') }}" class="siarc-btn siarc-btn-green px-6 py-2.5 text-[12.5px] justify-center mt-4 inline-flex">Voir les rendez-vous B2B</a>
+            </div>
+        </div>
+
+        {{-- ── TAB PANEL: Disponibilités ───────────────────────────────────────── --}}
+        <div data-panel="availability" data-tabs-for="b2b" hidden>
+            <div class="siarc-card siarc-shadow p-8 siarc-in text-center">
+                <p class="text-[13px] text-[#55524A]">Définissez vos créneaux disponibles pour les rendez-vous B2B durant le salon.</p>
+                <a href="{{ $h('siarc.admin.calendar') }}" class="siarc-btn siarc-btn-green px-6 py-2.5 text-[12.5px] justify-center mt-4 inline-flex">Ouvrir le calendrier</a>
+            </div>
         </div>
     </div>
 
@@ -215,7 +249,7 @@
         <div class="siarc-card siarc-shadow p-5 siarc-in">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[14px] font-bold text-[#1A1712]">Filtres rapides</h3>
-                <button class="text-[11.5px] font-semibold text-siarc-green hover:underline">Réinitialiser</button>
+                <button data-toast="Filtres réinitialisés" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Réinitialiser</button>
             </div>
             <div class="space-y-3.5">
                 @foreach(['Intérêt principal'=>'Tous','Type de partenariat'=>'Tous','Secteur d\'activité'=>'Tous','Pays / Région'=>'Tous'] as $flabel => $fval)
@@ -234,7 +268,7 @@
                     Entreprises premium
                 </label>
 
-                <button class="w-full siarc-btn justify-center py-2.5 text-[12.5px] mt-1" style="background:#0B3A1E;color:#fff">Appliquer les filtres</button>
+                <button data-toast="Filtres appliqués" class="w-full siarc-btn justify-center py-2.5 text-[12.5px] mt-1" style="background:#0B3A1E;color:#fff">Appliquer les filtres</button>
             </div>
         </div>
 
@@ -263,7 +297,7 @@
         <div class="siarc-card siarc-shadow p-5 siarc-in">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[14px] font-bold text-[#1A1712]">Prochains rendez-vous</h3>
-                <a href="{{ $h('siarc.admin.matchmaking') }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
+                <a href="{{ $h('siarc.admin.calendar') }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
             </div>
             <ul class="space-y-4">
                 @foreach($upcoming as $m)
@@ -281,7 +315,7 @@
                 </li>
                 @endforeach
             </ul>
-            <a href="{{ $h('siarc.admin.matchmaking') }}" class="flex items-center justify-end gap-1.5 text-[12px] font-semibold text-siarc-green mt-4 hover:gap-2 transition-all">Voir mon agenda complet <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            <a href="{{ $h('siarc.admin.calendar') }}" class="flex items-center justify-end gap-1.5 text-[12px] font-semibold text-siarc-green mt-4 hover:gap-2 transition-all">Voir mon agenda complet <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
         </div>
     </div>
 </div>

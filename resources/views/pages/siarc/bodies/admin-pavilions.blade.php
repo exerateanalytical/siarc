@@ -1,9 +1,20 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
+
+    // ── real ids so detail links never 404 ────────────────────────────────────
+    $eid = siarcEvent()?->id ?? 0;
+    $pavilionId = DB::table('pavilions')->where('event_id',$eid)->value('id');
+
+    $listHref = $h('siarc.admin.pavilions');
     $addHref  = $h('siarc.admin.pavilions');
     $planHref = $h('siarc.admin.floorplan');
+    // per-row detail / edit → pavilion detail when we have an id, else the list
+    $pavDetail = ($pavilionId && R::has('siarc.admin.pavilion'))
+        ? route('siarc.admin.pavilion', ['lang'=>$lang,'id'=>$pavilionId])
+        : $listHref;
 
     // ── KPI row — verbatim from the approved PNG ──────────────────────────────
     $kpis = [
@@ -86,17 +97,17 @@
     <div class="xl:col-span-2 siarc-card siarc-shadow overflow-hidden">
 
         {{-- tabs --}}
-        <div class="flex items-center gap-7 px-5 pt-4 border-b border-[#EFEDE6]">
-            <button class="pb-3 -mb-px text-[13px] font-bold text-siarc-green border-b-2 border-siarc-green">Tous les pavillons (16)</button>
-            <button class="pb-3 -mb-px text-[13px] font-medium text-[#8A857A] hover:text-[#3B382F]">Pavillons nationaux (10)</button>
-            <button class="pb-3 -mb-px text-[13px] font-medium text-[#8A857A] hover:text-[#3B382F]">Pavillons internationaux (6)</button>
+        <div data-tabs="pavtabs" class="flex items-center gap-7 px-5 pt-4 border-b border-[#EFEDE6]">
+            <button class="si-tab is-active pb-3 -mb-px text-[13px] font-bold" data-tab="all">Tous les pavillons (16)</button>
+            <button class="si-tab pb-3 -mb-px text-[13px] font-medium" data-tab="national">Pavillons nationaux (10)</button>
+            <button class="si-tab pb-3 -mb-px text-[13px] font-medium" data-tab="international">Pavillons internationaux (6)</button>
         </div>
 
         {{-- filter row --}}
         <div class="px-5 py-4 flex flex-wrap items-end gap-3">
             <div class="relative flex-1 min-w-[180px]">
                 <i data-lucide="search" class="w-4 h-4 text-[#B0AB9F] absolute left-3 top-1/2 -translate-y-1/2"></i>
-                <input type="text" placeholder="Rechercher un pavillon..." class="w-full text-[12.5px] rounded-xl border border-[#EFEDE6] pl-9 pr-3 py-2.5 focus:outline-none focus:border-[#D8E5DC] bg-white text-[#3B382F]">
+                <input type="text" data-filter="#pavScope" placeholder="Rechercher un pavillon..." class="w-full text-[12.5px] rounded-xl border border-[#EFEDE6] pl-9 pr-3 py-2.5 focus:outline-none focus:border-[#D8E5DC] bg-white text-[#3B382F]">
             </div>
             @foreach([['Catégorie','Tous'],['Type','Tous'],['Statut','Tous']] as [$flabel,$fval])
             <div class="min-w-[130px]">
@@ -106,12 +117,12 @@
             @endforeach
             <div class="flex flex-col items-end gap-2 ml-auto">
                 <div class="flex items-center gap-2.5">
-                    <button class="siarc-btn text-[12.5px] text-[#3B382F] border border-[#EFEDE6] px-3.5 py-2.5 rounded-xl bg-white hover:border-[#D8E5DC]"><i data-lucide="download" class="w-4 h-4 text-[#8A857A]"></i>Exporter</button>
+                    <button data-toast="Export en préparation…" class="siarc-btn text-[12.5px] text-[#3B382F] border border-[#EFEDE6] px-3.5 py-2.5 rounded-xl bg-white hover:border-[#D8E5DC]"><i data-lucide="download" class="w-4 h-4 text-[#8A857A]"></i>Exporter</button>
                     <a href="{{ $addHref }}" class="siarc-btn siarc-btn-green text-[12.5px] px-3.5 py-2.5"><i data-lucide="plus" class="w-4 h-4"></i>Ajouter un pavillon</a>
                 </div>
                 <div class="flex items-center gap-2.5">
-                    <button class="siarc-btn text-[12.5px] text-[#3B382F] border border-[#EFEDE6] px-3.5 py-2 rounded-xl bg-white hover:border-[#D8E5DC]"><i data-lucide="filter" class="w-4 h-4 text-[#8A857A]"></i>Filtres</button>
-                    <button class="siarc-btn text-[12.5px] text-siarc-green px-2 py-2"><i data-lucide="rotate-ccw" class="w-4 h-4"></i>Réinitialiser</button>
+                    <button data-toast="Filtres avancés à venir…" class="siarc-btn text-[12.5px] text-[#3B382F] border border-[#EFEDE6] px-3.5 py-2 rounded-xl bg-white hover:border-[#D8E5DC]"><i data-lucide="filter" class="w-4 h-4 text-[#8A857A]"></i>Filtres</button>
+                    <button data-toast="Filtres réinitialisés" class="siarc-btn text-[12.5px] text-siarc-green px-2 py-2"><i data-lucide="rotate-ccw" class="w-4 h-4"></i>Réinitialiser</button>
                 </div>
             </div>
         </div>
@@ -136,9 +147,9 @@
                         <th class="px-3 pb-2 text-[9.5px] font-semibold tracking-wide text-[#B0AB9F] uppercase text-center">Disponibles</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="pavScope">
                     @foreach($pavRows as [$thumb,$name,$code,$cat,$type,$region,$flag,$total,$occ,$dispo,$taux,$statut,$tone])
-                    <tr class="border-b border-[#F2F1EC] hover:bg-[#FBFAF6] transition-colors">
+                    <tr data-filter-item data-filter-text="{{ $name }} {{ $code }} {{ $cat }} {{ $type }} {{ $region }} {{ $statut }}" class="border-b border-[#F2F1EC] hover:bg-[#FBFAF6] transition-colors">
                         <td class="px-5 py-3">
                             <div class="flex items-center gap-3">
                                 <img src="{{ asset('images/siarc/pavilion-thumb-'.$thumb.'.png') }}" alt="" class="w-9 h-9 rounded-lg object-cover shrink-0 border border-[#EFEDE6]">
@@ -175,9 +186,9 @@
                         </td>
                         <td class="px-5 py-3">
                             <div class="flex items-center justify-end gap-1 text-[#B0AB9F]">
-                                <a href="{{ $addHref }}" class="w-7 h-7 rounded-lg hover:bg-[#EFEDE6] flex items-center justify-center hover:text-siarc-green"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                <a href="{{ $addHref }}" class="w-7 h-7 rounded-lg hover:bg-[#EFEDE6] flex items-center justify-center hover:text-siarc-green"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
-                                <button class="w-7 h-7 rounded-lg hover:bg-[#EFEDE6] flex items-center justify-center hover:text-siarc-green"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                                <a href="{{ $pavDetail }}" class="w-7 h-7 rounded-lg hover:bg-[#EFEDE6] flex items-center justify-center hover:text-siarc-green"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                <a href="{{ $pavDetail }}" class="w-7 h-7 rounded-lg hover:bg-[#EFEDE6] flex items-center justify-center hover:text-siarc-green"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
+                                <button data-toast="Plus d’actions à venir…" class="w-7 h-7 rounded-lg hover:bg-[#EFEDE6] flex items-center justify-center hover:text-siarc-green"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -187,13 +198,13 @@
         </div>
 
         {{-- pagination footer --}}
-        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-[#EFEDE6]">
-            <span class="text-[11.5px] text-[#8A857A]">Affichage de 1 à 10 sur 16 pavillons</span>
+        <div data-page="#pavScope" data-page-size="10" class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-t border-[#EFEDE6]">
+            <span data-page-info class="text-[11.5px] text-[#8A857A]">Affichage de 1 à 10 sur 16 pavillons</span>
             <div class="flex items-center gap-1.5">
-                <button class="w-8 h-8 rounded-lg border border-[#EFEDE6] flex items-center justify-center text-[#B0AB9F] hover:border-[#D8E5DC]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                <button class="w-8 h-8 rounded-lg bg-siarc-green text-white text-[12px] font-semibold">1</button>
-                <button class="w-8 h-8 rounded-lg border border-[#EFEDE6] text-[12px] text-[#3B382F] hover:border-[#D8E5DC]">2</button>
-                <button class="w-8 h-8 rounded-lg border border-[#EFEDE6] flex items-center justify-center text-[#B0AB9F] hover:border-[#D8E5DC]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                <button data-page-prev class="w-8 h-8 rounded-lg border border-[#EFEDE6] flex items-center justify-center text-[#B0AB9F] hover:border-[#D8E5DC]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                <button data-page-num="1" class="w-8 h-8 rounded-lg bg-siarc-green text-white text-[12px] font-semibold">1</button>
+                <button data-page-num="2" class="w-8 h-8 rounded-lg border border-[#EFEDE6] text-[12px] text-[#3B382F] hover:border-[#D8E5DC]">2</button>
+                <button data-page-next class="w-8 h-8 rounded-lg border border-[#EFEDE6] flex items-center justify-center text-[#B0AB9F] hover:border-[#D8E5DC]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
             </div>
             <div class="flex items-center gap-2 text-[11.5px] text-[#8A857A]">
                 <span>Lignes par page</span>

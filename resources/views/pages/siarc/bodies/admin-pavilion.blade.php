@@ -1,13 +1,29 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
 
     // Navigational hrefs only (design content is transcribed verbatim below).
     $lang = $lang ?? 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : null;
 
-    $backHref = $h('siarc.admin.pavilions');
-    $editHref = $h('siarc.admin.pavilions');
-    $addHref  = $h('siarc.admin.stands');
+    // Real ids so detail links never 404
+    $eid       = siarcEvent()?->id ?? 0;
+    $pavilionId = DB::table('pavilions')->where('event_id',$eid)->value('id');
+    $standId    = DB::table('stands')->where('event_id',$eid)->value('id');
+
+    $pavilionsHref = $h('siarc.admin.pavilions');
+    $floorplanHref = $h('siarc.admin.floorplan');
+    $standsHref    = $h('siarc.admin.stands');
+    $exhibitorsHref= $h('siarc.admin.exhibitors');
+
+    // "Modifier" → detail route (guard for null id)
+    $editHref = ($pavilionId && $h('siarc.admin.pavilion', ['id'=>$pavilionId]))
+        ? $h('siarc.admin.pavilion', ['id'=>$pavilionId])
+        : $pavilionsHref;
+    // "Ajouter un stand" → admin stands list
+    $addHref  = $standsHref;
+    // Back / "Voir toutes" → parent list
+    $backHref = $pavilionsHref;
 
     // ── KPI tile row (verbatim from design) ────────────────────────────────────
     $kpis = [
@@ -17,17 +33,17 @@
         ['users-round', '#3565DE','#E8EFFB', 'Exposants',         '118',                'Dans ce pavillon', '#8A857A'],
     ];
 
-    // Tab strip (Aperçu active; rest are non-navigational buttons)
+    // Tab strip (Aperçu active; rest wrap distinct panels)
     $tabs = [
-        ['Aperçu', true],
-        ['Stands (80)', false],
-        ['Exposants (118)', false],
-        ['Plan du pavillon', false],
-        ['Équipements', false],
-        ['Services', false],
-        ['Documents', false],
-        ['Activités', false],
-        ['Historique', false],
+        ['apercu',    'Aperçu',            true],
+        ['stands',    'Stands (80)',       false],
+        ['exposants', 'Exposants (118)',   false],
+        ['plan',      'Plan du pavillon',  false],
+        ['equipements','Équipements',      false],
+        ['services',  'Services',          false],
+        ['documents', 'Documents',         false],
+        ['activites', 'Activités',         false],
+        ['historique','Historique',        false],
     ];
 
     // Floorplan stand cells — [code, status] status: occ|avail|reserved|maint
@@ -152,25 +168,13 @@
 
             <p class="text-[13px] font-bold text-[#1A1712] mt-6 mb-3">Actions rapides</p>
             <div class="flex items-center gap-2">
-                @if($editHref)
                 <a href="{{ $editHref }}" class="siarc-btn siarc-btn-green text-[12.5px] px-3.5 py-2 flex-1 justify-center">
                     <i data-lucide="square-pen" class="w-4 h-4"></i>Modifier
                 </a>
-                @else
-                <button type="button" class="siarc-btn siarc-btn-green text-[12.5px] px-3.5 py-2 flex-1 justify-center">
-                    <i data-lucide="square-pen" class="w-4 h-4"></i>Modifier
-                </button>
-                @endif
-                @if($addHref)
                 <a href="{{ $addHref }}" class="siarc-btn siarc-btn-outline !border !border-[#E4E3DD] !text-[#3B382F] text-[12.5px] px-3.5 py-2 flex-1 justify-center hover:bg-[#FBFAF6]">
                     <i data-lucide="plus" class="w-4 h-4"></i>Ajouter un stand
                 </a>
-                @else
-                <button type="button" class="siarc-btn siarc-btn-outline !border !border-[#E4E3DD] !text-[#3B382F] text-[12.5px] px-3.5 py-2 flex-1 justify-center hover:bg-[#FBFAF6]">
-                    <i data-lucide="plus" class="w-4 h-4"></i>Ajouter un stand
-                </button>
-                @endif
-                <button type="button" class="siarc-btn !border !border-[#E4E3DD] text-[#8A857A] px-2.5 py-2 hover:bg-[#FBFAF6]" aria-label="Plus d'actions">
+                <button type="button" data-toast="Plus d'actions bientôt disponibles" class="siarc-btn !border !border-[#E4E3DD] text-[#8A857A] px-2.5 py-2 hover:bg-[#FBFAF6]" aria-label="Plus d'actions">
                     <i data-lucide="more-horizontal" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -212,21 +216,18 @@
     </div>
 
     {{-- ══ TAB STRIP ══ --}}
-    <div class="border-b border-[#ECEAE3] mb-5 overflow-x-auto">
+    <div data-tabs="pavilion" class="border-b border-[#ECEAE3] mb-5 overflow-x-auto">
         <div class="flex items-center gap-6 min-w-max">
-            @foreach($tabs as [$tLabel,$active])
-            <button type="button" @class([
-                'relative pb-3 text-[13.5px] whitespace-nowrap transition-colors',
-                'text-siarc-green font-semibold' => $active,
-                'text-[#8A857A] font-medium hover:text-[#3B382F]' => !$active,
-            ])>
+            @foreach($tabs as [$tKey,$tLabel,$active])
+            <button type="button" data-tab="{{ $tKey }}" class="si-tab relative pb-3 text-[13.5px] whitespace-nowrap transition-colors {{ $active ? 'is-active' : '' }}">
                 {{ $tLabel }}
-                @if($active)<span class="absolute left-0 -bottom-px h-[2.5px] w-full rounded-full bg-siarc-green"></span>@endif
             </button>
             @endforeach
         </div>
     </div>
 
+    {{-- Aperçu panel (default active) --}}
+    <div data-panel="apercu" data-tabs-for="pavilion">
     {{-- ══ MAIN: FLOORPLAN + CATEGORY/SERVICES (2/3) + RIGHT COLUMN (1/3) ══ --}}
     <div class="grid xl:grid-cols-[1fr_360px] gap-5">
 
@@ -235,7 +236,12 @@
 
             {{-- Plan du pavillon (floorplan) --}}
             <div class="siarc-card siarc-shadow p-5">
-                <h3 class="text-[14px] font-bold text-[#1A1712] mb-4">Plan du pavillon</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-[14px] font-bold text-[#1A1712]">Plan du pavillon</h3>
+                    @if($floorplanHref)
+                    <a href="{{ $floorplanHref }}" class="text-[11.5px] font-semibold text-siarc-green inline-flex items-center gap-1 hover:gap-1.5 transition-all">Plan interactif<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+                    @endif
+                </div>
 
                 <div class="rounded-xl border border-[#E4E3DD] bg-[#FCFBF8] p-4">
                     <svg viewBox="0 0 620 340" class="w-full" font-family="Poppins, sans-serif">
@@ -358,9 +364,9 @@
             <div class="siarc-card siarc-shadow p-5">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-[14px] font-bold text-[#1A1712]">Performance du pavillon</h3>
-                    <span class="text-[11px] font-medium text-[#8A857A] border border-[#EFEDE6] rounded-lg px-2.5 py-1 inline-flex items-center gap-1">
+                    <button type="button" data-toast="Période : 30 derniers jours" class="text-[11px] font-medium text-[#8A857A] border border-[#EFEDE6] rounded-lg px-2.5 py-1 inline-flex items-center gap-1">
                         30 derniers jours<i data-lucide="chevron-down" class="w-3 h-3"></i>
-                    </span>
+                    </button>
                 </div>
                 <svg viewBox="0 0 340 190" class="w-full">
                     {{-- y-axis labels --}}
@@ -395,8 +401,6 @@
                     <h3 class="text-[14px] font-bold text-[#1A1712]">Activités récentes</h3>
                     @if($backHref)
                     <a href="{{ $backHref }}" class="text-[11.5px] font-semibold text-siarc-green inline-flex items-center gap-1 hover:gap-1.5 transition-all">Voir toutes<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
-                    @else
-                    <button type="button" class="text-[11.5px] font-semibold text-siarc-green inline-flex items-center gap-1">Voir toutes<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
                     @endif
                 </div>
                 <ul class="space-y-4">
@@ -414,6 +418,67 @@
                     @endforeach
                 </ul>
             </div>
+        </div>
+    </div>
+    </div>{{-- /apercu panel --}}
+
+    {{-- Secondary tab panels (honest placeholders linking to the real list/detail pages) --}}
+    <div data-panel="stands" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Stands du pavillon</p>
+            <p class="mb-4">80 stands sont rattachés à ce pavillon.</p>
+            @if($standsHref)<a href="{{ $standsHref }}" class="siarc-btn siarc-btn-green text-[12.5px] px-3.5 py-2 inline-flex"><i data-lucide="store" class="w-4 h-4"></i>Gérer les stands</a>@endif
+        </div>
+    </div>
+
+    <div data-panel="exposants" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Exposants du pavillon</p>
+            <p class="mb-4">118 exposants présents dans ce pavillon.</p>
+            @if($exhibitorsHref)<a href="{{ $exhibitorsHref }}{{ $pavilionId ? '?pavilion='.$pavilionId : '' }}" class="siarc-btn siarc-btn-green text-[12.5px] px-3.5 py-2 inline-flex"><i data-lucide="users-round" class="w-4 h-4"></i>Voir les exposants</a>@endif
+        </div>
+    </div>
+
+    <div data-panel="plan" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Plan du pavillon</p>
+            <p class="mb-4">Consultez le plan interactif du salon pour visualiser l'implantation.</p>
+            @if($floorplanHref)<a href="{{ $floorplanHref }}" class="siarc-btn siarc-btn-green text-[12.5px] px-3.5 py-2 inline-flex"><i data-lucide="layout-grid" class="w-4 h-4"></i>Plan interactif</a>@endif
+        </div>
+    </div>
+
+    <div data-panel="equipements" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Équipements</p>
+            <p>La liste des équipements du pavillon sera affichée ici.</p>
+        </div>
+    </div>
+
+    <div data-panel="services" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Services</p>
+            <p>Les services disponibles sont listés dans l'onglet Aperçu.</p>
+        </div>
+    </div>
+
+    <div data-panel="documents" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Documents</p>
+            <p>Aucun document n'est disponible pour le moment.</p>
+        </div>
+    </div>
+
+    <div data-panel="activites" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Activités</p>
+            <p>Les activités récentes sont affichées dans l'onglet Aperçu.</p>
+        </div>
+    </div>
+
+    <div data-panel="historique" data-tabs-for="pavilion" hidden>
+        <div class="siarc-card siarc-shadow p-6 text-[13px] text-[#55524A]">
+            <p class="font-semibold text-[#161513] mb-2">Historique</p>
+            <p>L'historique des modifications du pavillon sera affiché ici.</p>
         </div>
     </div>
 

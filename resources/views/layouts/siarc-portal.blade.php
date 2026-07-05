@@ -160,6 +160,7 @@
         if(b)b.addEventListener('click',toggle); if(o)o.addEventListener('click',toggle);
     })();
 </script>
+<script src="{{ asset('vendor/siarc-ui.js') }}"></script>
 @stack('scripts')
 </body>
 </html>

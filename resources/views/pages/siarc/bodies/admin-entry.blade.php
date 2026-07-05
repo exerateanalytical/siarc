@@ -1,7 +1,17 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : null;
+
+    // Real routes (all guaranteed present in the route map) used as safe fallbacks.
+    $entryUrl     = route('siarc.admin.entry',     ['lang'=>$lang]);
+    $liveUrl      = route('siarc.admin.live',      ['lang'=>$lang]);
+    $incidentsUrl = route('siarc.admin.incidents', ['lang'=>$lang]);
+    $visitorsUrl  = route('siarc.admin.visitors',  ['lang'=>$lang]);
+    $badgesUrl    = route('siarc.admin.badges',    ['lang'=>$lang]);
+    $reportsUrl   = route('siarc.admin.reports',   ['lang'=>$lang]);
+    $floorplanUrl = route('siarc.admin.floorplan', ['lang'=>$lang]);
 
     // ── KPI tiles (approved design figures, verbatim) ────────────────────────
     // [icon, iconColor, tileBg, label, value, sub|null, trend|null, trendDir, sparkColor|null, sparkPts|null]
@@ -79,12 +89,12 @@
         ['check-circle-2','#157A43','#E2F3E8', 'Système opérationnel',   "Tous les points d'accès fonctionnent",'10:15'],
     ];
 
-    // Raccourcis rapides
+    // Raccourcis rapides — [icon, label, tileBg, iconColor, url]
     $shortcuts = [
-        ['scan-line',      'Scanner Badge',     '#F0EAFB','#7C4FE0', $h('siarc.admin.entry')],
-        ['search',         'Rechercher Visiteur','#E7EFFC','#2F6BE0', $h('siarc.admin.visitors')],
-        ['printer',        'Imprimer Badge',    '#E2F3E8','#157A43', $h('siarc.admin.badges')],
-        ['clipboard-list', 'Rapports Accès',    '#FDF3E0','#C97A16', $h('siarc.admin.reports')],
+        ['scan-line',      'Scanner Badge',      '#F0EAFB','#7C4FE0', $entryUrl],
+        ['search',         'Rechercher Visiteur','#E7EFFC','#2F6BE0', $visitorsUrl],
+        ['printer',        'Imprimer Badge',     '#E2F3E8','#157A43', $badgesUrl],
+        ['clipboard-list', 'Rapports Accès',     '#FDF3E0','#C97A16', $reportsUrl],
     ];
 
     // SVG helpers for the line chart
@@ -165,9 +175,9 @@
         <div class="siarc-card siarc-shadow p-5">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="text-[15px] font-bold text-[#1A1712]">Entrées en temps réel</h3>
-                <span class="text-[11px] font-medium text-[#8A857A] border border-[#EFEDE6] rounded-lg px-2.5 py-1 inline-flex items-center gap-1">
+                <button type="button" data-toast="Filtre de période à venir" class="text-[11px] font-medium text-[#8A857A] border border-[#EFEDE6] rounded-lg px-2.5 py-1 inline-flex items-center gap-1">
                     Aujourd'hui <i data-lucide="chevron-down" class="w-3 h-3"></i>
-                </span>
+                </button>
             </div>
             <div class="flex items-center gap-4 mb-2 text-[11px] text-[#3B382F]">
                 <span class="inline-flex items-center gap-1.5"><span class="w-3 h-0.5 rounded" style="background:#157A43"></span>Entrées</span>
@@ -303,10 +313,7 @@
         <div class="siarc-card siarc-shadow p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[15px] font-bold text-[#1A1712]">Flux d'entrées en direct</h3>
-                @php $feedAll = $h('siarc.admin.activity') ?? $h('siarc.admin.entry') @endphp
-                @if($feedAll)
-                    <a href="{{ $feedAll }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
-                @endif
+                <a href="{{ $entryUrl }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
             </div>
             <ul class="space-y-3">
                 @foreach($feed as [$img,$avatarKind,$name,$meta,$loc,$time,$status])
@@ -350,14 +357,11 @@
         <div class="siarc-card siarc-shadow p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[15px] font-bold text-[#1A1712]">Caméras en direct</h3>
-                @php $camAll = $h('siarc.admin.live') ?? $h('siarc.admin.entry') @endphp
-                @if($camAll)
-                    <a href="{{ $camAll }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir toutes</a>
-                @endif
+                <a href="{{ $liveUrl }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir toutes</a>
             </div>
             <div class="grid grid-cols-2 gap-3">
                 @foreach($cameras as [$camImg,$camLabel])
-                    <div>
+                    <a href="{{ $liveUrl }}" class="block">
                         <div class="relative rounded-xl overflow-hidden border border-[#EFEDE6]">
                             <img src="{{ asset('images/siarc/'.$camImg) }}" alt="{{ $camLabel }}" class="w-full h-[62px] object-cover">
                             <span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 text-[8px] font-bold tracking-wide text-white bg-siarc-red rounded px-1.5 py-0.5">
@@ -368,7 +372,7 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-siarc-green shrink-0"></span>
                             <p class="text-[10px] font-medium text-[#3B382F] leading-tight truncate">{{ $camLabel }}</p>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -377,10 +381,7 @@
         <div class="siarc-card siarc-shadow p-5">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[15px] font-bold text-[#1A1712]">Alertes en temps réel</h3>
-                @php $alertsAll = $h('siarc.admin.incidents') ?? $h('siarc.admin.entry') @endphp
-                @if($alertsAll)
-                    <a href="{{ $alertsAll }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
-                @endif
+                <a href="{{ $incidentsUrl }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
             </div>
             <ul class="space-y-2.5">
                 @foreach($alerts as [$icon,$color,$tile,$title,$sub,$time])
@@ -395,9 +396,9 @@
                             </div>
                             <p class="text-[11px] text-[#8A857A] leading-tight mt-0.5">{{ $sub }}</p>
                             @if($title !== 'Système opérationnel')
-                                <span class="inline-flex items-center gap-1 text-[10.5px] font-semibold mt-1" style="color:{{ $color }}">
+                                <a href="{{ $incidentsUrl }}" class="inline-flex items-center gap-1 text-[10.5px] font-semibold mt-1" style="color:{{ $color }}">
                                     Voir détails <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                                </span>
+                                </a>
                             @else
                                 <span class="inline-flex items-center gap-1 text-[10.5px] font-semibold text-siarc-green mt-1">OK</span>
                             @endif
@@ -412,21 +413,12 @@
             <h3 class="text-[15px] font-bold text-[#1A1712] mb-4">Raccourcis rapides</h3>
             <div class="grid grid-cols-4 gap-3">
                 @foreach($shortcuts as [$icon,$label,$tile,$color,$url])
-                    @if($url)
-                        <a href="{{ $url }}" class="rounded-xl border border-[#EFEDE6] p-3 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors text-center">
-                            <span class="w-9 h-9 mx-auto rounded-lg flex items-center justify-center mb-2" style="background:{{ $tile }}">
-                                <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px]" style="color:{{ $color }}"></i>
-                            </span>
-                            <p class="text-[10px] font-semibold text-[#3B382F] leading-tight">{{ $label }}</p>
-                        </a>
-                    @else
-                        <button type="button" class="rounded-xl border border-[#EFEDE6] p-3 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors text-center">
-                            <span class="w-9 h-9 mx-auto rounded-lg flex items-center justify-center mb-2" style="background:{{ $tile }}">
-                                <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px]" style="color:{{ $color }}"></i>
-                            </span>
-                            <p class="text-[10px] font-semibold text-[#3B382F] leading-tight">{{ $label }}</p>
-                        </button>
-                    @endif
+                    <a href="{{ $url }}" class="rounded-xl border border-[#EFEDE6] p-3 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors text-center">
+                        <span class="w-9 h-9 mx-auto rounded-lg flex items-center justify-center mb-2" style="background:{{ $tile }}">
+                            <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px]" style="color:{{ $color }}"></i>
+                        </span>
+                        <p class="text-[10px] font-semibold text-[#3B382F] leading-tight">{{ $label }}</p>
+                    </a>
                 @endforeach
             </div>
         </div>

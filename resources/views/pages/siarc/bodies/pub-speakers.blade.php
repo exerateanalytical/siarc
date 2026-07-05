@@ -1,7 +1,13 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
+
+    // ── Real ids so detail links never 404 ─────────────────────────────────────
+    $eid = siarcEvent()?->id ?? 0;
+    $speakerId = DB::table('speakers')->where('event_id',$eid)->value('id');
+    $spkProfileUrl = ($speakerId && R::has('siarc.speaker')) ? $h('siarc.speaker', ['id'=>$speakerId]) : $h('siarc.speakers');
 
     // ── Speakers (design content, verbatim from approved PNG) ───────────────────
     // role tone: green=Conférencier, purple=Paneliste/Panéliste, pink=Modératrice
@@ -62,18 +68,19 @@
         <div class="relative flex-1 min-w-[240px]">
             <i data-lucide="search" class="w-4 h-4 text-[#A8A498] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
             <input type="text" placeholder="Rechercher un intervenant par nom, thème, organisation…"
+                data-filter="#spkGrid"
                 class="w-full text-[12.5px] text-[#55524A] bg-[#FBFAF7] border border-[#ECEAE3] rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-siarc-green">
         </div>
-        <button class="inline-flex items-center gap-6 text-[12.5px] font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
+        <button data-toast="Filtre par rôle bientôt disponible" class="inline-flex items-center gap-6 text-[12.5px] font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
             Tous les rôles <i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i>
         </button>
-        <button class="inline-flex items-center gap-6 text-[12.5px] font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
+        <button data-toast="Filtre par pays bientôt disponible" class="inline-flex items-center gap-6 text-[12.5px] font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
             Tous les pays <i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i>
         </button>
-        <button class="inline-flex items-center gap-6 text-[12.5px] font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
+        <button data-toast="Filtre par thème bientôt disponible" class="inline-flex items-center gap-6 text-[12.5px] font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
             Tous les thèmes <i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498]"></i>
         </button>
-        <button class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
+        <button data-toast="Plus de filtres bientôt disponibles" class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl px-4 py-2.5 hover:border-siarc-green transition-colors">
             <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#8A857A]"></i> Plus de filtres
         </button>
     </div>
@@ -107,27 +114,27 @@
                 <div class="flex items-center gap-3">
                     <div class="hidden sm:flex items-center gap-2 text-[12px] text-[#8A857A]">
                         Trier par :
-                        <button class="inline-flex items-center gap-2 font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-lg px-3 py-1.5">
+                        <button data-toast="Tri appliqué : Nom (A-Z)" class="inline-flex items-center gap-2 font-medium text-[#55524A] bg-white border border-[#ECEAE3] rounded-lg px-3 py-1.5">
                             Nom (A-Z) <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#A8A498]"></i>
                         </button>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button class="w-8 h-8 rounded-lg bg-siarc-green text-white flex items-center justify-center"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white border border-[#ECEAE3] text-[#A8A498] flex items-center justify-center"><i data-lucide="list" class="w-4 h-4"></i></button>
+                        <button data-toast="Vue grille" class="w-8 h-8 rounded-lg bg-siarc-green text-white flex items-center justify-center"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                        <button data-toast="Vue liste bientôt disponible" class="w-8 h-8 rounded-lg bg-white border border-[#ECEAE3] text-[#A8A498] flex items-center justify-center"><i data-lucide="list" class="w-4 h-4"></i></button>
                     </div>
                 </div>
             </div>
 
             {{-- SPEAKER CARDS --}}
-            <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+            <div id="spkGrid" class="grid grid-cols-2 xl:grid-cols-4 gap-4">
                 @foreach($speakers as $s)
                 @php $t = $toneMap[$s['tone']]; @endphp
-                <div class="siarc-card siarc-shadow siarc-lift p-4 flex flex-col relative">
+                <div data-filter-item data-filter-text="{{ $s['name'].' '.$s['country'].' '.$s['role'].' '.$s['badge'].' '.implode(' ',$s['tags']) }}" class="siarc-card siarc-shadow siarc-lift p-4 flex flex-col relative">
                     {{-- role badge + star --}}
                     <div class="flex items-start justify-between mb-3">
                         <span class="inline-flex items-center text-[10.5px] font-semibold rounded-full px-2.5 py-1"
                               style="color:{{ $t['text'] }};background:{{ $t['bg'] }};border:1px solid {{ $t['br'] }}">{{ $s['badge'] }}</span>
-                        <button class="text-[#C9C4B8] hover:text-siarc-gold transition-colors"><i data-lucide="star" class="w-4 h-4"></i></button>
+                        <button data-toast="Ajouté à vos favoris" class="text-[#C9C4B8] hover:text-siarc-gold transition-colors"><i data-lucide="star" class="w-4 h-4"></i></button>
                     </div>
 
                     {{-- avatar --}}
@@ -150,9 +157,9 @@
 
                     {{-- footer actions --}}
                     <div class="flex items-center gap-2 mt-4 pt-3.5 border-t border-[#F2F0EA]">
-                        <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[#8A857A] flex items-center justify-center shrink-0 hover:border-siarc-green hover:text-siarc-green transition-colors"><i data-lucide="calendar-days" class="w-4 h-4"></i></button>
-                        <button class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[#8A857A] flex items-center justify-center shrink-0 hover:border-siarc-green hover:text-siarc-green transition-colors"><i data-lucide="id-card" class="w-4 h-4"></i></button>
-                        <a href="{{ $h('siarc.speakers') }}" class="flex-1 inline-flex items-center justify-center text-[11.5px] font-semibold text-siarc-green border border-[#CDE6D8] bg-white rounded-lg px-2 py-2 hover:bg-[#E7F1EB] transition-colors">Voir le profil</a>
+                        <a href="{{ $h('siarc.programme') }}" class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[#8A857A] flex items-center justify-center shrink-0 hover:border-siarc-green hover:text-siarc-green transition-colors"><i data-lucide="calendar-days" class="w-4 h-4"></i></a>
+                        <a href="{{ $spkProfileUrl }}" class="w-8 h-8 rounded-lg border border-[#ECEAE3] text-[#8A857A] flex items-center justify-center shrink-0 hover:border-siarc-green hover:text-siarc-green transition-colors"><i data-lucide="id-card" class="w-4 h-4"></i></a>
+                        <a href="{{ $spkProfileUrl }}" class="flex-1 inline-flex items-center justify-center text-[11.5px] font-semibold text-siarc-green border border-[#CDE6D8] bg-white rounded-lg px-2 py-2 hover:bg-[#E7F1EB] transition-colors">Voir le profil</a>
                     </div>
                 </div>
                 @endforeach
@@ -160,7 +167,7 @@
 
             {{-- LOAD MORE --}}
             <div class="flex justify-center mt-7">
-                <button class="siarc-btn px-6 py-3 text-[12.5px] font-semibold text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl hover:border-siarc-green transition-colors">
+                <button data-toast="Chargement de plus d'intervenants…" class="siarc-btn px-6 py-3 text-[12.5px] font-semibold text-[#55524A] bg-white border border-[#ECEAE3] rounded-xl hover:border-siarc-green transition-colors">
                     <i data-lucide="rotate-cw" class="w-4 h-4 text-[#8A857A]"></i> Charger plus d'intervenants <i data-lucide="arrow-down" class="w-4 h-4 text-[#8A857A]"></i>
                 </button>
             </div>
@@ -222,7 +229,7 @@
                     </div>
                 </div>
                 <p class="text-[12px] text-[#55524A] leading-relaxed mt-3.5">L'avenir de l'artisanat africain dans l'ère numérique</p>
-                <a href="{{ $h('siarc.speakers') }}" class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-siarc-green mt-3.5 pt-3.5 border-t border-[#F2F0EA] w-full justify-center hover:gap-2.5 transition-all">
+                <a href="{{ $spkProfileUrl }}" class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-siarc-green mt-3.5 pt-3.5 border-t border-[#F2F0EA] w-full justify-center hover:gap-2.5 transition-all">
                     Voir son profil <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>

@@ -81,4 +81,11 @@
     .siarc-scroll::-webkit-scrollbar{width:8px;}
     .siarc-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:8px;}
     .siarc-scroll::-webkit-scrollbar-track{background:transparent;}
+
+    /* ── Tabs (data-attribute driven — see vendor/siarc-ui.js) ──────────────── */
+    .si-tab{position:relative;padding:0 0 .8rem;font-size:13.5px;font-weight:600;color:#8A857A;cursor:pointer;white-space:nowrap;background:none;border:none;transition:color .15s;}
+    .si-tab:hover{color:#3B382F;}
+    .si-tab.is-active{color:var(--si-green-500);}
+    .si-tab.is-active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2.5px;border-radius:9999px;background:var(--si-green-500);}
+    [data-page-num].is-active{background:var(--si-green-500);color:#fff;}
 </style>

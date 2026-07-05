@@ -1,20 +1,32 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang  = $lang ?? 'fr';
     $isFr  = $isFr ?? ($lang === 'fr');
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : null;
 
-    // ── Real navigational target for the "back to programme" link ──
-    $backHref = $h('siarc.admin.programme') ?? $h('siarc.admin.ateliers') ?? $h('siarc.admin.dashboard') ?? url()->previous();
+    // ── Real IDs so detail links never 404 ──
+    $eid        = siarcEvent()?->id ?? 0;
+    $workshopId = DB::table('programme_sessions')->where('event_id',$eid)->where('type','workshop')->value('id')
+                  ?: DB::table('programme_sessions')->where('event_id',$eid)->value('id');
+    $speakerId  = DB::table('speakers')->where('event_id',$eid)->value('id');
 
-    // Tabs (visual only — <button>s)
+    // ── Navigational targets ──
+    $backHref     = $h('siarc.admin.programme') ?? $h('siarc.admin.dashboard') ?? url()->previous();
+    $editHref     = ($workshopId ? $h('siarc.admin.workshop', ['id'=>$workshopId]) : null)
+                    ?? ($workshopId ? $h('siarc.admin.session', ['id'=>$workshopId]) : null)
+                    ?? $h('siarc.admin.programme') ?? $backHref;
+    $speakersHref = $h('siarc.admin.speakers') ?? $backHref;
+    $speakerHref  = fn($i) => ($speakerId ? $h('siarc.admin.speaker', ['id'=>$speakerId]) : null) ?? $speakersHref;
+
+    // Tabs — [label, count|null, key]
     $tabs = [
-        ['Aperçu', true, null],
-        ['Programme détaillé', false, null],
-        ['Intervenants', false, '2'],
-        ['Informations pratiques', false, null],
-        ['Documents', false, null],
-        ['Participants', false, null],
+        ['Aperçu', null, 'apercu'],
+        ['Programme détaillé', null, 'programme'],
+        ['Intervenants', '2', 'intervenants'],
+        ['Informations pratiques', null, 'infos'],
+        ['Documents', null, 'documents'],
+        ['Participants', null, 'participants'],
     ];
 
     // "Ce que vous allez apprendre" outcomes
@@ -83,13 +95,13 @@
             </div>
         </div>
         <div class="flex items-center gap-2.5 shrink-0">
-            <button type="button" class="siarc-btn border border-[#E1DED5] bg-white text-[#3B382F] px-4 py-2.5 text-[13px] hover:bg-[#FBFAF6]">
+            <button type="button" data-toast="Atelier ajouté à votre calendrier" class="siarc-btn border border-[#E1DED5] bg-white text-[#3B382F] px-4 py-2.5 text-[13px] hover:bg-[#FBFAF6]">
                 <i data-lucide="calendar-days" class="w-4 h-4"></i>Ajouter au calendrier
             </button>
-            <button type="button" class="siarc-btn siarc-btn-green px-4 py-2.5 text-[13px] siarc-shadow">
+            <a href="{{ $editHref }}" class="siarc-btn siarc-btn-green px-4 py-2.5 text-[13px] siarc-shadow">
                 <i data-lucide="square-pen" class="w-4 h-4"></i>Modifier l’atelier
-            </button>
-            <button type="button" class="w-10 h-10 rounded-xl border border-[#E1DED5] bg-white text-[#8A857A] flex items-center justify-center hover:bg-[#FBFAF6]">
+            </a>
+            <button type="button" data-toast="Plus d’options bientôt disponibles" class="w-10 h-10 rounded-xl border border-[#E1DED5] bg-white text-[#8A857A] flex items-center justify-center hover:bg-[#FBFAF6]">
                 <i data-lucide="more-vertical" class="w-4 h-4"></i>
             </button>
         </div>
@@ -128,7 +140,7 @@
                     <div class="min-w-0 flex flex-col">
                         <div class="flex items-start justify-between gap-3">
                             <h2 class="font-display text-[22px] md:text-[25px] font-extrabold text-[#161513] leading-snug">Design &amp; tendances : valoriser le patrimoine culturel à travers l’innovation</h2>
-                            <button type="button" class="w-9 h-9 rounded-lg border border-[#E1DED5] text-[#8A857A] flex items-center justify-center shrink-0 hover:bg-[#FBFAF6]" aria-label="Enregistrer">
+                            <button type="button" data-toast="Atelier enregistré dans vos favoris" class="w-9 h-9 rounded-lg border border-[#E1DED5] text-[#8A857A] flex items-center justify-center shrink-0 hover:bg-[#FBFAF6]" aria-label="Enregistrer">
                                 <i data-lucide="bookmark" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -152,19 +164,18 @@
             </div>
 
             {{-- Tab nav --}}
-            <div class="border-b border-[#ECEAE3] overflow-x-auto">
+            <div data-tabs="workshop" class="border-b border-[#ECEAE3] overflow-x-auto">
                 <div class="flex items-center gap-1 min-w-max">
-                    @foreach($tabs as [$label,$active,$count])
-                        <button type="button" class="relative px-4 py-3 text-[13px] font-semibold whitespace-nowrap transition-colors {{ $active ? 'text-siarc-green' : 'text-[#8A857A] hover:text-[#3B382F]' }}">
-                            {{ $label }}@if($count)<span class="ml-1 {{ $active ? 'text-siarc-green' : 'text-[#B0AB9F]' }}">({{ $count }})</span>@endif
-                            @if($active)<span class="absolute left-3 right-3 -bottom-px h-0.5 rounded-full bg-siarc-green"></span>@endif
+                    @foreach($tabs as [$label,$count,$key])
+                        <button type="button" class="si-tab {{ $loop->first ? 'is-active' : '' }} relative px-4 py-3 text-[13px] font-semibold whitespace-nowrap transition-colors" data-tab="{{ $key }}">
+                            {{ $label }}@if($count)<span class="ml-1">({{ $count }})</span>@endif
                         </button>
                     @endforeach
                 </div>
             </div>
 
-            {{-- Aperçu: À propos + Ce que vous allez apprendre --}}
-            <div class="grid md:grid-cols-2 gap-5">
+            {{-- Panel: Aperçu --}}
+            <div data-panel="apercu" data-tabs-for="workshop" class="grid md:grid-cols-2 gap-5">
 
                 {{-- À propos de cet atelier --}}
                 <div class="siarc-card siarc-shadow p-6">
@@ -211,26 +222,64 @@
                 </div>
             </div>
 
-            {{-- Programme détaillé --}}
-            <div class="siarc-card siarc-shadow p-6">
-                <h3 class="text-[15px] font-bold text-[#1A1712] mb-5">Programme détaillé</h3>
-                <ol class="relative">
-                    @foreach($agenda as $ai => [$atime,$atitle,$asub,$abreak])
-                    <li class="flex gap-4 pb-5 last:pb-0 relative">
-                        <div class="flex flex-col items-center shrink-0 pt-0.5">
-                            <span class="w-3 h-3 rounded-full border-2 {{ $abreak ? 'border-siarc-ochre bg-white' : 'border-siarc-green bg-siarc-green' }} z-10"></span>
-                            @if(!$loop->last)<span class="w-px flex-1 bg-[#E4E1D8] mt-1"></span>@endif
-                        </div>
-                        <div class="grid sm:grid-cols-[120px_1fr] gap-x-6 gap-y-0.5 min-w-0 flex-1">
-                            <span class="text-[12.5px] font-semibold text-[#8A857A] whitespace-nowrap">{{ $atime }}</span>
-                            <div class="min-w-0">
-                                <p class="text-[13px] font-bold {{ $abreak ? 'text-siarc-ochre' : 'text-[#1A1712]' }} leading-tight">{{ $atitle }}</p>
-                                @if($asub)<p class="text-[12px] text-[#8A857A] mt-0.5">{{ $asub }}</p>@endif
+            {{-- Panel: Programme détaillé --}}
+            <div data-panel="programme" data-tabs-for="workshop" hidden>
+                <div class="siarc-card siarc-shadow p-6">
+                    <h3 class="text-[15px] font-bold text-[#1A1712] mb-5">Programme détaillé</h3>
+                    <ol class="relative">
+                        @foreach($agenda as $ai => [$atime,$atitle,$asub,$abreak])
+                        <li class="flex gap-4 pb-5 last:pb-0 relative">
+                            <div class="flex flex-col items-center shrink-0 pt-0.5">
+                                <span class="w-3 h-3 rounded-full border-2 {{ $abreak ? 'border-siarc-ochre bg-white' : 'border-siarc-green bg-siarc-green' }} z-10"></span>
+                                @if(!$loop->last)<span class="w-px flex-1 bg-[#E4E1D8] mt-1"></span>@endif
                             </div>
-                        </div>
-                    </li>
-                    @endforeach
-                </ol>
+                            <div class="grid sm:grid-cols-[120px_1fr] gap-x-6 gap-y-0.5 min-w-0 flex-1">
+                                <span class="text-[12.5px] font-semibold text-[#8A857A] whitespace-nowrap">{{ $atime }}</span>
+                                <div class="min-w-0">
+                                    <p class="text-[13px] font-bold {{ $abreak ? 'text-siarc-ochre' : 'text-[#1A1712]' }} leading-tight">{{ $atitle }}</p>
+                                    @if($asub)<p class="text-[12px] text-[#8A857A] mt-0.5">{{ $asub }}</p>@endif
+                                </div>
+                            </div>
+                        </li>
+                        @endforeach
+                    </ol>
+                </div>
+            </div>
+
+            {{-- Panel: Intervenants (placeholder — full list lives in the sidebar card) --}}
+            <div data-panel="intervenants" data-tabs-for="workshop" hidden>
+                <div class="siarc-card siarc-shadow p-6">
+                    <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Intervenants</h3>
+                    <p class="text-[13px] text-[#55524A] leading-relaxed">Retrouvez le profil complet des 2 intervenants de cet atelier dans le panneau latéral.</p>
+                    <a href="{{ $speakersHref }}" class="inline-flex items-center gap-2 mt-4 text-[13px] font-bold text-siarc-green">
+                        <span>Voir tous les intervenants</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Panel: Informations pratiques (placeholder — full card in sidebar) --}}
+            <div data-panel="infos" data-tabs-for="workshop" hidden>
+                <div class="siarc-card siarc-shadow p-6">
+                    <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Informations pratiques</h3>
+                    <p class="text-[13px] text-[#55524A] leading-relaxed">Lieu, matériel, capacité et modalités d'inscription sont détaillés dans le panneau latéral.</p>
+                </div>
+            </div>
+
+            {{-- Panel: Documents (placeholder — full card in sidebar) --}}
+            <div data-panel="documents" data-tabs-for="workshop" hidden>
+                <div class="siarc-card siarc-shadow p-6">
+                    <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Documents &amp; ressources</h3>
+                    <p class="text-[13px] text-[#55524A] leading-relaxed">Les supports et ressources de l'atelier sont disponibles dans le panneau latéral.</p>
+                </div>
+            </div>
+
+            {{-- Panel: Participants (placeholder) --}}
+            <div data-panel="participants" data-tabs-for="workshop" hidden>
+                <div class="siarc-card siarc-shadow p-6">
+                    <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">Participants</h3>
+                    <p class="text-[13px] text-[#55524A] leading-relaxed">30 places disponibles. La liste des participants inscrits sera affichée ici une fois les inscriptions ouvertes.</p>
+                </div>
             </div>
         </div>
 
@@ -242,7 +291,7 @@
                 <h3 class="text-[15px] font-bold text-[#1A1712] mb-4">Intervenants</h3>
                 <div class="space-y-5">
                     @foreach($speakers as [$img,$name,$role,$roleBg,$roleFg,$job,$country,$bio])
-                    <div class="{{ !$loop->last ? 'pb-5 border-b border-[#F1EFE9]' : '' }}">
+                    <a href="{{ $speakerHref($loop->index) }}" class="block {{ !$loop->last ? 'pb-5 border-b border-[#F1EFE9]' : '' }}">
                         <div class="flex items-start gap-3">
                             <img src="{{ asset('images/siarc/'.$img) }}" alt="{{ $name }}" class="w-12 h-12 rounded-full object-cover shrink-0">
                             <div class="min-w-0 flex-1">
@@ -255,13 +304,13 @@
                             </div>
                         </div>
                         <p class="text-[12px] text-[#55524A] leading-snug mt-2.5">{{ $bio }}</p>
-                    </div>
+                    </a>
                     @endforeach
                 </div>
-                <button type="button" class="flex items-center justify-between w-full mt-4 pt-1 text-[13px] font-bold text-siarc-green">
+                <a href="{{ $speakersHref }}" class="flex items-center justify-between w-full mt-4 pt-1 text-[13px] font-bold text-siarc-green">
                     <span>Voir tous les intervenants (2)</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
+                </a>
             </div>
 
             {{-- Informations pratiques --}}
@@ -285,17 +334,19 @@
                 <h3 class="text-[15px] font-bold text-[#1A1712] mb-4">Documents &amp; ressources</h3>
                 <ul class="space-y-3">
                     @foreach($docs as [$icon,$name,$meta])
-                    <li class="flex items-center gap-3 rounded-xl border border-[#ECEAE3] p-3 hover:bg-[#FBFAF6] transition-colors">
-                        <span class="w-9 h-9 rounded-lg bg-[#FDE8E8] flex items-center justify-center shrink-0"><i data-lucide="{{ $icon }}" class="w-[18px] h-[18px] text-siarc-red"></i></span>
-                        <div class="min-w-0 flex-1">
-                            <p class="text-[12.5px] font-bold text-[#1A1712] truncate">{{ $name }}</p>
-                            <p class="text-[11.5px] text-[#8A857A] mt-0.5">{{ $meta }}</p>
-                        </div>
-                        <i data-lucide="download" class="w-4 h-4 text-[#8A857A] shrink-0"></i>
+                    <li>
+                        <button type="button" data-toast="Téléchargement de « {{ $name }} »…" class="w-full text-left flex items-center gap-3 rounded-xl border border-[#ECEAE3] p-3 hover:bg-[#FBFAF6] transition-colors">
+                            <span class="w-9 h-9 rounded-lg bg-[#FDE8E8] flex items-center justify-center shrink-0"><i data-lucide="{{ $icon }}" class="w-[18px] h-[18px] text-siarc-red"></i></span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[12.5px] font-bold text-[#1A1712] truncate">{{ $name }}</p>
+                                <p class="text-[11.5px] text-[#8A857A] mt-0.5">{{ $meta }}</p>
+                            </div>
+                            <i data-lucide="download" class="w-4 h-4 text-[#8A857A] shrink-0"></i>
+                        </button>
                     </li>
                     @endforeach
                 </ul>
-                <button type="button" class="flex items-center justify-end gap-2 w-full mt-4 text-[13px] font-bold text-siarc-green">
+                <button type="button" data-toast="Toutes les ressources bientôt disponibles" class="flex items-center justify-end gap-2 w-full mt-4 text-[13px] font-bold text-siarc-green">
                     <span>Voir toutes les ressources</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>

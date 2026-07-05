@@ -69,6 +69,7 @@
         if(b&&m)b.addEventListener('click',function(){m.classList.toggle('hidden');});
     })();
 </script>
+<script src="{{ asset('vendor/siarc-ui.js') }}"></script>
 @stack('scripts')
 </body>
 </html>

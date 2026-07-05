@@ -1,9 +1,23 @@
 @php
     use Illuminate\Support\Facades\Route;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? app()->getLocale();
-    $h = fn ($name, $params = []) => Route::has($name) ? route($name, $params) : '#';
+    $h = fn ($name, $params = []) => Route::has($name) ? route($name, array_merge(['lang' => $lang], $params)) : '#';
 
     $img = fn ($slug) => asset('images/siarc/'.$slug.'.png');
+
+    // ── Real IDs so detail links never 404 ──
+    $eid = siarcEvent()?->id ?? 0;
+    $exhibitorId = request()->route()?->parameter('id')
+        ?? DB::table('event_exhibitors')->where('event_id', $eid)->value('id');
+    $standId    = DB::table('stands')->where('event_id', $eid)->value('id');
+
+    // Canonical helper routes
+    $exhibitorUrl = $exhibitorId
+        ? $h('siarc.admin.exhibitor', ['id' => $exhibitorId])
+        : $h('siarc.admin.exhibitors');
+    $exhibitorsUrl = $h('siarc.admin.exhibitors');
+    $standsUrl     = $h('siarc.admin.stands');
 
     // Country flag emoji chips for "Marchés d'intérêt"
     $markets = [
@@ -49,18 +63,18 @@
 
                 {{-- social + website --}}
                 <div class="flex flex-wrap items-center gap-3 mt-5">
-                    <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:#1877F2" aria-label="Facebook">
+                    <button type="button" data-toast="Réseau social externe" class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:#1877F2" aria-label="Facebook">
                         <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
-                    </a>
-                    <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)" aria-label="Instagram">
+                    </button>
+                    <button type="button" data-toast="Réseau social externe" class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)" aria-label="Instagram">
                         <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 01-1.38-.9 3.7 3.7 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 3.68a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zm0 10.16a4 4 0 110-8 4 4 0 010 8zm7.85-10.4a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>
-                    </a>
-                    <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:#25D366" aria-label="WhatsApp">
+                    </button>
+                    <button type="button" data-toast="Réseau social externe" class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:#25D366" aria-label="WhatsApp">
                         <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.42 9.42 0 01-4.8-1.32l-.34-.2-3.57.94.95-3.48-.22-.36a9.4 9.4 0 01-1.44-5.02c0-5.2 4.23-9.42 9.43-9.42 2.52 0 4.88.98 6.66 2.76a9.36 9.36 0 012.75 6.67c0 5.2-4.23 9.42-9.42 9.42zM20.52 3.48A11.35 11.35 0 0012.05.99C5.82.99.77 6.04.77 12.27c0 2 .52 3.95 1.51 5.67L.68 23.51l5.71-1.5a11.3 11.3 0 005.66 1.44h.01c6.23 0 11.28-5.05 11.28-11.28 0-3.01-1.17-5.84-3.3-7.97z"/></svg>
-                    </a>
-                    <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green">
+                    </button>
+                    <button type="button" data-toast="Site web externe" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green">
                         <i data-lucide="globe" class="w-4 h-4"></i>www.artboisprecieux.cm
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -84,14 +98,14 @@
     {{-- ── Right rail : Actions rapides + Statut ── --}}
     <div class="siarc-card siarc-shadow p-5">
         <p class="text-[13.5px] font-bold text-[#1A1712] mb-3">Actions rapides</p>
-        <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="siarc-btn siarc-btn-green w-full justify-center px-4 py-2.5 text-[12.5px] mb-2.5">
+        <a href="{{ $exhibitorUrl }}" class="siarc-btn siarc-btn-green w-full justify-center px-4 py-2.5 text-[12.5px] mb-2.5">
             <i data-lucide="square-pen" class="w-4 h-4"></i>Modifier l'exposant
         </a>
         <div class="grid grid-cols-2 gap-2.5">
-            <a href="{{ $h('siarc.admin.stands') }}" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] justify-center px-3 py-2.5 text-[12px] hover:bg-[#FBFAF6]">
+            <a href="{{ $standsUrl }}" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] justify-center px-3 py-2.5 text-[12px] hover:bg-[#FBFAF6]">
                 <i data-lucide="grid-3x3" class="w-4 h-4"></i>Assigner un stand
             </a>
-            <button type="button" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] justify-center px-3 py-2.5 text-[12px] hover:bg-[#FBFAF6]">
+            <button type="button" data-toast="Plus d'actions bientôt disponibles" class="siarc-btn border border-[#ECEAE3] text-[#3B382F] justify-center px-3 py-2.5 text-[12px] hover:bg-[#FBFAF6]">
                 <i data-lucide="ellipsis" class="w-4 h-4"></i>Plus
             </button>
         </div>
@@ -129,29 +143,32 @@
 </div>
 
 {{-- ════════════════════ TABS ════════════════════ --}}
-<div class="siarc-card siarc-shadow px-2 sm:px-4 mb-5 overflow-x-auto">
+<div data-tabs="exhibitor-detail" class="siarc-card siarc-shadow px-2 sm:px-4 mb-5 overflow-x-auto">
     <div class="flex items-center gap-1 min-w-max">
         @php
             $tabs = [
-                ['home',           'Aperçu', true],
-                ['clipboard-list', 'Informations', false],
-                ['store',          'Stand & Pavillon', false],
-                ['tag',            'Produits', false],
-                ['file-text',      'Documents', false],
-                ['id-card',        'Accréditations', false],
-                ['activity',       'Activités', false],
-                ['clock',          'Historique', false],
+                ['home',           'apercu',         'Aperçu'],
+                ['clipboard-list', 'informations',   'Informations'],
+                ['store',          'stand',          'Stand & Pavillon'],
+                ['tag',            'produits',       'Produits'],
+                ['file-text',      'documents',      'Documents'],
+                ['id-card',        'accreditations', 'Accréditations'],
+                ['activity',       'activites',      'Activités'],
+                ['clock',          'historique',     'Historique'],
             ];
         @endphp
-        @foreach($tabs as [$icon, $label, $active])
-        <button type="button" class="inline-flex items-center gap-2 text-[13px] font-semibold px-3.5 py-4 whitespace-nowrap {{ $active ? 'text-siarc-green border-b-2 border-siarc-green' : 'text-[#8A857A] border-b-2 border-transparent' }}">
+        @foreach($tabs as [$icon, $key, $label])
+        <button type="button" data-tab="{{ $key }}" class="si-tab inline-flex items-center gap-2 text-[13px] font-semibold px-3.5 py-4 whitespace-nowrap {{ $loop->first ? 'is-active' : '' }}">
             <i data-lucide="{{ $icon }}" class="w-4 h-4"></i>{{ $label }}
         </button>
         @endforeach
     </div>
 </div>
 
-{{-- ════════════════════ STAT TILES ════════════════════ --}}
+{{-- ════════════════════ APERÇU PANEL (stats + content grid) ════════════════════ --}}
+<div data-panel="apercu" data-tabs-for="exhibitor-detail">
+
+{{-- ── STAT TILES ── --}}
 @php
     $stats = [
         ['grid-3x3',    '#7C4FE0', '#F1ECFB', 'Stand assigné',    'C-12',  'Pavillon Centre'],
@@ -175,7 +192,7 @@
     @endforeach
 </div>
 
-{{-- ════════════════════ CONTENT GRID : 3 columns ════════════════════ --}}
+{{-- ── CONTENT GRID : 3 columns ── --}}
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
     {{-- ── LEFT : Informations sur l'entreprise ── --}}
@@ -251,7 +268,7 @@
                 @endforeach
             </div>
 
-            <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="flex items-center justify-between rounded-xl border border-[#ECEAE3] px-4 py-3 mt-5 hover:bg-[#FBFAF6] transition-colors">
+            <a href="{{ $exhibitorUrl }}" class="flex items-center justify-between rounded-xl border border-[#ECEAE3] px-4 py-3 mt-5 hover:bg-[#FBFAF6] transition-colors">
                 <span class="text-[12.5px] font-semibold text-[#3B382F]">Voir tous les produits (24)</span>
                 <i data-lucide="arrow-right" class="w-4 h-4 text-[#8A857A]"></i>
             </a>
@@ -288,11 +305,11 @@
                     <span class="w-8 h-8 rounded-lg bg-[#F1ECFB] flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4 h-4 text-[#7C4FE0]"></i></span>
                     <span class="text-[12.5px] font-semibold text-[#1A1712] flex-1 min-w-0 truncate">{{ $dName }}</span>
                     <span class="text-[11.5px] text-[#8A857A] shrink-0">{{ $dMeta }}</span>
-                    <i data-lucide="download" class="w-4 h-4 text-[#8A857A] shrink-0"></i>
+                    <button type="button" data-toast="Téléchargement en préparation…" class="shrink-0 text-[#8A857A] hover:text-[#1A1712]" aria-label="Télécharger {{ $dName }}"><i data-lucide="download" class="w-4 h-4"></i></button>
                 </div>
                 @endforeach
             </div>
-            <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green mt-4">
+            <a href="{{ $exhibitorUrl }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green mt-4">
                 Voir tous les documents <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
         </div>
@@ -301,7 +318,7 @@
         <div class="siarc-card siarc-shadow p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-[15px] font-bold text-[#1A1712]">Notes internes</h3>
-                <button type="button" class="text-[#8A857A] hover:text-[#1A1712]"><i data-lucide="square-pen" class="w-4 h-4"></i></button>
+                <a href="{{ $exhibitorUrl }}" class="text-[#8A857A] hover:text-[#1A1712]" aria-label="Modifier les notes"><i data-lucide="square-pen" class="w-4 h-4"></i></a>
             </div>
             <div class="rounded-xl px-4 py-3.5" style="background:#FDF6E7;border:1px solid #F3E6C4">
                 <p class="text-[12.5px] text-[#55524A] leading-relaxed">Exposant sérieux avec de belles pièces de qualité. Souhaite participer à la conférence sur l'export. À suivre pour le programme B2B.</p>
@@ -331,9 +348,34 @@
                 </div>
                 @endforeach
             </div>
-            <a href="{{ $h('siarc.admin.exhibitor', ['id' => request()->route()?->parameter('id')]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green mt-4">
+            <a href="{{ $exhibitorUrl }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green mt-4">
                 Voir toute l'activité <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
         </div>
     </div>
 </div>
+</div>{{-- /panel apercu --}}
+
+{{-- ════════════════════ SECONDARY TAB PANELS ════════════════════ --}}
+@php
+    $secondaryTabs = [
+        ['informations',   'Informations',    'Détails complets de l\'entreprise disponibles dans l\'onglet Aperçu.', $exhibitorUrl,  'Modifier les informations'],
+        ['stand',          'Stand & Pavillon','Stand C-12 · Pavillon Centre · 18 m². Gérez l\'affectation depuis le plan des stands.', $standsUrl, 'Gérer les stands'],
+        ['produits',       'Produits',        '24 produits exposés. Consultez le catalogue complet de l\'exposant.', $exhibitorUrl, 'Voir tous les produits'],
+        ['documents',      'Documents',       'Dossier d\'inscription, registre de commerce et attestations liés à cet exposant.', $exhibitorUrl, 'Voir tous les documents'],
+        ['accreditations', 'Accréditations',  '5 accréditations personnel. Gérez les badges depuis la fiche exposant.', $exhibitorUrl, 'Gérer les accréditations'],
+        ['activites',      'Activités',       'Historique des activités B2B et réunions planifiées pour cet exposant.', $exhibitorUrl, 'Voir toute l\'activité'],
+        ['historique',     'Historique',      'Journal complet des modifications et événements liés à cet exposant.', $exhibitorUrl, 'Voir l\'historique complet'],
+    ];
+@endphp
+@foreach($secondaryTabs as [$key, $label, $desc, $url, $cta])
+<div data-panel="{{ $key }}" data-tabs-for="exhibitor-detail" hidden>
+    <div class="siarc-card siarc-shadow p-6">
+        <h3 class="text-[15px] font-bold text-[#1A1712] mb-2">{{ $label }}</h3>
+        <p class="text-[12.5px] text-[#55524A] leading-relaxed max-w-[560px]">{{ $desc }}</p>
+        <a href="{{ $url }}" class="siarc-btn siarc-btn-green inline-flex items-center gap-1.5 px-4 py-2.5 text-[12.5px] mt-4">
+            {{ $cta }} <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+    </div>
+</div>
+@endforeach

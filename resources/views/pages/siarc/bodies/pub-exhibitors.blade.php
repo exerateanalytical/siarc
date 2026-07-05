@@ -1,7 +1,22 @@
 @php
     use Illuminate\Support\Facades\Route as R;
+    use Illuminate\Support\Facades\DB;
     $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
+
+    // ── real ids/slugs so detail links never 404 ──────────────────────────────
+    $eid = siarcEvent()?->id ?? 0;
+    $exhibitorSlug = DB::table('event_exhibitors as ee')
+        ->join('businesses as b','b.id','=','ee.business_id')
+        ->where('ee.event_id',$eid)->value('b.slug');
+    $pavilionId = DB::table('pavilions')->where('event_id',$eid)->value('id');
+
+    // profile URL: real exhibitor detail if we have a slug, else the list
+    $profileUrl = ($exhibitorSlug && R::has('siarc.exhibitor'))
+        ? route('siarc.exhibitor', ['lang'=>$lang, 'slug'=>$exhibitorSlug])
+        : $h('siarc.exhibitors');
+    // contact URL: messages compose if available, else register
+    $contactUrl = R::has('messages.compose') ? route('messages.compose', ['lang'=>$lang]) : $h('siarc.register');
 
     // ── KPI stat band (approved design figures, verbatim) ─────────────────────
     $kpis = [
@@ -81,9 +96,9 @@
                     <p class="text-[12px] text-[#8A857A]">Musée National de Yaoundé</p>
                 </div>
             </div>
-            <a href="{{ $h('siarc.exhibitors') }}" class="siarc-btn siarc-btn-green px-5 py-2.5 text-[13px] shrink-0">
+            <button type="button" data-toast="Export en préparation…" class="siarc-btn siarc-btn-green px-5 py-2.5 text-[13px] shrink-0">
                 <i data-lucide="download" class="w-4 h-4"></i>Exporter la liste
-            </a>
+            </button>
         </div>
     </div>
 
@@ -115,7 +130,7 @@
                 <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
                     <label class="relative flex-1">
                         <i data-lucide="search" class="w-5 h-5 text-[#A8A498] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                        <input type="text" disabled placeholder="Rechercher un exposant, produit, service…"
+                        <input type="text" data-filter="#exhibitorList" placeholder="Rechercher un exposant, produit, service…"
                             class="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E7E4DB] bg-[#FBFAF7] text-[13px] text-[#55524A] placeholder-[#A8A498] focus:outline-none focus:border-siarc-green">
                     </label>
                     @php
@@ -129,14 +144,14 @@
                     <div class="min-w-[150px]">
                         <span class="block text-[11.5px] font-medium text-[#8A857A] mb-1.5">{{ $lbl }}</span>
                         <div class="relative">
-                            <select disabled class="w-full appearance-none pl-3.5 pr-9 py-2.5 rounded-xl border border-[#E7E4DB] bg-white text-[13px] text-[#55524A] focus:outline-none">
+                            <select data-filter-select="#exhibitorList" class="w-full appearance-none pl-3.5 pr-9 py-2.5 rounded-xl border border-[#E7E4DB] bg-white text-[13px] text-[#55524A] focus:outline-none">
                                 <option>{{ $ph }}</option>
                             </select>
                             <i data-lucide="chevron-down" class="w-4 h-4 text-[#A8A498] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                         </div>
                     </div>
                     @endforeach
-                    <button type="button" class="siarc-btn px-4 py-2.5 text-[13px] border border-[#E7E4DB] text-[#55524A] bg-white hover:border-siarc-green shrink-0">
+                    <button type="button" data-toast="Filtres avancés bientôt disponibles" class="siarc-btn px-4 py-2.5 text-[13px] border border-[#E7E4DB] text-[#55524A] bg-white hover:border-siarc-green shrink-0">
                         <i data-lucide="filter" class="w-4 h-4"></i>Plus de filtres
                     </button>
                 </div>
@@ -148,20 +163,25 @@
                 <div class="flex items-center gap-2.5">
                     <span class="text-[12.5px] text-[#8A857A]">Trier par</span>
                     <div class="relative">
-                        <select disabled class="appearance-none pl-3 pr-8 py-2 rounded-lg border border-[#E7E4DB] bg-white text-[12.5px] font-semibold text-[#55524A] focus:outline-none">
-                            <option>Nom (A-Z)</option>
+                        <select data-sort="#exhibitorList" class="appearance-none pl-3 pr-8 py-2 rounded-lg border border-[#E7E4DB] bg-white text-[12.5px] font-semibold text-[#55524A] focus:outline-none">
+                            <option value="az">Nom (A-Z)</option>
+                            <option value="za">Nom (Z-A)</option>
                         </select>
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#A8A498] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                     </div>
-                    <button type="button" class="w-9 h-9 rounded-lg bg-siarc-green text-white flex items-center justify-center"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
-                    <button type="button" class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[#8A857A] flex items-center justify-center"><i data-lucide="clipboard-list" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Vue grille active" class="w-9 h-9 rounded-lg bg-siarc-green text-white flex items-center justify-center"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Vue liste bientôt disponible" class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[#8A857A] flex items-center justify-center"><i data-lucide="clipboard-list" class="w-4 h-4"></i></button>
                 </div>
             </div>
 
             {{-- ══════════════════ EXHIBITOR ROWS ══════════════════ --}}
-            <div class="space-y-4">
+            <div id="exhibitorList" class="space-y-4">
                 @foreach($exhibitors as $ex)
-                <article class="siarc-card siarc-shadow p-5">
+                <article data-filter-item
+                    data-filter-text="{{ $ex['name'] }} {{ $ex['country'] }} {{ $ex['stand'] }} {{ implode(' ', $ex['tags']) }} {{ $ex['desc'] }}"
+                    data-filter-tags="{{ strtolower($ex['country'].' '.implode(' ', $ex['tags'])) }}"
+                    data-sort-key="{{ $ex['name'] }}"
+                    class="siarc-card siarc-shadow p-5">
                     <div class="flex flex-col lg:flex-row gap-5">
 
                         {{-- logo tile --}}
@@ -207,13 +227,13 @@
 
                         {{-- action buttons --}}
                         <div class="shrink-0 flex flex-col gap-2 self-center w-full lg:w-[168px]">
-                            <a href="{{ $h('siarc.exhibitors') }}" class="siarc-btn siarc-btn-green justify-center w-full py-2.5 text-[12.5px]">
+                            <a href="{{ $profileUrl }}" class="siarc-btn siarc-btn-green justify-center w-full py-2.5 text-[12.5px]">
                                 <i data-lucide="eye" class="w-4 h-4"></i>Voir le profil
                             </a>
-                            <button type="button" class="siarc-btn justify-center w-full py-2.5 text-[12.5px] border border-[#E7E4DB] text-[#55524A] bg-white hover:border-siarc-green">
+                            <a href="{{ $contactUrl }}" class="siarc-btn justify-center w-full py-2.5 text-[12.5px] border border-[#E7E4DB] text-[#55524A] bg-white hover:border-siarc-green">
                                 <i data-lucide="mail" class="w-4 h-4"></i>Contacter
-                            </button>
-                            <button type="button" class="siarc-btn justify-center w-full py-2.5 text-[12.5px] border border-[#E7E4DB] text-[#55524A] bg-white hover:border-siarc-green">
+                            </a>
+                            <button type="button" data-toast="Ajouté à vos favoris" class="siarc-btn justify-center w-full py-2.5 text-[12.5px] border border-[#E7E4DB] text-[#55524A] bg-white hover:border-siarc-green">
                                 <i data-lucide="star" class="w-4 h-4"></i>Ajouter aux favoris
                             </button>
                         </div>
@@ -223,22 +243,22 @@
             </div>
 
             {{-- ══════════════════ PAGINATION ══════════════════ --}}
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-                <p class="text-[13px] text-[#8A857A]">Affichage de 1 à 12 sur 312 exposants</p>
+            <div data-page="#exhibitorList" data-page-size="10" class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+                <p data-page-info class="text-[13px] text-[#8A857A]">Affichage de 1 à 12 sur 312 exposants</p>
                 <div class="flex items-center gap-1.5">
-                    <button type="button" class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[#8A857A] flex items-center justify-center hover:border-siarc-green">
+                    <button type="button" data-page-prev class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[#8A857A] flex items-center justify-center hover:border-siarc-green">
                         <i data-lucide="chevron-left" class="w-4 h-4"></i>
                     </button>
                     @foreach($pages as $i => $p)
-                    <button type="button" class="w-9 h-9 rounded-lg text-[13px] font-semibold flex items-center justify-center {{ $i===0 ? 'bg-siarc-green text-white' : 'border border-[#E7E4DB] bg-white text-[#55524A] hover:border-siarc-green' }}">{{ $p }}</button>
+                    <button type="button" data-page-num="{{ $p }}" class="w-9 h-9 rounded-lg text-[13px] font-semibold flex items-center justify-center {{ $i===0 ? 'bg-siarc-green text-white' : 'border border-[#E7E4DB] bg-white text-[#55524A] hover:border-siarc-green' }}">{{ $p }}</button>
                     @endforeach
                     <span class="w-9 h-9 flex items-center justify-center text-[13px] text-[#8A857A]">…</span>
-                    <button type="button" class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[13px] font-semibold text-[#55524A] flex items-center justify-center hover:border-siarc-green">26</button>
-                    <button type="button" class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[#8A857A] flex items-center justify-center hover:border-siarc-green">
+                    <button type="button" data-page-num="26" class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[13px] font-semibold text-[#55524A] flex items-center justify-center hover:border-siarc-green">26</button>
+                    <button type="button" data-page-next class="w-9 h-9 rounded-lg border border-[#E7E4DB] bg-white text-[#8A857A] flex items-center justify-center hover:border-siarc-green">
                         <i data-lucide="chevron-right" class="w-4 h-4"></i>
                     </button>
                     <div class="relative ml-2">
-                        <select disabled class="appearance-none pl-3 pr-8 py-2 rounded-lg border border-[#E7E4DB] bg-white text-[12.5px] font-semibold text-[#55524A] focus:outline-none">
+                        <select data-toast="Taille de page mise à jour" class="appearance-none pl-3 pr-8 py-2 rounded-lg border border-[#E7E4DB] bg-white text-[12.5px] font-semibold text-[#55524A] focus:outline-none">
                             <option>12 / page</option>
                         </select>
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#A8A498] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
@@ -276,14 +296,16 @@
                 </div>
                 <ul class="space-y-4">
                     @foreach($featured as [$fname,$fcountry,$fflag,$fstand,$fcol])
-                    <li class="flex items-center gap-3">
-                        @php $fw = preg_split('/\s+/', trim($fname)); $fi = strtoupper(mb_substr($fw[0]??'S',0,1) . mb_substr($fw[count($fw)-1] ?? '',0,1)); @endphp
-                        <span class="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center text-white font-display font-bold text-[12px]" style="background:{{ $fcol }}">{{ $fi }}</span>
-                        <div class="min-w-0 flex-1">
-                            <p class="text-[13px] font-bold text-[#1A1712] truncate">{{ $fname }}</p>
-                            <p class="text-[11.5px] text-[#8A857A] truncate">{{ $fcountry }} {{ $flags[$fflag] ?? '' }} · {{ $fstand }}</p>
-                        </div>
-                        <span class="text-[10.5px] font-bold px-2 py-0.5 rounded-md bg-[#E4F1E9] text-siarc-green shrink-0">Premium</span>
+                    <li>
+                        <a href="{{ $profileUrl }}" class="flex items-center gap-3 group">
+                            @php $fw = preg_split('/\s+/', trim($fname)); $fi = strtoupper(mb_substr($fw[0]??'S',0,1) . mb_substr($fw[count($fw)-1] ?? '',0,1)); @endphp
+                            <span class="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center text-white font-display font-bold text-[12px]" style="background:{{ $fcol }}">{{ $fi }}</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[13px] font-bold text-[#1A1712] truncate group-hover:text-siarc-green transition-colors">{{ $fname }}</p>
+                                <p class="text-[11.5px] text-[#8A857A] truncate">{{ $fcountry }} {{ $flags[$fflag] ?? '' }} · {{ $fstand }}</p>
+                            </div>
+                            <span class="text-[10.5px] font-bold px-2 py-0.5 rounded-md bg-[#E4F1E9] text-siarc-green shrink-0">Premium</span>
+                        </a>
                     </li>
                     @endforeach
                 </ul>
@@ -292,9 +314,9 @@
             {{-- Plan du salon --}}
             <div class="siarc-card siarc-shadow p-5">
                 <h3 class="font-display text-[16px] font-bold text-[#1A1712] mb-3">Plan du salon</h3>
-                <div class="rounded-xl border border-[#E7E1D4] overflow-hidden">
+                <a href="{{ $h('siarc.pavilions') }}" class="block rounded-xl border border-[#E7E1D4] overflow-hidden">
                     <img src="{{ asset('images/siarc/exh-floorplan.png') }}" alt="Plan du salon SIARC 2026" class="w-full block">
-                </div>
+                </a>
                 <a href="{{ $h('siarc.pavilions') }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-siarc-green mt-3 hover:gap-2.5 transition-all">
                     Voir le plan interactif <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
