@@ -659,7 +659,7 @@ Route::get('/tableau-de-bord/siarc/exposant-checkin', function (Request $r) use 
 Route::get('/siarc', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => null, 'sTitle' => $fr ? 'SIARC 2026' : 'SIARC 2026', 'sPending' => true,
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sTitle' => $fr ? 'SIARC 2026' : 'SIARC 2026', 'sPending' => true,
         'sIntro' => $fr ? 'Le Salon International de l\'Artisanat du Cameroun — exposants, pavillons, programme et rencontres d\'affaires.' : 'The International Craft Fair of Cameroon — exhibitors, pavilions, programme and business meetings.',
         'sCards' => [
             ['title' => $fr ? 'Exposants' : 'Exhibitors', 'sub' => DB::table('event_exhibitors')->where('event_id', $eid)->count() . ($fr ? ' exposants' : ' exhibitors'), 'icon' => 'store', 'tone' => 'green', 'href' => route('siarc.exhibitors', ['lang' => $lang])],
@@ -677,7 +677,7 @@ Route::get('/siarc/exposants', function (Request $r) {
         ->leftJoin('pavilions as p', 'p.id', '=', 'ee.pavilion_id')->where('ee.event_id', $eid)->where('ee.status', 'confirmed')
         ->orderBy('b.name_fr')->get(['b.name_fr', 'b.slug', 'p.name_fr as pavilion', 'ee.booth_number']);
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => 'businesses', 'sCrumb' => $fr ? 'Exposants' : 'Exhibitors',
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Exposants' : 'Exhibitors',
         'sTitle' => $fr ? 'Annuaire des Exposants' : 'Exhibitors Directory',
         'sIntro' => $fr ? 'Les artisans et entreprises présents au SIARC 2026.' : 'The artisans and businesses at SIARC 2026.',
         'sCards' => $exh->map(fn ($x) => ['title' => $x->name_fr, 'sub' => ($x->pavilion ?? '') . ($x->booth_number ? ' · ' . $x->booth_number : ''), 'icon' => 'store', 'tone' => 'green', 'href' => route('siarc.exhibitor', ['slug' => $x->slug, 'lang' => $lang])])->all(),
@@ -692,7 +692,7 @@ Route::get('/siarc/exposants/{slug}', function (Request $r, $slug) {
     $ee = DB::table('event_exhibitors as ee')->leftJoin('pavilions as p', 'p.id', '=', 'ee.pavilion_id')
         ->where('ee.event_id', $eid)->where('ee.business_id', $b->id)->first(['ee.booth_number', 'p.name_fr as pavilion']);
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => 'businesses', 'sCrumb' => $b->name_fr, 'sTitle' => $b->name_fr,
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $b->name_fr, 'sTitle' => $b->name_fr,
         'sIntro' => $fr ? 'Exposant au SIARC 2026 — fiche reliée à la boutique en ligne du vendeur.' : 'SIARC 2026 exhibitor — linked to the vendor\'s online storefront.',
         'sStats' => [
             ['layout-grid', '#3565DE', '#E8EFFB', $ee->pavilion ?? '—', $fr ? 'Pavillon' : 'Pavilion', null],
@@ -706,7 +706,7 @@ Route::get('/siarc/pavillons', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $pavs = DB::table('pavilions')->where('event_id', $eid)->orderBy('sort_order')->get();
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => 'categories', 'sCrumb' => $fr ? 'Pavillons' : 'Pavilions',
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Pavillons' : 'Pavilions',
         'sTitle' => $fr ? 'Explorateur des Pavillons' : 'Pavilion Explorer',
         'sCards' => $pavs->map(fn ($p) => ['title' => $fr ? $p->name_fr : ($p->name_en ?? $p->name_fr), 'sub' => DB::table('event_exhibitors')->where('pavilion_id', $p->id)->count() . ($fr ? ' exposants' : ' exhibitors'), 'icon' => $p->icon ?? 'layout-grid', 'tone' => 'blue', 'href' => route('siarc.exhibitors', ['lang' => $lang])])->all(),
         'sPending' => true,
@@ -721,12 +721,16 @@ Route::get('/siarc/programme', function (Request $r) {
     foreach ($byDay as $day => $daySessions) {
         $tables[] = [
             'title' => $day !== '—' ? Carbon::parse($day)->translatedFormat('l d F') : ($fr ? 'À planifier' : 'To be scheduled'),
-            'cols' => [$fr ? 'Heure' : 'Time', $fr ? 'Activité' : 'Activity', 'Type', $fr ? 'Lieu' : 'Venue'],
-            'rows' => $daySessions->map(fn ($s) => ['cells' => [$s->starts_at ? Carbon::parse($s->starts_at)->format('H:i') : '—', $fr ? $s->title_fr : ($s->title_en ?? $s->title_fr), ucfirst($s->type), $s->room ?? '—']])->all(),
+            'cols' => [$fr ? 'Activité' : 'Activity', $fr ? 'Heure' : 'Time', 'Type', $fr ? 'Lieu' : 'Venue'],
+            'rows' => $daySessions->map(fn ($s) => [
+                'href' => ($s->type === 'workshop' || $s->registration_required) ? route('siarc.workshop.register', ['id' => $s->id, 'lang' => $lang]) : null,
+                'cells' => [$fr ? $s->title_fr : ($s->title_en ?? $s->title_fr), $s->starts_at ? Carbon::parse($s->starts_at)->format('H:i') : '—', ucfirst($s->type), $s->room ?? '—'],
+            ])->all(),
         ];
     }
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => 'events', 'sCrumb' => 'Programme', 'sTitle' => $fr ? 'Programme du Salon' : 'Programme Schedule',
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => 'Programme', 'sTitle' => $fr ? 'Programme du Salon' : 'Programme Schedule',
+        'sIntro' => $fr ? 'Cliquez sur un atelier pour vous y inscrire.' : 'Click a workshop to register for it.',
         'sTables' => $tables ?: [['title' => 'Programme', 'cols' => ['—'], 'rows' => [], 'empty' => $fr ? 'Programme à venir.' : 'Programme coming soon.']],
         'sPending' => true,
     ]);
@@ -736,7 +740,7 @@ Route::get('/siarc/intervenants', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $speakers = DB::table('speakers')->where('event_id', $eid)->orderBy('sort_order')->get();
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => null, 'sCrumb' => $fr ? 'Intervenants' : 'Speakers', 'sTitle' => $fr ? 'Nos Intervenants' : 'Speaker Directory',
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Intervenants' : 'Speakers', 'sTitle' => $fr ? 'Nos Intervenants' : 'Speaker Directory',
         'sCards' => $speakers->map(fn ($s) => ['title' => $s->name, 'sub' => trim(($s->role_fr ?? '') . ($s->organization ? ' · ' . $s->organization : '')), 'icon' => 'mic', 'tone' => 'gold', 'href' => route('siarc.speaker', ['id' => $s->id, 'lang' => $lang]), 'badge' => $s->is_featured ? ($fr ? 'À la une' : 'Featured') : null])->all(),
         'sPending' => true,
     ]);
@@ -748,7 +752,7 @@ Route::get('/siarc/intervenants/{id}', function (Request $r, $id) {
     abort_if(! $s, 404);
     $sessions = DB::table('session_speaker as ss')->join('programme_sessions as p', 'p.id', '=', 'ss.session_id')->where('ss.speaker_id', $id)->get(['p.title_fr', 'p.starts_at', 'p.room']);
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => null, 'sCrumb' => $s->name, 'sTitle' => $s->name,
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $s->name, 'sTitle' => $s->name,
         'sIntro' => trim(($s->role_fr ?? '') . ($s->organization ? ' — ' . $s->organization : '')) . '. ' . ($s->bio_fr ?? ''),
         'sTables' => [[
             'title' => $fr ? 'Interventions' : 'Sessions',
@@ -781,7 +785,8 @@ Route::post('/siarc/inscription', function (Request $r) {
             'created_at' => now(), 'updated_at' => now(),
         ]);
     }
-    return redirect()->route('siarc.register', ['lang' => webLang($r)])->with('siarc_registered', true);
+    return redirect()->route('siarc.register', ['lang' => webLang($r)])
+        ->with($eid ? 'siarc_registered' : 'siarc_error', true);
 })->name('siarc.register.store')->middleware('throttle:10,1');
 
 Route::get('/siarc/ateliers/{id}/inscription', function (Request $r, $id) {
@@ -792,10 +797,9 @@ Route::get('/siarc/ateliers/{id}/inscription', function (Request $r, $id) {
 })->name('siarc.workshop.register');
 
 Route::post('/siarc/ateliers/{id}/inscription', function (Request $r, $id) {
+    abort_if(! DB::table('programme_sessions')->where('id', $id)->exists(), 404);
     $data = $r->validate(['name' => 'required|string|max:160', 'email' => 'nullable|email|max:190']);
-    if (DB::table('programme_sessions')->where('id', $id)->exists()) {
-        DB::table('session_registrations')->insert($data + ['session_id' => $id, 'registered_at' => now(), 'created_at' => now(), 'updated_at' => now()]);
-    }
+    DB::table('session_registrations')->insert($data + ['session_id' => $id, 'registered_at' => now(), 'created_at' => now(), 'updated_at' => now()]);
     return redirect()->route('siarc.workshop.register', ['id' => $id, 'lang' => webLang($r)])->with('siarc_registered', true);
 })->name('siarc.workshop.register.store')->middleware('throttle:10,1');
 
@@ -804,7 +808,7 @@ Route::get('/tableau-de-bord/siarc', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $u = webUser(); $eid = siarcEvent()?->id ?? 0;
     $mine = DB::table('visitors')->where('event_id', $eid)->where('email', $u->email ?? '')->first();
     return view('pages.siarc.public', [
-        'lang' => $lang, 'sNavActive' => null, 'sCrumb' => $fr ? 'Mon espace SIARC' : 'My SIARC', 'sTitle' => $fr ? 'Mon espace SIARC 2026' : 'My SIARC 2026',
+        'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Mon espace SIARC' : 'My SIARC', 'sTitle' => $fr ? 'Mon espace SIARC 2026' : 'My SIARC 2026',
         'sIntro' => $fr ? 'Votre badge, vos rendez-vous et vos inscriptions aux ateliers.' : 'Your badge, meetings and workshop registrations.',
         'sStats' => [
             ['id-card', '#C97A16', '#FDF3E0', $mine->badge_code ?? ($fr ? 'À générer' : 'To generate'), 'Badge', null],

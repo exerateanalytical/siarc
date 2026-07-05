@@ -3,6 +3,7 @@
     $siacUser = session('siac_user');
     $isWorkshop = !empty($workshop);
     $done = session('siarc_registered');
+    $err = session('siarc_error');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -37,6 +38,13 @@
     <div class="flex items-start gap-2.5 bg-[#E9F6EE] border border-[#BFE3CD] rounded-xl px-4 py-3.5 mb-6 text-[13px] text-[#0F5B30]">
         <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
         <span>{{ $isFr ? 'Inscription enregistrée. Votre badge sera disponible à l\'accueil du salon.' : 'Registration recorded. Your badge will be available at the salon reception.' }}</span>
+    </div>
+    @endif
+
+    @if($err)
+    <div class="flex items-start gap-2.5 bg-[#FDECEC] border border-[#F3C7C7] rounded-xl px-4 py-3.5 mb-6 text-[13px] text-[#B4231E]">
+        <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+        <span>{{ $isFr ? 'Les inscriptions ne sont pas encore ouvertes. Réessayez plus tard.' : 'Registration is not open yet. Please try again later.' }}</span>
     </div>
     @endif
 
