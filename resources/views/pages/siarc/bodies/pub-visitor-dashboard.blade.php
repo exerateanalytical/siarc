@@ -67,27 +67,11 @@
     ];
 @endphp
 
-{{-- ══════════════════ WELCOME HEADER ══════════════════ --}}
-<section class="siarc-mud border-b border-[#EDE7DA]">
-    <div class="max-w-[1240px] mx-auto px-6 sm:px-10 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-        <div class="siarc-in">
-            <h1 class="font-display text-[30px] sm:text-[34px] font-extrabold text-[#1A1712] leading-tight">
-                {{ $isFr ? 'Bienvenue' : 'Welcome' }}, {{ $visitorName }} <span class="align-middle">👋</span>
-            </h1>
-            <p class="mt-1.5 text-[14px] text-[#55524A]">{{ $isFr ? 'Votre espace visiteur pour le SIARC 2026' : 'Your visitor space for SIARC 2026' }}</p>
-        </div>
-        <div class="flex flex-wrap items-center gap-6">
-            <span class="inline-flex items-start gap-2.5 text-[13px] font-semibold text-[#2A271F]">
-                <i data-lucide="calendar-days" class="w-5 h-5 text-siarc-ochre mt-0.5"></i>
-                <span class="leading-tight">27 Juillet – 05 Août 2026<span class="block text-[11.5px] font-normal text-[#8A857A]">Musée National de Yaoundé</span></span>
-            </span>
-        </div>
-    </div>
-</section>
+{{-- Welcome header is rendered by the portal topbar (layouts/siarc-portal). --}}
 
 {{-- ══════════════════ MAIN GRID ══════════════════ --}}
-<section class="bg-[#FBFAF7]">
-    <div class="max-w-[1240px] mx-auto px-6 sm:px-10 py-8 grid lg:grid-cols-[1fr_452px] gap-6 items-start">
+<section>
+    <div class="grid lg:grid-cols-[1fr_452px] gap-6 items-start">
 
         {{-- ══════ LEFT / MAIN COLUMN ══════ --}}
         <div class="space-y-6 min-w-0">

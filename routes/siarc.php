@@ -815,7 +815,7 @@ Route::get('/tableau-de-bord/siarc', function (Request $r) {
     $mine = ($u && ! empty($u->email))
         ? DB::table('visitors')->where('event_id', $eid)->where('email', $u->email)->first()
         : null;
-    return view('pages.siarc.public', [
+    return view('pages.siarc.portal', [
         'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Mon espace SIARC' : 'My SIARC', 'sTitle' => $fr ? 'Mon espace SIARC 2026' : 'My SIARC 2026',
         'sIntro' => $fr ? 'Votre badge, vos rendez-vous et vos inscriptions aux ateliers.' : 'Your badge, meetings and workshop registrations.',
         'sStats' => [
