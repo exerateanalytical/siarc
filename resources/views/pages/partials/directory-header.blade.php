@@ -192,6 +192,7 @@
                     ['building-2',    $isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
                     ['map-pin',       $isFr ? 'Centres d\'artisanat' : 'Craft Centres', route('centres.index', ['lang' => $lang])],
                     ['calendar-days', $isFr ? 'Événements' : 'Events',       route('events.index', ['lang' => $lang])],
+                    ['tent',          'SIARC 2026',                          route('siarc.home', ['lang' => $lang])],
                     ['info',          $isFr ? 'À propos' : 'About',          route('about')],
                     ['circle-help',   'FAQ',                                 route('faq', ['lang' => $lang])],
                     ['message-circle', $isFr ? 'Contact' : 'Contact',        route('contact', ['lang' => $lang])],
@@ -228,6 +229,7 @@
         ['collections', 'layers',        'Collections',                         route('collections.index', ['lang' => $lang])],
         ['centres',     'landmark',      $isFr ? 'Centres' : 'Centres',         route('centres.index', ['lang' => $lang])],
         ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',       route('events.index')],
+        ['siarc',       'tent',          'SIARC 2026',                          route('siarc.home', ['lang' => $lang])],
         ['about',       'info',          $isFr ? 'À propos' : 'About',          route('about')],
     ];
 @endphp

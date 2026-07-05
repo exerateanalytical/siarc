@@ -22,6 +22,14 @@
             ['events',      'side-ic-events',      $isFr ? 'Événements' : 'Events',                         route('admin.events'), null],
             ['documents',   'side-ic-documents',   'Documents',                                             route('admin.media') . '#documents', null],
         ]],
+        [$isFr ? 'Salon SIARC 2026' : 'SIARC 2026 Fair', [
+            ['siarc',         'side-ic-events',        $isFr ? 'Tableau SIARC' : 'SIARC Dashboard',         route('siarc.admin.dashboard'), null],
+            ['siarc-exh',     'side-ic-boutiques',     $isFr ? 'Exposants' : 'Exhibitors',                  route('siarc.admin.exhibitors'), null],
+            ['siarc-plan',    'map-pin',               $isFr ? 'Pavillons & Plan' : 'Pavilions & Plan',     route('siarc.admin.floorplan'), null],
+            ['siarc-vis',     'side-ic-users',         $isFr ? 'Visiteurs & Badges' : 'Visitors & Badges',  route('siarc.admin.visitors'), null],
+            ['siarc-prog',    'side-ic-events',        $isFr ? 'Programme' : 'Programme',                   route('siarc.admin.programme'), null],
+            ['siarc-b2b',     'side-ic-subscriptions', $isFr ? 'B2B & Matchmaking' : 'B2B & Matchmaking',   route('siarc.admin.b2b'), null],
+        ]],
         [$isFr ? 'Gestion des utilisateurs' : 'User management', [
             ['users',       'side-ic-users',       $isFr ? 'Utilisateurs' : 'Users',                        route('admin.users'), null],
             ['roles',       'side-ic-roles',       $isFr ? 'Rôles & Permissions' : 'Roles & Permissions',   route('admin.roles'), null],

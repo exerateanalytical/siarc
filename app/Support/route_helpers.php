@@ -138,3 +138,40 @@ if (! function_exists('developerConsumer')) {
         return $consumer;
     }
 }
+
+if (! function_exists('webLang')) {
+    function webLang(Request $request): string
+    {
+        $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+        return in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    }
+}
+
+if (! function_exists('requireAdmin')) {
+    /** Guard for admin-only routes: redirect guests to login, non-admins to their dashboard. */
+    function requireAdmin(Request $request)
+    {
+        $u = session('siac_user');
+        if (! $u) {
+            return redirect('/login?next=' . urlencode($request->fullUrl()));
+        }
+        if (empty($u['is_admin'])) {
+            return redirect('/tableau-de-bord');
+        }
+        return null;
+    }
+}
+
+if (! function_exists('siarcEvent')) {
+    /** The current SIARC salon event (most recent one whose slug starts with "siarc"). */
+    function siarcEvent(): ?object
+    {
+        static $event = null;
+        static $loaded = false;
+        if (! $loaded) {
+            $event = DB::table('events')->where('slug', 'like', 'siarc%')->orderByDesc('starts_at')->first();
+            $loaded = true;
+        }
+        return $event;
+    }
+}

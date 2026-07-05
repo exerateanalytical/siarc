@@ -195,7 +195,7 @@ class SiarcSalonSeeder extends Seeder
         }
 
         // 8) B2B meetings
-        $visitorRows = DB::table('visitors')->where('event_id', $eid)->whereIn('type', ['buyer', 'vip'])->limit(12)->pluck('id')->all();
+        $visitorRows = empty($exhIds) ? [] : DB::table('visitors')->where('event_id', $eid)->whereIn('type', ['buyer', 'vip'])->limit(12)->pluck('id')->all();
         $statuses = ['requested', 'confirmed', 'confirmed', 'completed', 'declined'];
         foreach ($visitorRows as $i => $visId) {
             if (! isset($exhIds[$i % count($exhIds)])) continue;
