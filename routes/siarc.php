@@ -103,7 +103,7 @@ Route::get('/tableau-de-bord/admin/siarc/exposants/{id}', function (Request $r, 
     $stand = DB::table('stands')->where('exhibitor_id', $id)->first();
     $meetings = DB::table('b2b_meetings')->where('host_exhibitor_id', $id)->count();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => ($fr ? 'Exposant · ' : 'Exhibitor · ') . ($x->name_fr ?? '—'),
+        'lang' => $lang, 'sActive' => 'siarc-exh', 'sTitle' => ($fr ? 'Exposant · ' : 'Exhibitor · ') . ($x->name_fr ?? '—'),
         'sIntro' => $fr ? 'Fiche exposant (données salon) reliée à la fiche entreprise/vendeur.' : 'Exhibitor record (salon data) linked to the business/vendor record.',
         'sStats' => [
             ['layout-grid', '#3565DE', '#E8EFFB', $x->pavilion ?? '—', $fr ? 'Pavillon' : 'Pavilion', null],
@@ -154,7 +154,7 @@ Route::get('/tableau-de-bord/admin/siarc/pavillons/{id}', function (Request $r, 
         ->leftJoin('businesses as b', 'b.id', '=', 'ee.business_id')->where('s.pavilion_id', $id)->orderBy('s.code')
         ->get(['s.id', 's.code', 's.status', 'b.name_fr']);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => ($fr ? 'Pavillon · ' : 'Pavilion · ') . $p->name_fr,
+        'lang' => $lang, 'sActive' => 'siarc-plan', 'sTitle' => ($fr ? 'Pavillon · ' : 'Pavilion · ') . $p->name_fr,
         'sStats' => [
             ['grid-3x3', '#7C4FE0', '#F0EAFB', $stands->count(), 'Stands', null],
             ['check-circle-2', '#157A43', '#E2F3E8', $stands->where('status', 'allocated')->count(), $fr ? 'Alloués' : 'Allocated', null],
@@ -209,7 +209,7 @@ Route::get('/tableau-de-bord/admin/siarc/stands/{id}', function (Request $r, $id
         ->where('s.id', $id)->first(['s.*', 'p.name_fr as pavilion', 'b.name_fr as exhibitor', 'ee.id as exhibitor_id']);
     abort_if(! $s, 404);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => ($fr ? 'Stand · ' : 'Stand · ') . $s->code,
+        'lang' => $lang, 'sActive' => 'siarc-plan', 'sTitle' => ($fr ? 'Stand · ' : 'Stand · ') . $s->code,
         'sStats' => [
             ['layout-grid', '#3565DE', '#E8EFFB', $s->pavilion ?? '—', $fr ? 'Pavillon' : 'Pavilion', null],
             ['ruler', '#7C4FE0', '#F0EAFB', ($s->size_sqm ?? '—') . ' m²', $fr ? 'Surface' : 'Size', null],
@@ -260,7 +260,7 @@ Route::get('/tableau-de-bord/admin/siarc/visiteurs/{id}', function (Request $r, 
     $v = DB::table('visitors')->where('id', $id)->first();
     abort_if(! $v, 404);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => ($fr ? 'Visiteur · ' : 'Visitor · ') . trim($v->first_name . ' ' . $v->last_name),
+        'lang' => $lang, 'sActive' => 'siarc-vis', 'sTitle' => ($fr ? 'Visiteur · ' : 'Visitor · ') . trim($v->first_name . ' ' . $v->last_name),
         'sStats' => [
             ['tag', '#3565DE', '#E8EFFB', ucfirst($v->type), 'Type', null],
             ['id-card', '#C97A16', '#FDF3E0', $v->badge_code ?? '—', 'Badge', null],
@@ -277,7 +277,7 @@ Route::get('/tableau-de-bord/admin/siarc/controle', function (Request $r) {
     $vis = DB::table('visitors')->where('event_id', $eid);
     $recent = DB::table('check_ins')->where('event_id', $eid)->orderByDesc('id')->limit(50)->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Contrôle d\'accès' : 'Entry Control',
+        'lang' => $lang, 'sActive' => 'siarc-vis', 'sTitle' => $fr ? 'Contrôle d\'accès' : 'Entry Control',
         'sStats' => [
             ['scan-line', '#157A43', '#E2F3E8', $vis->clone()->where('status', 'checked_in')->count(), $fr ? 'Entrées' : 'Check-ins', null],
             ['users-round', '#C97A16', '#FDF3E0', $vis->count(), $fr ? 'Inscrits' : 'Registered', null],
@@ -298,7 +298,7 @@ Route::get('/tableau-de-bord/admin/siarc/badges', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $vis = DB::table('visitors')->where('event_id', $eid)->whereNotNull('badge_code')->orderByDesc('id')->limit(100)->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Impression des Badges' : 'Badge Printing',
+        'lang' => $lang, 'sActive' => 'siarc-vis', 'sTitle' => $fr ? 'Impression des Badges' : 'Badge Printing',
         'sIntro' => $fr ? 'Réutilise le générateur de certificats/QR existant pour produire les badges nominatifs.' : 'Reuses the existing certificate/QR generator to produce named badges.',
         'sStats' => [['id-card', '#C97A16', '#FDF3E0', DB::table('visitors')->where('event_id', $eid)->whereNotNull('badge_code')->count(), $fr ? 'Badges visiteurs' : 'Visitor badges', null], ['id-card', '#157A43', '#E2F3E8', DB::table('event_exhibitors')->where('event_id', $eid)->whereNotNull('badge_code')->count(), $fr ? 'Badges exposants' : 'Exhibitor badges', null]],
         'sTables' => [[
@@ -315,7 +315,7 @@ Route::get('/tableau-de-bord/admin/siarc/checkin', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $recent = DB::table('check_ins')->where('event_id', $eid)->orderByDesc('id')->limit(30)->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Check-in QR' : 'QR Check-in',
+        'lang' => $lang, 'sActive' => 'siarc-vis', 'sTitle' => $fr ? 'Check-in QR' : 'QR Check-in',
         'sIntro' => $fr ? 'Scannez ou saisissez un code badge pour enregistrer une entrée (réutilise la vérification QR des certificats).' : 'Scan or enter a badge code to record entry (reuses the certificate QR verification).',
         'sStats' => [['qr-code', '#157A43', '#E2F3E8', $recent->count(), $fr ? 'Scans récents' : 'Recent scans', null]],
         'sTables' => [[
@@ -378,7 +378,7 @@ Route::get('/tableau-de-bord/admin/siarc/matchmaking', function (Request $r) {
         ->leftJoin('industries as i', 'i.id', '=', 'b.industry_id')->where('ee.event_id', $eid)
         ->groupBy('i.name_fr')->selectRaw('i.name_fr as sector, count(*) as c')->orderByDesc('c')->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Matchmaking d\'affaires' : 'Business Matchmaking',
+        'lang' => $lang, 'sActive' => 'siarc-b2b', 'sTitle' => $fr ? 'Matchmaking d\'affaires' : 'Business Matchmaking',
         'sIntro' => $fr ? 'Met en relation acheteurs et exposants selon la nomenclature officielle des métiers.' : 'Connects buyers and exhibitors using the official trades taxonomy.',
         'sStats' => [
             ['store', '#157A43', '#E2F3E8', DB::table('event_exhibitors')->where('event_id', $eid)->count(), $fr ? 'Exposants' : 'Exhibitors', null],
@@ -426,7 +426,7 @@ Route::get('/tableau-de-bord/admin/siarc/programme/{id}', function (Request $r, 
     $speakers = DB::table('session_speaker as ss')->join('speakers as sp', 'sp.id', '=', 'ss.speaker_id')->where('ss.session_id', $id)->pluck('sp.name');
     $regs = DB::table('session_registrations')->where('session_id', $id)->count();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $s->title_fr,
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $s->title_fr,
         'sStats' => [
             ['tag', '#7C4FE0', '#F0EAFB', ucfirst($s->type), 'Type', null],
             ['calendar-clock', '#C97A16', '#FDF3E0', (string) $s->starts_at, $fr ? 'Début' : 'Start', null],
@@ -445,7 +445,7 @@ Route::get('/tableau-de-bord/admin/siarc/ateliers/{id}', function (Request $r, $
     abort_if(! $s, 404);
     $regs = DB::table('session_registrations')->where('session_id', $id)->orderByDesc('id')->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => ($fr ? 'Atelier · ' : 'Workshop · ') . $s->title_fr,
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => ($fr ? 'Atelier · ' : 'Workshop · ') . $s->title_fr,
         'sStats' => [
             ['users', '#157A43', '#E2F3E8', $regs->count() . '/' . ($s->capacity ?? '∞'), $fr ? 'Inscriptions' : 'Registrations', null],
             ['calendar-clock', '#C97A16', '#FDF3E0', (string) $s->starts_at, $fr ? 'Horaire' : 'Time', null],
@@ -465,7 +465,7 @@ Route::get('/tableau-de-bord/admin/siarc/intervenants', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $rows = DB::table('speakers')->where('event_id', $eid)->orderBy('sort_order')->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Gestion des Intervenants' : 'Speaker Management',
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Gestion des Intervenants' : 'Speaker Management',
         'sStats' => [['mic', '#157A43', '#E2F3E8', $rows->count(), $fr ? 'Intervenants' : 'Speakers', null], ['star', '#C97A16', '#FDF3E0', $rows->where('is_featured', true)->count(), $fr ? 'À la une' : 'Featured', null]],
         'sTables' => [[
             'title' => $fr ? 'Intervenants' : 'Speakers',
@@ -483,7 +483,7 @@ Route::get('/tableau-de-bord/admin/siarc/intervenants/{id}', function (Request $
     abort_if(! $s, 404);
     $sessions = DB::table('session_speaker as ss')->join('programme_sessions as p', 'p.id', '=', 'ss.session_id')->where('ss.speaker_id', $id)->get(['p.id', 'p.title_fr', 'p.starts_at']);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => ($fr ? 'Intervenant · ' : 'Speaker · ') . $s->name,
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => ($fr ? 'Intervenant · ' : 'Speaker · ') . $s->name,
         'sIntro' => ($s->role_fr ?? '') . ($s->organization ? ' — ' . $s->organization : ''),
         'sTables' => [[
             'title' => $fr ? 'Interventions' : 'Sessions',
@@ -511,7 +511,7 @@ Route::get('/tableau-de-bord/admin/siarc/calendrier', function (Request $r) {
         ];
     }
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Calendrier de l\'événement' : 'Event Calendar',
+        'lang' => $lang, 'sActive' => 'siarc-prog', 'sTitle' => $fr ? 'Calendrier de l\'événement' : 'Event Calendar',
         'sStats' => [['calendar', '#3565DE', '#E8EFFB', $byDay->count(), $fr ? 'Jours' : 'Days', null], ['calendar-days', '#7C4FE0', '#F0EAFB', $sessions->count(), 'Sessions', null]],
         'sTables' => $tables ?: [['title' => 'Sessions', 'cols' => ['—'], 'rows' => [], 'empty' => $fr ? 'Aucune session.' : 'No sessions.']],
     ]);
@@ -609,7 +609,7 @@ Route::get('/tableau-de-bord/admin/siarc/vip', function (Request $r) use ($tone)
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $rows = DB::table('visitors')->where('event_id', $eid)->where('type', 'vip')->orderByDesc('id')->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Gestion VIP' : 'VIP Management',
+        'lang' => $lang, 'sActive' => 'siarc-vis', 'sTitle' => $fr ? 'Gestion VIP' : 'VIP Management',
         'sStats' => [['star', '#7C4FE0', '#F0EAFB', $rows->count(), 'VIP', null], ['scan-line', '#157A43', '#E2F3E8', $rows->where('status', 'checked_in')->count(), $fr ? 'Présents' : 'Checked-in', null]],
         'sTables' => [[
             'title' => 'VIP',
@@ -626,7 +626,7 @@ Route::get('/tableau-de-bord/siarc/scanner', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
     $recent = DB::table('check_ins')->where('event_id', $eid)->orderByDesc('id')->limit(15)->get();
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Scanner du Personnel' : 'Staff Scanner',
+        'lang' => $lang, 'sActive' => 'siarc-vis', 'sTitle' => $fr ? 'Scanner du Personnel' : 'Staff Scanner',
         'sIntro' => $fr ? 'Interface mobile de scan des badges (réutilise la vérification QR des certificats).' : 'Mobile badge-scan interface (reuses the certificate QR verification).',
         'sStats' => [['qr-code', '#157A43', '#E2F3E8', $recent->count(), $fr ? 'Derniers scans' : 'Recent scans', null]],
         'sTables' => [[
@@ -644,7 +644,7 @@ Route::get('/tableau-de-bord/siarc/exposant-checkin', function (Request $r) use 
     $rows = DB::table('event_exhibitors as ee')->leftJoin('businesses as b', 'b.id', '=', 'ee.business_id')
         ->where('ee.event_id', $eid)->orderByDesc('ee.id')->get(['ee.id', 'b.name_fr', 'ee.checked_in_at']);
     return view('pages.siarc.admin', [
-        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Check-in des Exposants' : 'Exhibitor Check-in',
+        'lang' => $lang, 'sActive' => 'siarc-exh', 'sTitle' => $fr ? 'Check-in des Exposants' : 'Exhibitor Check-in',
         'sStats' => [['store', '#157A43', '#E2F3E8', $rows->count(), $fr ? 'Exposants' : 'Exhibitors', null], ['scan-line', '#3565DE', '#E8EFFB', $rows->whereNotNull('checked_in_at')->count(), $fr ? 'Enregistrés' : 'Checked-in', null]],
         'sTables' => [[
             'title' => $fr ? 'Exposants' : 'Exhibitors',
@@ -673,14 +673,20 @@ Route::get('/siarc', function (Request $r) {
 
 Route::get('/siarc/exposants', function (Request $r) {
     $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
+    $pavId = (int) $r->query('pavilion', 0);
+    $pav = $pavId ? DB::table('pavilions')->where('id', $pavId)->where('event_id', $eid)->first() : null;
     $exh = DB::table('event_exhibitors as ee')->join('businesses as b', 'b.id', '=', 'ee.business_id')
         ->leftJoin('pavilions as p', 'p.id', '=', 'ee.pavilion_id')->where('ee.event_id', $eid)->where('ee.status', 'confirmed')
+        ->when($pav, fn ($q) => $q->where('ee.pavilion_id', $pav->id))
         ->orderBy('b.name_fr')->get(['b.name_fr', 'b.slug', 'p.name_fr as pavilion', 'ee.booth_number']);
     return view('pages.siarc.public', [
         'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Exposants' : 'Exhibitors',
-        'sTitle' => $fr ? 'Annuaire des Exposants' : 'Exhibitors Directory',
-        'sIntro' => $fr ? 'Les artisans et entreprises présents au SIARC 2026.' : 'The artisans and businesses at SIARC 2026.',
+        'sTitle' => $pav ? (($fr ? 'Exposants · ' : 'Exhibitors · ') . $pav->name_fr) : ($fr ? 'Annuaire des Exposants' : 'Exhibitors Directory'),
+        'sIntro' => $pav
+            ? ($fr ? 'Exposants du pavillon « ' . $pav->name_fr . ' ».' : 'Exhibitors in the ' . ($pav->name_en ?? $pav->name_fr) . ' pavilion.')
+            : ($fr ? 'Les artisans et entreprises présents au SIARC 2026.' : 'The artisans and businesses at SIARC 2026.'),
         'sCards' => $exh->map(fn ($x) => ['title' => $x->name_fr, 'sub' => ($x->pavilion ?? '') . ($x->booth_number ? ' · ' . $x->booth_number : ''), 'icon' => 'store', 'tone' => 'green', 'href' => route('siarc.exhibitor', ['slug' => $x->slug, 'lang' => $lang])])->all(),
+        'sLinks' => $pav ? [['label' => $fr ? 'Tous les exposants' : 'All exhibitors', 'href' => route('siarc.exhibitors', ['lang' => $lang]), 'icon' => 'arrow-left'], ['label' => $fr ? 'Tous les pavillons' : 'All pavilions', 'href' => route('siarc.pavilions', ['lang' => $lang]), 'icon' => 'layout-grid']] : null,
         'sPending' => true,
     ]);
 })->name('siarc.exhibitors');
@@ -708,7 +714,7 @@ Route::get('/siarc/pavillons', function (Request $r) {
     return view('pages.siarc.public', [
         'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Pavillons' : 'Pavilions',
         'sTitle' => $fr ? 'Explorateur des Pavillons' : 'Pavilion Explorer',
-        'sCards' => $pavs->map(fn ($p) => ['title' => $fr ? $p->name_fr : ($p->name_en ?? $p->name_fr), 'sub' => DB::table('event_exhibitors')->where('pavilion_id', $p->id)->count() . ($fr ? ' exposants' : ' exhibitors'), 'icon' => $p->icon ?? 'layout-grid', 'tone' => 'blue', 'href' => route('siarc.exhibitors', ['lang' => $lang])])->all(),
+        'sCards' => $pavs->map(fn ($p) => ['title' => $fr ? $p->name_fr : ($p->name_en ?? $p->name_fr), 'sub' => DB::table('event_exhibitors')->where('pavilion_id', $p->id)->count() . ($fr ? ' exposants' : ' exhibitors'), 'icon' => $p->icon ?? 'layout-grid', 'tone' => 'blue', 'href' => route('siarc.exhibitors', ['lang' => $lang, 'pavilion' => $p->id])])->all(),
         'sPending' => true,
     ]);
 })->name('siarc.pavilions');
