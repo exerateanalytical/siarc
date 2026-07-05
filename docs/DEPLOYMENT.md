@@ -53,14 +53,24 @@ Or just run the bundled idempotent script (safe to re-run per release):
 ### Route caching
 
 `routes/web.php` defines most pages as **closure routes**. On Laravel 11+/13
-these ARE cacheable — closures are serialized via `laravel/serializable-closure`,
-and `php artisan route:cache` has been verified to build cleanly and serve every
-route correctly (landing, product/vendor/news detail, admin auth redirects).
-Include it in the deploy pipeline for the perf win:
+these ARE cacheable — closures are serialized via `laravel/serializable-closure`
+— and `route:cache` is in the deploy pipeline for the perf win:
 
 ```bash
 php artisan route:cache
 ```
+
+**Critical requirement (verified):** the closure routes call shared helper
+functions (`webUser`, `requireAuth`, `establishSiacSession`, `dataExportDatasets`/
+`dataExportRows`, `developerConsumer`). When routes are cached, `routes/web.php`
+is **not** re-included on each request, so a helper defined *in that file* would
+be undefined inside the cached closures — every protected route (and login,
+which calls `establishSiacSession`) would fatal with *"Call to undefined
+function …"*. To keep `route:cache` safe, those helpers live in
+**`app/Support/route_helpers.php`**, autoloaded via composer's `"files"` entry
+so they are always defined. Proven: `route:cache` + the guest RouteSmokeTest +
+LoginTest all pass. **Add any new route helper there, never inline in
+`routes/web.php`.**
 
 Caveat: if a future closure captures an unserializable object via `use (...)`,
 `route:cache` will fail at build time — convert that single route to a

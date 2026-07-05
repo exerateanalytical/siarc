@@ -39,7 +39,7 @@ Blade edits do **not** show while `view:cache` is active — run `view:clear` fi
 
 ## 2. Architecture (what a maintainer must know)
 
-- **Routes:** most pages are **closure routes** in `routes/web.php` (not controllers). `route:cache` works; `route:list` for the map.
+- **Routes:** most pages are **closure routes** in `routes/web.php` (not controllers). `route:cache` works **because route helpers are autoloaded from `app/Support/route_helpers.php`** — never define a route helper inline in `routes/web.php`, cached closures wouldn't see it. `route:list` for the map.
 - **Auth:** session-based via `session('siac_user')` = `{id, name, email, role, is_admin}`. **`users.id` is a UUID** — never `foreignId()` to users.
 - **Brand name:** **SIARC** (Salon International de l'Artisanat du Cameroun). Never write "SIAC" in user-visible text (internal session key `siac_user` is kept intentionally).
 - **Chrome rules (mandatory):**

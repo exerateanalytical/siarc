@@ -772,7 +772,8 @@ now powers them, built TDD-first (superpowers TDD skill):
 Production hardening (commit f96278b): dynamic `/sitemap.xml` +
 `/robots.txt` routes (static robots.txt deleted), `throttle:10,1` on
 newsletter, `throttle:30,1` on quote writes, `docs/DEPLOYMENT.md` (note:
-**route:cache is impossible** — closure routes; config/view cache are fine).
+**route:cache works** — closure routes serialize fine; route helpers live in
+`app/Support/route_helpers.php` so cached closures resolve them).
 Suite: **47 tests / 168 assertions green**.
 
 ## Subscriptions pixel pass + NEW admin sidebar (2026-07-04)

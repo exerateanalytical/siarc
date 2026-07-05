@@ -38,10 +38,14 @@ php artisan config:cache
 php artisan view:cache
 php artisan event:cache
 php artisan route:cache
-# NOTE: route:cache DOES work on Laravel 11+/13 — closure routes are cached via
-# laravel/serializable-closure and verified to respond correctly. If a future
-# closure captures unserializable state (an object in `use (...)`), route:cache
-# will error at build time; convert that one route to a controller/invokable.
+# NOTE: route:cache works here ONLY because the closure routes' helper functions
+# (webUser, requireAuth, establishSiacSession, dataExportDatasets/…, developerConsumer)
+# live in app/Support/route_helpers.php, autoloaded via composer's "files".
+# When routes are cached, routes/web.php is NOT re-included per request, so any
+# helper defined THERE and called from a cached closure would fatal with
+# "Call to undefined function ...". Keep route helpers in the autoloaded file.
+# (Also: a closure that captures unserializable state in `use (...)` will make
+# route:cache error at build time — convert that one route to a controller.)
 
 echo "==> [8/8] Restart queue workers (pick up new code)"
 php artisan queue:restart || true
