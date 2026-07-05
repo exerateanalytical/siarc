@@ -11,7 +11,7 @@
         ['users','#C97A16','#FDF3E0','Sessions en cours','5','Sur 12 prévues',null],
         ['store','#7C4FE0','#F0EAFB','Exposants actifs','312','Sur 580 inscrits',null],
         ['handshake','#157A43','#E2F3E8','Rendez-vous B2B','86',"Aujourd'hui",null],
-        ['activity','#C0010C','#FDE8E8','Alertes actives','3','Voir les alertes','alert'],
+        ['shield','#C0010C','#FDE8E8','Alertes actives','3','Voir les alertes','alert'],
     ];
 
     // Zone occupancy (heatmap tiles) — approved figures
@@ -24,7 +24,7 @@
         ['Salle Conf. B','142','#157A43','#E2F3E8'],
     ];
     $zoneLegend = [
-        ['#C0010C','Très élevé','(≥ 500)'],
+        ['#C0010C','Très élevé','(> 500)'],
         ['#C97A16','Élevé','(200 – 500)'],
         ['#E6B201','Moyen','(50 – 200)'],
         ['#157A43','Faible','(< 50)'],
@@ -42,18 +42,18 @@
     // Live activity feed — prefer real $sTables['Flux des entrées'], else approved sample
     $feedRows = $sTables['Flux des entrées']['rows'] ?? ($sTables[0]['rows'] ?? null);
     $activityFeed = [
-        ['user-plus','#157A43','#E2F3E8','Nouveau visiteur accrédité','Paul Tchameni – Cameroun','14:02'],
+        ['users-round','#157A43','#E2F3E8','Nouveau visiteur accrédité','Paul Tchameni – Cameroun','14:02'],
         ['handshake','#157A43','#E2F3E8','Rendez-vous B2B commencé','TechCraft Africa ↔ Artisanat Plus','14:01'],
-        ['bar-chart-3','#C97A16','#FDF3E0','Pic de fréquentation détecté','Pavillon A – 856 visiteurs','14:00'],
-        ['presentation','#7C4FE0','#F0EAFB','Session commencée','Conférence – Salle de Conférence A','13:58'],
-        ['activity','#157A43','#E2F3E8','Alerte sécurité résolue','Pavillon B – Allée 3','13:55'],
+        ['trending-up','#C97A16','#FDF3E0','Pic de fréquentation détecté','Pavillon A – 856 visiteurs','14:00'],
+        ['play-circle','#7C4FE0','#F0EAFB','Session commencée','Conférence – Salle de Conférence A','13:58'],
+        ['shield-check','#157A43','#E2F3E8','Alerte sécurité résolue','Pavillon B – Allée 3','14:55'],
     ];
 
     // Active alerts — approved figures
     $alerts = [
         ['triangle-alert','#C0010C','#FDE8E8','Affluence élevée','Pavillon A – Allée 2','859 visiteurs','Critique','red','14:02'],
-        ['clock','#C97A16','#FDF3E0','File d\'attente importante','Accréditation – Entrée principale','Temps d\'attente : 18 min','Élevée','gold','14:01'],
-        ['activity','#E6B201','#FCF6DE','Température élevée','Hall d\'Exposition','Température : 31.2°C','Moyenne','gold','13:59'],
+        ['bell-ring','#C97A16','#FDF3E0','File d\'attente importante','Accréditation – Entrée principale','Temps d\'attente : 18 min','Élevée','gold','14:01'],
+        ['thermometer','#E6B201','#FCF6DE','Température élevée','Hall d\'Exposition','Température : 31.2°C','Moyenne','gold','13:59'],
     ];
     $badgeTone = ['red'=>['#FDE8E8','#C0010C'],'gold'=>['#FCF6DE','#9A6A00'],'green'=>['#E2F3E8','#157A43']];
 @endphp
@@ -64,7 +64,7 @@
         <i data-lucide="refresh-cw" class="w-4 h-4"></i>Actualiser
     </button>
     <button class="siarc-btn text-[12.5px] bg-white border border-[#E4E1D8] text-[#3B382F] px-3.5 py-2 hover:bg-[#FBFAF6]">
-        <i data-lucide="megaphone" class="w-4 h-4"></i>Paramètres d'alertes
+        <i data-lucide="bell" class="w-4 h-4"></i>Paramètres d'alertes
     </button>
     <button class="siarc-btn siarc-btn-green text-[12.5px] px-4 py-2">
         <i data-lucide="download" class="w-4 h-4"></i>Exporter le rapport
@@ -102,26 +102,8 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-white siarc-pulse"></span>LIVE
             </span>
         </div>
-        <div class="siarc-adire relative rounded-xl overflow-hidden aspect-video flex items-center justify-center">
-            <div class="text-center px-4">
-                <span class="w-14 h-14 mx-auto rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-3">
-                    <i data-lucide="mic" class="w-6 h-6 text-siarc-gold"></i>
-                </span>
-                <p class="font-display text-white text-[16px] font-bold">SIARC 2026</p>
-                <p class="text-white/60 text-[11px] mt-1">Salon International de l'Artisanat</p>
-            </div>
-            <span class="absolute top-3 right-3 inline-flex items-center gap-1.5 text-[10px] font-bold text-white bg-siarc-red rounded px-2 py-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-white siarc-pulse"></span>LIVE
-            </span>
-            <span class="absolute top-3 left-3 inline-flex items-center gap-1 text-[10.5px] font-semibold text-white bg-black/40 rounded px-2 py-0.5">
-                <i data-lucide="user" class="w-3 h-3"></i>312
-            </span>
-            <div class="absolute bottom-0 inset-x-0 flex items-center gap-3 px-4 py-2.5 bg-gradient-to-t from-black/60 to-transparent">
-                <i data-lucide="play" class="w-4 h-4 text-white"></i>
-                <i data-lucide="volume-2" class="w-4 h-4 text-white"></i>
-                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-white"><span class="w-1.5 h-1.5 rounded-full bg-siarc-red siarc-pulse"></span>LIVE</span>
-                <i data-lucide="maximize" class="w-4 h-4 text-white ml-auto"></i>
-            </div>
+        <div class="relative rounded-xl overflow-hidden aspect-video bg-black">
+            <img src="{{ asset('images/siarc/live-stream-1.png') }}" alt="Live Stream – Salle de Conférence A" class="absolute inset-0 w-full h-full object-cover">
         </div>
     </div>
 
@@ -159,15 +141,8 @@
     <div class="xl:col-span-4 siarc-card siarc-shadow p-5 siarc-in">
         <h3 class="text-[14px] font-bold text-[#1A1712] mb-3">Répartition des visiteurs par zone</h3>
         <div class="flex gap-4">
-            <div class="grid grid-cols-2 gap-2 flex-1">
-                @foreach($zones as [$zn,$zv,$zc,$zt])
-                <div class="rounded-xl p-3 text-center border" style="background:{{ $zt }};border-color:{{ $zc }}22">
-                    <p class="text-[11px] font-semibold text-[#3B382F] leading-tight">{{ $zn }}</p>
-                    <p class="font-display text-[19px] font-extrabold leading-tight mt-0.5" style="color:{{ $zc }}">{{ $zv }}</p>
-                </div>
-                @endforeach
-            </div>
-            <ul class="space-y-2.5 shrink-0 pt-1">
+            <img src="{{ asset('images/siarc/zone-map-1.png') }}" alt="Répartition des visiteurs par zone" class="flex-1 min-w-0 rounded-lg">
+            <ul class="space-y-3 shrink-0 pt-1">
                 @foreach($zoneLegend as [$lc,$ll,$lr])
                 <li class="flex items-start gap-2 text-[10.5px]">
                     <span class="w-2.5 h-2.5 rounded-full mt-0.5 shrink-0" style="background:{{ $lc }}"></span>
@@ -185,20 +160,22 @@
     {{-- Fréquentation temps réel --}}
     <div class="xl:col-span-3 siarc-card siarc-shadow p-5 siarc-in">
         <h3 class="text-[13.5px] font-bold text-[#1A1712] mb-3">Fréquentation en temps réel</h3>
-        <svg viewBox="0 0 300 180" class="w-full">
-            @foreach(['3K'=>25,'2K'=>70,'1K'=>115,'0'=>150] as $t=>$yy)
-                <line x1="28" y1="{{ $yy }}" x2="295" y2="{{ $yy }}" stroke="#F1F1EF"/>
-                <text x="22" y="{{ $yy+3 }}" font-size="8" fill="#B0AB9F" text-anchor="end">{{ $t }}</text>
-            @endforeach
-            <polygon points="28,150 28,132 60,120 92,112 124,88 156,58 188,66 220,52 252,48 295,40 295,150" fill="#157A43" opacity="0.10"/>
-            <polyline points="28,132 60,120 92,112 124,88 156,58 188,66 220,52 252,48 295,40" fill="none" stroke="#157A43" stroke-width="2.2"/>
-            <line x1="156" y1="24" x2="156" y2="150" stroke="#157A43" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
-            <circle cx="156" cy="58" r="3.4" fill="#157A43" stroke="#fff" stroke-width="1.5"/>
-            @foreach(['08:00','10:00','12:00','14:00','16:00','18:00'] as $i=>$d)<text x="{{ 28+$i*53 }}" y="168" font-size="7.5" fill="#B0AB9F" text-anchor="middle">{{ $d }}</text>@endforeach
-        </svg>
-        <div class="mt-2 inline-flex flex-col items-start text-[10.5px] bg-[#F8F5EF] border border-[#EFEDE6] rounded-lg px-3 py-1.5">
-            <span class="font-semibold text-[#1A1712]">14:00</span>
-            <span class="text-siarc-green font-semibold">▲ 2 458 visiteurs</span>
+        <div class="relative">
+            <svg viewBox="0 0 300 180" class="w-full">
+                @foreach(['3K'=>25,'2K'=>70,'1K'=>115,'0'=>150] as $t=>$yy)
+                    <line x1="28" y1="{{ $yy }}" x2="295" y2="{{ $yy }}" stroke="#F1F1EF"/>
+                    <text x="22" y="{{ $yy+3 }}" font-size="8" fill="#B0AB9F" text-anchor="end">{{ $t }}</text>
+                @endforeach
+                <polygon points="28,150 28,132 60,120 92,112 124,88 156,58 188,66 220,52 252,48 295,40 295,150" fill="#157A43" opacity="0.10"/>
+                <polyline points="28,132 60,120 92,112 124,88 156,58 188,66 220,52 252,48 295,40" fill="none" stroke="#157A43" stroke-width="2.2"/>
+                <line x1="156" y1="24" x2="156" y2="150" stroke="#157A43" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+                <circle cx="156" cy="58" r="3.4" fill="#157A43" stroke="#fff" stroke-width="1.5"/>
+                @foreach(['08:00','10:00','12:00','14:00','16:00','18:00'] as $i=>$d)<text x="{{ 28+$i*53 }}" y="168" font-size="7.5" fill="#B0AB9F" text-anchor="middle">{{ $d }}</text>@endforeach
+            </svg>
+            <div class="absolute left-[46%] top-[16%] inline-flex flex-col items-start text-[10.5px] bg-white siarc-shadow border border-[#EFEDE6] rounded-lg px-2.5 py-1.5 leading-tight">
+                <span class="font-semibold text-[#1A1712]">14:00</span>
+                <span class="text-siarc-green font-semibold whitespace-nowrap">▲ 2 458 visiteurs</span>
+            </div>
         </div>
     </div>
 
@@ -213,7 +190,10 @@
                     <p class="text-[12px] font-semibold text-[#1A1712] leading-tight truncate">{{ $title }}</p>
                     <p class="text-[10.5px] text-[#8A857A]">{{ $loc }}</p>
                 </div>
-                <span class="text-[12.5px] font-bold text-[#1A1712]">{{ $count }}</span>
+                <span class="text-[12px] font-bold text-[#1A1712] mr-2">{{ $count }}</span>
+                <svg viewBox="0 0 40 16" class="w-9 h-4 shrink-0" preserveAspectRatio="none">
+                    <polyline points="0,11 6,9 12,12 18,7 24,9 30,5 40,8" fill="none" stroke="#157A43" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
             </li>
             @endforeach
         </ul>
@@ -276,12 +256,12 @@
             @else
                 @foreach($activityFeed as [$icon,$color,$tile,$title,$sub,$time])
                 <li class="flex gap-3">
+                    <span class="text-[10px] text-[#B0AB9F] whitespace-nowrap pt-0.5 w-10 shrink-0">{{ $time }}</span>
                     <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:{{ $tile }}"><i data-lucide="{{ $icon }}" class="w-4 h-4" style="color:{{ $color }}"></i></span>
                     <div class="min-w-0 flex-1">
                         <p class="text-[12px] font-semibold text-[#1A1712] leading-tight">{{ $title }}</p>
-                        <p class="text-[10.5px] text-[#8A857A] truncate">{{ $sub }}</p>
+                        <p class="text-[10.5px] text-[#8A857A] truncate flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3 shrink-0"></i>{{ $sub }}</p>
                     </div>
-                    <span class="text-[10px] text-[#B0AB9F] whitespace-nowrap">{{ $time }}</span>
                 </li>
                 @endforeach
             @endif
@@ -298,7 +278,7 @@
 <div id="alertes" class="siarc-in">
     <div class="flex items-center justify-between mb-3">
         <h3 class="text-[14px] font-bold text-siarc-red flex items-center gap-2">
-            <i data-lucide="activity" class="w-4 h-4"></i>Alertes actives (3)
+            <i data-lucide="triangle-alert" class="w-4 h-4"></i>Alertes actives (3)
         </h3>
         <a href="{{ route('siarc.home', ['lang' => $lang ?? 'fr']) }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir toutes les alertes</a>
     </div>

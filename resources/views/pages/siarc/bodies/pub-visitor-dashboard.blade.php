@@ -4,7 +4,7 @@
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
 
     $u = function_exists('webUser') ? webUser() : ($u ?? null);
-    $visitorName = $u->name ?? 'Visiteur';
+    $visitorName = $u->name ?? 'Jean Dupont';
     $visitorEmail = $u->email ?? null;
 
     // Badge code — from $sStats if present, else honest default
@@ -34,36 +34,36 @@
         ['calendar-days', $isFr ? 'Programme complet' : 'Full programme', 'siarc.programme', '#157A43'],
         ['mic', $isFr ? 'Intervenants' : 'Speakers', 'siarc.speakers', '#7C4FE0'],
         ['store', $isFr ? 'Exposants' : 'Exhibitors', 'siarc.exhibitors', '#C97A16'],
-        ['map', $isFr ? 'Plan interactif' : 'Interactive map', 'siarc.pavilions', '#157A43'],
-        ['grid-3x3', $isFr ? 'Pavillons' : 'Pavilions', 'siarc.pavilions', '#157A43'],
+        ['map', $isFr ? 'Plan interactif' : 'Interactive map', 'siarc.pavilions', '#2563EB'],
+        ['flag', $isFr ? 'Pavillons' : 'Pavilions', 'siarc.pavilions', '#157A43'],
         ['star', $isFr ? 'Favoris' : 'Favourites', 'siarc.visitor.dashboard', '#E6B201'],
-        ['info', $isFr ? 'Infos pratiques' : 'Practical info', 'siarc.register', '#157A43'],
-        ['phone', $isFr ? 'Nous contacter' : 'Contact us', 'siarc.register', '#7C4FE0'],
+        ['info', $isFr ? 'Infos pratiques' : 'Practical info', 'siarc.register', '#0E7A5F'],
+        ['headphones', $isFr ? 'Nous contacter' : 'Contact us', 'siarc.register', '#7C4FE0'],
     ];
 
     // KPI tiles (approved headline figures from the design)
     $tiles = [
-        ['file-check-2', '2', $isFr ? 'Billet(s) actif(s)' : 'Active ticket(s)', $isFr ? 'Voir mes billets' : 'View my tickets', 'siarc.register', '#157A43', '#E7F1EA'],
+        ['ticket', '2', $isFr ? 'Billet(s) actif(s)' : 'Active ticket(s)', $isFr ? 'Voir mes billets' : 'View my tickets', 'siarc.register', '#157A43', '#E7F1EA'],
         ['calendar-days', '5', $isFr ? 'Sessions favorites' : 'Favourite sessions', $isFr ? 'Voir mes favoris' : 'View favourites', 'siarc.programme', '#7C4FE0', '#F0EAFB'],
-        ['calendar-clock', '2', $isFr ? 'RDV planifiés' : 'Planned meetings', $isFr ? 'Voir mes rendez-vous' : 'View my meetings', 'siarc.register', '#C97A16', '#FCEFE0'],
-        ['map-pin', '32', $isFr ? 'Exposants suivis' : 'Followed exhibitors', $isFr ? 'Voir mes exposants' : 'View exhibitors', 'siarc.exhibitors', '#157A43', '#E7F1EA'],
+        ['calendar-days', '2', $isFr ? 'RDV planifiés' : 'Planned meetings', $isFr ? 'Voir mes rendez-vous' : 'View my meetings', 'siarc.register', '#C97A16', '#FCEFE0'],
+        ['map-pin', '32', $isFr ? 'Exposants suivis' : 'Followed exhibitors', $isFr ? 'Voir mes exposants' : 'View exhibitors', 'siarc.exhibitors', '#2563EB', '#E4EDFD'],
     ];
 
     // Upcoming sessions — approved sample programme (from tokens exemplar)
     $sessions = [
-        ['09:30','10:30','CONFÉRENCE','purple','Innovation & Technologie au service de l\'artisanat','Par Dr. Alain Mbarga','Salle de Conférence A', false],
-        ['11:00','12:30','ATELIER','gold','Design Thinking pour artisans et créateurs','Par Awa Diop','Salle de Formation 1', false],
-        ['14:00','15:30','PANEL','red','Jeunes artisans & transmission des savoir-faire','Modérateur : P. Essomba','Salle de Conférence B', false],
-        ['16:00','17:30','CONFÉRENCE','purple','E-commerce & plateformes digitales pour artisans','Par Jumia Consulting','Espace Innovation', true],
+        ['09:30','10:30','CONFÉRENCE','green','Innovation & Technologie au service de l\'artisanat','Par Dr. Alain Mbarga','Salle de Conférence A','sess-1.png', false],
+        ['11:00','12:30','ATELIER','purple','Design Thinking pour artisans et créateurs','Par Awa Diop','Salle de Formation 1','sess-2.png', false],
+        ['14:00','15:30','PANEL','gold','Jeunes artisans & transmission des savoir-faire','Modérateur : P. Essomba','Salle de Conférence B','sess-3.png', false],
+        ['16:00','17:30','CONFÉRENCE','blue','E-commerce & plateformes digitales pour artisans','Par Jumia Consulting','Espace Innovation','sess-4.png', true],
     ];
-    $badge = ['purple'=>['#F0EAFB','#7C4FE0'],'gold'=>['#FDF3E0','#C97A16'],'red'=>['#FDE8E8','#C0010C']];
+    $badge = ['green'=>['#E7F1EA','#157A43'],'purple'=>['#F0EAFB','#7C4FE0'],'gold'=>['#FBF0DE','#B07A18'],'blue'=>['#E4EDFD','#2563EB'],'red'=>['#FDE8E8','#C0010C']];
 
     $recommended = [
-        ['Artisanat d\'Excellence Cameroun','Bois sculpté, Décoration','Pavillon Cameroun','#157A43','AE'],
-        ['Afrique Naturelle SARL','Cosmétiques naturels','Pavillon Sénégal','#C97A16','AN'],
-        ['Design Afrika','Mobilier & Décoration','Pavillon Innovation','#0B3A1E','DA'],
-        ['Tissages du Sahel','Textile traditionnel','Pavillon Mali','#C0010C','TS'],
-        ['Terre & Tradition','Poterie, Céramique','Pavillon Maroc','#7C4FE0','TT'],
+        ['Artisanat d\'Excellence Cameroun','Bois sculpté, Décoration','Pavillon Cameroun','reco-1.png'],
+        ['Afrique Naturelle SARL','Cosmétiques naturels','Pavillon Sénégal','reco-2.png'],
+        ['Design Afrika','Mobilier & Décoration','Pavillon Innovation','reco-3.png'],
+        ['Tissages du Sahel','Textile traditionnel','Pavillon Mali','reco-4.png'],
+        ['Terre & Tradition','Poterie, Céramique','Pavillon Maroc','reco-5.png'],
     ];
 @endphp
 
@@ -87,16 +87,15 @@
 
 {{-- ══════════════════ MAIN GRID ══════════════════ --}}
 <section class="bg-[#FBFAF7]">
-    <div class="max-w-[1240px] mx-auto px-6 sm:px-10 py-8 grid lg:grid-cols-[1fr_360px] gap-6 items-start">
+    <div class="max-w-[1240px] mx-auto px-6 sm:px-10 py-8 grid lg:grid-cols-[1fr_452px] gap-6 items-start">
 
         {{-- ══════ LEFT / MAIN COLUMN ══════ --}}
         <div class="space-y-6 min-w-0">
 
             {{-- Hero band --}}
             <div class="relative rounded-2xl overflow-hidden siarc-adire text-white siarc-shadow-lg">
-                <div class="siarc-kente absolute top-0 left-0 right-0 opacity-80 z-10"></div>
                 <div class="relative grid md:grid-cols-2 gap-0 items-stretch">
-                    <div class="p-8 pt-10 flex flex-col justify-center">
+                    <div class="p-8 flex flex-col justify-center">
                         <h2 class="font-display text-[26px] sm:text-[30px] font-bold leading-[1.12] mb-3">
                             {{ $isFr ? "Vivez l'excellence artisanale africaine au SIARC 2026" : 'Live African craft excellence at SIARC 2026' }}
                         </h2>
@@ -107,8 +106,8 @@
                         </div>
                     </div>
                     <div class="hidden md:block relative min-h-[210px]">
-                        <img src="{{ asset('images/siarc/home-hero.png') }}" alt="SIARC 2026" class="absolute inset-0 w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-r from-[#0B3A1E] via-[#0B3A1E]/30 to-transparent"></div>
+                        <img src="{{ asset('images/siarc/vdash-hero.png') }}" alt="SIARC 2026" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#0B3A1E] via-transparent to-transparent"></div>
                     </div>
                 </div>
             </div>
@@ -134,7 +133,7 @@
                     <a href="{{ $h('siarc.programme') }}" class="text-[12px] font-semibold text-siarc-green hover:underline whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                 </div>
                 <div class="divide-y divide-[#F1EFE8]">
-                    @foreach($sessions as [$start,$end,$type,$tone,$title,$by,$venue,$fav])
+                    @foreach($sessions as [$start,$end,$type,$tone,$title,$by,$venue,$avatar,$fav])
                     @php $bt = $badge[$tone]; @endphp
                     <div class="flex items-start gap-4 py-4 first:pt-0 last:pb-0">
                         <div class="text-center shrink-0 w-14">
@@ -142,8 +141,8 @@
                             <p class="text-[11px] text-[#A8A498]">–</p>
                             <p class="text-[11px] text-[#A8A498] leading-tight">{{ $end }}</p>
                         </div>
-                        <span class="shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style="background:{{ $bt[0] }}">
-                            <i data-lucide="user" class="w-5 h-5" style="color:{{ $bt[1] }}"></i>
+                        <span class="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-[#F1EFE8] border border-[#ECEAE3]">
+                            <img src="{{ asset('images/siarc/'.$avatar) }}" alt="" class="w-full h-full object-cover">
                         </span>
                         <div class="min-w-0 flex-1">
                             <span class="inline-block text-[9.5px] font-bold px-2 py-0.5 rounded mb-1.5" style="background:{{ $bt[0] }};color:{{ $bt[1] }}">{{ $type }}</span>
@@ -162,12 +161,14 @@
             </div>
 
             {{-- Réservez vos rencontres d'affaires --}}
-            <div class="relative rounded-2xl overflow-hidden siarc-adire text-white p-7 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 siarc-shadow">
-                <div class="min-w-0">
+            <div class="relative rounded-2xl overflow-hidden siarc-adire text-white siarc-shadow">
+                <img src="{{ asset('images/siarc/vdash-handshake.png') }}" alt="" class="hidden sm:block absolute top-0 right-0 h-full w-[300px] object-cover">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#0B3A1E] via-[#0B3A1E]/85 to-transparent"></div>
+                <div class="relative p-7">
                     <h3 class="font-display text-[20px] font-bold mb-1.5">{{ $isFr ? "Réservez vos rencontres d'affaires" : 'Book your business meetings' }}</h3>
-                    <p class="text-[13px] text-white/75 leading-relaxed">{{ $isFr ? 'Rencontrez des exposants, partenaires et investisseurs.' : 'Meet exhibitors, partners and investors.' }}</p>
+                    <p class="text-[13px] text-white/75 leading-relaxed mb-5">{{ $isFr ? 'Rencontrez des exposants, partenaires et investisseurs.' : 'Meet exhibitors, partners and investors.' }}</p>
+                    <a href="{{ $h('siarc.register') }}" class="siarc-btn px-5 py-3 text-[13px] bg-white text-[#0B3A1E]"><i data-lucide="calendar-check" class="w-4 h-4"></i>{{ $isFr ? 'Planifier un rendez-vous' : 'Schedule a meeting' }}</a>
                 </div>
-                <a href="{{ $h('siarc.register') }}" class="siarc-btn siarc-btn-primary px-5 py-3 text-[13px] shrink-0 self-start sm:self-auto"><i data-lucide="calendar-clock" class="w-4 h-4"></i>{{ $isFr ? 'Planifier un rendez-vous' : 'Schedule a meeting' }}</a>
             </div>
 
             {{-- Exposants recommandés --}}
@@ -176,15 +177,24 @@
                     <h3 class="font-display text-[20px] font-bold text-[#1A1712]">{{ $isFr ? 'Exposants recommandés pour vous' : 'Exhibitors recommended for you' }}</h3>
                     <a href="{{ $h('siarc.exhibitors') }}" class="text-[12px] font-semibold text-siarc-green hover:underline whitespace-nowrap">{{ $isFr ? 'Voir tous' : 'View all' }} →</a>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                    @foreach($recommended as [$name,$cat,$pav,$col,$ini])
-                    <a href="{{ $h('siarc.exhibitors') }}" class="siarc-card siarc-lift p-4 text-center bg-[#FBFAF7]">
-                        <span class="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 font-display font-bold text-white text-[15px]" style="background:{{ $col }}">{{ $ini }}</span>
-                        <p class="text-[12px] font-bold text-[#1A1712] leading-snug mb-1">{{ $name }}</p>
-                        <p class="text-[10.5px] text-[#8A857A] leading-tight mb-2">{{ $cat }}</p>
-                        <span class="inline-block text-[9.5px] font-semibold px-2 py-0.5 rounded-full bg-[#E7F1EA] text-siarc-green">{{ $pav }}</span>
-                    </a>
-                    @endforeach
+                <div class="flex items-stretch gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 flex-1 min-w-0">
+                        @foreach($recommended as [$name,$cat,$pav,$logo])
+                        <a href="{{ $h('siarc.exhibitors') }}" class="siarc-card siarc-lift p-3.5 bg-[#FBFAF7] flex items-start gap-3">
+                            <span class="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-white border border-[#ECEAE3] flex items-center justify-center">
+                                <img src="{{ asset('images/siarc/'.$logo) }}" alt="" class="w-full h-full object-cover">
+                            </span>
+                            <div class="min-w-0">
+                                <p class="text-[12px] font-bold text-[#1A1712] leading-snug">{{ $name }}</p>
+                                <p class="text-[10.5px] text-[#8A857A] leading-tight mt-0.5">{{ $cat }}</p>
+                                <p class="text-[10.5px] text-[#8A857A] leading-tight mt-2">{{ $pav }}</p>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                    <button type="button" aria-label="{{ $isFr ? 'Suivant' : 'Next' }}" class="hidden xl:flex shrink-0 self-center w-9 h-9 rounded-full bg-white border border-[#ECEAE3] siarc-shadow items-center justify-center text-[#55524A] hover:bg-[#F1EFE8]">
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -194,21 +204,20 @@
 
             {{-- Mon billet --}}
             <div class="siarc-card siarc-shadow overflow-hidden">
-                <div class="siarc-kente"></div>
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-display text-[18px] font-bold text-[#1A1712]">{{ $isFr ? 'Mon billet' : 'My ticket' }}</h3>
                         <a href="{{ $h('siarc.register') }}" class="text-[12px] font-semibold text-siarc-green hover:underline whitespace-nowrap">{{ $isFr ? 'Voir tous' : 'View all' }} →</a>
                     </div>
 
-                    <div class="rounded-xl border border-[#ECEAE3] bg-[#FBFAF7] p-4">
+                    <div>
                         <span class="inline-block text-[9.5px] font-bold tracking-wide px-2.5 py-1 rounded bg-[#E7F1EA] text-siarc-green mb-4">{{ $isFr ? 'VISITEUR STANDARD' : 'STANDARD VISITOR' }}</span>
                         <div class="flex gap-4">
                             <div class="shrink-0">
-                                <div id="siarc-badge-qr" class="w-[104px] h-[104px] rounded-lg bg-white p-1.5 border border-[#ECEAE3] flex items-center justify-center"></div>
+                                <div id="siarc-badge-qr" class="w-[100px] h-[100px] flex items-center justify-center"></div>
                             </div>
                             <div class="min-w-0">
-                                <p class="font-display text-[16px] font-extrabold text-siarc-green leading-tight">SIARC 2026</p>
+                                <p class="font-display text-[17px] font-extrabold text-siarc-green leading-tight">SIARC 2026</p>
                                 <p class="text-[11px] text-[#8A857A] leading-snug mt-1">{{ $isFr ? "Salon International de l'Artisanat du Cameroun" : 'International Craft Fair of Cameroon' }}</p>
                                 <p class="mt-3 inline-flex items-center gap-1.5 text-[11px] text-[#55524A]"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-siarc-ochre"></i>27 Juil – 05 Août 2026</p>
                                 <p class="mt-1 inline-flex items-center gap-1.5 text-[11px] text-[#55524A]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-siarc-ochre"></i>Musée National de Yaoundé</p>
@@ -219,19 +228,17 @@
                             <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#E7F1EA] text-siarc-green"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>{{ $accessStatus }}</span>
                         </div>
                     </div>
-
-                    <a href="{{ $h('siarc.register') }}" class="siarc-btn siarc-btn-green w-full justify-center px-4 py-3 text-[13px] mt-4"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Télécharger le badge' : 'Download badge' }}</a>
                 </div>
             </div>
 
             {{-- Accès rapides --}}
             <div class="siarc-card siarc-shadow p-6">
                 <h3 class="font-display text-[18px] font-bold text-[#1A1712] mb-4">{{ $isFr ? 'Accès rapides' : 'Quick access' }}</h3>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     @foreach($quicklinks as [$icon,$label,$route,$color])
-                    <a href="{{ $h($route) }}" class="siarc-card siarc-lift bg-[#FBFAF7] p-4 flex flex-col items-center text-center gap-2">
+                    <a href="{{ $h($route) }}" class="siarc-card siarc-lift bg-[#FBFAF7] px-2 py-4 flex flex-col items-center text-center gap-2.5">
                         <i data-lucide="{{ $icon }}" class="w-6 h-6" style="color:{{ $color }}"></i>
-                        <span class="text-[11.5px] font-semibold text-[#2A271F] leading-tight">{{ $label }}</span>
+                        <span class="text-[11px] font-semibold text-[#2A271F] leading-tight">{{ $label }}</span>
                     </a>
                     @endforeach
                 </div>
@@ -248,8 +255,8 @@
                 <div class="space-y-4">
                     {{-- LIVE item --}}
                     <div class="flex items-center gap-3 rounded-xl border border-[#ECEAE3] bg-[#FBFAF7] p-3">
-                        <span class="shrink-0 w-11 h-11 rounded-lg bg-[#FDE8E8] flex items-center justify-center">
-                            <i data-lucide="play" class="w-5 h-5" style="color:#C0010C;fill:#C0010C"></i>
+                        <span class="shrink-0 w-11 h-11 rounded-lg overflow-hidden border border-[#ECEAE3] bg-[#F1EFE8]">
+                            <img src="{{ asset('images/siarc/vdash-news-live.png') }}" alt="" class="w-full h-full object-cover">
                         </span>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2 mb-0.5">
@@ -260,11 +267,14 @@
                             </div>
                             <p class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#C0010C]"><span class="w-1.5 h-1.5 rounded-full bg-[#C0010C]"></span>{{ $isFr ? 'En cours maintenant' : 'Happening now' }}</p>
                         </div>
+                        <button type="button" aria-label="{{ $isFr ? 'Regarder' : 'Watch' }}" class="shrink-0 w-8 h-8 rounded-full bg-[#0B3A1E] text-white flex items-center justify-center">
+                            <i data-lucide="play" class="w-4 h-4" style="fill:#fff"></i>
+                        </button>
                     </div>
                     {{-- News item --}}
                     <div class="flex items-center gap-3">
                         <span class="shrink-0 w-11 h-11 rounded-lg overflow-hidden border border-[#ECEAE3] bg-[#F1EFE8]">
-                            <img src="{{ asset('images/siarc/home-hero.png') }}" alt="" class="w-full h-full object-cover">
+                            <img src="{{ asset('images/siarc/vdash-news-pavillon.png') }}" alt="" class="w-full h-full object-cover">
                         </span>
                         <div class="min-w-0 flex-1">
                             <p class="text-[12.5px] font-semibold text-[#1A1712] leading-snug">{{ $isFr ? 'Nouveau pavillon Afrique Centrale' : 'New Central Africa pavilion' }}</p>

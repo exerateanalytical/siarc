@@ -1,257 +1,287 @@
 @php
     use Illuminate\Support\Facades\Route as R;
-    $lang = $lang ?? 'fr'; $isFr = $lang === 'fr';
+    $lang = $lang ?? 'fr';
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
 
     // ── KPI row — approved design figures (verbatim) ────────────────────────────
     $kpis = [
-        ['users-round','#157A43','#E2F3E8','Entreprises inscrites','1 248','18.6%',true],
-        ['handshake','#3565DE','#E8EFFB','Rendez-vous confirmés','156','24.3%',true],
-        ['calendar-clock','#7C4FE0','#F0EAFB','Demandes en attente','28','4.2%',false],
-        ['activity','#C97A16','#FDF3E0','Vues de profil','1 893','31.7%',true],
-        ['circle-dot','#157A43','#E2F3E8','Taux de correspondance','87%','Excellent',null],
+        ['users-round','#157A43','#E2F3E8','Entreprises inscrites','1,248','arrow-up','18.6%','text-siarc-green'],
+        ['handshake','#3565DE','#E8EFFB','Rendez-vous confirmés','156','arrow-up','24.3%','text-siarc-green'],
+        ['calendar','#7C4FE0','#F0EAFB','Demandes en attente','28','arrow-down','4.2%','text-siarc-red'],
+        ['eye','#E68A00','#FDEBCF','Vues de profil','1,893','arrow-up','31.7%','text-siarc-green'],
+        ['target','#157A43','#E2F3E8','Taux de correspondance','87%',null,'Excellent',null],
     ];
 
-    // Fallbacks so the page is robust if a var is absent (never fabricated rows)
-    $sStats  = $sStats  ?? [];
-    $sTables = $sTables ?? [];
-    $sLinks  = $sLinks  ?? [];
-    $meetTable = $sTables[0] ?? null;
+    // ── Result cards — verbatim from the approved design ────────────────────────
+    $cards = [
+        [
+            'logo'=>'b2b-logo-1.png','name'=>'SAFIRA ARTISANAT SARL','tag'=>'Achat','tagTone'=>'green',
+            'loc'=>'Yaoundé, Cameroun','flag'=>'🇨🇲',
+            'desc'=>'Spécialisée dans la transformation du bois précieux et la fabrication de meubles haut de gamme.',
+            'chips'=>['Bois & Ameublement','Mobilier sur mesure','Export'],
+            'interest'=>'Fournisseurs de bois certifié, designers',
+            'partnership'=>'Fourniture • Distribution','score'=>'92%',
+        ],
+        [
+            'logo'=>'b2b-logo-2.png','name'=>'ETHNO TEXTILES','tag'=>'Vente','tagTone'=>'blue',
+            'loc'=>'Bamako, Mali','flag'=>'🇲🇱',
+            'desc'=>'Textiles traditionnels et tissus africains faits main avec teintures naturelles.',
+            'chips'=>['Textile','Tissus traditionnels','Mode'],
+            'interest'=>'Acheteurs, distributeurs, boutiques',
+            'partnership'=>'Distribution • Commercial','score'=>'88%',
+        ],
+        [
+            'logo'=>'b2b-logo-3.png','name'=>'AGRO NATURE CAMEROUN','tag'=>'Achat','tagTone'=>'green',
+            'loc'=>'Douala, Cameroun','flag'=>'🇨🇲',
+            'desc'=>'Transformation et exportation de produits agricoles biologiques et épices.',
+            'chips'=>['Agroalimentaire','Épices','Produits bio'],
+            'interest'=>'Fournisseurs, partenaires logistiques',
+            'partnership'=>'Fourniture • Logistique','score'=>'85%',
+        ],
+        [
+            'logo'=>'b2b-logo-4.png','name'=>'KALABASH DESIGN','tag'=>'Vente','tagTone'=>'blue',
+            'loc'=>'Abidjan, Côte d\'Ivoire','flag'=>'🇨🇮',
+            'desc'=>'Objets déco et art de la table en calebasse et matériaux naturels.',
+            'chips'=>['Artisanat d\'art','Décoration','Design'],
+            'interest'=>'Distributeurs, concept stores',
+            'partnership'=>'Distribution • Co-branding','score'=>'80%',
+        ],
+    ];
 
-    // Status badge tone map
-    $tone = function($status){
-        $s = mb_strtolower(trim((string)$status));
-        if(str_contains($s,'confirm')||str_contains($s,'allou')||str_contains($s,'complé')||str_contains($s,'termin')) return ['#E2F3E8','#157A43'];
-        if(str_contains($s,'attente')||str_contains($s,'demand')||str_contains($s,'pending')||str_contains($s,'requested')) return ['#FBF0D6','#9A6B00'];
-        if(str_contains($s,'annul')||str_contains($s,'refus')||str_contains($s,'declin')||str_contains($s,'cancel')) return ['#FBE3E3','#B0121B'];
-        if(str_contains($s,'réserv')||str_contains($s,'reserv')||str_contains($s,'registr')) return ['#E8EFFB','#2B4F9E'];
-        return ['#EFEDE6','#6B6558'];
-    };
+    // ── Recommendations (verbatim) ──────────────────────────────────────────────
+    $recos = [
+        ['name'=>'BAMBOU DU CAMEROUN','loc'=>'Douala, Cameroun','score'=>'95%','logo'=>'b2b-logo-1.png'],
+        ['name'=>'GLOBAL CRAFTS LTD','loc'=>'Lagos, Nigeria','score'=>'90%','logo'=>'b2b-logo-3.png'],
+        ['name'=>'TERRE & COULEURS','loc'=>'Marrakech, Maroc','score'=>'89%','logo'=>'b2b-logo-4.png'],
+    ];
+
+    // ── Upcoming meetings (verbatim) ────────────────────────────────────────────
+    $upcoming = [
+        ['day'=>'28','mon'=>'JUIL','time'=>'10:00 – 10:30','title'=>'RDV avec SAFIRA Artisanat SARL','sub'=>'Pavillon Centre - Stand C-09','status'=>'Confirmé','tone'=>'green'],
+        ['day'=>'29','mon'=>'JUIL','time'=>'14:00 – 14:30','title'=>'RDV avec Ethno Textiles','sub'=>'Salle B2B 1','status'=>'En attente','tone'=>'blue'],
+        ['day'=>'30','mon'=>'JUIL','time'=>'11:00 – 11:30','title'=>'RDV avec Agro Nature Cameroun','sub'=>'Salle B2B 2','status'=>'En attente','tone'=>'blue'],
+    ];
+
+    $tagStyle = fn($t) => $t==='green'
+        ? 'background:#E2F3E8;color:#157A43'
+        : 'background:#E8EFFB;color:#2B4F9E';
 @endphp
+
+{{-- ══ IN-BODY HEADING (subtitle sits under the topbar title) ══ --}}
 
 {{-- ══ KPI ROW ══ --}}
 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-5">
-    @foreach($kpis as [$icon,$color,$tile,$label,$val,$chg,$isUp])
+    @foreach($kpis as [$icon,$color,$tile,$label,$val,$dir,$chg,$chgCls])
     <div class="siarc-card siarc-shadow p-4 siarc-in">
-        <span class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:{{ $tile }}"><i data-lucide="{{ $icon }}" class="w-5 h-5" style="color:{{ $color }}"></i></span>
-        <p class="mt-3 text-[11.5px] text-[#8A857A] font-medium">{{ $label }}</p>
-        <p class="text-[24px] font-extrabold text-[#161513] leading-tight tracking-tight">{{ $val }}</p>
-        @if($isUp === null)
-            <span class="inline-flex items-center gap-1 mt-2 text-[11px] font-semibold text-siarc-green">{{ $chg }}</span>
+        <div class="flex items-center gap-3">
+            <span class="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style="background:{{ $tile }}"><i data-lucide="{{ $icon }}" class="w-5 h-5" style="color:{{ $color }}"></i></span>
+            <p class="text-[11.5px] text-[#8A857A] font-medium leading-tight">{{ $label }}</p>
+        </div>
+        <p class="mt-3 text-[26px] font-extrabold text-[#161513] leading-none tracking-tight">{{ $val }}</p>
+        @if($dir === null)
+            <span class="inline-flex items-center gap-1 mt-2.5 text-[11.5px] font-semibold text-siarc-green">{{ $chg }}</span>
         @else
-            <span class="inline-flex items-center gap-1 mt-2 text-[11px] font-semibold {{ $isUp ? 'text-siarc-green' : 'text-siarc-red' }}">
-                <i data-lucide="{{ $isUp ? 'arrow-up' : 'arrow-down' }}" class="w-3 h-3"></i>{{ $chg }}<span class="text-[#B0AB9F] font-normal">vs dernier salon</span>
+            <span class="inline-flex items-center gap-1 mt-2.5 text-[11.5px] font-semibold {{ $chgCls }}">
+                <i data-lucide="{{ $dir }}" class="w-3.5 h-3.5"></i>{{ $chg }}<span class="text-[#B0AB9F] font-normal">vs dernier salon</span>
             </span>
         @endif
     </div>
     @endforeach
 </div>
 
-<div class="grid lg:grid-cols-3 gap-5">
+<div class="grid grid-cols-1 xl:grid-cols-[1fr_326px] gap-5">
     {{-- ══ MAIN COLUMN ══ --}}
-    <div class="lg:col-span-2 space-y-5">
+    <div class="min-w-0 space-y-5">
 
-        {{-- ── Matchmaking concept: Acheteurs ↔ Exposants ─────────────────────── --}}
-        <div class="siarc-card siarc-shadow overflow-hidden siarc-in">
-            <div class="siarc-kente"></div>
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-5">
+        {{-- ── Tabs + search panel ─────────────────────────────────────────────── --}}
+        <div class="siarc-card siarc-shadow siarc-in overflow-hidden">
+            {{-- Tabs --}}
+            <div class="flex items-center gap-7 px-6 pt-4 border-b border-[#EFEDE6]">
+                <button class="relative text-[13.5px] font-bold text-siarc-green pb-3">
+                    Recherche de partenaires
+                    <span class="absolute left-0 -bottom-px w-full h-[3px] rounded-full bg-siarc-green"></span>
+                </button>
+                <button class="text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]">Entreprises recommandées</button>
+                <button class="text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]">Requêtes reçues</button>
+                <button class="text-[13.5px] font-semibold text-[#8A857A] pb-3 hover:text-[#3B382F]">Disponibilités</button>
+            </div>
+
+            {{-- Search row --}}
+            <div class="px-6 pt-5 pb-4">
+                <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end">
                     <div>
-                        <p class="siarc-kicker text-siarc-ochre">Mise en relation</p>
-                        <h2 class="font-display text-[20px] font-extrabold text-[#161513] mt-1.5">Acheteurs <span class="text-siarc-ochre">↔</span> Exposants</h2>
+                        <label class="block text-[11.5px] font-semibold text-[#8A857A] mb-1.5">Que recherchez-vous ?</label>
+                        <input type="text" placeholder="Produit, service, compétence..." class="w-full rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] placeholder-[#B0AB9F] focus:outline-none focus:border-siarc-green">
                     </div>
-                    @foreach($sLinks as $lk)
-                        @if(mb_strtolower($lk['label'] ?? '') === 'matchmaking' || ($loop->first))
-                        <a href="{{ $lk['href'] ?? '#' }}" class="siarc-btn siarc-btn-green px-4 py-2 text-[12.5px]"><i data-lucide="handshake" class="w-4 h-4"></i>{{ $lk['label'] ?? 'Matchmaking' }}</a>
-                        @break
-                        @endif
-                    @endforeach
+                    <div>
+                        <label class="block text-[11.5px] font-semibold text-[#8A857A] mb-1.5">Catégorie</label>
+                        <div class="flex items-center justify-between rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] bg-white">Toutes les catégories<i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></div>
+                    </div>
+                    <div>
+                        <label class="block text-[11.5px] font-semibold text-[#8A857A] mb-1.5">Pays / Région</label>
+                        <div class="flex items-center justify-between rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] bg-white">Tous les pays<i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></div>
+                    </div>
+                    <button class="siarc-btn siarc-btn-green px-5 py-2.5 text-[12.5px] justify-center whitespace-nowrap"><i data-lucide="search" class="w-4 h-4"></i>Rechercher</button>
                 </div>
-
-                <div class="grid grid-cols-2 gap-5 items-stretch relative">
-                    {{-- Acheteurs --}}
-                    <div class="rounded-2xl border border-[#E8EFFB] bg-[#F6F9FE] p-5">
-                        <div class="flex items-center gap-2.5 mb-3">
-                            <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#E8EFFB]"><i data-lucide="users" class="w-[18px] h-[18px]" style="color:#3565DE"></i></span>
-                            <div>
-                                <p class="text-[12.5px] font-bold text-[#1A1712]">Acheteurs</p>
-                                <p class="text-[10.5px] text-[#8A857A]">Distributeurs & importateurs</p>
-                            </div>
-                        </div>
-                        <p class="font-display text-[26px] font-extrabold text-[#161513] leading-none">640</p>
-                        <p class="text-[11px] text-[#8A857A] mt-1">profils acheteurs actifs</p>
-                        <div class="mt-3 flex flex-wrap gap-1.5">
-                            @foreach(['Mobilier','Textile','Décoration','Agro'] as $t)
-                            <span class="text-[10.5px] font-medium px-2 py-0.5 rounded-full bg-white border border-[#E8EFFB] text-[#2B4F9E]">{{ $t }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- connector --}}
-                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full bg-white siarc-shadow flex items-center justify-center border border-[#ECEAE3]">
-                        <i data-lucide="handshake" class="w-5 h-5 text-siarc-ochre"></i>
-                    </div>
-
-                    {{-- Exposants --}}
-                    <div class="rounded-2xl border border-[#E2F3E8] bg-[#F5FBF7] p-5">
-                        <div class="flex items-center gap-2.5 mb-3">
-                            <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#E2F3E8]"><i data-lucide="store" class="w-[18px] h-[18px]" style="color:#157A43"></i></span>
-                            <div>
-                                <p class="text-[12.5px] font-bold text-[#1A1712]">Exposants</p>
-                                <p class="text-[10.5px] text-[#8A857A]">Artisans & coopératives</p>
-                            </div>
-                        </div>
-                        <p class="font-display text-[26px] font-extrabold text-[#161513] leading-none">842</p>
-                        <p class="text-[11px] text-[#8A857A] mt-1">profils exposants actifs</p>
-                        <div class="mt-3 flex flex-wrap gap-1.5">
-                            @foreach(['Bois','Tissus','Bijouterie','Poterie'] as $t)
-                            <span class="text-[10.5px] font-medium px-2 py-0.5 rounded-full bg-white border border-[#E2F3E8] text-siarc-green">{{ $t }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-5 flex items-center justify-between rounded-xl bg-[#FBFAF6] border border-[#EFEDE6] px-4 py-3">
-                    <div class="flex items-center gap-2 text-[12px] text-[#3B382F]">
-                        <i data-lucide="circle-dot" class="w-4 h-4 text-siarc-green"></i>
-                        <span><span class="font-bold text-[#161513]">87%</span> de taux de correspondance moyen</span>
-                    </div>
-                    <span class="text-[11.5px] font-semibold text-siarc-green">1 248 mises en relation</span>
+                <div class="flex justify-end mt-3">
+                    <button class="inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-siarc-green hover:underline"><i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>Recherche avancée</button>
                 </div>
             </div>
         </div>
 
-        {{-- ── Meetings schedule table (REAL data) ────────────────────────────── --}}
-        <div class="siarc-card siarc-shadow overflow-hidden siarc-in">
-            <div class="flex items-center justify-between p-5 pb-4 border-b border-[#EFEDE6]">
-                <h3 class="text-[14px] font-bold text-[#1A1712]">{{ $meetTable['title'] ?? "Rendez-vous d'affaires" }}</h3>
-                {{-- filter chips (visual) --}}
-                <div class="flex items-center gap-1.5">
-                    <button class="text-[11.5px] font-semibold px-3 py-1.5 rounded-lg bg-siarc-green text-white">Tous</button>
-                    <button class="text-[11.5px] font-semibold px-3 py-1.5 rounded-lg border border-[#EFEDE6] text-[#55524A] hover:bg-[#FBFAF6]">Confirmés</button>
-                    <button class="text-[11.5px] font-semibold px-3 py-1.5 rounded-lg border border-[#EFEDE6] text-[#55524A] hover:bg-[#FBFAF6]">Demandés</button>
+        {{-- ── Result count + sort ─────────────────────────────────────────────── --}}
+        <div class="flex items-center justify-between px-1">
+            <p class="text-[13px] text-[#3B382F]"><span class="font-bold text-[#161513]">1,248</span> résultats trouvés</p>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 text-[12px] text-[#8A857A]">
+                    Trier par :
+                    <span class="inline-flex items-center gap-1.5 rounded-lg border border-[#EFEDE6] px-2.5 py-1.5 text-[12px] font-semibold text-[#3B382F] bg-white">Pertinence<i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-[#E2F3E8] text-siarc-green"><i data-lucide="grid-3x3" class="w-4 h-4"></i></button>
+                    <button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#B0AB9F] hover:bg-[#FBFAF6]"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                    <button class="w-8 h-8 rounded-lg flex items-center justify-center text-[#B0AB9F] hover:bg-[#FBFAF6]"><i data-lucide="menu" class="w-4 h-4"></i></button>
                 </div>
             </div>
+        </div>
 
-            @php $cols = $meetTable['cols'] ?? ['Demandeur','Exposant hôte','Horaire','Statut']; $rows = $meetTable['rows'] ?? []; @endphp
+        {{-- ── Result cards ────────────────────────────────────────────────────── --}}
+        <div class="siarc-card siarc-shadow siarc-in overflow-hidden divide-y divide-[#F1EFE9]">
+            @foreach($cards as $c)
+            <div class="p-5 hover:bg-[#FCFBF8] transition-colors">
+                <div class="flex gap-5">
+                    {{-- Logo --}}
+                    <span class="w-14 h-14 rounded-full border border-[#ECEAE3] bg-white flex items-center justify-center shrink-0 overflow-hidden">
+                        <img src="{{ asset('images/siarc/'.$c['logo']) }}" alt="{{ $c['name'] }}" class="w-full h-full object-contain">
+                    </span>
 
-            @if(count($rows))
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-[11px] uppercase tracking-wide text-[#8A857A] bg-[#FBFAF6]">
-                            @foreach($cols as $c)
-                            <th class="px-5 py-3 font-semibold {{ $loop->last ? 'text-right' : '' }}">{{ $c }}</th>
+                    {{-- Identity + description --}}
+                    <div class="w-[280px] shrink-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="text-[15px] font-extrabold text-[#161513]">{{ $c['name'] }}</h3>
+                            <span class="text-[10.5px] font-semibold px-2 py-0.5 rounded-full" style="{{ $tagStyle($c['tagTone']) }}">{{ $c['tag'] }}</span>
+                        </div>
+                        <p class="flex items-center gap-1.5 text-[12px] text-[#55524A] mt-1.5">{{ $c['loc'] }} <span class="text-[13px] leading-none">{{ $c['flag'] }}</span></p>
+                        <p class="text-[12px] text-[#55524A] leading-snug mt-2">{{ $c['desc'] }}</p>
+                        <div class="flex flex-wrap gap-1.5 mt-3">
+                            @foreach($c['chips'] as $chip)
+                            <span class="text-[10.5px] font-medium px-2.5 py-0.5 rounded-full bg-[#F0F4FB] text-[#2B4F9E]">{{ $chip }}</span>
                             @endforeach
-                            <th class="px-5 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[#F1EFE9]">
-                        @foreach($rows as $row)
-                        @php $cells = $row['cells'] ?? []; $href = $row['href'] ?? null; $last = count($cells)-1; @endphp
-                        <tr class="hover:bg-[#FBFAF6] transition-colors">
-                            @foreach($cells as $i => $cell)
-                                @php $cellTxt = is_array($cell) ? ($cell['badge'] ?? '') : (string)$cell; @endphp
-                                @if($i === $last && is_array($cell))
-                                    @php [$bg,$fg] = $tone($cellTxt); @endphp
-                                    <td class="px-5 py-3.5 text-right">
-                                        <span class="inline-flex items-center gap-1.5 text-[11.5px] font-semibold px-2.5 py-1 rounded-full" style="background:{{ $bg }};color:{{ $fg }}">
-                                            <span class="w-1.5 h-1.5 rounded-full" style="background:{{ $fg }}"></span>{{ $cellTxt }}
-                                        </span>
-                                    </td>
-                                @elseif($i === 0)
-                                    <td class="px-5 py-3.5">
-                                        <div class="flex items-center gap-2.5">
-                                            <span class="w-8 h-8 rounded-lg siarc-green-tile flex items-center justify-center text-[11px] font-bold text-white shrink-0" style="background:#157A43">{{ mb_strtoupper(mb_substr(trim($cellTxt),0,2)) }}</span>
-                                            <span class="text-[13px] font-semibold text-[#1A1712]">{{ $cellTxt }}</span>
-                                        </div>
-                                    </td>
-                                @else
-                                    <td class="px-5 py-3.5 text-[12.5px] text-[#55524A]">{{ $cellTxt }}</td>
-                                @endif
-                            @endforeach
-                            <td class="px-5 py-3.5 text-right">
-                                @if($href)
-                                <a href="{{ $href }}" class="inline-flex items-center gap-1 text-[11.5px] font-semibold text-siarc-green hover:gap-1.5 transition-all">Détails <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </div>
+                    </div>
+
+                    {{-- Interest / partnership --}}
+                    <div class="flex-1 min-w-0 pt-0.5">
+                        <p class="text-[11px] font-bold text-[#161513]">Intérêt recherché</p>
+                        <p class="text-[12px] text-[#55524A] mt-1">{{ $c['interest'] }}</p>
+                        <p class="text-[11px] font-bold text-[#161513] mt-4">Type de partenariat</p>
+                        <p class="text-[12px] text-[#55524A] mt-1">{{ $c['partnership'] }}</p>
+                    </div>
+
+                    {{-- Compatibility donut --}}
+                    <div class="w-[92px] shrink-0 flex flex-col items-center pt-0.5">
+                        <p class="text-[11px] text-[#8A857A] mb-2">Compatibilité</p>
+                        @php $pct = (int) rtrim($c['score'],'%'); $circ = 2 * 3.14159 * 26; $dash = $circ * $pct / 100; @endphp
+                        <div class="relative w-[64px] h-[64px]">
+                            <svg viewBox="0 0 64 64" class="w-full h-full -rotate-90">
+                                <circle cx="32" cy="32" r="26" fill="none" stroke="#EDEBE4" stroke-width="6"></circle>
+                                <circle cx="32" cy="32" r="26" fill="none" stroke="#157A43" stroke-width="6" stroke-linecap="round" stroke-dasharray="{{ $dash }} {{ $circ }}"></circle>
+                            </svg>
+                            <span class="absolute inset-0 flex items-center justify-center text-[13px] font-extrabold text-[#161513]">{{ $c['score'] }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="w-[150px] shrink-0 flex flex-col gap-2 pt-0.5">
+                        <a href="{{ $h('siarc.admin.matchmaking') }}" class="siarc-btn siarc-btn-green justify-center py-2.5 text-[12px]">Demander un RDV</a>
+                        <a href="{{ $h('siarc.admin.matchmaking') }}" class="siarc-btn justify-center py-2.5 text-[12px] border border-[#EFEDE6] text-[#3B382F] hover:bg-[#FBFAF6]">Voir le profil</a>
+                        <button class="self-end w-8 h-8 rounded-full flex items-center justify-center text-[#B0AB9F] hover:text-siarc-red hover:bg-[#FBE3E3]"><i data-lucide="heart" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
             </div>
-            @else
-            <div class="p-10 text-center">
-                <span class="w-12 h-12 mx-auto rounded-xl bg-[#F0EAFB] flex items-center justify-center mb-3"><i data-lucide="calendar-clock" class="w-6 h-6 text-[#7C4FE0]"></i></span>
-                <p class="text-[13px] font-semibold text-[#1A1712]">Aucun rendez-vous pour le moment</p>
-                <p class="text-[12px] text-[#8A857A] mt-1">Les rendez-vous d'affaires planifiés apparaîtront ici.</p>
-            </div>
-            @endif
+            @endforeach
+        </div>
+
+        {{-- ── Load more ───────────────────────────────────────────────────────── --}}
+        <div class="flex justify-center">
+            <button class="siarc-btn px-6 py-2.5 text-[12.5px] font-semibold border border-[#EFEDE6] text-[#3B382F] bg-white siarc-shadow hover:bg-[#FBFAF6]">Charger plus de résultats <i data-lucide="chevron-down" class="w-4 h-4"></i></button>
         </div>
     </div>
 
     {{-- ══ SIDEBAR ══ --}}
     <div class="space-y-5">
 
-        {{-- Live stats from $sStats (real) --}}
+        {{-- Filtres rapides --}}
         <div class="siarc-card siarc-shadow p-5 siarc-in">
-            <h3 class="text-[13.5px] font-bold text-[#1A1712] mb-4">Aperçu des rendez-vous</h3>
-            @if(count($sStats))
-            <ul class="space-y-3">
-                @php $palette = [['#E2F3E8','#157A43','handshake'],['#E8EFFB','#3565DE','check-circle-2'],['#FBF0D6','#9A6B00','calendar-clock']]; @endphp
-                @foreach($sStats as $i => $st)
-                @php [$tile,$fg,$ic] = $palette[$i % count($palette)]; @endphp
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-[14px] font-bold text-[#1A1712]">Filtres rapides</h3>
+                <button class="text-[11.5px] font-semibold text-siarc-green hover:underline">Réinitialiser</button>
+            </div>
+            <div class="space-y-3.5">
+                @foreach(['Intérêt principal'=>'Tous','Type de partenariat'=>'Tous','Secteur d\'activité'=>'Tous','Pays / Région'=>'Tous'] as $flabel => $fval)
+                <div>
+                    <label class="block text-[11.5px] font-semibold text-[#55524A] mb-1.5">{{ $flabel }}</label>
+                    <div class="flex items-center justify-between rounded-xl border border-[#EFEDE6] px-3.5 py-2.5 text-[12.5px] text-[#3B382F] bg-white">{{ $fval }}<i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></div>
+                </div>
+                @endforeach
+
+                <label class="flex items-center gap-2.5 text-[12.5px] text-[#3B382F] pt-0.5 cursor-pointer">
+                    <span class="w-4 h-4 rounded bg-siarc-green flex items-center justify-center shrink-0"><i data-lucide="check" class="w-3 h-3 text-white"></i></span>
+                    Disponibles pour des RDV
+                </label>
+                <label class="flex items-center gap-2.5 text-[12.5px] text-[#3B382F] cursor-pointer">
+                    <span class="w-4 h-4 rounded border border-[#D8D5CC] bg-white shrink-0"></span>
+                    Entreprises premium
+                </label>
+
+                <button class="w-full siarc-btn justify-center py-2.5 text-[12.5px] mt-1" style="background:#0B3A1E;color:#fff">Appliquer les filtres</button>
+            </div>
+        </div>
+
+        {{-- Recommandés pour vous --}}
+        <div class="siarc-card siarc-shadow p-5 siarc-in">
+            <h3 class="flex items-center gap-1.5 text-[14px] font-bold text-[#1A1712] mb-4">Recommandés pour vous <i data-lucide="help-circle" class="w-3.5 h-3.5 text-[#B0AB9F]"></i></h3>
+            <ul class="space-y-4">
+                @foreach($recos as $r)
                 <li class="flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style="background:{{ $tile }}"><i data-lucide="{{ $ic }}" class="w-[18px] h-[18px]" style="color:{{ $fg }}"></i></span>
-                    <span class="text-[12.5px] text-[#3B382F] font-medium">{{ is_array($st) ? ($st[4] ?? $st['label'] ?? '') : $st }}</span>
-                    <span class="ml-auto font-display text-[18px] font-extrabold text-[#161513]">{{ is_array($st) ? ($st[3] ?? $st['value'] ?? '—') : '—' }}</span>
+                    <span class="w-9 h-9 rounded-full border border-[#ECEAE3] bg-white flex items-center justify-center shrink-0 overflow-hidden">
+                        <img src="{{ asset('images/siarc/'.$r['logo']) }}" alt="{{ $r['name'] }}" class="w-full h-full object-contain">
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-[12px] font-bold text-[#1A1712] truncate">{{ $r['name'] }}</p>
+                        <p class="text-[11px] text-[#8A857A] truncate">{{ $r['loc'] }}</p>
+                    </div>
+                    <span class="ml-auto inline-flex items-center gap-1 text-[11.5px] font-semibold text-siarc-green shrink-0"><i data-lucide="badge-check" class="w-3.5 h-3.5"></i>{{ $r['score'] }}</span>
+                    <a href="{{ $h('siarc.admin.matchmaking') }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline shrink-0">Voir profil</a>
                 </li>
                 @endforeach
             </ul>
-            @else
-            <p class="text-[12px] text-[#8A857A]">Aucune donnée disponible.</p>
-            @endif
+            <a href="{{ $h('siarc.admin.matchmaking') }}" class="flex items-center justify-end gap-1.5 text-[12px] font-semibold text-siarc-green mt-4 hover:gap-2 transition-all">Voir toutes les recommandations <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
         </div>
 
-        {{-- Quick links from $sLinks (real) --}}
-        <div class="siarc-card siarc-shadow p-5 siarc-in">
-            <h3 class="text-[13.5px] font-bold text-[#1A1712] mb-4">Accès rapide</h3>
-            <div class="space-y-2.5">
-                @php $linkIcons = ['matchmaking'=>['handshake','#E2F3E8','#157A43'],'messagerie'=>['mail','#E8EFFB','#3565DE'],'messages'=>['mail','#E8EFFB','#3565DE']]; @endphp
-                @forelse($sLinks as $lk)
-                    @php $key = mb_strtolower($lk['label'] ?? ''); [$ic,$tile,$fg] = $linkIcons[$key] ?? ['arrow-right','#EFEDE6','#55524A']; @endphp
-                    <a href="{{ $lk['href'] ?? '#' }}" class="flex items-center gap-3 rounded-xl border border-[#EFEDE6] p-3 hover:border-[#D8E5DC] hover:bg-[#FBFAF6] transition-colors group">
-                        <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style="background:{{ $tile }}"><i data-lucide="{{ $ic }}" class="w-[18px] h-[18px]" style="color:{{ $fg }}"></i></span>
-                        <span class="text-[12.5px] font-semibold text-[#3B382F]">{{ $lk['label'] ?? '' }}</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-[#B0AB9F] ml-auto group-hover:translate-x-0.5 transition-transform"></i>
-                    </a>
-                @empty
-                    <p class="text-[12px] text-[#8A857A]">Aucun lien disponible.</p>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- Filters (visual concept) --}}
+        {{-- Prochains rendez-vous --}}
         <div class="siarc-card siarc-shadow p-5 siarc-in">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-[13.5px] font-bold text-[#1A1712]">Filtres rapides</h3>
-                <button class="text-[11px] font-semibold text-siarc-green hover:underline">Réinitialiser</button>
+                <h3 class="text-[14px] font-bold text-[#1A1712]">Prochains rendez-vous</h3>
+                <a href="{{ $h('siarc.admin.matchmaking') }}" class="text-[11.5px] font-semibold text-siarc-green hover:underline">Voir tout</a>
             </div>
-            <div class="space-y-3">
-                @foreach(['Type de partenariat'=>'Tous','Secteur d\'activité'=>'Tous','Pays / Région'=>'Tous'] as $flabel => $fval)
-                <div>
-                    <label class="block text-[11px] font-semibold text-[#8A857A] mb-1.5">{{ $flabel }}</label>
-                    <div class="flex items-center justify-between rounded-xl border border-[#EFEDE6] px-3 py-2.5 text-[12.5px] text-[#3B382F] bg-white">
-                        {{ $fval }}<i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i>
+            <ul class="space-y-4">
+                @foreach($upcoming as $m)
+                <li class="flex gap-3">
+                    <span class="w-11 shrink-0 rounded-xl bg-[#E2F3E8] flex flex-col items-center justify-center py-1.5">
+                        <span class="text-[15px] font-extrabold text-siarc-green leading-none">{{ $m['day'] }}</span>
+                        <span class="text-[9px] font-bold text-siarc-green mt-0.5 tracking-wide">{{ $m['mon'] }}</span>
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[11px] text-[#8A857A]">{{ $m['time'] }}</p>
+                        <p class="text-[12px] font-bold text-[#1A1712] mt-0.5 truncate">{{ $m['title'] }}</p>
+                        <p class="text-[11px] text-[#8A857A] mt-0.5 truncate">{{ $m['sub'] }}</p>
                     </div>
-                </div>
+                    <span class="self-start text-[10.5px] font-semibold px-2 py-0.5 rounded-full shrink-0" style="{{ $tagStyle($m['tone']) }}">{{ $m['status'] }}</span>
+                </li>
                 @endforeach
-                <label class="flex items-center gap-2 text-[12px] text-[#3B382F] pt-1">
-                    <span class="w-4 h-4 rounded bg-siarc-green flex items-center justify-center"><i data-lucide="check-circle-2" class="w-3 h-3 text-white"></i></span>
-                    Disponibles pour des RDV
-                </label>
-                <button class="w-full siarc-btn siarc-btn-green justify-center py-2.5 text-[12.5px] mt-1">Appliquer les filtres</button>
-            </div>
+            </ul>
+            <a href="{{ $h('siarc.admin.matchmaking') }}" class="flex items-center justify-end gap-1.5 text-[12px] font-semibold text-siarc-green mt-4 hover:gap-2 transition-all">Voir mon agenda complet <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
         </div>
     </div>
 </div>
