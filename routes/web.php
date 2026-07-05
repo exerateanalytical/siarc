@@ -30,6 +30,17 @@ Route::get('/galerie/produits/{slug}', [FrontendController::class, 'productShow'
 use App\Http\Controllers\MessagingWebController;
 
 Route::post('/galerie/messages', [MessagingWebController::class, 'send'])->name('messages.send')->middleware('verified.email');
+Route::get('/galerie/messages/nouveau', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (! $siacUser) return redirect('/login?next=' . urlencode($request->fullUrl()));
+    $lang = webLang($request);
+    $business = DB::table('businesses')->where('slug', $request->query('business'))->whereNull('deleted_at')->first(['name_fr', 'name_en', 'slug']);
+    abort_if(! $business, 404);
+    $product = $request->query('product')
+        ? DB::table('products')->where('slug', $request->query('product'))->whereNull('deleted_at')->first(['name_fr', 'slug'])
+        : null;
+    return view('pages.messages.compose', compact('lang', 'siacUser', 'business', 'product'));
+})->name('messages.compose');
 Route::get('/tableau-de-bord/messages', [MessagingWebController::class, 'inbox'])->name('messages.inbox');
 Route::get('/tableau-de-bord/messages/{id}', [MessagingWebController::class, 'thread'])->name('messages.thread');
 Route::post('/tableau-de-bord/messages/{id}/repondre', [MessagingWebController::class, 'reply'])->name('messages.reply')->middleware('verified.email');
@@ -1480,6 +1491,13 @@ Route::post('/creer-mon-compte', function (Request $request) {
         'role'     => 'business_owner',
         'is_admin' => false,
     ]]);
+
+    // Send the email-verification code now, so the verify page isn't an empty inbox.
+    try {
+        app(\App\Modules\Auth\Services\OtpService::class)->send($email, 'email_verification', 'email', $userId, $isFr ? 'fr' : 'en');
+    } catch (\Throwable $e) {
+        // Non-fatal: the user can request a fresh code from the verification page.
+    }
 
     return redirect('/creer-mon-compte?submitted=1');
 })->name('onboarding.store')->middleware('throttle:10,1');

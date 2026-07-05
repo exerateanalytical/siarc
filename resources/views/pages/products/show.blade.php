@@ -146,10 +146,21 @@
                 @if(($product->created_at ?? null) && $product->created_at->gt(now()->subDays(60)))
                 <span class="absolute top-4 left-4 bg-[#0E3D26] text-white text-[10px] font-bold tracking-[0.06em] uppercase rounded-md px-2.5 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
                 @endif
-                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                @if($siacUser)
+                <form method="POST" action="{{ route('products.toggle-save', $product->slug) }}" class="absolute top-3.5 right-3.5">
+                    @csrf
+                    <input type="hidden" name="return_to" value="{{ url()->full() }}">
+                    <button type="submit" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                        class="w-9 h-9 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
+                        <i data-lucide="heart" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                @else
+                <a href="/login?lang={{ $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                     class="absolute top-3.5 right-3.5 w-9 h-9 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
                     <i data-lucide="heart" class="w-4 h-4"></i>
                 </a>
+                @endif
                 <button type="button" id="gal-prev" aria-label="{{ $isFr ? 'Image précédente' : 'Previous image' }}"
                     class="absolute left-3.5 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
                     <i data-lucide="chevron-left" class="w-[18px] h-[18px]"></i>
@@ -229,12 +240,12 @@
 
             <!-- CTA buttons -->
             <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
                     class="h-[46px] bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center gap-2.5 text-[11.5px] font-bold tracking-[0.08em] uppercase transition-colors">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer une demande (Enquiry)' : 'Send an enquiry' }}
                 </a>
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
                     class="h-[46px] bg-white border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center gap-2.5 text-[11.5px] font-bold tracking-[0.08em] uppercase text-[#1D1B16] transition-colors">
                     <i data-lucide="message-square" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer un message' : 'Send a message' }}
@@ -267,12 +278,25 @@
                     </span>
                     <span class="text-[11px] text-[#3A3A35]">{{ $isFr ? 'Partager' : 'Share' }}</span>
                 </button>
-                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="flex flex-col items-center gap-1.5 group">
+                @if($siacUser)
+                <form method="POST" action="{{ route('products.toggle-save', $product->slug) }}" class="flex flex-col items-center gap-1.5 group">
+                    @csrf
+                    <input type="hidden" name="return_to" value="{{ url()->full() }}">
+                    <button type="submit" class="flex flex-col items-center gap-1.5">
+                        <span class="w-11 h-11 rounded-full bg-white border border-[#F3C9C9] flex items-center justify-center text-[#D93838] group-hover:border-[#D93838] transition-colors">
+                            <i data-lucide="heart" class="w-[18px] h-[18px]"></i>
+                        </span>
+                        <span class="text-[11px] text-[#3A3A35]">{{ $isFr ? 'Ajouter aux favoris' : 'Add to favorites' }}</span>
+                    </button>
+                </form>
+                @else
+                <a href="/login?lang={{ $lang }}" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-white border border-[#F3C9C9] flex items-center justify-center text-[#D93838] group-hover:border-[#D93838] transition-colors">
                         <i data-lucide="heart" class="w-[18px] h-[18px]"></i>
                     </span>
                     <span class="text-[11px] text-[#3A3A35]">{{ $isFr ? 'Ajouter aux favoris' : 'Add to favorites' }}</span>
                 </a>
+                @endif
             </div>
 
             <!-- Custom request note -->
@@ -429,7 +453,7 @@
                             <p class="mt-2 text-[11.5px] text-[#55524A] leading-relaxed">
                                 {{ $isFr ? 'Vous souhaitez un motif ou une taille différente ? Cet artisan peut réaliser des pièces sur mesure selon vos préférences.' : 'Would you like a different pattern or size? This artisan can craft custom pieces to your preferences.' }}
                             </p>
-                            <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}"
+                            <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
                                 class="mt-3.5 w-full h-[36px] bg-white border border-[#E0D9C6] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] transition-colors">
                                 <i data-lucide="message-circle" class="w-[14px] h-[14px]"></i>
                                 {{ $isFr ? 'Demander une personnalisation' : 'Request a customisation' }}
@@ -503,10 +527,21 @@
                     @elseif($relBadge === 'best')
                     <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
                     @endif
-                    <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                    @if($siacUser)
+                    <form method="POST" action="{{ route('products.toggle-save', $rel->slug) }}" class="absolute top-2 right-2">
+                        @csrf
+                        <input type="hidden" name="return_to" value="{{ url()->full() }}">
+                        <button type="submit" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                            class="w-8 h-8 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
+                            <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
+                        </button>
+                    </form>
+                    @else
+                    <a href="/login?lang={{ $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                         class="absolute top-2 right-2 w-8 h-8 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
                         <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
                     </a>
+                    @endif
                 </div>
                 <div class="p-3">
                     <h3 class="text-[12.5px] font-bold text-[#1D1B16] truncate">

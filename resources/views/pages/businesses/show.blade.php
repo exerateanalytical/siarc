@@ -191,12 +191,12 @@
                     ID&nbsp;: {{ $vendorId }}
                 </p>
 
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
                     class="mt-4 w-full h-[42px] bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center gap-2.5 text-[12.5px] font-semibold transition-colors">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer une demande (Enquiry)' : 'Send an enquiry' }}
                 </a>
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
                     class="mt-2.5 w-full h-[42px] bg-white border border-[#E0B453] hover:bg-[#FBF6E8] rounded-lg flex items-center justify-center gap-2.5 text-[12.5px] font-semibold text-[#8A6D1F] transition-colors">
                     <i data-lucide="message-square" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer un message' : 'Send a message' }}
@@ -418,10 +418,20 @@
                                 @if($fpBadge === 'best')
                                 <span class="absolute bottom-1.5 left-1.5 bg-[#EFA912] text-white text-[8px] font-bold tracking-[0.05em] uppercase rounded px-1.5 py-0.5">Best-seller</span>
                                 @endif
-                                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Favoris' : 'Favorites' }}"
+                                @if($siacUser)
+                                <form method="POST" action="{{ route('products.toggle-save', $fp->slug) }}" class="absolute top-1.5 right-1.5">
+                                    @csrf
+                                    <input type="hidden" name="return_to" value="{{ url()->full() }}">
+                                    <button type="submit" aria-label="{{ $isFr ? 'Favoris' : 'Favorites' }}" class="w-6 h-6 bg-white/95 rounded-full flex items-center justify-center text-[#1D1B16]">
+                                        <i data-lucide="heart" class="w-3 h-3"></i>
+                                    </button>
+                                </form>
+                                @else
+                                <a href="/login?lang={{ $lang }}" aria-label="{{ $isFr ? 'Favoris' : 'Favorites' }}"
                                     class="absolute top-1.5 right-1.5 w-6 h-6 bg-white/95 rounded-full flex items-center justify-center text-[#1D1B16]">
                                     <i data-lucide="heart" class="w-3 h-3"></i>
                                 </a>
+                                @endif
                             </div>
                             <div class="p-2.5">
                                 <h3 class="text-[11.5px] font-bold text-[#1D1B16] truncate">

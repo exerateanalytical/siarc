@@ -26,10 +26,21 @@
             @endif
         </a>
         <span class="absolute top-2 left-2 bg-[#EFA912] text-[#3A2A03] text-[10px] font-bold tracking-[0.04em] px-2.5 py-1 rounded-md">{{ $bcType }}</span>
-        <a href="{{ $bcUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+        @if($bcUser)
+        <form method="POST" action="{{ route('businesses.toggle-save', $business->slug) }}" class="absolute top-2 right-2">
+            @csrf
+            <input type="hidden" name="return_to" value="{{ url()->full() }}">
+            <button type="submit" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                class="w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-[#55524A] hover:text-[#C0010C] transition-colors">
+                <i data-lucide="heart" class="w-4 h-4" style="stroke-width:1.8"></i>
+            </button>
+        </form>
+        @else
+        <a href="/login?lang={{ $lang }}" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
             class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow flex items-center justify-center text-[#55524A] hover:text-[#C0010C] transition-colors">
             <i data-lucide="heart" class="w-4 h-4" style="stroke-width:1.8"></i>
         </a>
+        @endif
     </div>
     <div class="p-3.5 flex-1 flex flex-col">
         <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16]">
@@ -60,7 +71,7 @@
                 class="flex-1 h-[34px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] transition-colors">
                 {{ $bcIsFr ? 'Voir le profil' : 'View profile' }}
             </a>
-            <a href="{{ $bcUser ? route('messages.inbox') : '/login?lang=' . $lang }}" aria-label="{{ $bcIsFr ? 'Envoyer un message' : 'Send a message' }}"
+            <a href="{{ $bcUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}" aria-label="{{ $bcIsFr ? 'Envoyer un message' : 'Send a message' }}"
                 class="w-[38px] h-[34px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center text-[#55524A] transition-colors">
                 <i data-lucide="message-square" class="w-[15px] h-[15px]"></i>
             </a>
