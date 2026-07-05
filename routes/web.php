@@ -3000,7 +3000,7 @@ Route::get('/verification-certificat', function (Request $request) {
             ->whereNull('b.deleted_at')
             ->where('b.certificate_no', $numero)
             ->first([
-                'b.name_fr', 'b.name_en', 'b.slug', 'b.vendor_type', 'b.status',
+                'b.id', 'b.name_fr', 'b.name_en', 'b.slug', 'b.vendor_type', 'b.status',
                 'b.certificate_no', 'b.certificate_issued_at', 'b.certificate_expires_at', 'b.certificate_revoked_at',
                 'i.name_fr as industry_fr', 'i.name_en as industry_en', 'r.name_fr as region_fr', 'r.name_en as region_en',
             ]);

@@ -44,6 +44,18 @@
         ['shield-check',   $isFr ? 'Statut' : 'Status',                           $state[4], true],
     ] : [];
 
+    // Personalised certificate canvas (real name/number/dates over the design).
+    $seed = $b ? md5('gvn-cert-' . $b->id) : '';
+    $certCanvas = $found ? [
+        'ccName'   => mb_strtoupper($certName),
+        'ccNumber' => $b->certificate_no,
+        'ccCode'   => strtoupper(substr($seed, 6, 4) . '-' . substr($seed, 10, 4) . '-' . substr($seed, 14, 4)),
+        'ccStart'  => $fmtD($b->certificate_issued_at),
+        'ccEnd'    => $fmtD($b->certificate_expires_at),
+        'ccQrUrl'  => route('certificate.verify', ['numero' => $b->certificate_no]),
+        'ccQrId'   => 'verify-cert-qr',
+    ] : [];
+
     $securityChecks = $isFr
         ? ['Filigrane invisible', 'Hologramme 3D GVN', 'Encre UV invisible', 'Microtexte de sécurité', 'Numéro unique infalsifiable']
         : ['Invisible watermark', '3D GVN hologram', 'Invisible UV ink', 'Security microtext', 'Tamper-proof unique number'];
@@ -179,7 +191,7 @@
         </div>
         @if($found)
         <div class="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-8 px-6 sm:px-8 py-7">
-            <img src="{{ asset('images/landing/cert-image.png') }}" alt="{{ $isFr ? 'Certificat d\'adhésion' : 'Membership certificate' }}" class="w-full rounded-lg shadow-md self-start">
+            @include('pages.partials.certificate-canvas', $certCanvas)
             <div>
                 <h3 class="text-[16.5px] font-bold text-[#14532D] pb-3 border-b border-[#EDEDEB]">{{ $isFr ? 'Informations du certificat' : 'Certificate information' }}</h3>
                 <dl class="mt-4 space-y-4">
