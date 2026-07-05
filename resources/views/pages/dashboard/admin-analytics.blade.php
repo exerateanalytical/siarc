@@ -200,7 +200,7 @@
             <div class="mt-4 space-y-3.5">
                 @forelse($anCats as $i => $cat)
                 @php
-                    $cc  = (int) ($cat['c'] ?? 0);
+                    $cc  = (int) data_get($cat, 'c', 0);
                     $pct = round($cc / $anCatMax * 100);
                     $barColor = $anCatBarColors[$i] ?? '#0B4D2C';
                 @endphp
@@ -208,7 +208,7 @@
                     <div class="flex items-center justify-between text-[12.5px]">
                         <span class="flex items-center gap-2 text-[#3B382F] min-w-0">
                             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $barColor }}"></span>
-                            <span class="truncate">{{ $cat['name_fr'] ?? '—' }}</span>
+                            <span class="truncate">{{ data_get($cat, 'name_fr', '—') }}</span>
                         </span>
                         <span class="font-semibold text-[#1B1B18] shrink-0 pl-2">{{ number_format($cc) }}</span>
                     </div>

@@ -66,9 +66,11 @@ class AdminPagesRenderTest extends TestCase
 
     public function test_admin_categories_page_renders_with_real_rows(): void
     {
-        // industries base rows are seeded once in dev (not via migration), so
-        // the test DB starts empty — create real parent + child rows here to
-        // actually exercise the hierarchy/date-formatting code paths.
+        // The official craft taxonomy is now seeded by migration (000004), so the
+        // test DB already holds the real 4-level tree. We (a) assert a seeded
+        // sector renders, and (b) create a parent + child and surface them via the
+        // search filter to exercise the hierarchy/date-formatting code paths
+        // without fighting the 10-per-page pagination.
         $admin = $this->makeUser();
         $session = ['siac_user' => [
             'id' => $admin->id, 'name' => 'Admin Test', 'email' => $admin->email,
@@ -87,8 +89,15 @@ class AdminPagesRenderTest extends TestCase
             'created_at' => now(), 'updated_at' => now(),
         ]);
 
+        // (a) the seeded official taxonomy renders on the default page
         $this->withSession($session)
             ->get('/tableau-de-bord/admin/categories')
+            ->assertOk()
+            ->assertSee('Artisanat');
+
+        // (b) the parent + child hierarchy renders (search keeps them on page 1)
+        $this->withSession($session)
+            ->get('/tableau-de-bord/admin/categories?q=' . urlencode('Test'))
             ->assertOk()
             ->assertSee('Industrie Test')
             ->assertSee('Sous-Industrie Test');
