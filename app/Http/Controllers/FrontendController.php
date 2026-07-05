@@ -16,6 +16,62 @@ class FrontendController extends Controller
         return in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     }
 
+    /**
+     * Load the full official craft taxonomy as a tree with published business and
+     * product counts ROLLED UP from the leaf métiers to every ancestor (corps →
+     * filière → secteur). Returns ['all' => id-keyed rows, 'children' => grouped by
+     * parent_id, 'biz' => [id => count], 'prod' => [id => count]].
+     */
+    private function industryTree(): array
+    {
+        $all = DB::table('industries')->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get(['id', 'parent_id', 'level', 'slug', 'name_fr', 'name_en', 'image_icon', 'side_icon', 'sort_order'])
+            ->keyBy('id');
+
+        $bizDirect = DB::table('businesses')
+            ->where('status', 'published')->whereNull('deleted_at')->whereNotNull('industry_id')
+            ->groupBy('industry_id')->selectRaw('industry_id as iid, count(*) as c')->pluck('c', 'iid');
+
+        $prodDirect = DB::table('products')
+            ->join('businesses', 'products.business_id', '=', 'businesses.id')
+            ->where('products.status', 'published')->whereNull('products.deleted_at')
+            ->where('businesses.status', 'published')
+            ->groupBy('businesses.industry_id')->selectRaw('businesses.industry_id as iid, count(*) as c')->pluck('c', 'iid');
+
+        $biz = [];
+        $prod = [];
+        foreach ($all as $id => $n) {
+            $biz[$id] = (int) ($bizDirect[$id] ?? 0);
+            $prod[$id] = (int) ($prodDirect[$id] ?? 0);
+        }
+        // Deepest level first: each node adds its (already-summed) total to its parent.
+        foreach ($all->sortByDesc('level') as $n) {
+            if ($n->parent_id && isset($biz[$n->parent_id])) {
+                $biz[$n->parent_id] += $biz[$n->id];
+                $prod[$n->parent_id] += $prod[$n->id];
+            }
+        }
+
+        return ['all' => $all, 'children' => $all->groupBy('parent_id'), 'biz' => $biz, 'prod' => $prod];
+    }
+
+    /** Every industry id in the subtree rooted at $slug (self + descendants), bounded to the 4 taxonomy levels. */
+    private function descendantIndustryIds(string $slug): array
+    {
+        $root = DB::table('industries')->where('slug', $slug)->value('id');
+        if (! $root) {
+            return [];
+        }
+        $ids = [$root];
+        $frontier = [$root];
+        for ($i = 0; $i < 4 && $frontier; $i++) {
+            $frontier = DB::table('industries')->whereIn('parent_id', $frontier)->pluck('id')->all();
+            $ids = array_merge($ids, $frontier);
+        }
+        return array_values(array_unique($ids));
+    }
+
     public function home(Request $request)
     {
         $lang = $this->lang($request);
@@ -101,7 +157,10 @@ class FrontendController extends Controller
         }
 
         if ($industry) {
-            $query->whereHas('industry', fn($qb) => $qb->where('slug', $industry));
+            // Subtree-aware: filtering by a sector/filière/corps slug matches every
+            // business tagged to any métier beneath it; a leaf métier matches itself.
+            $ids = $this->descendantIndustryIds($industry);
+            $query->whereIn('industry_id', $ids ?: [-1]);
         }
 
         if ($tier) {
@@ -360,30 +419,38 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
-        $industries = Industry::withCount('businesses')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        $tree = $this->industryTree();
+        $all = $tree['all'];
+        $childrenByParent = $tree['children'];
+        $biz = $tree['biz'];
+        $prod = $tree['prod'];
 
-        // Publicly browsable products per industry (published product + published business)
-        $productCounts = DB::table('products')
-            ->join('businesses', 'products.business_id', '=', 'businesses.id')
-            ->where('products.status', 'published')
-            ->whereNull('products.deleted_at')
-            ->where('businesses.status', 'published')
-            ->groupBy('businesses.industry_id')
-            ->selectRaw('businesses.industry_id, count(*) as total')
-            ->pluck('total', 'industry_id');
+        // Current node from ?cat=<slug> (null = root = the sectors).
+        $catSlug = $request->query('cat');
+        $current = $catSlug ? $all->firstWhere('slug', $catSlug) : null;
+
+        $children = ($current
+            ? $childrenByParent->get($current->id, collect())
+            : $all->where('level', 1))->sortBy('sort_order')->values();
+
+        // Breadcrumb trail: root → current.
+        $trail = [];
+        for ($n = $current; $n; $n = ($n->parent_id ? $all->get($n->parent_id) : null)) {
+            array_unshift($trail, $n);
+        }
+
+        // The 10 illustrated tiles kept as a "featured trades" shortcut on the root.
+        $featured = $all->filter(fn ($i) => $i->image_icon)->sortBy('sort_order')->values();
 
         $sort = $request->query('sort');
         if ($sort === 'name') {
-            $industries = $industries->sortBy($lang === 'fr' ? 'name_fr' : 'name_en', SORT_NATURAL | SORT_FLAG_CASE)->values();
+            $children = $children->sortBy(fn ($c) => $lang === 'fr' ? $c->name_fr : ($c->name_en ?? $c->name_fr), SORT_NATURAL | SORT_FLAG_CASE)->values();
         } elseif ($sort === 'products') {
-            $industries = $industries->sortByDesc(fn ($i) => $productCounts[$i->id] ?? 0)->values();
+            $children = $children->sortByDesc(fn ($c) => $prod[$c->id] ?? 0)->values();
         }
 
         return response(
-            view('pages.industries.index', compact('lang', 'industries', 'productCounts', 'sort'))
+            view('pages.industries.index', compact('lang', 'all', 'childrenByParent', 'biz', 'prod', 'current', 'children', 'trail', 'featured', 'sort'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
