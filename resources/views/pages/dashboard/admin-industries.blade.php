@@ -14,9 +14,15 @@
     ];
 
     $levelTotal = max(1, array_sum($catLevelDist));
-    $levelColors = [1 => '#157A43', 2 => '#3565DE'];
+    $levelColors = [1 => '#157A43', 2 => '#3565DE', 3 => '#7C4FE0', 4 => '#C97A16'];
+    $levelTile   = [1 => '#E2F3E8', 2 => '#E8EFFB', 3 => '#F0EAFB', 4 => '#FDF3E0'];
+    $levelIcon   = [1 => 'layers', 2 => 'git-branch', 3 => 'folder', 4 => 'hammer'];
+    $levelShort  = $isFr ? [1 => 'Secteur', 2 => 'Filière', 3 => 'Corps', 4 => 'Métier']
+                         : [1 => 'Sector', 2 => 'Branch', 3 => 'Group', 4 => 'Trade'];
+    $levelLong   = $isFr ? [1 => 'Niveau 1 (Secteurs)', 2 => 'Niveau 2 (Filières)', 3 => 'Niveau 3 (Corps de métier)', 4 => 'Niveau 4 (Métiers)']
+                         : [1 => 'Level 1 (Sectors)', 2 => 'Level 2 (Branches)', 3 => 'Level 3 (Trade groups)', 4 => 'Level 4 (Trades)'];
     $deg = 0; $levelStops = [];
-    foreach ($catLevelDist as $lvl => $c) { $pct = $c / $levelTotal * 100; $start = $deg; $deg += $pct / 100 * 360; $levelStops[] = $levelColors[$lvl] . " {$start}deg {$deg}deg"; }
+    foreach ($catLevelDist as $lvl => $c) { if ($c <= 0) continue; $pct = $c / $levelTotal * 100; $start = $deg; $deg += $pct / 100 * 360; $levelStops[] = $levelColors[$lvl] . " {$start}deg {$deg}deg"; }
     $levelConic = 'conic-gradient(' . implode(', ', $levelStops) . ')';
 
     $monthsFr = [1=>'Jan',2=>'Fév',3=>'Mars',4=>'Avr',5=>'Mai',6=>'Juin',7=>'Juil',8=>'Août',9=>'Sept',10=>'Oct',11=>'Nov',12=>'Déc'];
@@ -85,21 +91,33 @@
                         <th class="px-5 py-2.5 text-right">{{ $isFr ? 'ACTIONS' : 'ACTIONS' }}</th>
                     </tr></thead>
                     <tbody>
-                        @forelse($catPagedRows as $row)
-                            @php $isSub = (bool) $row->parent_id; $subCount = $catByParent->get($row->id, collect())->count(); @endphp
-                        <tr class="border-t border-[#F1F1EF] hover:bg-[#FAFAF8] {{ $isSub ? 'bg-[#FDFDFC]' : '' }}">
+                        @foreach($ordered as $row)
+                        @php
+                            $lvl = $row->level;
+                            $hasKids = $row->sub_count > 0;
+                            $show = $filtering ? isset($visibleIds[$row->id]) : ($lvl === 1);
+                            $expanded = $filtering ? isset($visibleIds[$row->id]) : false;
+                        @endphp
+                        <tr data-cat-id="{{ $row->id }}" data-cat-parent="{{ $row->parent_id ?? '' }}" data-cat-level="{{ $lvl }}"
+                            class="cat-row border-t border-[#F1F1EF] hover:bg-[#FAFAF8] {{ $lvl > 1 ? 'bg-[#FDFDFC]' : '' }}" @unless($show) hidden @endunless>
                             <td class="px-5 py-3">
-                                <div class="flex items-center gap-2.5 {{ $isSub ? 'pl-5' : '' }}">
-                                    @if($isSub)<span class="w-1.5 h-1.5 rounded-full bg-[#3565DE] shrink-0"></span>@endif
-                                    <div class="w-9 h-9 rounded-lg bg-[#F8F8F6] border border-[#EFEFED] flex items-center justify-center shrink-0"><i data-lucide="{{ $row->icon ?? 'shapes' }}" class="w-4 h-4 text-[#8A857A]"></i></div>
+                                <div class="flex items-center gap-2" style="padding-left: {{ ($lvl - 1) * 20 }}px">
+                                    @if($hasKids)
+                                    <button type="button" data-cat-toggle="{{ $row->id }}" aria-expanded="{{ $expanded ? 'true' : 'false' }}" class="w-5 h-5 shrink-0 flex items-center justify-center rounded hover:bg-[#EEF2EE] text-[#8A857A]">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 transition-transform {{ $expanded ? 'rotate-90' : '' }}"></i>
+                                    </button>
+                                    @else
+                                    <span class="w-5 h-5 shrink-0 flex items-center justify-center"><span class="w-1.5 h-1.5 rounded-full bg-[#CBB26B]"></span></span>
+                                    @endif
+                                    <div class="w-8 h-8 rounded-lg bg-[#F8F8F6] border border-[#EFEFED] flex items-center justify-center shrink-0"><i data-lucide="{{ $levelIcon[$lvl] ?? 'shapes' }}" class="w-4 h-4" style="color: {{ $levelColors[$lvl] ?? '#8A857A' }}"></i></div>
                                     <div class="min-w-0">
-                                        <a href="{{ request()->fullUrlWithQuery(['selected' => $row->id]) }}" class="text-[12.5px] font-semibold text-[#1B1B18] hover:text-[#157A43] truncate block">{{ $isFr ? $row->name_fr : ($row->name_en ?? $row->name_fr) }}</a>
-                                        <p class="text-[11px] text-[#8A857A] truncate max-w-[220px]">{{ $row->description_fr }}</p>
+                                        <a href="{{ request()->fullUrlWithQuery(['selected' => $row->id]) }}" class="text-[12.5px] font-semibold text-[#1B1B18] hover:text-[#157A43] truncate block max-w-[340px]">{{ $isFr ? $row->name_fr : ($row->name_en ?? $row->name_fr) }}</a>
+                                        @if($row->description_fr)<p class="text-[11px] text-[#8A857A] truncate max-w-[300px]">{{ $row->description_fr }}</p>@endif
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-3 py-3"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $isSub ? 'bg-[#E8EFFB] text-[#3565DE]' : 'bg-[#E2F3E8] text-[#157A43]' }}">{{ $isSub ? ($isFr ? 'Niveau 2' : 'Level 2') : ($isFr ? 'Niveau 1' : 'Level 1') }}</span></td>
-                            <td class="px-3 py-3 text-[12.5px] text-[#3B382F]">{{ $isSub ? '—' : $subCount }}</td>
+                            <td class="px-3 py-3"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background-color: {{ $levelTile[$lvl] ?? '#F1F1EF' }}; color: {{ $levelColors[$lvl] ?? '#8A857A' }}">{{ $levelShort[$lvl] ?? ('N' . $lvl) }}</span></td>
+                            <td class="px-3 py-3 text-[12.5px] text-[#3B382F]">{{ $hasKids ? number_format($row->sub_count) : '—' }}</td>
                             <td class="px-3 py-3 text-[12.5px] text-[#3B382F]">{{ number_format($row->business_count) }}</td>
                             <td class="px-3 py-3 text-[12.5px] text-[#3B382F]">{{ number_format($row->product_count) }}</td>
                             <td class="px-3 py-3"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $row->is_active ? 'bg-[#E2F3E8] text-[#157A43]' : 'bg-[#FDE8E8] text-[#DC2626]' }}">{{ $row->is_active ? ($isFr ? 'Active' : 'Active') : ($isFr ? 'Inactive' : 'Inactive') }}</span></td>
@@ -111,19 +129,22 @@
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                        @endforeach
+                        @if($filtering && empty($visibleIds))
                         <tr><td colspan="7" class="text-center py-10 text-[13px] text-[#8A857A]">{{ $isFr ? 'Aucune catégorie trouvée.' : 'No categories found.' }}</td></tr>
-                        @endforelse
+                        @endif
                     </tbody>
                 </table>
             </div>
 
-            @if($catPagedRows->total() > 0)
             <div class="px-5 py-3.5 border-t border-[#F1F1EF] flex flex-wrap items-center justify-between gap-3">
-                <p class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $catPagedRows->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $catPagedRows->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $catPagedRows->total() }} {{ $isFr ? 'catégories' : 'categories' }}</p>
-                <div class="flex items-center gap-1">{{ $catPagedRows->onEachSide(1)->links() }}</div>
+                <p class="text-[12px] text-[#8A857A]">{{ number_format($catKpis['total']) }} {{ $isFr ? 'catégories officielles réparties sur 4 niveaux' : 'official categories across 4 levels' }}</p>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="cat-expand-all" class="text-[12px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Tout déplier' : 'Expand all' }}</button>
+                    <span class="text-[#D8D8D3]">·</span>
+                    <button type="button" id="cat-collapse-all" class="text-[12px] font-semibold text-[#8A857A] hover:underline">{{ $isFr ? 'Tout replier' : 'Collapse all' }}</button>
+                </div>
             </div>
-            @endif
         </div>
 
         {{-- Right rail: selected category detail --}}
@@ -144,8 +165,8 @@
                 <p class="text-[12px] text-[#6F6B60] leading-relaxed mb-4">{{ $catSelected->description_fr }}</p>
 
                 <dl class="space-y-2 text-[12.5px] border-t border-[#F1F1EF] pt-3">
-                    <div class="flex justify-between"><dt class="text-[#8A857A]">{{ $isFr ? 'Catégorie principale' : 'Main category' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $catSelectedParent->name_fr ?? '—' }}</dd></div>
-                    <div class="flex justify-between"><dt class="text-[#8A857A]">{{ $isFr ? 'Niveau' : 'Level' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $catSelected->parent_id ? ($isFr ? 'Niveau 2' : 'Level 2') : ($isFr ? 'Niveau 1' : 'Level 1') }}</dd></div>
+                    <div class="flex justify-between gap-3"><dt class="text-[#8A857A] shrink-0">{{ $isFr ? 'Catégorie parente' : 'Parent category' }}</dt><dd class="font-semibold text-[#1B1B18] text-right truncate">{{ $catSelectedParent->name_fr ?? '—' }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-[#8A857A]">{{ $isFr ? 'Niveau' : 'Level' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ ($isFr ? 'Niveau' : 'Level') }} {{ $catSelected->level }} — {{ $levelShort[$catSelected->level] ?? '' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-[#8A857A]">{{ $isFr ? 'Sous-catégories' : 'Sub-categories' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $catSelectedSubs->count() }}</dd></div>
                     <div class="flex justify-between"><dt class="text-[#8A857A]">{{ $isFr ? 'Artisans' : 'Artisans' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ number_format($catSelected->business_count) }}</dd></div>
                     <div class="flex justify-between"><dt class="text-[#8A857A]">{{ $isFr ? 'Produits' : 'Products' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ number_format($catSelected->product_count) }}</dd></div>
@@ -163,7 +184,7 @@
                     <span class="w-[80px] h-[80px] rounded-full shrink-0" style="background: {{ $levelConic }}"><span class="block w-[44px] h-[44px] rounded-full bg-white m-[18px]"></span></span>
                     <ul class="space-y-1.5 text-[11.5px]">
                         @foreach($catLevelDist as $lvl => $c)
-                        <li class="flex items-center gap-2 text-[#3B382F]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $levelColors[$lvl] }}"></span>{{ $lvl == 1 ? ($isFr ? 'Niveau 1 (Principales)' : 'Level 1 (Main)') : ($isFr ? 'Niveau 2' : 'Level 2') }}<span class="font-semibold ml-auto">{{ round($c / $levelTotal * 100, 1) }}% ({{ $c }})</span></li>
+                        <li class="flex items-center gap-2 text-[#3B382F]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $levelColors[$lvl] }}"></span>{{ $levelLong[$lvl] ?? ('N' . $lvl) }}<span class="font-semibold ml-auto whitespace-nowrap">{{ round($c / $levelTotal * 100, 1) }}% ({{ $c }})</span></li>
                         @endforeach
                     </ul>
                 </div>
@@ -186,4 +207,43 @@
         <p class="text-[12px] text-[#8A857A] mb-4">{{ $isFr ? 'La création de catégories se gère actuellement via les migrations de contenu — contactez un administrateur système pour ajouter une nouvelle catégorie ou sous-catégorie.' : 'Category creation is currently managed via content migrations — contact a system administrator to add a new category or sub-category.' }}</p>
     </div>
 </div>
+
+<script>
+(function () {
+    const rows = () => document.querySelectorAll('tr.cat-row');
+    const directChildren = (id) => document.querySelectorAll('tr.cat-row[data-cat-parent="' + id + '"]');
+    function setToggle(btn, open) {
+        if (!btn) return;
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        const ic = btn.querySelector('svg') || btn.querySelector('[data-lucide]');
+        if (ic) ic.classList.toggle('rotate-90', open);
+    }
+    function collapse(id) {
+        directChildren(id).forEach(function (r) {
+            r.hidden = true;
+            setToggle(r.querySelector('[data-cat-toggle]'), false);
+            collapse(r.getAttribute('data-cat-id'));
+        });
+    }
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-cat-toggle]');
+        if (!btn) return;
+        const id = btn.getAttribute('data-cat-toggle');
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        setToggle(btn, !open);
+        if (open) { collapse(id); } else { directChildren(id).forEach(function (r) { r.hidden = false; }); }
+    });
+    const expandAll = document.getElementById('cat-expand-all');
+    const collapseAll = document.getElementById('cat-collapse-all');
+    if (expandAll) expandAll.addEventListener('click', function () {
+        rows().forEach(function (r) { r.hidden = false; setToggle(r.querySelector('[data-cat-toggle]'), true); });
+    });
+    if (collapseAll) collapseAll.addEventListener('click', function () {
+        rows().forEach(function (r) {
+            if (Number(r.getAttribute('data-cat-level')) > 1) r.hidden = true;
+            setToggle(r.querySelector('[data-cat-toggle]'), false);
+        });
+    });
+})();
+</script>
 @endsection
