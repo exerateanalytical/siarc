@@ -429,9 +429,17 @@ class FrontendController extends Controller
         $catSlug = $request->query('cat');
         $current = $catSlug ? $all->firstWhere('slug', $catSlug) : null;
 
-        $children = ($current
-            ? $childrenByParent->get($current->id, collect())
-            : $all->where('level', 1))->sortBy('sort_order')->values();
+        // Root view mode: 'sectors' (default, the 3 sectors) or 'filieres' (all 14
+        // filières at once, grouped by sector). Ignored once you drill into a node.
+        $view = $request->query('view') === 'filieres' ? 'filieres' : 'sectors';
+        if ($current) {
+            $children = $childrenByParent->get($current->id, collect())->sortBy('sort_order')->values();
+        } elseif ($view === 'filieres') {
+            $children = $all->where('level', 2)
+                ->sortBy(fn ($f) => sprintf('%08d%04d', $f->parent_id, $f->sort_order))->values();
+        } else {
+            $children = $all->where('level', 1)->sortBy('sort_order')->values();
+        }
 
         // Breadcrumb trail: root → current.
         $trail = [];
@@ -450,7 +458,7 @@ class FrontendController extends Controller
         }
 
         return response(
-            view('pages.industries.index', compact('lang', 'all', 'childrenByParent', 'biz', 'prod', 'current', 'children', 'trail', 'featured', 'sort'))
+            view('pages.industries.index', compact('lang', 'all', 'childrenByParent', 'biz', 'prod', 'current', 'children', 'trail', 'featured', 'sort', 'view'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 

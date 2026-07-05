@@ -167,7 +167,7 @@
                     <span class="inline-block text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#B8860B]">{{ $levelLabel($current->level) }}</span>
                     @endif
                     <h1 class="font-serif text-[28px] sm:text-[36px] font-bold text-[#1D1B16] leading-tight">
-                        {{ $current ? $nm($current) : ($isFr ? 'Toutes les catégories' : 'All categories') }}
+                        {{ $current ? $nm($current) : ($view === 'filieres' ? ($isFr ? 'Toutes les filières' : 'All branches') : ($isFr ? 'Toutes les catégories' : 'All categories')) }}
                     </h1>
                     <div class="mt-2.5 h-[3.5px] w-[112px] bg-gradient-to-r from-[#D9991F] via-[#E9C989] to-transparent rounded-full"></div>
                     <p class="mt-4 text-[14px] text-[#55524A] leading-relaxed max-w-[460px]">
@@ -175,6 +175,10 @@
                             {{ $isFr
                                 ? ($isLeaf($current) ? 'Découvrez les artisans et les créations de ce métier.' : 'Parcourez les sous-catégories officielles de cette branche de l\'artisanat.')
                                 : ($isLeaf($current) ? 'Discover the artisans and creations of this trade.' : 'Browse the official sub-categories of this craft branch.') }}
+                        @elseif($view === 'filieres')
+                            {{ $isFr
+                                ? 'Les 14 filières officielles — les grandes familles de métiers, tous secteurs confondus. Cliquez sur une filière pour explorer ses corps de métier.'
+                                : 'The 14 official filières — the main craft families across every sector. Click a filière to explore its trade groups.' }}
                         @else
                             {{ $isFr
                                 ? 'Explorez l\'artisanat camerounais selon la nomenclature officielle : secteur, filière, corps de métier et métier.'
@@ -192,6 +196,7 @@
                     <form method="GET" action="{{ route('industries.index') }}" class="flex items-center gap-2.5 h-[46px] bg-white border border-[#E5E3E0] rounded-xl px-4 shadow-sm">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         @if($current)<input type="hidden" name="cat" value="{{ $current->slug }}">@endif
+                        @if(!$current && $view === 'filieres')<input type="hidden" name="view" value="filieres">@endif
                         <label for="sort" class="text-[13.5px] text-[#6F6B60] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort" name="sort" onchange="this.form.submit()"
                             class="bg-transparent text-[14px] font-semibold text-[#1D1B16] focus:outline-none cursor-pointer pr-1">
@@ -213,9 +218,20 @@
                 </div>
             </div>
 
-            <p class="mt-5 text-[13px] text-[#55524A]">
+            @unless($current)
+            <div class="mt-5 inline-flex items-center bg-[#F4F2ED] rounded-xl p-1 gap-1">
+                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] hover:text-[#1D1B16]' : 'bg-white shadow-sm text-[#14532D]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white shadow-sm text-[#14532D]' : 'text-[#6F6B60] hover:text-[#1D1B16]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
+            </div>
+            @endunless
+
+            <p class="{{ $current ? 'mt-5' : 'mt-3' }} text-[13px] text-[#55524A]">
                 {{ $fmt($children->count()) }}
-                {{ $isFr ? ($children->count() === 1 ? 'catégorie' : 'catégories') : ($children->count() === 1 ? 'category' : 'categories') }}
+                @if(!$current && $view === 'filieres')
+                    {{ $isFr ? ($children->count() === 1 ? 'filière' : 'filières') : ($children->count() === 1 ? 'branch' : 'branches') }}
+                @else
+                    {{ $isFr ? ($children->count() === 1 ? 'catégorie' : 'catégories') : ($children->count() === 1 ? 'category' : 'categories') }}
+                @endif
             </p>
 
             @if($children->isEmpty())
