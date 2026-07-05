@@ -829,3 +829,19 @@ Route::get('/tableau-de-bord/siarc', function (Request $r) {
         ],
     ]);
 })->name('siarc.visitor.dashboard');
+
+// ───────────────────────── ADMIN — Platform mode ────────────────────────────
+
+Route::get('/tableau-de-bord/admin/siarc/mode', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    $lang = webLang($r); $fr = $lang === 'fr';
+    return view('pages.siarc.admin', [
+        'lang' => $lang, 'sActive' => 'siarc', 'sTitle' => $fr ? 'Mode de la plateforme' : 'Platform mode',
+    ]);
+})->name('siarc.admin.mode');
+
+Route::post('/tableau-de-bord/admin/siarc/mode', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    siarcSetStandalone($r->boolean('standalone'));
+    return redirect()->route('siarc.admin.mode', ['lang' => webLang($r)])->with('siarc_mode_saved', true);
+})->name('siarc.admin.mode.set')->middleware('throttle:20,1');

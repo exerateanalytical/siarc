@@ -130,4 +130,19 @@ class SiarcPagesRenderTest extends TestCase
             $this->withSession($session)->get(route('siarc.admin.workshop', ['id' => $sess->id]))->assertOk();
         }
     }
+
+    public function test_siarc_standalone_mode_switches_the_landing_page(): void
+    {
+        // Module mode (default): the root is the national gallery home.
+        siarcSetStandalone(false);
+        $this->get('/')->assertOk();
+
+        // SIARC overall mode: the root redirects to the SIARC home.
+        siarcSetStandalone(true);
+        $res = $this->get('/');
+        $res->assertStatus(302);
+        $this->assertStringContainsString('/siarc', (string) $res->headers->get('Location'));
+
+        siarcSetStandalone(false);
+    }
 }

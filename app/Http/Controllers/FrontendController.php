@@ -76,6 +76,11 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
+        // SIARC "overall" mode: the whole platform becomes SIARC — land on the SIARC home.
+        if (function_exists('siarcStandalone') && siarcStandalone()) {
+            return redirect()->route('siarc.home', ['lang' => $lang]);
+        }
+
         $industries = Industry::withCount('businesses')
             ->where('is_active', true)
             ->orderBy('sort_order')

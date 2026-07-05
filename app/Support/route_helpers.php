@@ -176,6 +176,34 @@ if (! function_exists('siarcEvent')) {
     }
 }
 
+if (! function_exists('siarcStandalone')) {
+    /**
+     * SIARC "overall" mode: when true the whole platform presents as SIARC 2026
+     * (root landing becomes the SIARC home). Runtime toggle is stored durably in
+     * the cache; falls back to config('siarc.standalone').
+     */
+    function siarcStandalone(): bool
+    {
+        try {
+            return (bool) \Illuminate\Support\Facades\Cache::get('siarc.standalone', (bool) config('siarc.standalone', false));
+        } catch (\Throwable $e) {
+            return (bool) config('siarc.standalone', false);
+        }
+    }
+}
+
+if (! function_exists('siarcSetStandalone')) {
+    /** Turn SIARC overall mode on/off, persisted across requests. */
+    function siarcSetStandalone(bool $on): void
+    {
+        try {
+            \Illuminate\Support\Facades\Cache::forever('siarc.standalone', $on);
+        } catch (\Throwable $e) {
+            // cache unavailable (e.g. some CLI contexts) — silently ignore
+        }
+    }
+}
+
 if (! function_exists('certNumberFor')) {
     /** Deterministic membership-certificate number for a business (single source of truth). */
     function certNumberFor(int $businessId, $createdAt = null): string

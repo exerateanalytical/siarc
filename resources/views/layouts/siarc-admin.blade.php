@@ -33,6 +33,7 @@
             ['Analytics & Rapports',   'Analytics & Reports','bar-chart-3',      'siarc.admin.analytics', ['siarc.admin.analytics','siarc.admin.attendance','siarc.admin.reports']],
         ]],
         ['PARAMÈTRES', 'SETTINGS', [
+            ['Mode plateforme',        'Platform Mode',      'toggle-right',     'siarc.admin.mode', ['siarc.admin.mode']],
             ['Utilisateurs',           'Users',              'users-round',      'admin.users', ['admin.users*']],
             ['Paramètres',             'Settings',           'settings',         'admin.settings', ['admin.settings*']],
             ['Journal d\'activité',    'Activity Log',       'history',          'admin.audit-log', ['admin.audit-log*']],
