@@ -67,12 +67,33 @@ Everything is packaged:
 
 Steps: provision PHP 8.3 + MySQL 8 + web root at `public/`; copy `.env.production.example`→`.env` and fill it; `php artisan key:generate`; run `./deploy.sh`; run a supervised `php artisan queue:work`.
 
-## 5. Known issues / in progress (pixel-audit pass)
-- **3 admin views were routed but never created** (500 for an admin) — being built from their PNGs in this pass:
-  - `admin-payments` (`Gestion de payment.png`), `admin-analytics` (`analytic dashboard.png`), `admin-product-detail` (`detail de produits.png`).
-  - Follow-up: extend `AdminPagesRenderTest` to hit the `{id}` detail + analytics/payments routes so this can't regress.
-- **~22 secondary pages still use legacy content styling** (generic `gray-*`/`forest-*`) inside the re-skinned chrome — no design PNG exists for them, so they need an identity pass, not a pixel replica: `dashboard/ministry`, `profile`, `security`, `messages/inbox`, `thread`, `notifications`, `notification-settings`, `regional-rep`, `technical-reviewer`, `technical-history`, `business-form`, `product-form`, `verification`, `support-index`, `support-show`, plus `privacy`, `terms`, `search`, and the auth secondary flows.
-- A full **pixel-fidelity audit** of all ~80 built design pages vs their PNGs is running; discrepancies (text, sections, spacing, colours, icons, fonts, branding) are being fixed. Results appended here on completion.
+## 5. Heritage-unification pass (2026-07-05) — DONE
+
+- **3 previously-missing admin views built + wired to real data** and covered by
+  `AdminPagesRenderTest`: `admin-payments`, `admin-analytics`, `admin-product-detail`
+  (they used to 500). Plus low-fidelity rebuilds of `admin-partners`, `admin-reports`,
+  `admin-events`, `admin-industries` and the public partners page.
+- **Admin chrome fully unified.** All **42 admin pages** now `@extends('layouts.admin')`,
+  which renders the single heritage header `pages/partials/admin-heritage-header`
+  (mask + kente + medallion). The generic `admin-topbar` and the dead `gallery-header`
+  partials are **deleted**; ~26 pages of duplicated `<!DOCTYPE>` boilerplate collapsed.
+  One layout, one header, one sidebar — no duplicates, heritage first.
+- **"SIAC" eradicated** from every user-visible surface (views, notification emails,
+  2FA issuer, and the whole live DB). Only internal code identifiers remain
+  (`siac_user` session key, `Database\Seeders\Siac` namespace) — not user-visible text.
+- **18 legacy secondary pages re-skinned** from generic cool-gray to the heritage
+  warm-neutral palette (profile, security, messages, notifications, the entreprise/
+  produit forms, ministry/regional/technical dashboards, support, privacy, terms,
+  search). Content-only colour remap; chrome unchanged.
+- The remaining standalone `<!DOCTYPE>` dashboard views are the **buyer / entrepreneur /
+  seller-quote role dashboards** — separate role UIs, intentionally not part of the
+  admin panel.
+- 67 tests green throughout; committed in clean, reviewable increments.
+
+### Local production build is warmed
+`.env` is set to `APP_ENV=production`, `APP_DEBUG=false`, all four caches warmed
+(`config`/`event`/`route`/`view`). To go back to editing: set `APP_ENV=local` +
+`APP_DEBUG=true`, then `php artisan optimize:clear` (Blade edits need `view:clear`).
 
 ## 6. Source-of-truth docs
 - `docs/DESIGN-REPLICA-HANDOFF.md` — the replica build process (crop → transcribe → standalone view → verify → test), palette, guardrails.
