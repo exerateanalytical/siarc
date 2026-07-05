@@ -93,7 +93,7 @@
 </head>
 <body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
 
-@include('pages.partials.directory-header')
+@include('pages.partials.directory-header', ['dirNavActive' => 'products'])
 
 <main class="pb-16 sm:pb-0">
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-5 pb-10">
@@ -101,6 +101,8 @@
 
         <!-- Sidebar -->
         <aside class="w-full lg:w-[265px] shrink-0">
+            <!-- Browse by official sector -->
+            <div class="mb-4">@include('pages.partials.sector-browser')</div>
             <!-- Categories -->
             <div class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
                 <div class="flex items-center gap-2.5 bg-[#04291A] px-4 h-[38px]">

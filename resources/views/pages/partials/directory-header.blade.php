@@ -236,11 +236,46 @@
     <div class="max-w-[1472px] mx-auto px-4 sm:px-6">
         <nav class="flex items-center justify-center gap-8 xl:gap-12">
             @foreach($dirNavItems as [$dnKey, $dnIcon, $dnLabel, $dnHref])
+            @if($dnKey === 'categories' && !empty($navSectors) && $navSectors->count())
+            {{-- Categories megamenu: official sectors → filières --}}
+            <div class="relative group">
+                <a href="{{ $dnHref }}" class="relative flex items-center gap-2 py-3 text-[13px] {{ $dnKey === $dirNavActive ? 'font-semibold text-[#14532D]' : 'font-medium text-[#3A3A35] hover:text-leaf' }} transition-colors whitespace-nowrap">
+                    <i data-lucide="{{ $dnIcon }}" class="w-[15px] h-[15px]"></i>
+                    {{ $dnLabel }}
+                    <i data-lucide="chevron-down" class="w-3 h-3 text-[#8A857A]"></i>
+                    @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
+                </a>
+                <div class="absolute left-1/2 -translate-x-1/2 top-full pt-2 hidden group-hover:block z-50">
+                    <div class="w-[600px] max-w-[92vw] bg-white rounded-xl shadow-xl border border-[#EFEDEA] p-5">
+                        <div class="grid grid-cols-3 gap-x-5 gap-y-4">
+                            @foreach($navSectors as $sec)
+                            <div class="min-w-0">
+                                <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="flex items-center gap-1.5 text-[12.5px] font-bold text-[#14532D] hover:underline mb-2">
+                                    <i data-lucide="layers" class="w-3.5 h-3.5 shrink-0"></i>
+                                    <span class="truncate">{{ $isFr ? $sec->name_fr : ($sec->name_en ?? $sec->name_fr) }}</span>
+                                </a>
+                                <div class="space-y-1">
+                                    @foreach($sec->filieres as $fil)
+                                    @php $filName = $isFr ? $fil->name_fr : ($fil->name_en ?? $fil->name_fr); @endphp
+                                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $fil->slug]) }}" title="{{ $filName }}" class="block text-[11.5px] text-[#55524A] hover:text-leaf truncate">{{ $filName }}</a>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <a href="{{ $dnHref }}" class="mt-4 pt-3 border-t border-[#F1F0EC] flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] hover:underline">
+                            {{ $isFr ? 'Explorer toute la nomenclature officielle' : 'Explore the full official nomenclature' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @else
             <a href="{{ $dnHref }}" class="relative flex items-center gap-2 py-3 text-[13px] {{ $dnKey === $dirNavActive ? 'font-semibold text-[#14532D]' : 'font-medium text-[#3A3A35] hover:text-leaf' }} transition-colors whitespace-nowrap">
                 <i data-lucide="{{ $dnIcon }}" class="w-[15px] h-[15px]"></i>
                 {{ $dnLabel }}
                 @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
             </a>
+            @endif
             @endforeach
         </nav>
     </div>

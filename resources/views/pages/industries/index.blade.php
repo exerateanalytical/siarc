@@ -80,7 +80,7 @@
 <body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
 
 {{-- Canonical platform chrome (consolidated 2026-07-03) --}}
-@include('pages.partials.directory-header')
+@include('pages.partials.directory-header', ['dirNavActive' => 'categories'])
 
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-5 pb-9">
     <div class="flex flex-col lg:flex-row gap-8 xl:gap-9 items-start">

@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +16,26 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+        $this->shareNavTaxonomy();
+    }
+
+    /**
+     * Share the official craft taxonomy (3 sectors, each with its filières) with the
+     * shared nav header + the marketplace sidebar so both can offer a "browse by
+     * sector" menu that drills into /galerie/secteurs?cat=<slug>.
+     */
+    private function shareNavTaxonomy(): void
+    {
+        View::composer(['pages.partials.directory-header', 'pages.partials.sector-browser'], function ($view) {
+            $rows = DB::table('industries')->whereIn('level', [1, 2])->where('is_active', true)
+                ->orderBy('sort_order')->get(['id', 'parent_id', 'level', 'slug', 'name_fr', 'name_en']);
+            $byParent = $rows->groupBy('parent_id');
+            $navSectors = $rows->where('level', 1)->map(function ($s) use ($byParent) {
+                $s->filieres = $byParent->get($s->id, collect())->values();
+                return $s;
+            })->values();
+            $view->with('navSectors', $navSectors);
+        });
     }
 
     private function configureRateLimiting(): void

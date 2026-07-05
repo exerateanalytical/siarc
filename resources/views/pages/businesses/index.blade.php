@@ -117,6 +117,8 @@
 
         <!-- Sidebar -->
         <aside class="w-full lg:w-[250px] shrink-0">
+            <!-- Browse by official sector -->
+            <div class="mb-5">@include('pages.partials.sector-browser')</div>
             <!-- Search & filter -->
             <div class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
                 <div class="flex items-center gap-2.5 bg-[#04291A] px-4 h-[38px]">
