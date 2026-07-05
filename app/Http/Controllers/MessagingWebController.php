@@ -156,10 +156,10 @@ class MessagingWebController extends Controller
 
         if ($business->email) {
             Mail::raw(
-                "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIAC.",
+                "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIARC.",
                 function ($message) use ($business, $conversation) {
                     $message->to($business->email)
-                        ->subject('[SIAC] Nouveau message — ' . $conversation->subject);
+                        ->subject('[SIARC] Nouveau message — ' . $conversation->subject);
                 }
             );
         }
@@ -182,10 +182,10 @@ class MessagingWebController extends Controller
 
         if ($buyer->email) {
             Mail::raw(
-                "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIAC.",
+                "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord SIARC.",
                 function ($message) use ($buyer, $conversation) {
                     $message->to($buyer->email)
-                        ->subject('[SIAC] Nouvelle réponse — ' . $conversation->subject);
+                        ->subject('[SIARC] Nouvelle réponse — ' . $conversation->subject);
                 }
             );
         }

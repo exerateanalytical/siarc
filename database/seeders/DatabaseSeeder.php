@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             SystemSettingsSeeder::class,
         ]);
 
-        // SIAC platform — the active product
+        // SIARC platform — the active product
         $this->call(SiacSeeder::class);
     }
 }

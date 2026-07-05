@@ -63,7 +63,7 @@ function establishSiacSession(object $user, Request $request): void
 }
 
 // ─────────────────────────────────────────────
-// SIAC Platform — API landing
+// SIARC Platform — API landing
 // ─────────────────────────────────────────────
 use App\Http\Controllers\FrontendController;
 
@@ -1557,7 +1557,7 @@ Route::post('/creer-mon-compte', function (Request $request) {
 })->name('onboarding.store')->middleware('throttle:10,1');
 
 // ─────────────────────────────────────────────
-// SIAC — Dashboards
+// SIARC — Dashboards
 // ─────────────────────────────────────────────
 Route::get('/tableau-de-bord', function (Request $request) {
     $siacUser = session('siac_user');

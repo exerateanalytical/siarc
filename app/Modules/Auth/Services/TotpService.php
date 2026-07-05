@@ -34,7 +34,7 @@ class TotpService
         return false;
     }
 
-    public function otpauthUri(string $secret, string $accountName, string $issuer = 'SIAC Galerie Artisanat'): string
+    public function otpauthUri(string $secret, string $accountName, string $issuer = 'SIARC Galerie Artisanat'): string
     {
         return 'otpauth://totp/' . rawurlencode($issuer) . ':' . rawurlencode($accountName)
             . '?secret=' . $secret
