@@ -1,4 +1,5 @@
-@extends('layouts.dashboard')
+@php $dashLayout = !empty(session('siac_user')['is_admin']) ? 'layouts.admin' : 'layouts.dashboard'; @endphp
+@extends($dashLayout)
 
 @php
 $pageTitle = $lang === 'fr' ? $ticket->subject_fr : ($ticket->subject_en ?? $ticket->subject_fr);
