@@ -58,4 +58,76 @@ class SiarcPagesRenderTest extends TestCase
         $this->withSession($session)->get(route('siarc.admin.dashboard'))->assertOk()->assertSee('SIARC');
         $this->withSession($session)->get(route('siarc.admin.exhibitors'))->assertOk();
     }
+
+    public function test_public_siarc_chrome_and_home_render(): void
+    {
+        $this->seed(\Database\Seeders\SiarcSalonSeeder::class);
+
+        // V4 home hero + SIARC public chrome (not the artisan-directory chrome).
+        $this->get('/siarc')->assertOk()
+            ->assertSee('CAMEROUNAIS')
+            ->assertSee('MON ESPACE')
+            ->assertSee('UNE PLATEFORME COMPLÈTE À VOTRE SERVICE');
+
+        // Public directories render their bespoke bodies.
+        $this->get('/siarc/exposants')->assertOk();
+        $this->get('/siarc/pavillons')->assertOk();
+        $this->get('/siarc/intervenants')->assertOk();
+        $this->get('/siarc/programme')->assertOk();
+    }
+
+    public function test_admin_siarc_chrome_renders(): void
+    {
+        $this->seed(\Database\Seeders\SiarcSalonSeeder::class);
+        $admin = $this->makeUser();
+        $session = ['siac_user' => [
+            'id' => $admin->id, 'name' => 'SIARC Admin', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]];
+
+        // SIARC admin shell: sidebar items + dashboard body.
+        $this->withSession($session)->get(route('siarc.admin.dashboard'))->assertOk()
+            ->assertSee('B2B Matchmaking')
+            ->assertSee('Compte à rebours');
+    }
+
+    public function test_siarc_detail_pages_render_with_seeded_data(): void
+    {
+        $this->seed(\Database\Seeders\SiarcSalonSeeder::class);
+        $admin = $this->makeUser();
+        $session = ['siac_user' => [
+            'id' => $admin->id, 'name' => 'SIARC Admin', 'email' => $admin->email,
+            'role' => 'super_admin', 'is_admin' => true,
+        ]];
+
+        $eid = \Illuminate\Support\Facades\DB::table('events')->value('id');
+        $ee = \Illuminate\Support\Facades\DB::table('event_exhibitors')->where('event_id', $eid)->first();
+        $pav = \Illuminate\Support\Facades\DB::table('pavilions')->where('event_id', $eid)->first();
+        $spk = \Illuminate\Support\Facades\DB::table('speakers')->where('event_id', $eid)->first();
+        $sess = \Illuminate\Support\Facades\DB::table('programme_sessions')->where('event_id', $eid)->first();
+        $biz = \Illuminate\Support\Facades\DB::table('businesses')->where('id', $ee->business_id ?? 0)->first();
+
+        // Public detail pages.
+        if ($biz) {
+            $this->get('/siarc/exposants/'.$biz->slug)->assertOk();
+        }
+        if ($spk) {
+            $this->get(route('siarc.speaker', ['id' => $spk->id]))->assertOk();
+        }
+
+        // Admin detail pages.
+        if ($ee) {
+            $this->withSession($session)->get(route('siarc.admin.exhibitor', ['id' => $ee->id]))->assertOk();
+        }
+        if ($pav) {
+            $this->withSession($session)->get(route('siarc.admin.pavilion', ['id' => $pav->id]))->assertOk();
+        }
+        if ($spk) {
+            $this->withSession($session)->get(route('siarc.admin.speaker', ['id' => $spk->id]))->assertOk();
+        }
+        if ($sess) {
+            $this->withSession($session)->get(route('siarc.admin.session', ['id' => $sess->id]))->assertOk();
+            $this->withSession($session)->get(route('siarc.admin.workshop', ['id' => $sess->id]))->assertOk();
+        }
+    }
 }

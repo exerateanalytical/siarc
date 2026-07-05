@@ -1,115 +1,282 @@
 @php
-    $isFr = ($lang ?? 'fr') === 'fr';
-    $siacUser = session('siac_user');
-    $isWorkshop = !empty($workshop);
-    $done = session('siarc_registered');
-    $err = session('siarc_error');
+    $lang = $lang ?? 'fr';
+    $isFr = $lang === 'fr';
+    $workshop = $workshop ?? null;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isWorkshop ? ($isFr ? 'Inscription atelier' : 'Workshop registration') : ($isFr ? 'Inscription visiteur' : 'Visitor registration') }} — SIARC 2026</title>
+    <meta name="description" content="Inscription des visiteurs — SIARC 2026, Salon International de l'Artisanat du Cameroun.">
+    <title>{{ $isFr ? 'Inscription des visiteurs' : 'Visitor Registration' }} — SIARC 2026</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config={theme:{extend:{colors:{leaf:'#164C28',gold:'#C9942E'},fontFamily:{sans:['Poppins','system-ui','sans-serif'],serif:['"Playfair Display"','Georgia','serif']}}}}</script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { siarc:{green:'#157A43',dark:'#0B3A1E',darker:'#042B15',gold:'#E6B201',ochre:'#C97A16',red:'#C0010C'}, cream:'#F8F4EC' },
+            fontFamily: { sans:['Poppins','system-ui','sans-serif'], display:['"Playfair Display"','Georgia','serif'] },
+        } } }
+    </script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>body{font-family:'Poppins',system-ui,sans-serif}html,body{overflow-x:clip}</style>
+    @include('pages.siarc.partials.tokens')
+    <style>body{font-family:'Poppins',system-ui,sans-serif} html,body{overflow-x:clip}
+        .si-input{width:100%;border:1px solid #E3E0D8;border-radius:12px;background:#fff;
+            padding:.72rem .95rem;font-size:13.5px;color:#1D1B16;transition:border-color .15s,box-shadow .15s;}
+        .si-input::placeholder{color:#A8A498;}
+        .si-input:focus{outline:none;border-color:#157A43;box-shadow:0 0 0 3px rgba(21,122,67,.12);}
+        .si-label{display:block;font-size:12.5px;font-weight:600;color:#3A372F;margin-bottom:.42rem;}
+        .si-req{color:#C0010C;}
+        .si-type input:checked + .si-type-box{border-color:#157A43;background:#F2F8F4;box-shadow:0 0 0 1px #157A43;}
+        .si-type input:checked + .si-type-box .si-type-check{opacity:1;}
+    </style>
 </head>
-<body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
+<body class="bg-[#FBFAF7] text-[#1D1B16] antialiased">
 
-@include('pages.partials.directory-header')
+@include('pages.siarc.partials.siarc-header')
 
-<div class="max-w-[640px] mx-auto px-4 sm:px-6 pt-8 pb-16">
-    <nav class="flex items-center gap-2 text-[13px] mb-4">
-        <a href="{{ route('siarc.home', ['lang' => $lang]) }}" class="text-[#166534] hover:underline">SIARC 2026</a>
-        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
-        <span class="text-[#6F6B60]">{{ $isWorkshop ? ($isFr ? 'Inscription atelier' : 'Workshop registration') : ($isFr ? 'Inscription' : 'Registration') }}</span>
-    </nav>
+{{-- ══════════════════ HEADER BAND ══════════════════ --}}
+<section class="siarc-mud relative overflow-hidden border-b border-[#EDE7DA]">
+    <div class="siarc-kente-v absolute left-0 top-0 bottom-0 opacity-70"></div>
+    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 py-9">
+        <nav class="flex items-center gap-2 text-[12.5px] mb-3" aria-label="Breadcrumb">
+            <a href="{{ route('siarc.home', ['lang' => $lang]) }}" class="text-siarc-green hover:underline font-medium">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
+            <span class="text-[#8A857A]">{{ $isFr ? 'Inscription des visiteurs' : 'Visitor Registration' }}</span>
+        </nav>
+        <h1 class="font-display text-[30px] sm:text-[38px] font-bold text-[#0F2E1A] leading-tight">
+            {{ $workshop ? ($isFr ? 'Inscription à l\'atelier' : 'Workshop Registration') : ($isFr ? 'Inscription des visiteurs' : 'Visitor Registration') }}
+        </h1>
+        <div class="mt-3 h-[3.5px] w-[104px] bg-gradient-to-r from-siarc-gold via-[#F1D48A] to-transparent rounded-full"></div>
+        <p class="mt-4 text-[14px] text-[#55524A] leading-relaxed max-w-[760px]">
+            {{ $isFr ? 'Créez votre compte pour participer au SIARC 2026.' : 'Create your account to take part in SIARC 2026.' }}
+        </p>
+    </div>
+</section>
 
-    <h1 class="font-serif text-[30px] font-bold text-[#1D1B16] leading-tight">
-        {{ $isWorkshop ? ($isFr ? 'Inscription à l\'atelier' : 'Workshop registration') : ($isFr ? 'Inscription Visiteur' : 'Visitor Registration') }}
-    </h1>
-    @if($isWorkshop)<p class="mt-2 text-[15px] font-semibold text-[#157A43]">{{ $workshop->title_fr }}</p>@endif
-    <div class="mt-2.5 h-[3.5px] w-[100px] bg-gradient-to-r from-[#D9991F] via-[#E9C989] to-transparent rounded-full mb-6"></div>
+<main class="max-w-[1240px] mx-auto px-4 sm:px-6 py-10">
 
-    @if($done)
-    <div class="flex items-start gap-2.5 bg-[#E9F6EE] border border-[#BFE3CD] rounded-xl px-4 py-3.5 mb-6 text-[13px] text-[#0F5B30]">
-        <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
-        <span>{{ $isFr ? 'Inscription enregistrée. Votre badge sera disponible à l\'accueil du salon.' : 'Registration recorded. Your badge will be available at the salon reception.' }}</span>
+    {{-- ── FLASH BANNERS ── --}}
+    @if(session('siarc_registered'))
+    <div class="siarc-in mb-6 flex items-start gap-3 rounded-2xl border border-[#BFE3CC] bg-[#EEF8F1] px-5 py-4">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-siarc-green shrink-0 mt-0.5"></i>
+        <p class="text-[13.5px] text-[#0F4824] leading-relaxed font-medium">{{ session('siarc_registered') }}</p>
+    </div>
+    @endif
+    @if(session('siarc_error'))
+    <div class="siarc-in mb-6 flex items-start gap-3 rounded-2xl border border-[#F1C3C6] bg-[#FDECED] px-5 py-4">
+        <i data-lucide="circle-dot" class="w-5 h-5 text-siarc-red shrink-0 mt-0.5"></i>
+        <p class="text-[13.5px] text-[#8A1015] leading-relaxed font-medium">{{ session('siarc_error') }}</p>
     </div>
     @endif
 
-    @if($err)
-    <div class="flex items-start gap-2.5 bg-[#FDECEC] border border-[#F3C7C7] rounded-xl px-4 py-3.5 mb-6 text-[13px] text-[#B4231E]">
-        <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
-        <span>{{ $isFr ? 'Les inscriptions ne sont pas encore ouvertes. Réessayez plus tard.' : 'Registration is not open yet. Please try again later.' }}</span>
+    <div class="grid lg:grid-cols-3 gap-6 items-start">
+
+        {{-- ══════════ LEFT — FORM CARD ══════════ --}}
+        <div class="lg:col-span-2">
+
+            @if($workshop)
+            {{-- ─────── WORKSHOP REGISTRATION ─────── --}}
+            <div class="siarc-card siarc-shadow overflow-hidden">
+                <div class="siarc-kente"></div>
+                <div class="p-6 sm:p-8">
+                    <div class="rounded-2xl siarc-adire text-white p-5 mb-7 relative overflow-hidden">
+                        <span class="siarc-kicker text-siarc-gold mb-2">{{ $isFr ? 'Atelier' : 'Workshop' }}</span>
+                        <h2 class="font-display text-[21px] font-bold leading-snug mb-3">{{ $workshop->title_fr }}</h2>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2 text-[12.5px] text-white/85">
+                            @if(!empty($workshop->starts_at))
+                            <span class="inline-flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4 text-siarc-gold"></i>{{ \Illuminate\Support\Str::of($workshop->starts_at)->replace('T',' ') }}</span>
+                            @endif
+                            @if(!empty($workshop->room))
+                            <span class="inline-flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-siarc-gold"></i>{{ $workshop->room }}</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <form action="{{ route('siarc.workshop.register.store', ['id' => $workshop->id]) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="lang" value="{{ $lang }}">
+                        <div class="grid sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="si-label" for="ws_name">{{ $isFr ? 'Nom complet' : 'Full name' }} <span class="si-req">*</span></label>
+                                <input class="si-input" id="ws_name" name="name" type="text" required placeholder="{{ $isFr ? 'Votre nom complet' : 'Your full name' }}">
+                            </div>
+                            <div>
+                                <label class="si-label" for="ws_email">Email</label>
+                                <input class="si-input" id="ws_email" name="email" type="email" placeholder="exemple@email.com">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-3 mt-7 pt-6 border-t border-[#EFEDE6]">
+                            <a href="{{ route('siarc.programme', ['lang' => $lang]) }}" class="siarc-btn px-6 py-3 text-[13px] border border-[#DAD6CC] text-[#55524A] hover:bg-[#F3F0E7]">{{ $isFr ? 'Annuler' : 'Cancel' }}</a>
+                            <button type="submit" class="siarc-btn siarc-btn-green px-7 py-3 text-[13px]">{{ $isFr ? 'S\'inscrire' : 'Register' }} <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @else
+            {{-- ─────── VISITOR REGISTRATION ─────── --}}
+            <form action="{{ route('siarc.register.store') }}" method="POST" class="siarc-card siarc-shadow overflow-hidden">
+                @csrf
+                <input type="hidden" name="lang" value="{{ $lang }}">
+                <div class="siarc-kente"></div>
+
+                <div class="p-6 sm:p-8">
+                    {{-- Informations personnelles --}}
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="w-9 h-9 rounded-xl bg-[#F3F0E7] flex items-center justify-center"><i data-lucide="user" class="w-5 h-5 text-siarc-green"></i></span>
+                        <h2 class="font-display text-[19px] font-bold text-[#1A1712]">{{ $isFr ? 'Informations personnelles' : 'Personal information' }}</h2>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="si-label" for="first_name">{{ $isFr ? 'Prénom' : 'First name' }} <span class="si-req">*</span></label>
+                            <input class="si-input" id="first_name" name="first_name" type="text" required placeholder="{{ $isFr ? 'Entrez votre prénom' : 'Enter your first name' }}">
+                        </div>
+                        <div>
+                            <label class="si-label" for="last_name">{{ $isFr ? 'Nom' : 'Last name' }}</label>
+                            <input class="si-input" id="last_name" name="last_name" type="text" placeholder="{{ $isFr ? 'Entrez votre nom' : 'Enter your last name' }}">
+                        </div>
+                    </div>
+
+                    {{-- Informations de contact --}}
+                    <div class="flex items-center gap-3 mt-9 mb-6">
+                        <span class="w-9 h-9 rounded-xl bg-[#F3F0E7] flex items-center justify-center"><i data-lucide="phone" class="w-5 h-5 text-siarc-green"></i></span>
+                        <h2 class="font-display text-[19px] font-bold text-[#1A1712]">{{ $isFr ? 'Informations de contact' : 'Contact information' }}</h2>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="si-label" for="email">Email <span class="si-req">*</span></label>
+                            <input class="si-input" id="email" name="email" type="email" required placeholder="exemple@email.com">
+                        </div>
+                        <div>
+                            <label class="si-label" for="phone">{{ $isFr ? 'Téléphone' : 'Phone' }}</label>
+                            <input class="si-input" id="phone" name="phone" type="tel" placeholder="+237 6 12 34 56 78">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="si-label" for="organization">{{ $isFr ? 'Organisation / Entreprise' : 'Organization / Company' }}</label>
+                            <input class="si-input" id="organization" name="organization" type="text" placeholder="{{ $isFr ? 'Nom de votre organisation' : 'Your organization name' }}">
+                        </div>
+                    </div>
+
+                    {{-- Type selector --}}
+                    <div class="flex items-center gap-3 mt-9 mb-6">
+                        <span class="w-9 h-9 rounded-xl bg-[#F3F0E7] flex items-center justify-center"><i data-lucide="id-card" class="w-5 h-5 text-siarc-green"></i></span>
+                        <h2 class="font-display text-[19px] font-bold text-[#1A1712]">{{ $isFr ? 'Type de visiteur' : 'Visitor type' }} <span class="si-req align-top text-[13px]">*</span></h2>
+                    </div>
+                    @php
+                        $types = [
+                            ['visitor','user','Visiteur','Visitor',$isFr ? 'Accès aux expositions et au village artisanal.' : 'Access to exhibitions and the craft village.'],
+                            ['buyer','handshake','Acheteur','Buyer',$isFr ? 'Accès aux conférences, ateliers et B2B meetings.' : 'Access to conferences, workshops and B2B meetings.'],
+                            ['press','megaphone','Presse','Press',$isFr ? 'Accès presse, conférences de presse et interviews.' : 'Press access, press conferences and interviews.'],
+                        ];
+                    @endphp
+                    <div class="grid sm:grid-cols-3 gap-4">
+                        @foreach($types as [$val,$icon,$fr,$en,$desc])
+                        <label class="si-type cursor-pointer">
+                            <input type="radio" name="type" value="{{ $val }}" class="sr-only" {{ $loop->first ? 'checked' : '' }}>
+                            <div class="si-type-box relative h-full rounded-2xl border border-[#E3E0D8] bg-white p-4 transition-all hover:border-[#C7D9CD]">
+                                <i data-lucide="check-circle-2" class="si-type-check absolute top-3 right-3 w-5 h-5 text-siarc-green opacity-0 transition-opacity"></i>
+                                <span class="w-10 h-10 rounded-xl bg-[#F3F0E7] flex items-center justify-center mb-3"><i data-lucide="{{ $icon }}" class="w-5 h-5 text-siarc-green"></i></span>
+                                <p class="text-[14px] font-bold text-[#1A1712]">{{ $isFr ? $fr : $en }}</p>
+                                <p class="text-[11.5px] text-[#8A857A] leading-relaxed mt-1">{{ $desc }}</p>
+                                <p class="text-[11px] font-semibold text-siarc-green mt-2">{{ $isFr ? 'Gratuit' : 'Free' }}</p>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+
+                    {{-- Consent + actions --}}
+                    <label class="flex items-start gap-2.5 mt-8 cursor-pointer">
+                        <input type="checkbox" required class="mt-0.5 w-4 h-4 accent-siarc-green rounded">
+                        <span class="text-[12.5px] text-[#55524A] leading-relaxed">
+                            {{ $isFr ? "J'accepte les" : 'I accept the' }}
+                            <a href="{{ route('siarc.home', ['lang' => $lang ?? 'fr']) }}" class="text-siarc-green font-medium hover:underline">{{ $isFr ? "Conditions d'utilisation" : 'Terms of use' }}</a>
+                            {{ $isFr ? 'et la' : 'and the' }}
+                            <a href="{{ route('siarc.home', ['lang' => $lang ?? 'fr']) }}" class="text-siarc-green font-medium hover:underline">{{ $isFr ? 'Politique de confidentialité' : 'Privacy policy' }}</a>
+                            {{ $isFr ? 'du SIARC 2026' : 'of SIARC 2026' }} <span class="si-req">*</span>
+                        </span>
+                    </label>
+
+                    <div class="flex items-center justify-end gap-3 mt-7 pt-6 border-t border-[#EFEDE6]">
+                        <a href="{{ route('siarc.home', ['lang' => $lang]) }}" class="siarc-btn px-6 py-3 text-[13px] border border-[#DAD6CC] text-[#55524A] hover:bg-[#F3F0E7]">{{ $isFr ? 'Annuler' : 'Cancel' }}</a>
+                        <button type="submit" class="siarc-btn siarc-btn-green px-7 py-3 text-[13px]">{{ $isFr ? "S'inscrire" : 'Register' }} <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </form>
+            @endif
+        </div>
+
+        {{-- ══════════ RIGHT — BENEFITS SIDEBAR ══════════ --}}
+        <aside class="space-y-6">
+            {{-- Event summary --}}
+            <div class="siarc-card siarc-shadow overflow-hidden">
+                <div class="siarc-adire text-white p-6 relative overflow-hidden">
+                    <div class="siarc-kente absolute top-0 left-0 right-0 opacity-80"></div>
+                    <span class="siarc-kicker text-siarc-gold mb-3 mt-2">{{ $isFr ? "Résumé de l'inscription" : 'Registration summary' }}</span>
+                    <h3 class="font-display text-[22px] font-bold leading-tight mb-4">SIARC 2026</h3>
+                    <div class="space-y-3 text-[13px]">
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="calendar-days" class="w-5 h-5 text-siarc-gold shrink-0 mt-0.5"></i>
+                            <div><p class="font-semibold">27 Juillet – 05 Août 2026</p><p class="text-white/70 text-[12px]">{{ $isFr ? 'Dix jours de célébration' : 'Ten days of celebration' }}</p></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-siarc-gold shrink-0 mt-0.5"></i>
+                            <div><p class="font-semibold">Musée National de Yaoundé</p><p class="text-white/70 text-[12px]">Cameroun</p></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="ticket" class="w-5 h-5 text-siarc-gold shrink-0 mt-0.5"></i>
+                            <div><p class="font-semibold">{{ $isFr ? 'Entrée libre' : 'Free entry' }}</p><p class="text-white/70 text-[12px]">{{ $isFr ? 'Inscription gratuite' : 'Free registration' }}</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- What you get --}}
+            <div class="siarc-card siarc-shadow p-6">
+                <h3 class="font-display text-[18px] font-bold text-[#1A1712] mb-4">{{ $isFr ? 'Ce que vous obtenez' : 'What you get' }}</h3>
+                <ul class="space-y-3.5">
+                    @php
+                        $benefits = [
+                            ['id-card','Badge personnel', $isFr ? 'Votre badge d\'accès nominatif au salon.' : 'Your personal access badge to the fair.'],
+                            ['map','Plan interactif', $isFr ? 'Trouvez stands, pavillons et services.' : 'Find stands, pavilions and services.'],
+                            ['calendar-days','Programme complet', $isFr ? 'Conférences, ateliers et démonstrations.' : 'Conferences, workshops and demonstrations.'],
+                            ['handshake','Networking B2B', $isFr ? 'Rencontrez artisans, acheteurs et investisseurs.' : 'Meet artisans, buyers and investors.'],
+                        ];
+                    @endphp
+                    @foreach($benefits as [$icon,$title,$desc])
+                    <li class="flex items-start gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-[#F3F0E7] flex items-center justify-center shrink-0"><i data-lucide="{{ $icon }}" class="w-5 h-5 text-siarc-green"></i></span>
+                        <div>
+                            <p class="text-[13.5px] font-semibold text-[#1A1712] leading-tight">{{ $title }}</p>
+                            <p class="text-[12px] text-[#8A857A] leading-relaxed mt-0.5">{{ $desc }}</p>
+                        </div>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- Help --}}
+            <div class="rounded-2xl bg-gradient-to-br from-[#14652F] to-[#042B15] text-white p-6 relative overflow-hidden">
+                <h3 class="font-display text-[18px] font-bold mb-2">{{ $isFr ? "Besoin d'aide ?" : 'Need help?' }}</h3>
+                <p class="text-[12.5px] text-white/75 leading-relaxed mb-4">{{ $isFr ? 'Notre équipe est à votre disposition pour vous accompagner dans votre inscription.' : 'Our team is here to help you register.' }}</p>
+                <div class="space-y-2 text-[13px]">
+                    <span class="flex items-center gap-2.5"><i data-lucide="phone" class="w-4 h-4 text-siarc-gold"></i>+237 222 22 22 22</span>
+                    <span class="flex items-center gap-2.5"><i data-lucide="mail" class="w-4 h-4 text-siarc-gold"></i>contact@siarc-cameroun.cm</span>
+                </div>
+            </div>
+        </aside>
     </div>
-    @endif
+</main>
 
-    <form method="POST" action="{{ $isWorkshop ? route('siarc.workshop.register.store', ['id' => $workshop->id]) : route('siarc.register.store') }}" class="bg-white border border-[#ECE9E2] rounded-2xl p-6 space-y-4">
-        @csrf
-        <input type="hidden" name="lang" value="{{ $lang }}">
+@include('pages.siarc.partials.siarc-footer')
 
-        @if($isWorkshop)
-        <div>
-            <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Nom complet' : 'Full name' }} *</label>
-            <input name="name" required class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-        </div>
-        <div>
-            <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">Email</label>
-            <input name="email" type="email" class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-        </div>
-        @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Prénom' : 'First name' }} *</label>
-                <input name="first_name" required class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-            </div>
-            <div>
-                <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Nom' : 'Last name' }}</label>
-                <input name="last_name" class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-            </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">Email</label>
-                <input name="email" type="email" class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-            </div>
-            <div>
-                <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Téléphone' : 'Phone' }}</label>
-                <input name="phone" class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-            </div>
-        </div>
-        <div>
-            <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Organisation' : 'Organization' }}</label>
-            <input name="organization" class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3.5 text-[13px] focus:outline-none focus:border-gold">
-        </div>
-        <div>
-            <label class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Profil' : 'Profile' }}</label>
-            <select name="type" class="w-full h-[42px] bg-white border border-[#E3E3E1] rounded-lg px-3 text-[13px] focus:outline-none focus:border-gold">
-                <option value="visitor">{{ $isFr ? 'Visiteur' : 'Visitor' }}</option>
-                <option value="buyer">{{ $isFr ? 'Acheteur professionnel' : 'Professional buyer' }}</option>
-                <option value="press">{{ $isFr ? 'Presse' : 'Press' }}</option>
-            </select>
-        </div>
-        @endif
-
-        @error('first_name')<p class="text-[12px] text-[#DC2626]">{{ $message }}</p>@enderror
-        @error('name')<p class="text-[12px] text-[#DC2626]">{{ $message }}</p>@enderror
-
-        <button type="submit" class="w-full h-[46px] bg-[#02331C] hover:bg-leaf text-white text-[13.5px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors">
-            <i data-lucide="ticket" class="w-4 h-4"></i>{{ $isFr ? 'Valider mon inscription' : 'Confirm registration' }}
-        </button>
-    </form>
-</div>
-
-@include('pages.partials.directory-footer')
 <script>
     lucide.createIcons();
-    const mBtn = document.getElementById('mobile-menu-btn'); const mMenu = document.getElementById('mobile-menu');
-    if (mBtn && mMenu) mBtn.addEventListener('click', () => mMenu.classList.toggle('hidden'));
+    (function(){
+        var b=document.getElementById('si-mnav-btn'),m=document.getElementById('si-mnav');
+        if(b&&m)b.addEventListener('click',function(){m.classList.toggle('hidden');});
+    })();
 </script>
+@stack('scripts')
 </body>
 </html>

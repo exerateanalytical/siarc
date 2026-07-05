@@ -1,6 +1,5 @@
 @php
     $isFr = ($lang ?? 'fr') === 'fr';
-    $siacUser = session('siac_user');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -12,42 +11,64 @@
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
         tailwind.config = { theme: { extend: {
-            colors: { cream:'#F7F2EC', leaf:'#164C28', gold:'#C9942E' },
-            fontFamily: { sans:['Poppins','system-ui','sans-serif'], serif:['"Playfair Display"','Georgia','serif'] },
+            colors: { siarc:{green:'#157A43',dark:'#0B3A1E',darker:'#042B15',gold:'#E6B201',ochre:'#C97A16',red:'#C0010C'}, cream:'#F8F4EC' },
+            fontFamily: { sans:['Poppins','system-ui','sans-serif'], display:['"Playfair Display"','Georgia','serif'] },
         } } }
     </script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
+    @include('pages.siarc.partials.tokens')
     <style>body{font-family:'Poppins',system-ui,sans-serif} html,body{overflow-x:clip}</style>
 </head>
-<body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
+<body class="bg-[#FBFAF7] text-[#1D1B16] antialiased">
 
-@include('pages.partials.directory-header', ['dirNavActive' => $sNavActive ?? null])
+@include('pages.siarc.partials.siarc-header')
 
-<div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-6 pb-14">
-    <nav class="flex items-center gap-2 text-[13px] mb-4" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#166534] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
-        <span class="text-[#6F6B60]">SIARC 2026</span>
-        @if(!empty($sCrumb))
-        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
-        <span class="text-[#6F6B60]">{{ $sCrumb }}</span>
-        @endif
-    </nav>
+@php
+    // Body dispatch: a per-route bespoke body under pages/siarc/bodies/ takes over the
+    // content region; otherwise render the generic header-band + block scaffold.
+    $rn = request()->route()?->getName() ?? '';
+    $bodyKey = str_replace('.', '-', str_replace(['siarc.admin.','siarc.'], ['admin.','pub.'], $rn));
+    $bodyView = 'pages.siarc.bodies.'.$bodyKey;
+    $hasBody = view()->exists($bodyView);
+@endphp
 
-    <h1 class="font-serif text-[30px] sm:text-[36px] font-bold text-[#1D1B16] leading-tight">{{ $sTitle ?? 'SIARC 2026' }}</h1>
-    <div class="mt-2.5 h-[3.5px] w-[112px] bg-gradient-to-r from-[#D9991F] via-[#E9C989] to-transparent rounded-full mb-7"></div>
+@if($hasBody)
+    @include($bodyView)
+@else
+    {{-- inner-page header band --}}
+    <section class="siarc-mud border-b border-[#EDE7DA]">
+        <div class="max-w-[1240px] mx-auto px-4 sm:px-6 py-8">
+            <nav class="flex items-center gap-2 text-[12.5px] mb-3" aria-label="Breadcrumb">
+                <a href="{{ route('siarc.home', ['lang' => $lang]) }}" class="text-siarc-green hover:underline font-medium">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+                @if(!empty($sCrumb))
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
+                <span class="text-[#8A857A]">{{ $sCrumb }}</span>
+                @endif
+            </nav>
+            <h1 class="font-display text-[30px] sm:text-[38px] font-bold text-[#0F2E1A] leading-tight">{{ $sTitle ?? 'SIARC 2026' }}</h1>
+            <div class="mt-3 h-[3.5px] w-[104px] bg-gradient-to-r from-siarc-gold via-[#F1D48A] to-transparent rounded-full"></div>
+            @if(!empty($sIntro))
+            <p class="mt-4 text-[14px] text-[#55524A] leading-relaxed max-w-[760px]">{{ $sIntro }}</p>
+            @endif
+        </div>
+    </section>
 
-    @include('pages.siarc._blocks')
-</div>
+    <main class="max-w-[1240px] mx-auto px-4 sm:px-6 py-9">
+        @php $sIntro = null; @endphp {{-- already shown in the header band --}}
+        @include('pages.siarc._blocks')
+    </main>
+@endif
 
-@include('pages.partials.directory-footer')
+@include('pages.siarc.partials.siarc-footer')
 
 <script>
     lucide.createIcons();
-    const mBtn = document.getElementById('mobile-menu-btn');
-    const mMenu = document.getElementById('mobile-menu');
-    if (mBtn && mMenu) mBtn.addEventListener('click', () => mMenu.classList.toggle('hidden'));
+    (function(){
+        var b=document.getElementById('si-mnav-btn'),m=document.getElementById('si-mnav');
+        if(b&&m)b.addEventListener('click',function(){m.classList.toggle('hidden');});
+    })();
 </script>
+@stack('scripts')
 </body>
 </html>

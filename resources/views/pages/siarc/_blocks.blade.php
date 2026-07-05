@@ -1,5 +1,5 @@
-{{-- Shared SIARC block renderer (design-pending but fully wired to real data).
-     Consumes: $lang, $sIntro, $sStats, $sTables, $sCards, $sLinks, $sPending. --}}
+{{-- Shared SIARC block renderer — wired to real salon data, styled to the SIARC
+     design system. Consumes: $lang, $sIntro, $sStats, $sTables, $sCards, $sLinks. --}}
 @php
     $isFr = ($lang ?? 'fr') === 'fr';
     $tone = [
@@ -10,34 +10,34 @@
 @endphp
 
 @if(!empty($sIntro))
-<p class="text-[13px] text-[#55524A] leading-relaxed max-w-[820px] mb-5">{{ $sIntro }}</p>
+<p class="text-[13.5px] text-[#55524A] leading-relaxed max-w-[840px] mb-6">{{ $sIntro }}</p>
 @endif
 
 @if(!empty($sStats))
-<section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-{{ min(5, max(1, count($sStats))) }} gap-4 mb-5">
+<section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-{{ min(5, max(1, count($sStats))) }} gap-4 mb-6">
     @foreach($sStats as [$stIcon, $stColor, $stTile, $stValue, $stLabel, $stSub])
-    <div class="bg-white border border-[#EFF0EF] rounded-2xl px-4 py-4">
-        <span class="w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="background-color: {{ $stTile }}"><i data-lucide="{{ $stIcon }}" class="w-[19px] h-[19px]" style="color: {{ $stColor }};stroke-width:1.8"></i></span>
-        <p class="mt-3 text-[22px] font-extrabold text-[#1B1B18] leading-none">{{ $stValue }}</p>
-        <p class="mt-1 text-[11.5px] font-semibold text-[#3B382F]">{{ $stLabel }}</p>
-        @if($stSub)<p class="mt-0.5 text-[10.5px] text-[#8A857A]">{{ $stSub }}</p>@endif
+    <div class="siarc-card siarc-shadow px-5 py-5">
+        <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center" style="background-color: {{ $stTile }}"><i data-lucide="{{ $stIcon }}" class="w-[20px] h-[20px]" style="color: {{ $stColor }};stroke-width:1.9"></i></span>
+        <p class="mt-3.5 text-[24px] font-extrabold text-[#161513] leading-none tracking-tight">{{ $stValue }}</p>
+        <p class="mt-1.5 text-[12px] font-semibold text-[#3B382F]">{{ $stLabel }}</p>
+        @if($stSub)<p class="mt-0.5 text-[11px] text-[#8A857A]">{{ $stSub }}</p>@endif
     </div>
     @endforeach
 </section>
 @endif
 
 @if(!empty($sCards))
-<section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-5">
+<section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
     @foreach($sCards as $c)
     @php $cTone = $tone[$c['tone'] ?? 'green'] ?? $tone['green']; @endphp
-    <a href="{{ $c['href'] ?? '#' }}" class="block bg-white border border-[#EFF0EF] rounded-2xl p-4 hover:shadow-md hover:border-[#D8E5DC] transition-all">
-        <div class="flex items-center gap-3">
-            <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center shrink-0" style="background-color: {{ $cTone[0] }}"><i data-lucide="{{ $c['icon'] ?? 'box' }}" class="w-5 h-5" style="color: {{ $cTone[1] }}"></i></span>
+    <a href="{{ $c['href'] ?? '#' }}" class="siarc-card siarc-shadow siarc-lift block p-5">
+        <div class="flex items-center gap-3.5">
+            <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center shrink-0" style="background-color: {{ $cTone[0] }}"><i data-lucide="{{ $c['icon'] ?? 'box' }}" class="w-[22px] h-[22px]" style="color: {{ $cTone[1] }}"></i></span>
             <div class="min-w-0">
-                <p class="text-[13.5px] font-bold text-[#1B1B18] truncate">{{ $c['title'] }}</p>
-                @if(!empty($c['sub']))<p class="text-[11.5px] text-[#8A857A] truncate">{{ $c['sub'] }}</p>@endif
+                <p class="text-[14px] font-bold text-[#161513] truncate">{{ $c['title'] }}</p>
+                @if(!empty($c['sub']))<p class="text-[12px] text-[#8A857A] truncate">{{ $c['sub'] }}</p>@endif
             </div>
-            @if(!empty($c['badge']))<span class="ml-auto shrink-0 text-[10.5px] font-semibold px-2 py-0.5 rounded-full" style="background-color: {{ $cTone[0] }};color: {{ $cTone[1] }}">{{ $c['badge'] }}</span>@endif
+            @if(!empty($c['badge']))<span class="ml-auto shrink-0 text-[10.5px] font-semibold px-2.5 py-1 rounded-full" style="background-color: {{ $cTone[0] }};color: {{ $cTone[1] }}">{{ $c['badge'] }}</span>@else<i data-lucide="arrow-right" class="ml-auto w-4 h-4 text-[#C7C3B8] shrink-0"></i>@endif
         </div>
         @if(!empty($c['meta']))<p class="mt-3 text-[12px] text-[#6F6B60]">{{ $c['meta'] }}</p>@endif
     </a>
@@ -47,28 +47,28 @@
 
 @if(!empty($sTables))
 @foreach($sTables as $tbl)
-<div class="bg-white border border-[#EFF0EF] rounded-2xl overflow-hidden mb-5">
+<div class="siarc-card siarc-shadow overflow-hidden mb-6">
     @if(!empty($tbl['title']))
-    <div class="px-5 py-3.5 border-b border-[#F1F1EF] flex items-center justify-between gap-3">
-        <h2 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $tbl['title'] }}</h2>
-        @if(!empty($tbl['action']))<a href="{{ $tbl['action'][1] }}" class="text-[12px] font-semibold text-[#157A43] hover:underline">{{ $tbl['action'][0] }}</a>@endif
+    <div class="px-6 py-4 border-b border-[#F1F1EF] flex items-center justify-between gap-3">
+        <h2 class="text-[14px] font-bold text-[#161513]">{{ $tbl['title'] }}</h2>
+        @if(!empty($tbl['action']))<a href="{{ $tbl['action'][1] }}" class="text-[12.5px] font-semibold text-siarc-green hover:underline">{{ $tbl['action'][0] }}</a>@endif
     </div>
     @endif
     <div class="overflow-x-auto">
         <table class="w-full text-left">
-            <thead><tr class="text-[10.5px] font-bold text-[#8A857A]">
-                @foreach($tbl['cols'] as $col)<th class="px-5 py-2.5 whitespace-nowrap">{{ strtoupper($col) }}</th>@endforeach
+            <thead><tr class="text-[10.5px] font-bold text-[#8A857A] bg-[#FAFAF7]">
+                @foreach($tbl['cols'] as $col)<th class="px-6 py-3 whitespace-nowrap tracking-wide">{{ strtoupper($col) }}</th>@endforeach
             </tr></thead>
             <tbody>
                 @forelse($tbl['rows'] as $row)
-                <tr class="border-t border-[#F1F1EF] hover:bg-[#FAFAF8]">
+                <tr class="border-t border-[#F1F1EF] hover:bg-[#FBFAF6] transition-colors">
                     @foreach($row['cells'] as $ci => $cell)
-                    <td class="px-5 py-3 text-[12.5px] text-[#3B382F]">
+                    <td class="px-6 py-3.5 text-[12.5px] text-[#3B382F]">
                         @if(is_array($cell))
                             @php $ct = $tone[$cell['tone'] ?? 'grey'] ?? $tone['grey']; @endphp
-                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background-color: {{ $ct[0] }};color: {{ $ct[1] }}">{{ $cell['badge'] }}</span>
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full" style="background-color: {{ $ct[0] }};color: {{ $ct[1] }}"><span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ $ct[1] }}"></span>{{ $cell['badge'] }}</span>
                         @elseif($ci === 0 && !empty($row['href']))
-                            <a href="{{ $row['href'] }}" class="font-semibold text-[#1B1B18] hover:text-[#157A43]">{{ $cell }}</a>
+                            <a href="{{ $row['href'] }}" class="font-semibold text-[#161513] hover:text-siarc-green">{{ $cell }}</a>
                         @else
                             {{ $cell }}
                         @endif
@@ -76,7 +76,7 @@
                     @endforeach
                 </tr>
                 @empty
-                <tr><td colspan="{{ count($tbl['cols']) }}" class="text-center py-10 text-[13px] text-[#8A857A]">{{ $tbl['empty'] ?? ($isFr ? 'Aucune donnée.' : 'No data.') }}</td></tr>
+                <tr><td colspan="{{ count($tbl['cols']) }}" class="text-center py-12 text-[13px] text-[#8A857A]">{{ $tbl['empty'] ?? ($isFr ? 'Aucune donnée.' : 'No data.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -86,21 +86,14 @@
 @endif
 
 @if(!empty($sLinks))
-<div class="bg-white border border-[#EFF0EF] rounded-2xl p-5 mb-5">
-    <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide mb-3">{{ $isFr ? 'PAGES LIÉES' : 'RELATED PAGES' }}</h3>
-    <div class="flex flex-wrap gap-2">
+<div class="siarc-card siarc-shadow p-6 mb-2">
+    <h3 class="text-[12px] font-bold text-[#8A857A] tracking-[0.1em] mb-4">{{ $isFr ? 'PAGES LIÉES' : 'RELATED PAGES' }}</h3>
+    <div class="flex flex-wrap gap-2.5">
         @foreach($sLinks as $lnk)
-        <a href="{{ $lnk['href'] }}" class="inline-flex items-center gap-2 bg-[#F6F7F6] hover:bg-[#E2F3E8] text-[12.5px] font-medium text-[#3B382F] px-3.5 py-2 rounded-lg transition-colors">
-            <i data-lucide="{{ $lnk['icon'] ?? 'arrow-right' }}" class="w-4 h-4 text-[#157A43]"></i>{{ $lnk['label'] }}
+        <a href="{{ $lnk['href'] }}" class="inline-flex items-center gap-2 bg-[#F6F7F6] hover:bg-[#E2F3E8] text-[12.5px] font-medium text-[#3B382F] px-4 py-2.5 rounded-xl transition-colors">
+            <i data-lucide="{{ $lnk['icon'] ?? 'arrow-right' }}" class="w-4 h-4 text-siarc-green"></i>{{ $lnk['label'] }}
         </a>
         @endforeach
     </div>
-</div>
-@endif
-
-@if($sPending ?? true)
-<div class="flex items-start gap-2.5 bg-[#FBF7EC] border border-[#EFE4C8] rounded-xl px-4 py-3 text-[12px] text-[#7A5A12]">
-    <i data-lucide="palette" class="w-4 h-4 mt-0.5 shrink-0"></i>
-    <span>{{ $isFr ? 'Page fonctionnelle et connectée aux données réelles — le design SIARC définitif sera appliqué dès réception de la maquette.' : 'Page is functional and wired to real data — the final SIARC design will be applied once the mockup is provided.' }}</span>
 </div>
 @endif
