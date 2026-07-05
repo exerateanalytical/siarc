@@ -4,6 +4,8 @@
    TABS:    <div data-tabs="name"> <button class="si-tab is-active" data-tab="k">…</button> … </div>
             panels anywhere:  <div data-panel="k" data-tabs-for="name"> … </div>
             (if no panels exist the tab still toggles its active state)
+            add data-tabs-filter="#scopeSelector" on the group to make tabs filter
+            [data-filter-item]s by data-filter-tags (tab key 'all' shows everything)
    FILTER:  <input data-filter="#scopeSelector" …>   +  items: [data-filter-item] (matched on data-filter-text|textContent)
             optional empty state: [data-filter-empty] inside scope
    SELECT:  <select data-filter-select="#scopeSelector"> options value matched against item [data-filter-tags]
@@ -22,9 +24,20 @@
       var name = group.getAttribute('data-tabs');
       var triggers = Array.prototype.slice.call(group.querySelectorAll('[data-tab]'));
       var panels = Array.prototype.slice.call(document.querySelectorAll('[data-panel][data-tabs-for="' + name + '"]'));
+      var fSel = group.getAttribute('data-tabs-filter');
+      var fScope = fSel && document.querySelector(fSel);
       function activate(key) {
         triggers.forEach(function (t) { t.classList.toggle('is-active', t.getAttribute('data-tab') === key); });
         panels.forEach(function (p) { p.hidden = (p.getAttribute('data-panel') !== key); });
+        if (fScope) {
+          var k = (key || '').toLowerCase();
+          items(fScope).forEach(function (it) {
+            var tags = (it.getAttribute('data-filter-tags') || '').toLowerCase().split(/[\s,]+/);
+            var ok = !k || k === 'all' || tags.indexOf(k) >= 0;
+            it.setAttribute('data-hidden', ok ? '0' : '1'); it.style.display = ok ? '' : 'none';
+          });
+          repage(fScope);
+        }
       }
       triggers.forEach(function (t) {
         t.addEventListener('click', function (e) { e.preventDefault(); activate(t.getAttribute('data-tab')); });

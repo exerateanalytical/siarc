@@ -132,7 +132,7 @@
                         <span class="text-[#D5D2CA]">·</span>
                         <a href="?lang=en" class="{{ !$isFr ? 'text-siarc-green font-semibold' : '' }}">EN</a>
                     </div>
-                    <button class="relative w-9 h-9 rounded-full hover:bg-[#F1F1EF] flex items-center justify-center">
+                    <button data-toast="12 notifications non lues — centre de notifications à venir" class="relative w-9 h-9 rounded-full hover:bg-[#F1F1EF] flex items-center justify-center">
                         <i data-lucide="bell" class="w-[19px] h-[19px] text-[#3B382F]"></i>
                         <span class="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-siarc-red text-white text-[10px] font-bold flex items-center justify-center">12</span>
                     </button>

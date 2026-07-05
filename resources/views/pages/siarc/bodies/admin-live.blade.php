@@ -60,13 +60,13 @@
 
 {{-- ══ PAGE ACTION BAR ══ --}}
 <div class="flex flex-wrap items-center justify-end gap-2.5 mb-4 siarc-in">
-    <button class="siarc-btn text-[12.5px] bg-white border border-[#E4E1D8] text-[#3B382F] px-3.5 py-2 hover:bg-[#FBFAF6]">
+    <button onclick="window.location.reload()" class="siarc-btn text-[12.5px] bg-white border border-[#E4E1D8] text-[#3B382F] px-3.5 py-2 hover:bg-[#FBFAF6]">
         <i data-lucide="refresh-cw" class="w-4 h-4"></i>Actualiser
     </button>
-    <button class="siarc-btn text-[12.5px] bg-white border border-[#E4E1D8] text-[#3B382F] px-3.5 py-2 hover:bg-[#FBFAF6]">
+    <button data-toast="Paramètres d'alertes à venir…" class="siarc-btn text-[12.5px] bg-white border border-[#E4E1D8] text-[#3B382F] px-3.5 py-2 hover:bg-[#FBFAF6]">
         <i data-lucide="bell" class="w-4 h-4"></i>Paramètres d'alertes
     </button>
-    <button class="siarc-btn siarc-btn-green text-[12.5px] px-4 py-2">
+    <button data-toast="Export du rapport en préparation…" class="siarc-btn siarc-btn-green text-[12.5px] px-4 py-2">
         <i data-lucide="download" class="w-4 h-4"></i>Exporter le rapport
     </button>
 </div>

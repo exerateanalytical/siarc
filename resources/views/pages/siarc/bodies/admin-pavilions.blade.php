@@ -97,7 +97,7 @@
     <div class="xl:col-span-2 siarc-card siarc-shadow overflow-hidden">
 
         {{-- tabs --}}
-        <div data-tabs="pavtabs" class="flex items-center gap-7 px-5 pt-4 border-b border-[#EFEDE6]">
+        <div data-tabs="pavtabs" data-tabs-filter="#pavScope" class="flex items-center gap-7 px-5 pt-4 border-b border-[#EFEDE6]">
             <button class="si-tab is-active pb-3 -mb-px text-[13px] font-bold" data-tab="all">Tous les pavillons (16)</button>
             <button class="si-tab pb-3 -mb-px text-[13px] font-medium" data-tab="national">Pavillons nationaux (10)</button>
             <button class="si-tab pb-3 -mb-px text-[13px] font-medium" data-tab="international">Pavillons internationaux (6)</button>
@@ -149,7 +149,7 @@
                 </thead>
                 <tbody id="pavScope">
                     @foreach($pavRows as [$thumb,$name,$code,$cat,$type,$region,$flag,$total,$occ,$dispo,$taux,$statut,$tone])
-                    <tr data-filter-item data-filter-text="{{ $name }} {{ $code }} {{ $cat }} {{ $type }} {{ $region }} {{ $statut }}" class="border-b border-[#F2F1EC] hover:bg-[#FBFAF6] transition-colors">
+                    <tr data-filter-item data-filter-tags="{{ Str::lower($type) }}" data-filter-text="{{ $name }} {{ $code }} {{ $cat }} {{ $type }} {{ $region }} {{ $statut }}" class="border-b border-[#F2F1EC] hover:bg-[#FBFAF6] transition-colors">
                         <td class="px-5 py-3">
                             <div class="flex items-center gap-3">
                                 <img src="{{ asset('images/siarc/pavilion-thumb-'.$thumb.'.png') }}" alt="" class="w-9 h-9 rounded-lg object-cover shrink-0 border border-[#EFEDE6]">

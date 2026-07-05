@@ -1855,19 +1855,8 @@ Route::get('/tableau-de-bord/admin/categories', function (Request $request) {
 Route::get('/tableau-de-bord/admin/siarc', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
-    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
-    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
-
-    $siarcEvent = DB::table('events')->where('slug', 'like', 'siarc%')->first();
-    $siarcExhibitors = $siarcEvent
-        ? DB::table('event_exhibitors')
-            ->leftJoin('businesses', 'businesses.id', '=', 'event_exhibitors.business_id')
-            ->where('event_exhibitors.event_id', $siarcEvent->id)
-            ->select('event_exhibitors.*', 'businesses.name_fr as business_name', 'businesses.slug as business_slug')
-            ->get()
-        : collect();
-
-    return view('pages.dashboard.admin-siarc', compact('lang', 'siacUser', 'siarcEvent', 'siarcExhibitors'));
+    // Superseded by the full SIARC 2026 module — hand over to its dashboard.
+    return redirect()->route('siarc.admin.dashboard', ['lang' => webLang($request)]);
 })->name('admin.siarc');
 
 // ─── Admin replica pages, 2026-07-04 wave (designs: gestion dartisans / gestion de

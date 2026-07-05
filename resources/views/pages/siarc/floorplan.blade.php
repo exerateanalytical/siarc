@@ -59,13 +59,13 @@
             <i data-lucide="search" class="w-[18px] h-[18px] text-[#B0AB9F]"></i>
         </div>
 
-        <button type="button" class="siarc-btn siarc-card siarc-shadow px-4 h-[52px] text-[13px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
+        <button type="button" data-toast="{{ $isFr ? 'Filtres avancés à venir…' : 'Advanced filters coming soon…' }}" class="siarc-btn siarc-card siarc-shadow px-4 h-[52px] text-[13px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
             <i data-lucide="filter" class="w-[16px] h-[16px] text-[#8A857A]"></i>{{ $isFr ? 'Filtres' : 'Filters' }}
         </button>
-        <button type="button" class="siarc-btn siarc-card siarc-shadow px-4 h-[52px] text-[13px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
+        <button type="button" data-toast="{{ $isFr ? 'Légende affichée sous le plan' : 'Legend shown below the map' }}" class="siarc-btn siarc-card siarc-shadow px-4 h-[52px] text-[13px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6]">
             <i data-lucide="list" class="w-[16px] h-[16px] text-[#8A857A]"></i>{{ $isFr ? 'Légende' : 'Legend' }}
         </button>
-        <button type="button" class="siarc-btn siarc-btn-green px-4 h-[52px] text-[13px] siarc-shadow">
+        <button type="button" data-toast="{{ $isFr ? 'Vue 3D en cours de préparation…' : '3D view coming soon…' }}" class="siarc-btn siarc-btn-green px-4 h-[52px] text-[13px] siarc-shadow">
             <i data-lucide="box" class="w-[16px] h-[16px]"></i>{{ $isFr ? 'Vue 3D' : '3D view' }}
         </button>
     </div>
@@ -314,7 +314,7 @@
                         ['lightbulb','#E6B201','Espace Innovation'],
                     ]; @endphp
                     @foreach($navq as [$icon,$col,$lbl])
-                    <button type="button" class="flex items-center gap-2 rounded-xl border border-[#EFEDE6] px-3 py-2.5 text-[11.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6] transition-colors text-left">
+                    <button type="button" data-toast="{{ $lbl }} — {{ $isFr ? 'repère affiché sur le plan' : 'marker shown on the map' }}" class="flex items-center gap-2 rounded-xl border border-[#EFEDE6] px-3 py-2.5 text-[11.5px] font-semibold text-[#3B382F] hover:bg-[#FBFAF6] transition-colors text-left">
                         <i data-lucide="{{ $icon }}" class="w-[16px] h-[16px] shrink-0" style="color:{{ $col }}"></i>{{ $lbl }}
                     </button>
                     @endforeach

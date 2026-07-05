@@ -122,7 +122,7 @@
             <span class="siarc-btn siarc-btn-green px-3.5 py-2 text-[12.5px]"><i data-lucide="layout-grid" class="w-4 h-4"></i>Vue calendrier</span>
             <a href="{{ $h('siarc.admin.programme') }}" class="inline-flex items-center gap-2 px-3.5 py-2 text-[12.5px] font-semibold text-[#55524A] rounded-lg hover:bg-[#F5F3EE]"><i data-lucide="clipboard-list" class="w-4 h-4"></i>Vue liste</a>
         </div>
-        <button type="button" class="inline-flex items-center gap-2 rounded-xl border border-[#E6E3DB] bg-white px-3.5 py-2.5 text-[12.5px] font-medium text-[#55524A] siarc-shadow">
+        <button type="button" data-toast="Filtre par lieu à venir…" class="inline-flex items-center gap-2 rounded-xl border border-[#E6E3DB] bg-white px-3.5 py-2.5 text-[12.5px] font-medium text-[#55524A] siarc-shadow">
             <span>Tous les lieux</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i>
         </button>
         <div class="ml-auto flex items-center gap-3">
@@ -140,12 +140,12 @@
             {{-- month nav bar --}}
             <div class="flex items-center justify-between px-4 py-3.5 border-b border-[#EEECE5]">
                 <div class="flex items-center gap-2">
-                    <button type="button" class="w-8 h-8 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
-                    <button type="button" class="px-3.5 h-8 rounded-lg border border-[#E6E3DB] flex items-center text-[12px] font-semibold text-[#55524A] hover:bg-[#F5F3EE]">Aujourd'hui</button>
-                    <button type="button" class="w-8 h-8 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Semaine précédente — navigation à venir" class="w-8 h-8 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Vous êtes sur la semaine en cours" class="px-3.5 h-8 rounded-lg border border-[#E6E3DB] flex items-center text-[12px] font-semibold text-[#55524A] hover:bg-[#F5F3EE]">Aujourd'hui</button>
+                    <button type="button" data-toast="Semaine suivante — navigation à venir" class="w-8 h-8 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                 </div>
                 <h2 class="font-display text-[17px] font-bold text-[#1A1712] flex items-center gap-1.5">Juillet – Août 2026<i data-lucide="chevron-down" class="w-4 h-4 text-[#B0AB9F]"></i></h2>
-                <button type="button" class="inline-flex items-center gap-1.5 px-3.5 h-8 rounded-lg border border-[#E6E3DB] text-[12px] font-semibold text-[#55524A] hover:bg-[#F5F3EE]"><i data-lucide="filter" class="w-3.5 h-3.5"></i>Filtres</button>
+                <button type="button" data-toast="Filtres avancés à venir…" class="inline-flex items-center gap-1.5 px-3.5 h-8 rounded-lg border border-[#E6E3DB] text-[12px] font-semibold text-[#55524A] hover:bg-[#F5F3EE]"><i data-lucide="filter" class="w-3.5 h-3.5"></i>Filtres</button>
             </div>
 
             {{-- weekday header --}}
@@ -205,9 +205,9 @@
             <div class="siarc-card siarc-shadow p-4">
                 <h3 class="text-[14px] font-bold text-[#1A1712] mb-3">Mini calendrier</h3>
                 <div class="flex items-center justify-between mb-3">
-                    <button type="button" class="w-7 h-7 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Mois précédent — navigation à venir" class="w-7 h-7 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                     <p class="text-[13px] font-bold text-[#1A1712]">Juillet – Août 2026</p>
-                    <button type="button" class="w-7 h-7 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <button type="button" data-toast="Mois suivant — navigation à venir" class="w-7 h-7 rounded-lg border border-[#E6E3DB] flex items-center justify-center text-[#8A857A] hover:bg-[#F5F3EE]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
                 <div class="grid grid-cols-7 gap-0.5 text-center mb-1">
                     @foreach(['L','M','M','J','V','S','D'] as $d)<span class="text-[10.5px] font-bold text-[#B0AB9F] py-1">{{ $d }}</span>@endforeach
