@@ -26,10 +26,11 @@
         ['Types de Badges',    'siarc.admin.accred.types'],
         ['Print Queue',        'siarc.admin.accred.queue'],
         ['Bulk Printing',      'siarc.admin.accred.bulk'],
-        ['Réimpressions',      'siarc.admin.accred.queue'],
-        ['Historique',         'siarc.admin.accred.queue'],
+        ['Réimpressions',      'siarc.admin.accred.reprints'],
+        ['Historique',         'siarc.admin.accred.reprints'],
         ['QR Code Generation', 'siarc.admin.accred.qr'],
         ['RFID Support',       'siarc.admin.accred.rfid'],
+        ['QR Scanner',         'siarc.admin.accred.qrscanner'],
     ];
     $accNavBottom = [
         ['Lecteurs & Accès',    'scan-line',      'siarc.admin.entry'],
@@ -49,6 +50,9 @@
         'siarc.admin.accred.qr'        => ['active'=>'QR Code Generation', 'art'=>'accred-art-qr.png',         'top'=>['fr'=>true]],
         'siarc.admin.accred.rfid'      => ['active'=>'RFID Support',       'art'=>'accred-art-rfid.png',       'top'=>['search'=>true,'scope'=>'#rfScope','searchPh'=>'Rechercher (nom, badge, ID, type...)','help'=>true]],
         'siarc.admin.accred.rfid.card' => ['active'=>'RFID Support',       'art'=>'accred-art-rfiddetail.png', 'top'=>['search'=>true,'searchPh'=>'Rechercher (nom, badge ID, RFID, email...)','help'=>true]],
+        'siarc.admin.accred.rfid.write'=> ['active'=>'RFID Support',       'art'=>'accred-art-types.png',      'top'=>['search'=>true,'searchPh'=>'Rechercher (nom, badge, RFID, ID...)','help'=>true,'fr'=>true]],
+        'siarc.admin.accred.reprints'  => ['active'=>'Réimpressions',      'art'=>'accred-art-types.png',      'top'=>['search'=>true,'scope'=>'#rpScope','searchPh'=>'Rechercher (nom, badge ID, RFID, email...)','help'=>true]],
+        'siarc.admin.accred.qrscanner' => ['active'=>'QR Scanner',         'art'=>'accred-art-types.png',      'top'=>['help'=>true]],
     ];
     // Spec-driven operations pages share one chrome variant.
     foreach (array_keys(config('siarc_accred_ops', [])) as $opsRoute) {

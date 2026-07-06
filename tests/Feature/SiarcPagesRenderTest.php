@@ -49,6 +49,11 @@ class SiarcPagesRenderTest extends TestCase
             'siarc.admin.accred.monitor', 'siarc.admin.accred.failures', 'siarc.admin.accred.override',
             'siarc.admin.accred.lost', 'siarc.admin.accred.activation', 'siarc.admin.accred.replace',
             'siarc.admin.accred.revocations', 'siarc.admin.accred.health', 'siarc.admin.accred.sync',
+            'siarc.admin.accred.rfid.write', 'siarc.admin.accred.reprints', 'siarc.admin.accred.qrscanner',
+            'siarc.admin.secops.overview', 'siarc.admin.secops.crowd', 'siarc.admin.secops.incidents',
+            'siarc.admin.secops.lost', 'siarc.admin.secops.lost.case', 'siarc.admin.secops.medical',
+            'siarc.admin.secops.medical.case', 'siarc.admin.secops.fire', 'siarc.admin.secops.fire.case',
+            'siarc.admin.secops.police.case', 'siarc.admin.secops.kiosk.scanner', 'siarc.admin.secops.kiosk.checkin',
         ] as $name) {
             $this->withSession($session)->get(route($name))->assertOk();
         }
@@ -56,6 +61,11 @@ class SiarcPagesRenderTest extends TestCase
         $this->withSession($session)
             ->get(route('siarc.admin.accred.rfid.card', ['uid' => '04A3B27F916E80']))
             ->assertOk()->assertSee('04 A3 B2 7F 91 6E 80');
+
+        foreach (['granted', 'refused', 'manual', 'validation', 'offline'] as $etat) {
+            $this->withSession($session)
+                ->get(route('siarc.admin.accred.qrscanner', ['etat' => $etat]))->assertOk();
+        }
     }
 
     public function test_printable_badges_render_for_all_types(): void

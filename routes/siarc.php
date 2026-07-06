@@ -917,3 +917,52 @@ foreach ([
         return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => $title]);
     })->name('siarc.admin.accred.'.$key);
 }
+
+// ── Accreditation: RFID write flow, reprint history, QR scanner ─────────────
+Route::get('/tableau-de-bord/admin/siarc/accreditation/rfid-ecriture', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => 'RFID Write Data Flow']);
+})->name('siarc.admin.accred.rfid.write');
+
+Route::get('/tableau-de-bord/admin/siarc/accreditation/reimpressions', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => 'Reprint History']);
+})->name('siarc.admin.accred.reprints');
+
+Route::get('/tableau-de-bord/admin/siarc/accreditation/qr-scanner', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => 'QR Scanner', 'qrState' => $r->query('etat', 'camera')]);
+})->name('siarc.admin.accred.qrscanner');
+
+// ─────────────────── ADMIN — Security Operations module ─────────────────────
+// Ten approved designs (Overview / Crowd Alerts / Incidents / Lost Persons +
+// detail / Medical Emergency + detail / Fire Alerts + detail / Police Request
+// Details) rendered through the pages.siarc.secops scaffold.
+foreach ([
+    'overview'     => ['apercu',            'Security Operations',       null],
+    'crowd'        => ['foule',             'Crowd Alerts',              'Crowd Alerts'],
+    'incidents'    => ['incidents',         'Incidents',                 'Incidents'],
+    'lost'         => ['personnes-perdues', 'Lost Persons',              'Lost Persons'],
+    'lost.case'    => ['personnes-perdues/dossier', 'Lost Person Detail','Lost Persons » Lost Person Detail'],
+    'medical'      => ['urgences-medicales','Medical Emergency',         'Medical Emergency'],
+    'medical.case' => ['urgences-medicales/dossier','Medical Emergency Detail','Medical Emergency » Emergency Detail'],
+    'fire'         => ['incendies',         'Fire Alerts',               'Fire Alerts'],
+    'fire.case'    => ['incendies/dossier', 'Fire Alert Detail',         'Fire Alerts » Fire Alert Detail'],
+    'police.case'  => ['police/dossier',    'Police Request Details',    'Police Requests » Request Details'],
+] as $key => [$slug, $title, $crumb]) {
+    Route::get('/tableau-de-bord/admin/siarc/securite/'.$slug, function (Request $r) use ($title, $crumb) {
+        if ($x = requireAdmin($r)) return $x;
+        return view('pages.siarc.secops', ['lang' => webLang($r), 'sTitle' => $title, 'sCrumb' => $crumb]);
+    })->name('siarc.admin.secops.'.$key);
+}
+
+// ── Security operations kiosks (tablet devices at the gates) ─────────────────
+Route::get('/tableau-de-bord/admin/siarc/securite/kiosque-scanner', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    return view('pages.siarc.kiosk-staff-scanner', ['lang' => webLang($r)]);
+})->name('siarc.admin.secops.kiosk.scanner');
+
+Route::get('/tableau-de-bord/admin/siarc/securite/kiosque-checkin', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    return view('pages.siarc.kiosk-visitor-checkin', ['lang' => webLang($r)]);
+})->name('siarc.admin.secops.kiosk.checkin');
