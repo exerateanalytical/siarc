@@ -166,13 +166,16 @@ if (! function_exists('siarcEvent')) {
     /** The current SIARC salon event (most recent one whose slug starts with "siarc"). */
     function siarcEvent(): ?object
     {
-        static $event = null;
-        static $loaded = false;
-        if (! $loaded) {
-            $event = DB::table('events')->where('slug', 'like', 'siarc%')->orderByDesc('starts_at')->first();
-            $loaded = true;
+        // Memoized on the container (per request in production, per test in phpunit)
+        // — a process-wide static would leak an empty-DB null across test cases.
+        $app = app();
+        if (! $app->bound('siarc.event.memo')) {
+            $app->instance('siarc.event.memo',
+                DB::table('events')->where('slug', 'like', 'siarc%')->orderByDesc('starts_at')->first() ?? false);
         }
-        return $event;
+        $memo = $app->make('siarc.event.memo');
+
+        return $memo === false ? null : $memo;
     }
 }
 

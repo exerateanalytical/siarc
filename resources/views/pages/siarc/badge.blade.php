@@ -60,7 +60,7 @@
                 [$isFr ? 'Urgence' : 'Emergency', '+237 6 78 90 12 34'],
               ]);
     }
-    $verify = 'https://siarc2026.cm/verify/'.$code;
+    $verify = route('siarc.verify', ['code' => $code, 'lang' => $lang]);
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">

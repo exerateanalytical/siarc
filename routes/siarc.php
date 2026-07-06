@@ -645,6 +645,11 @@ Route::get('/tableau-de-bord/siarc/exposant-checkin', function (Request $r) use 
         ->where('ee.event_id', $eid)->orderByDesc('ee.id')->get(['ee.id', 'b.name_fr', 'ee.checked_in_at']);
     return view('pages.siarc.admin', [
         'lang' => $lang, 'sActive' => 'siarc-exh', 'sTitle' => $fr ? 'Check-in des Exposants' : 'Exhibitor Check-in',
+        'sForm' => [
+            'action' => route('siarc.mobile.exhibitor-checkin.store'),
+            'label' => $fr ? 'Badge exposant (code ou QR)' : 'Exhibitor badge (code or QR)',
+            'placeholder' => 'SIARC-EXH-0011', 'button' => $fr ? 'Enregistrer le check-in' : 'Record check-in',
+        ],
         'sStats' => [['store', '#157A43', '#E2F3E8', $rows->count(), $fr ? 'Exposants' : 'Exhibitors', null], ['scan-line', '#3565DE', '#E8EFFB', $rows->whereNotNull('checked_in_at')->count(), $fr ? 'Enregistrés' : 'Checked-in', null]],
         'sTables' => [[
             'title' => $fr ? 'Exposants' : 'Exhibitors',
@@ -782,17 +787,20 @@ Route::post('/siarc/inscription', function (Request $r) {
         'organization' => 'nullable|string|max:190', 'type' => 'nullable|in:visitor,buyer,press',
     ]);
     $eid = siarcEvent()?->id;
+    $badge = null;
     if ($eid) {
         $n = DB::table('visitors')->where('event_id', $eid)->count() + 1;
+        $badge = 'SIARC-VIS-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT);
         DB::table('visitors')->insert($data + [
             'event_id' => $eid, 'type' => $data['type'] ?? 'visitor', 'status' => 'registered',
-            'badge_code' => 'SIARC-VIS-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+            'badge_code' => $badge,
             'qr_token' => \Illuminate\Support\Str::random(40), 'registered_at' => now(),
             'created_at' => now(), 'updated_at' => now(),
         ]);
     }
     return redirect()->route('siarc.register', ['lang' => webLang($r)])
-        ->with($eid ? 'siarc_registered' : 'siarc_error', true);
+        ->with($eid ? 'siarc_registered' : 'siarc_error', true)
+        ->with('siarc_badge', $badge);
 })->name('siarc.register.store')->middleware('throttle:10,1');
 
 Route::get('/siarc/ateliers/{id}/inscription', function (Request $r, $id) {
@@ -931,7 +939,18 @@ Route::get('/tableau-de-bord/admin/siarc/accreditation/reimpressions', function 
 
 Route::get('/tableau-de-bord/admin/siarc/accreditation/qr-scanner', function (Request $r) {
     if ($x = requireAdmin($r)) return $x;
-    return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => 'QR Scanner', 'qrState' => $r->query('etat', 'camera')]);
+    $state = $r->query('etat', 'camera');
+    $scan = null;
+    // A real code (manual entry or camera hand-off) resolves against the badge tables.
+    if ($code = trim((string) $r->query('code', ''))) {
+        $holder = siarcResolveBadge($code);
+        $scan = ['input' => $code, 'holder' => $holder];
+        if (! in_array($state, ['validation'])) {
+            $state = $holder && ! $holder['blocked'] ? ($r->query('etat') === 'validation' ? 'validation' : 'granted') : 'refused';
+        }
+        if ($state === 'validation' && (! $holder || $holder['blocked'])) $state = 'refused';
+    }
+    return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => 'QR Scanner', 'qrState' => $state, 'qrScan' => $scan, 'qrCheckin' => (bool) $r->query('checkin')]);
 })->name('siarc.admin.accred.qrscanner');
 
 // ─────────────────── ADMIN — Security Operations module ─────────────────────
@@ -992,3 +1011,109 @@ Route::get('/siarc/pavillons/{slug}', function (Request $r, $slug) {
         ->map(fn ($o, $s) => [$s, $o['name'], $o['img']])->values()->all();
     return view('pages.siarc.public', ['lang' => $lang, 'sTitle' => $p['name'], 'pavPublic' => $p]);
 })->name('siarc.pavilion');
+
+// ═══════════════ End-to-end flows: verify / scan / check-in / lifecycle ══════
+
+// Resolve a badge code or QR token to its holder (visitor, exhibitor or speaker).
+if (! function_exists('siarcResolveBadge')) {
+    function siarcResolveBadge(string $code): ?array
+    {
+        $v = DB::table('visitors')->where('badge_code', $code)->orWhere('qr_token', $code)->first();
+        if ($v) return ['kind' => 'visitor', 'row' => $v, 'name' => trim($v->first_name.' '.$v->last_name),
+            'type' => $v->type === 'vip' ? 'VIP' : ucfirst($v->type), 'code' => $v->badge_code,
+            'blocked' => in_array($v->status, ['blocked', 'cancelled']), 'checked_in' => (bool) $v->checked_in_at];
+        $x = DB::table('event_exhibitors as ee')->leftJoin('businesses as b', 'b.id', '=', 'ee.business_id')
+            ->where('ee.badge_code', $code)->orWhere('ee.qr_token', $code)
+            ->first(['ee.*', 'b.name_fr as company']);
+        if ($x) return ['kind' => 'exhibitor', 'row' => $x, 'name' => $x->company ?? 'Exposant',
+            'type' => 'Exposant', 'code' => $x->badge_code,
+            'blocked' => in_array($x->status, ['blocked', 'cancelled']), 'checked_in' => (bool) $x->checked_in_at];
+        if (preg_match('/^SPK-0*(\d+)$/i', $code, $m)) {
+            $s = DB::table('speakers')->where('id', $m[1])->first();
+            if ($s) return ['kind' => 'speaker', 'row' => $s, 'name' => $s->name,
+                'type' => 'Intervenant', 'code' => strtoupper($code), 'blocked' => false, 'checked_in' => false];
+        }
+        return null;
+    }
+}
+
+// ── Public badge verification (target of every printed badge QR) ────────────
+Route::get('/siarc/verify/{code}', function (Request $r, $code) {
+    $lang = webLang($r);
+    $holder = siarcResolveBadge($code);
+    $state = ! $holder ? 'unknown' : ($holder['blocked'] ? 'blocked' : 'valid');
+    return view('pages.siarc.verify', ['lang' => $lang, 'code' => $code, 'holder' => $holder, 'state' => $state]);
+})->name('siarc.verify');
+
+// ── Admin scanner check-in (records the passage) ────────────────────────────
+Route::post('/tableau-de-bord/admin/siarc/accreditation/qr-scanner/checkin', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    $data = $r->validate(['code' => 'required|string|max:120']);
+    $holder = siarcResolveBadge($data['code']);
+    if (! $holder || $holder['blocked']) {
+        return redirect()->route('siarc.admin.accred.qrscanner', ['lang' => webLang($r), 'etat' => 'refused', 'code' => $data['code']]);
+    }
+    $eid = siarcEvent()?->id ?? 0;
+    $table = $holder['kind'] === 'exhibitor' ? 'event_exhibitors' : 'visitors';
+    if (in_array($holder['kind'], ['visitor', 'exhibitor'])) {
+        DB::table($table)->where('id', $holder['row']->id)->update(['checked_in_at' => now(), 'updated_at' => now()]);
+        DB::table('check_ins')->insert([
+            'event_id' => $eid, 'subject_type' => $holder['kind'], 'subject_id' => $holder['row']->id,
+            'gate' => 'Porte A - Entrée Principale', 'scanned_by' => session('siac_user')['name'] ?? 'Scanner',
+            'scanned_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+    }
+    return redirect()->route('siarc.admin.accred.qrscanner', ['lang' => webLang($r), 'etat' => 'granted', 'code' => $data['code'], 'checkin' => 1]);
+})->name('siarc.admin.accred.qrscanner.checkin')->middleware('throttle:60,1');
+
+// ── Badge lifecycle: block / unblock (lost & blocked badge management) ──────
+Route::post('/tableau-de-bord/admin/siarc/accreditation/badges/{code}/statut', function (Request $r, $code) {
+    if ($x = requireAdmin($r)) return $x;
+    $holder = siarcResolveBadge($code);
+    abort_if(! $holder || ! in_array($holder['kind'], ['visitor', 'exhibitor']), 404);
+    $table = $holder['kind'] === 'exhibitor' ? 'event_exhibitors' : 'visitors';
+    $new = $holder['blocked'] ? 'registered' : 'cancelled'; // schema enum: registered / checked_in / cancelled
+    DB::table($table)->where('id', $holder['row']->id)->update(['status' => $new, 'updated_at' => now()]);
+    return redirect()->route('siarc.admin.accred.lost', ['lang' => webLang($r)])
+        ->with('siarc_badge_status', [$holder['code'], $new]);
+})->name('siarc.admin.accred.badge.status')->middleware('throttle:30,1');
+
+// ── Exhibitor gate check-in (portal device) ─────────────────────────────────
+Route::post('/tableau-de-bord/siarc/exposant-checkin', function (Request $r) {
+    if ($x = requireAdmin($r)) return $x;
+    $data = $r->validate(['code' => 'required|string|max:120']);
+    $holder = siarcResolveBadge($data['code']);
+    $ok = $holder && $holder['kind'] === 'exhibitor' && ! $holder['blocked'];
+    if ($ok) {
+        DB::table('event_exhibitors')->where('id', $holder['row']->id)->update(['checked_in_at' => now(), 'updated_at' => now()]);
+        DB::table('check_ins')->insert([
+            'event_id' => siarcEvent()?->id ?? 0, 'subject_type' => 'exhibitor', 'subject_id' => $holder['row']->id,
+            'gate' => 'Accès Exposants', 'scanned_by' => session('siac_user')['name'] ?? 'Portail',
+            'scanned_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+    }
+    return redirect()->route('siarc.mobile.exhibitor-checkin', ['lang' => webLang($r)])
+        ->with($ok ? 'siarc_checkin_ok' : 'siarc_checkin_ko', $holder['name'] ?? $data['code']);
+})->name('siarc.mobile.exhibitor-checkin.store')->middleware('throttle:60,1');
+
+// ── Visitor B2B meeting request (public form on the visitor dashboard) ──────
+Route::post('/siarc/b2b/demande', function (Request $r) {
+    $data = $r->validate([
+        'email' => 'required|email|max:190',
+        'exhibitor_id' => 'required|integer|exists:event_exhibitors,id',
+        'message' => 'nullable|string|max:500',
+    ]);
+    $eid = siarcEvent()?->id ?? 0;
+    $visitorId = DB::table('visitors')->where('event_id', $eid)->where('email', $data['email'])->value('id');
+    if (! $visitorId) {
+        return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)])
+            ->with('siarc_b2b_ko', true)->withInput();
+    }
+    DB::table('b2b_meetings')->insert([
+        'event_id' => $eid, 'requester_visitor_id' => $visitorId, 'host_exhibitor_id' => $data['exhibitor_id'],
+        'scheduled_at' => now()->addDay()->setTime(10, 0), 'duration_min' => 30,
+        'location' => 'Espace B2B — Musée National', 'status' => 'requested',
+        'message' => $data['message'] ?? null, 'created_at' => now(), 'updated_at' => now(),
+    ]);
+    return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)])->with('siarc_b2b_ok', true);
+})->name('siarc.b2b.request')->middleware('throttle:10,1');

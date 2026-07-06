@@ -13,6 +13,30 @@
 <p class="text-[13.5px] text-[#55524A] leading-relaxed max-w-[840px] mb-6">{{ $sIntro }}</p>
 @endif
 
+@if(session('siarc_checkin_ok'))
+<div class="mb-5 flex items-center gap-2.5 rounded-xl border border-[#CFE8D8] bg-[#EAF6EE] px-4 py-3">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] shrink-0"></i>
+    <p class="text-[13px] font-semibold text-[#155B33]">{{ $isFr ? 'Check-in enregistré :' : 'Check-in recorded:' }} {{ session('siarc_checkin_ok') }}</p>
+</div>
+@elseif(session('siarc_checkin_ko'))
+<div class="mb-5 flex items-center gap-2.5 rounded-xl border border-[#F5CFCF] bg-[#FDF0F0] px-4 py-3">
+    <i data-lucide="x-circle" class="w-4 h-4 text-[#C0010C] shrink-0"></i>
+    <p class="text-[13px] font-semibold text-[#8A1015]">{{ $isFr ? 'Badge refusé ou inconnu :' : 'Badge refused or unknown:' }} {{ session('siarc_checkin_ko') }}</p>
+</div>
+@endif
+
+@if(!empty($sForm))
+<form method="POST" action="{{ $sForm['action'] }}" class="mb-6 siarc-card siarc-shadow p-4 flex flex-wrap items-end gap-3 max-w-[640px]">
+    @csrf
+    <div class="flex-1 min-w-[220px]">
+        <label class="block text-[11px] text-[#8A857A] mb-1">{{ $sForm['label'] }}</label>
+        <input name="{{ $sForm['name'] ?? 'code' }}" required maxlength="120" placeholder="{{ $sForm['placeholder'] ?? '' }}"
+               class="w-full text-[13px] rounded-lg border border-[#EFEDE6] px-3.5 py-2.5 focus:outline-none focus:border-[#D8E5DC] bg-white text-[#3B382F]">
+    </div>
+    <button type="submit" class="siarc-btn siarc-btn-green text-[13px] px-4 py-2.5 rounded-lg"><i data-lucide="scan-line" class="w-4 h-4"></i>{{ $sForm['button'] }}</button>
+</form>
+@endif
+
 @if(!empty($sStats))
 <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-{{ min(5, max(1, count($sStats))) }} gap-4 mb-6">
     @foreach($sStats as [$stIcon, $stColor, $stTile, $stValue, $stLabel, $stSub])

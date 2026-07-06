@@ -92,6 +92,13 @@
         <div>
             <p class="text-[13.5px] text-[#0F4824] leading-relaxed font-semibold">{{ $isFr ? 'Inscription confirmée !' : 'Registration confirmed!' }}</p>
             <p class="text-[12.5px] text-[#3F6B4F] leading-relaxed mt-0.5">{{ $isFr ? 'Votre badge vous sera envoyé par email. Nous avons hâte de vous accueillir au SIARC 2026.' : 'Your badge will be emailed to you. We look forward to welcoming you to SIARC 2026.' }}</p>
+            @if(session('siarc_badge'))
+            <p class="text-[12.5px] text-[#0F4824] mt-2">{{ $isFr ? 'Votre numéro de badge :' : 'Your badge number:' }} <b class="font-bold tracking-wide">{{ session('siarc_badge') }}</b></p>
+            <div class="flex flex-wrap items-center gap-2.5 mt-2.5">
+                <a href="{{ route('siarc.badge.print', ['code' => session('siarc_badge'), 'lang' => $lang]) }}" class="inline-flex items-center gap-1.5 rounded-lg bg-siarc-green text-white text-[12px] font-semibold px-3.5 py-2"><i data-lucide="printer" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Voir & imprimer mon badge' : 'View & print my badge' }}</a>
+                <a href="{{ route('siarc.verify', ['code' => session('siarc_badge'), 'lang' => $lang]) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-[#BFE3CC] bg-white text-siarc-green text-[12px] font-semibold px-3.5 py-2"><i data-lucide="badge-check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Vérifier mon badge' : 'Verify my badge' }}</a>
+            </div>
+            @endif
         </div>
     </div>
     @endif

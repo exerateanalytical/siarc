@@ -272,6 +272,45 @@
     </div>
 </section>
 
+{{-- ══════════════════ B2B MEETING REQUEST (live form) ══════════════════ --}}
+<section class="mt-6">
+    @if(session('siarc_b2b_ok'))
+    <div class="mb-4 flex items-center gap-2.5 rounded-xl border border-[#CFE8D8] bg-[#EAF6EE] px-4 py-3">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] shrink-0"></i>
+        <p class="text-[13px] font-semibold text-[#155B33]">{{ $isFr ? 'Votre demande de rendez-vous B2B a été envoyée. L\'équipe matchmaking vous confirmera le créneau.' : 'Your B2B meeting request has been sent. The matchmaking team will confirm the slot.' }}</p>
+    </div>
+    @elseif(session('siarc_b2b_ko'))
+    <div class="mb-4 flex items-center gap-2.5 rounded-xl border border-[#F5CFCF] bg-[#FDF0F0] px-4 py-3">
+        <i data-lucide="x-circle" class="w-4 h-4 text-[#C0010C] shrink-0"></i>
+        <p class="text-[13px] font-semibold text-[#8A1015]">{{ $isFr ? 'Adresse email inconnue — utilisez l\'email de votre inscription visiteur.' : 'Unknown email address — use the email from your visitor registration.' }}</p>
+    </div>
+    @endif
+    <div class="siarc-card siarc-shadow p-5">
+        <h2 class="flex items-center gap-2 text-[16px] font-bold text-[#1A1712] mb-1"><i data-lucide="handshake" class="w-4.5 h-4.5 text-siarc-green"></i>{{ $isFr ? 'Demander un rendez-vous B2B' : 'Request a B2B meeting' }}</h2>
+        <p class="text-[12px] text-[#8A857A] mb-4">{{ $isFr ? 'Rencontrez un exposant en tête-à-tête à l\'Espace B2B du Musée National.' : 'Meet an exhibitor one-on-one at the B2B Space of the Musée National.' }}</p>
+        <form method="POST" action="{{ route('siarc.b2b.request') }}" class="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-end">
+            @csrf
+            <div>
+                <label class="block text-[11px] text-[#8A857A] mb-1">{{ $isFr ? 'Email de votre inscription' : 'Your registration email' }}</label>
+                <input type="email" name="email" required value="{{ old('email', $visitorEmail) }}" placeholder="vous@exemple.cm" class="w-full text-[13px] rounded-lg border border-[#EFEDE6] px-3.5 py-2.5 focus:outline-none focus:border-[#D8E5DC] bg-white text-[#3B382F]">
+            </div>
+            <div>
+                <label class="block text-[11px] text-[#8A857A] mb-1">{{ $isFr ? 'Exposant à rencontrer' : 'Exhibitor to meet' }}</label>
+                <select name="exhibitor_id" required class="w-full text-[13px] rounded-lg border border-[#EFEDE6] px-3 py-2.5 bg-white text-[#3B382F]">
+                    @foreach(\Illuminate\Support\Facades\DB::table('event_exhibitors as ee')->join('businesses as b','b.id','=','ee.business_id')->where('ee.event_id', function_exists('siarcEvent') ? (siarcEvent()?->id ?? 0) : 0)->orderBy('b.name_fr')->limit(50)->get(['ee.id','b.name_fr']) as $exOpt)
+                    <option value="{{ $exOpt->id }}">{{ $exOpt->name_fr }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="siarc-btn siarc-btn-green text-[13px] px-4 py-2.5 rounded-lg whitespace-nowrap"><i data-lucide="send" class="w-4 h-4"></i>{{ $isFr ? 'Envoyer la demande' : 'Send request' }}</button>
+            <div class="md:col-span-3">
+                <label class="block text-[11px] text-[#8A857A] mb-1">{{ $isFr ? 'Message (optionnel)' : 'Message (optional)' }}</label>
+                <textarea name="message" rows="2" maxlength="500" placeholder="{{ $isFr ? 'Objet de la rencontre, produits qui vous intéressent…' : 'Purpose of the meeting, products of interest…' }}" class="w-full text-[13px] rounded-lg border border-[#EFEDE6] px-3.5 py-2.5 focus:outline-none focus:border-[#D8E5DC] bg-white text-[#3B382F]">{{ old('message') }}</textarea>
+            </div>
+        </form>
+    </div>
+</section>
+
 {{-- ══════════════════ QR CODE RENDER ══════════════════ --}}
 <script src="{{ asset('vendor/qrcode.min.js') }}"></script>
 <script>

@@ -42,6 +42,24 @@
     </div>
 </div>
 
+@if(request()->route()?->getName() === 'siarc.admin.accred.lost')
+    @if(session('siarc_badge_status'))
+    @php [$sbCode, $sbNew] = session('siarc_badge_status'); @endphp
+    <div class="mb-4 flex items-center gap-2.5 rounded-xl border {{ in_array($sbNew, ['blocked','cancelled']) ? 'border-[#F5CFCF] bg-[#FDF0F0]' : 'border-[#CFE8D8] bg-[#EAF6EE]' }} px-4 py-3">
+        <i data-lucide="{{ in_array($sbNew, ['blocked','cancelled']) ? 'ban' : 'check-circle-2' }}" class="w-4 h-4 {{ in_array($sbNew, ['blocked','cancelled']) ? 'text-[#C0010C]' : 'text-[#157A43]' }} shrink-0"></i>
+        <p class="text-[13px] font-semibold {{ in_array($sbNew, ['blocked','cancelled']) ? 'text-[#8A1015]' : 'text-[#155B33]' }}">Badge {{ $sbCode }} — {{ in_array($sbNew, ['blocked','cancelled']) ? 'bloqué sur tous les lecteurs' : 'réactivé' }}.</p>
+    </div>
+    @endif
+    <form method="POST" action="#" onsubmit="event.preventDefault(); this.action='{{ url('/tableau-de-bord/admin/siarc/accreditation/badges') }}/'+encodeURIComponent(this.code.value)+'/statut'; this.submit();" class="mb-5 bg-white rounded-xl border border-[#EFEDE6] siarc-shadow p-4 flex flex-wrap items-end gap-3 max-w-[640px]">
+        @csrf
+        <div class="flex-1 min-w-[220px]">
+            <label class="block text-[11px] text-[#8A857A] mb-1">Badge à bloquer / réactiver (code ou QR)</label>
+            <input name="code" required maxlength="120" placeholder="SIARC-VIS-0001" class="w-full text-[13px] rounded-lg border border-[#EFEDE6] px-3.5 py-2.5 focus:outline-none focus:border-[#D8E5DC] bg-white text-[#3B382F]">
+        </div>
+        <button type="submit" class="siarc-btn text-[13px] font-semibold text-[#C0010C] border border-[#F5CFCF] rounded-lg px-4 py-2.5 hover:bg-[#FDF3F3]"><i data-lucide="ban" class="w-4 h-4"></i>Basculer le statut</button>
+    </form>
+@endif
+
 {{-- ══ STAT CARDS ══ --}}
 <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
     @foreach($spec['stats'] as [$icon,$col,$tile,$value,$label,$sub])

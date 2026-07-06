@@ -12,6 +12,23 @@
         ['calendar','Validité','27/07/2026 - 05/08/2026'], ['globe','Pays','Cameroun'],
     ];
     $offline = $state === 'offline';
+
+    // Real scan hand-off from the route (?code=...): overrides the design's demo visitor.
+    $scan = $qrScan ?? null;
+    $live = $scan && ($scan['holder'] ?? null);
+    if ($live) {
+        $hd = $scan['holder'];
+        $visitor = [
+            ['user-round','Nom complet',$hd['name']], ['id-card','Type de badge',$hd['type']],
+            ['copy','Badge ID',$hd['code']], ['qr-code','QR / RFID',$hd['row']->qr_token ?? '—'],
+            ['landmark','Pavillon / Zone','Pavillon Officiel'], ['key-round',"Niveau d'accès",'Standard'],
+            ['calendar','Validité','27/07/2026 - 05/08/2026'], ['globe','Pays', ucfirst($hd['row']->country ?? 'Cameroun')],
+        ];
+    }
+    $scanName = $live ? $hd['name'] : 'Jean Paul Essomba';
+    $scanCode = $live ? $hd['code'] : 'VIS-000356';
+    $scanRole = $live ? strtoupper($hd['type']) : 'VISITEUR';
+    $checkinDone = ($qrCheckin ?? false) && $live;
 @endphp
 
 {{-- ══ HEADER ROW (title + mode pill live in the body per the design) ══ --}}
@@ -203,6 +220,15 @@
 
 <div class="flex flex-wrap items-center gap-3">
     @if($ok)
+        @if($checkinDone)
+        <span class="inline-flex items-center gap-2 rounded-lg bg-[#E8F5EC] border border-[#CFE8D8] px-4 py-2.5 text-[13px] font-bold text-[#157A43]"><i data-lucide="check-circle-2" class="w-4 h-4"></i>Check-in enregistré pour {{ $scanName }}</span>
+        @elseif($live)
+        <form method="POST" action="{{ route('siarc.admin.accred.qrscanner.checkin') }}">
+            @csrf
+            <input type="hidden" name="code" value="{{ $scanCode }}">
+            <button type="submit" class="siarc-btn siarc-btn-green text-[13px] px-4 py-2.5 rounded-lg"><i data-lucide="log-in" class="w-4 h-4"></i>Confirmer le check-in</button>
+        </form>
+        @endif
         <button data-toast="Reçu envoyé à l'impression (démo)" class="siarc-btn text-[13px] font-semibold text-[#3B382F] border border-[#EFEDE6] rounded-lg px-4 py-2.5 bg-white hover:bg-[#FBFAF6]"><i data-lucide="printer" class="w-4 h-4 text-[#8A857A]"></i>Imprimer reçu</button>
         <a href="{{ $self('validation') }}" class="siarc-btn text-[13px] font-semibold text-[#3B382F] border border-[#EFEDE6] rounded-lg px-4 py-2.5 bg-white hover:bg-[#FBFAF6]"><i data-lucide="history" class="w-4 h-4 text-[#8A857A]"></i>Voir l'historique</a>
     @else
@@ -226,16 +252,20 @@
                 @endforeach
             </div>
             <label class="block text-[11px] font-bold tracking-wide text-[#3B382F] uppercase mb-1.5">Entrez le code</label>
+            <form method="GET" action="{{ route('siarc.admin.accred.qrscanner') }}" id="qr-manual-form">
+            <input type="hidden" name="lang" value="{{ $lang }}">
+            <input type="hidden" name="etat" value="validation">
             <div class="relative">
-                <input id="qr-manual-code" type="text" maxlength="100" placeholder="Ex: VIS-000356 ou 04A3B2......" class="w-full text-[13px] rounded-lg border-2 border-[#157A43] pl-4 pr-10 py-3 focus:outline-none bg-white text-[#3B382F]">
-                <button data-toast="Champ vidé (démo)" onclick="document.getElementById('qr-manual-code').value=''" class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center hover:bg-[#F1F1EF]"><i data-lucide="x-circle" class="w-4 h-4 text-[#8A857A]"></i></button>
+                <input id="qr-manual-code" name="code" value="{{ $scan['input'] ?? '' }}" type="text" maxlength="100" placeholder="Ex: VIS-000356 ou 04A3B2......" class="w-full text-[13px] rounded-lg border-2 border-[#157A43] pl-4 pr-10 py-3 focus:outline-none bg-white text-[#3B382F]">
+                <button type="button" onclick="document.getElementById('qr-manual-code').value=''" class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center hover:bg-[#F1F1EF]"><i data-lucide="x-circle" class="w-4 h-4 text-[#8A857A]"></i></button>
             </div>
             <p class="flex items-center justify-between text-[11px] text-[#8A857A] mt-1.5"><span>Formats acceptés : Code QR, Code-barres, UID RFID, Numéro de badge</span><span>0 / 100 caractères</span></p>
             <div class="rounded-lg bg-[#EAF6EE] border border-[#CFE8D8] px-3.5 py-2.5 mt-3 flex items-center gap-2.5">
                 <i data-lucide="info" class="w-4 h-4 text-[#157A43] shrink-0"></i>
                 <p class="text-[12px] text-[#155B33]">Vous pouvez entrer manuellement le code visible sur le badge ou le code reçu par email.</p>
             </div>
-            <a href="{{ $self('validation') }}" class="mt-4 w-full siarc-btn justify-center siarc-btn-green text-[14px] px-4 py-3.5 rounded-lg"><i data-lucide="search" class="w-4 h-4"></i>Vérifier l'accès</a>
+            <button type="submit" form="qr-manual-form" class="mt-4 w-full siarc-btn justify-center siarc-btn-green text-[14px] px-4 py-3.5 rounded-lg"><i data-lucide="search" class="w-4 h-4"></i>Vérifier l'accès</button>
+            </form>
             <p class="text-center text-[12px] text-[#8A857A] my-3">ou</p>
             <button data-toast="Clavier virtuel à venir…" class="w-full max-w-[300px] mx-auto siarc-btn justify-center text-[13px] font-semibold text-[#3B382F] border border-[#EFEDE6] rounded-lg px-4 py-2.5 hover:bg-[#FBFAF6]"><i data-lucide="keyboard" class="w-4 h-4 text-[#8A857A]"></i>Activer le clavier virtuel</button>
         </div>
