@@ -7,7 +7,7 @@
     $navLinks = [
         [$isFr ? 'Accueil' : 'Home',          route('home', ['lang' => $lang])],
         [$isFr ? 'À propos' : 'About',        route('about')],
-        [$isFr ? 'Artisans' : 'Artisans',     route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        [$isFr ? 'Artisans' : 'Artisans',     route('businesses.index', ['lang' => $lang])],
         [$isFr ? 'Produits' : 'Products',     route('products.index', ['lang' => $lang])],
         [$isFr ? 'Événements' : 'Events',     route('events.index')],
         [$isFr ? 'Actualités' : 'News',       route('events.index')],

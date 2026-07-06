@@ -19,7 +19,7 @@
     $navLinks = [
         [$isFr ? 'Explorer' : 'Explore',        route('businesses.index', ['lang' => $lang])],
         [$isFr ? 'Collections' : 'Collections', route('industries.index', ['lang' => $lang])],
-        [$isFr ? 'Artisans' : 'Artisans',       route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat'])],
+        [$isFr ? 'Artisans' : 'Artisans',       route('businesses.index', ['lang' => $lang])],
         [$isFr ? 'Régions' : 'Regions',         route('businesses.index', ['lang' => $lang])],
         [$isFr ? 'Événements' : 'Events',       route('events.index')],
         [$isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
@@ -183,7 +183,7 @@
                         {{ $isFr ? 'Explorer la galerie' : 'Explore the gallery' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
-                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']) }}"
+                    <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
                         class="inline-flex items-center gap-2.5 border border-golddk text-gold hover:bg-gold/10 text-[13px] font-medium px-5 py-3 rounded transition-colors">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         {{ $isFr ? 'Découvrir les artisans' : 'Discover the artisans' }}

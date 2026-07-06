@@ -208,7 +208,7 @@
                 <span class="text-[14.5px] text-muted">{{ $isFr ? 'comptes de démonstration' : 'demo accounts' }}</span>
                 <span class="flex-1 h-px bg-[#E4E0D8]"></span>
             </div>
-            <div class="mt-4 grid grid-cols-3 gap-3">
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 @foreach([
                     ['admin',  'shield-check', $isFr ? 'Admin' : 'Admin', 'Administrateur SIARC', '#157A43'],
                     ['vendor', 'store',        $isFr ? 'Vendeur' : 'Vendor', 'Paul Nguema · Atelier Nguéma', '#C97A16'],

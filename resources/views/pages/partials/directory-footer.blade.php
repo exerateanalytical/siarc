@@ -10,7 +10,7 @@
         ($isFr ? 'Produits' : 'Products')               => route('products.index', ['lang' => $lang]),
         'Collections'                                   => route('collections.index', ['lang' => $lang]),
         ($isFr ? 'Centres d\'artisanat' : 'Craft centres') => route('centres.index', ['lang' => $lang]),
-        'Artisans'                                      => route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']),
+        'Artisans'                                      => route('businesses.index', ['lang' => $lang]),
         ($isFr ? 'Catégories' : 'Categories')           => route('industries.index', ['lang' => $lang]),
         ($isFr ? 'Entreprises' : 'Businesses')          => route('businesses.index', ['lang' => $lang]),
         ($isFr ? 'Événements' : 'Events')               => route('events.index', ['lang' => $lang]),

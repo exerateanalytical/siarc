@@ -4,7 +4,7 @@
     $navLinks = [
         [$isFr ? 'Explorer' : 'Explore',        route('businesses.index', ['lang' => $lang]), false],
         [$isFr ? 'Collections' : 'Collections', route('industries.index', ['lang' => $lang]), false],
-        [$isFr ? 'Artisans' : 'Artisans',       route('businesses.index', ['lang' => $lang, 'industry' => 'artisanat']), false],
+        [$isFr ? 'Artisans' : 'Artisans',       route('businesses.index', ['lang' => $lang]), false],
         [$isFr ? 'Régions' : 'Regions',         route('businesses.index', ['lang' => $lang]), false],
         [$isFr ? 'Secteurs' : 'Sectors',        route('industries.index', ['lang' => $lang]), false],
         [$isFr ? 'Événements' : 'Events',       route('events.index'), false],

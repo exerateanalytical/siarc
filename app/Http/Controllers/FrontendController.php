@@ -165,7 +165,11 @@ class FrontendController extends Controller
             // Subtree-aware: filtering by a sector/filière/corps slug matches every
             // business tagged to any métier beneath it; a leaf métier matches itself.
             $ids = $this->descendantIndustryIds($industry);
-            $query->whereIn('industry_id', $ids ?: [-1]);
+            if ($ids) {
+                $query->whereIn('industry_id', $ids);
+            }
+            // Unknown slug (e.g. legacy link): fall back to the unfiltered directory
+            // rather than an empty page.
         }
 
         if ($tier) {
