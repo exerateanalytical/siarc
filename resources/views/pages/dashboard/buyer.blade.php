@@ -123,7 +123,7 @@
 </aside>
 <div id="buyer-backdrop" class="fixed inset-0 z-40 bg-black/50 hidden"></div>
 
-<div class="max-w-[431px] mx-auto min-h-screen bg-[#FEFEFE] shadow-sm">
+<div class="max-w-[431px] lg:max-w-[1160px] mx-auto min-h-screen bg-[#FEFEFE] shadow-sm">
 
     <!-- Header -->
     <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
@@ -142,10 +142,10 @@
         </button>
     </header>
 
-    <div class="px-4 pb-24 pt-1 space-y-3.5">
+    <div class="px-4 lg:px-8 pb-24 lg:pb-10 pt-1 space-y-3.5 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-5 lg:items-start lg:pt-4">
 
         <!-- Hero card -->
-        <section class="relative bg-herogr rounded-2xl overflow-hidden">
+        <section class="relative bg-herogr rounded-2xl overflow-hidden lg:col-span-2">
             <img src="{{ asset('images/landing/bm-hero-flag.png') }}" alt="" class="absolute right-0 inset-y-0 h-full pointer-events-none select-none" aria-hidden="true">
             <div class="absolute inset-0 opacity-15 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
             <div class="relative flex items-start gap-3.5 p-4 pb-[52px]">
@@ -236,7 +236,7 @@
         </section>
 
         <!-- Promo -->
-        <section class="relative bg-white border border-[#F0F0EE] rounded-2xl overflow-hidden">
+        <section class="relative bg-white border border-[#F0F0EE] rounded-2xl overflow-hidden lg:col-span-2">
             <img src="{{ asset('images/landing/bm-promo-art.png') }}" alt="" class="absolute right-0 bottom-0 h-full pointer-events-none select-none" aria-hidden="true">
             <div class="relative p-4 pr-[84px]">
                 <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Développez votre boutique' : 'Grow your shop' }}</h2>
@@ -251,7 +251,7 @@
     </div>
 
     <!-- Bottom nav -->
-    <nav class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#EDEDEB] max-w-[431px] mx-auto flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#EDEDEB] max-w-[431px] mx-auto flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
         <a href="{{ route('dashboard.buyer') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#0B5B31]">
             <i data-lucide="house" class="w-[22px] h-[22px]"></i>
             <span class="text-[10px] font-semibold">{{ $isFr ? 'Accueil' : 'Home' }}</span>

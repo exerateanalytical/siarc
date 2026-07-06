@@ -202,6 +202,31 @@
                 </button>
             </form>
 
+            @if(config('app.demo_login', true))
+            <div class="mt-7 flex items-center gap-4">
+                <span class="flex-1 h-px bg-[#E4E0D8]"></span>
+                <span class="text-[14.5px] text-muted">{{ $isFr ? 'comptes de démonstration' : 'demo accounts' }}</span>
+                <span class="flex-1 h-px bg-[#E4E0D8]"></span>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-3">
+                @foreach([
+                    ['admin',  'shield-check', $isFr ? 'Admin' : 'Admin', 'Administrateur SIARC', '#157A43'],
+                    ['vendor', 'store',        $isFr ? 'Vendeur' : 'Vendor', 'Paul Nguema · Atelier Nguéma', '#C97A16'],
+                    ['buyer',  'shopping-bag', $isFr ? 'Acheteur' : 'Buyer', 'Test Buyer', '#3565DE'],
+                ] as [$key, $icon, $label, $who, $col])
+                <form method="POST" action="{{ url('/demo-login/'.$key) }}">
+                    @csrf
+                    <button type="submit" class="w-full rounded-[12px] border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] px-3 py-3 text-center transition-colors">
+                        <i data-lucide="{{ $icon }}" class="w-5 h-5 mx-auto mb-1" style="color:{{ $col }}"></i>
+                        <span class="block text-[13.5px] font-bold text-[#26251F]">{{ $label }}</span>
+                        <span class="block text-[10.5px] text-muted leading-tight mt-0.5">{{ $who }}</span>
+                    </button>
+                </form>
+                @endforeach
+            </div>
+            <p class="mt-2 text-center text-[11px] text-muted">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
+            @endif
+
             <div class="mt-7 flex items-center gap-4">
                 <span class="flex-1 h-px bg-[#E4E0D8]"></span>
                 <span class="text-[14.5px] text-muted">{{ $isFr ? 'ou continuer avec' : 'or continue with' }}</span>

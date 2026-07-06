@@ -207,6 +207,7 @@
                 <a href="/tableau-de-bord" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
                 @else
                 <a href="/login?lang={{ $lang }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 border border-[#02301B] text-[#02301B] text-[13px] font-semibold px-4 py-2 rounded-lg"><i data-lucide="zap" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
                 @endif
                 <span class="flex items-center gap-2 text-[13px] font-semibold">
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">FR</a>

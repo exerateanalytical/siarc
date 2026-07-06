@@ -3310,3 +3310,63 @@ Route::post('/developer/keys/{id}/revoke', function (Request $request, $id) {
     }
     return back()->with('success', 'API key revoked.');
 })->name('developer.keys.revoke');
+
+// ─── Demo one-click logins (presentation/testing) ────────────────────────────
+// Buttons on /login. Each key maps to a real seeded account so demo messages,
+// quotes and orders land in accounts the audience can open live.
+Route::post('/demo-login/{key}', function (Request $request, string $key) {
+    abort_unless(config('app.demo_login', true), 404);
+    $accounts = [
+        'admin'  => 'admin@artisanatcameroun.cm',
+        'vendor' => 'nguemasculptures@example.cm',
+        'buyer'  => 'buyer1@test.cm',
+    ];
+    abort_unless(isset($accounts[$key]), 404);
+    $user = DB::table('users')->whereNull('deleted_at')->where('email', $accounts[$key])->first();
+    abort_if(! $user, 404);
+    establishSiacSession($user, $request);
+    return redirect('/tableau-de-bord');
+})->name('demo.login')->middleware('throttle:30,1');
+
+// ─── Quick signup: email + password now, profile later ──────────────────────
+Route::get('/inscription-rapide', function (Request $request) {
+    if (session('siac_user')) return redirect('/tableau-de-bord');
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+    return view('auth.quick-register', ['lang' => $lang]);
+})->name('register.quick');
+
+Route::post('/inscription-rapide', function (Request $request) {
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $isFr = $lang === 'fr';
+    $data = $request->validate([
+        'email'        => ['required', 'email', 'max:255'],
+        'password'     => ['required', 'min:8'],
+        'account_type' => ['required', 'in:buyer,artisan'],
+    ]);
+    $email = strtolower(trim($data['email']));
+    if (DB::table('users')->where('email', $email)->exists()) {
+        return back()->withErrors(['email' => $isFr ? 'Un compte avec cet email existe déjà. Connectez-vous.' : 'An account with this email already exists. Sign in instead.'])->withInput();
+    }
+    $userId = Str::uuid()->toString();
+    DB::table('users')->insert([
+        'id' => $userId,
+        'name' => ucfirst(strtok($email, '@')),
+        'email' => $email,
+        'password' => Hash::make($data['password']),
+        'status' => 'active', 'language_preference' => $lang,
+        'is_email_verified' => 0, 'is_phone_verified' => 0,
+        'created_at' => now(), 'updated_at' => now(),
+    ]);
+    $roleName = $data['account_type'] === 'artisan' ? 'business_owner' : 'buyer';
+    $role = DB::table('roles')->where('name', $roleName)->first();
+    if ($role) {
+        DB::table('model_has_roles')->insert([
+            'role_id' => $role->id, 'model_type' => 'App\Modules\Auth\Models\User', 'model_id' => $userId,
+        ]);
+    }
+    session(['siac_user' => [
+        'id' => $userId, 'name' => ucfirst(strtok($email, '@')), 'email' => $email,
+        'role' => $roleName, 'is_admin' => false,
+    ]]);
+    return redirect('/tableau-de-bord')->with('quick_signup', true);
+})->name('register.quick.store')->middleware('throttle:10,1');

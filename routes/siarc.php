@@ -791,12 +791,13 @@ Route::post('/siarc/inscription', function (Request $r) {
     if ($eid) {
         $n = DB::table('visitors')->where('event_id', $eid)->count() + 1;
         $badge = 'SIARC-VIS-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT);
-        DB::table('visitors')->insert($data + [
+        $visitorId = DB::table('visitors')->insertGetId($data + [
             'event_id' => $eid, 'type' => $data['type'] ?? 'visitor', 'status' => 'registered',
             'badge_code' => $badge,
             'qr_token' => \Illuminate\Support\Str::random(40), 'registered_at' => now(),
             'created_at' => now(), 'updated_at' => now(),
         ]);
+        session(['siarc_visitor' => $visitorId]); // the registrant's personal space
     }
     return redirect()->route('siarc.register', ['lang' => webLang($r)])
         ->with($eid ? 'siarc_registered' : 'siarc_error', true)
@@ -818,14 +819,25 @@ Route::post('/siarc/ateliers/{id}/inscription', function (Request $r, $id) {
 })->name('siarc.workshop.register.store')->middleware('throttle:10,1');
 
 Route::get('/tableau-de-bord/siarc', function (Request $r) {
-    if ($x = requireAuth($r)) return $x;
-    $lang = webLang($r); $fr = $lang === 'fr'; $u = webUser(); $eid = siarcEvent()?->id ?? 0;
-    $mine = ($u && ! empty($u->email))
-        ? DB::table('visitors')->where('event_id', $eid)->where('email', $u->email)->first()
-        : null;
+    $lang = webLang($r); $fr = $lang === 'fr'; $eid = siarcEvent()?->id ?? 0;
+    $mine = null;
+    if ($vid = session('siarc_visitor')) {
+        $mine = DB::table('visitors')->where('id', $vid)->first();
+    }
+    if (! $mine) {
+        if (! session('siac_user')) {
+            // SIARC-only visitors sign in with the email + badge code from their registration.
+            return view('pages.siarc.visitor-access', ['lang' => $lang]);
+        }
+        $u = webUser();
+        $mine = ($u && ! empty($u->email))
+            ? DB::table('visitors')->where('event_id', $eid)->where('email', $u->email)->first()
+            : null;
+    }
     return view('pages.siarc.portal', [
         'lang' => $lang, 'sNavActive' => 'siarc', 'sCrumb' => $fr ? 'Mon espace SIARC' : 'My SIARC', 'sTitle' => $fr ? 'Mon espace SIARC 2026' : 'My SIARC 2026',
         'sIntro' => $fr ? 'Votre badge, vos rendez-vous et vos inscriptions aux ateliers.' : 'Your badge, meetings and workshop registrations.',
+        'sVisitor' => $mine,
         'sStats' => [
             ['id-card', '#C97A16', '#FDF3E0', $mine->badge_code ?? ($fr ? 'À générer' : 'To generate'), 'Badge', null],
             ['scan-line', '#157A43', '#E2F3E8', ($mine && $mine->checked_in_at) ? ($fr ? 'Présent' : 'Checked-in') : ($fr ? 'Attendu' : 'Expected'), $fr ? 'Accès' : 'Access', null],
@@ -1117,3 +1129,16 @@ Route::post('/siarc/b2b/demande', function (Request $r) {
     ]);
     return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)])->with('siarc_b2b_ok', true);
 })->name('siarc.b2b.request')->middleware('throttle:10,1');
+
+// ── SIARC visitor access: email + badge code open the personal space ─────────
+Route::post('/tableau-de-bord/siarc/acces', function (Request $r) {
+    $data = $r->validate(['email' => 'required|email', 'badge_code' => 'required|string|max:60']);
+    $v = DB::table('visitors')->where('email', strtolower(trim($data['email'])))
+        ->where('badge_code', trim($data['badge_code']))->first();
+    if (! $v) {
+        return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)])
+            ->with('siarc_access_ko', true)->withInput();
+    }
+    session(['siarc_visitor' => $v->id]);
+    return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)]);
+})->name('siarc.visitor.access')->middleware('throttle:15,1');

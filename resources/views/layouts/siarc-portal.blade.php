@@ -5,6 +5,11 @@
     $isFr = $lang === 'fr';
     $u = session('siac_user') ?? [];
     $uName = is_array($u) ? ($u['name'] ?? 'Visiteur') : ($u->name ?? 'Visiteur');
+    // SIARC-only registrants (no platform account) are greeted by their registration name.
+    if ($uName === 'Visiteur' && session('siarc_visitor')) {
+        $svRow = \Illuminate\Support\Facades\DB::table('visitors')->where('id', session('siarc_visitor'))->first(['first_name', 'last_name']);
+        if ($svRow) $uName = trim($svRow->first_name.' '.$svRow->last_name) ?: 'Visiteur';
+    }
     $uRole = $isFr ? 'Visiteur' : 'Visitor';
     $ev = function_exists('siarcEvent') ? siarcEvent() : null;
     $evDates = $isFr ? '27 Juillet – 05 Août 2026' : '27 July – 05 August 2026';

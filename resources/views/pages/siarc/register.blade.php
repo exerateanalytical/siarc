@@ -97,6 +97,7 @@
             <div class="flex flex-wrap items-center gap-2.5 mt-2.5">
                 <a href="{{ route('siarc.badge.print', ['code' => session('siarc_badge'), 'lang' => $lang]) }}" class="inline-flex items-center gap-1.5 rounded-lg bg-siarc-green text-white text-[12px] font-semibold px-3.5 py-2"><i data-lucide="printer" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Voir & imprimer mon badge' : 'View & print my badge' }}</a>
                 <a href="{{ route('siarc.verify', ['code' => session('siarc_badge'), 'lang' => $lang]) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-[#BFE3CC] bg-white text-siarc-green text-[12px] font-semibold px-3.5 py-2"><i data-lucide="badge-check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Vérifier mon badge' : 'Verify my badge' }}</a>
+                <a href="{{ route('siarc.visitor.dashboard', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-[#BFE3CC] bg-white text-siarc-green text-[12px] font-semibold px-3.5 py-2"><i data-lucide="user-round" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Accéder à mon espace' : 'Go to my space' }}</a>
             </div>
             @endif
         </div>

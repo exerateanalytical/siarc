@@ -4,8 +4,9 @@
     $h = fn($name, $params = []) => R::has($name) ? route($name, array_merge(['lang'=>$lang], $params)) : '#';
 
     $u = function_exists('webUser') ? webUser() : ($u ?? null);
-    $visitorName = $u->name ?? 'Jean Dupont';
-    $visitorEmail = $u->email ?? null;
+    $sv = $sVisitor ?? null; // real SIARC registration row when the space is opened
+    $visitorName = $sv ? trim(($sv->first_name ?? '').' '.($sv->last_name ?? '')) : ($u->name ?? 'Jean Dupont');
+    $visitorEmail = $sv->email ?? $u->email ?? null;
 
     // Badge code — from $sStats if present, else honest default
     $badgeCode = null;
@@ -16,7 +17,7 @@
             if ($val && (stripos((string)$lbl, 'badge') !== false || stripos((string)$lbl, 'code') !== false)) { $badgeCode = $val; break; }
         }
     }
-    $badgeCode = $badgeCode ?: 'SIARC26-VIS-84217';
+    $badgeCode = ($sv->badge_code ?? null) ?: ($badgeCode ?: 'SIARC26-VIS-84217');
 
     // Access status
     $accessStatus = null;
@@ -27,6 +28,7 @@
             if ($val && stripos((string)$lbl, 'accès') !== false) { $accessStatus = $val; break; }
         }
     }
+    if ($sv) $accessStatus = $sv->checked_in_at ? ($isFr ? 'Présent' : 'Checked-in') : ($isFr ? 'Actif' : 'Active');
     $accessStatus = $accessStatus ?: ($isFr ? 'Actif' : 'Active');
 
     // Quick-link cards — from $sLinks if provided, else the canonical set
@@ -319,7 +321,7 @@
         if (el && window.QRCode) {
             try {
                 new QRCode(el, {
-                    text: @json('SIARC26|'.$badgeCode),
+                    text: @json(\Illuminate\Support\Facades\Route::has('siarc.verify') ? route('siarc.verify', ['code' => $badgeCode, 'lang' => $lang]) : 'SIARC26|'.$badgeCode),
                     width: 96, height: 96,
                     colorDark: '#0B3A1E', colorLight: '#ffffff',
                     correctLevel: QRCode.CorrectLevel.M
