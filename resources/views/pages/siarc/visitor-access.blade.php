@@ -47,6 +47,33 @@
                 {{ $isFr ? 'Pas encore inscrit ?' : 'Not registered yet?' }}
                 <a href="{{ route('siarc.register', ['lang' => $lang]) }}" class="font-bold text-[#157A43]">{{ $isFr ? "S'inscrire au SIARC 2026" : 'Register for SIARC 2026' }}</a>
             </p>
+
+            @if(config('app.demo_login', true))
+            <div class="mt-5 flex items-center gap-3">
+                <span class="flex-1 h-px bg-[#EAE7DE]"></span>
+                <span class="text-[11.5px] text-[#8A857A]">{{ $isFr ? 'comptes de démonstration' : 'demo accounts' }}</span>
+                <span class="flex-1 h-px bg-[#EAE7DE]"></span>
+            </div>
+            <div class="mt-3 grid grid-cols-2 gap-3">
+                <form method="POST" action="{{ url('/tableau-de-bord/siarc/acces-demo/visitor') }}">
+                    @csrf
+                    <button type="submit" class="w-full rounded-xl border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] px-3 py-3 text-center transition-colors">
+                        <i data-lucide="user-round" class="w-5 h-5 mx-auto mb-1 text-[#157A43]"></i>
+                        <span class="block text-[12.5px] font-bold text-[#26251F]">{{ $isFr ? 'Visiteur démo' : 'Demo visitor' }}</span>
+                        <span class="block text-[10px] text-[#8A857A] leading-tight mt-0.5">SIARC-VIS-DEMO</span>
+                    </button>
+                </form>
+                <form method="POST" action="{{ url('/tableau-de-bord/siarc/acces-demo/admin') }}">
+                    @csrf
+                    <button type="submit" class="w-full rounded-xl border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] px-3 py-3 text-center transition-colors">
+                        <i data-lucide="shield-check" class="w-5 h-5 mx-auto mb-1 text-[#C97A16]"></i>
+                        <span class="block text-[12.5px] font-bold text-[#26251F]">{{ $isFr ? 'Admin SIARC' : 'SIARC admin' }}</span>
+                        <span class="block text-[10px] text-[#8A857A] leading-tight mt-0.5">{{ $isFr ? 'Console de gestion' : 'Management console' }}</span>
+                    </button>
+                </form>
+            </div>
+            <p class="mt-2 text-center text-[10.5px] text-[#8A857A]">{{ $isFr ? 'Un clic ouvre directement l\'espace correspondant.' : 'One click opens the matching space directly.' }}</p>
+            @endif
         </div>
     </main>
     <script>lucide.createIcons();</script>

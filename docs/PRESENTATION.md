@@ -11,6 +11,10 @@
 - **Vendeur** — Paul Nguema, Atelier Nguéma Sculptures (listed in the gallery; receives messages/quotes)
 - **Acheteur** — Test Buyer (sends messages/quotes, buyer dashboard)
 
+## SIARC demo logins (on /tableau-de-bord/siarc when signed out)
+- **Visiteur demo** - opens "Mon Espace" as Visiteur Demo (badge SIARC-VIS-DEMO, live QR)
+- **Admin SIARC** - opens the SIARC management console directly
+
 ## Demo scripts
 1. **SIARC visitor journey**: /siarc/inscription → register → banner shows badge → "Voir & imprimer mon badge" (QR is scannable) → "Accéder à mon espace" (badge + QR in Mon Espace). Returning: /tableau-de-bord/siarc → email + badge code.
 2. **Scan & check-in (admin)**: login Admin → Accréditation → QR Scanner → Saisie manuelle → type the badge code → VALIDATION RÉUSSIE → "Confirmer le check-in". Public verify page then shows "Oui — enregistré".

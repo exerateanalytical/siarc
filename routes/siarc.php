@@ -1142,3 +1142,31 @@ Route::post('/tableau-de-bord/siarc/acces', function (Request $r) {
     session(['siarc_visitor' => $v->id]);
     return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)]);
 })->name('siarc.visitor.access')->middleware('throttle:15,1');
+
+// ── SIARC demo logins (presentation): one click opens the matching space ────
+Route::post('/tableau-de-bord/siarc/acces-demo/{key}', function (Request $r, string $key) {
+    abort_unless(config('app.demo_login', true), 404);
+    if ($key === 'admin') {
+        $u = DB::table('users')->whereNull('deleted_at')->where('email', 'admin@artisanatcameroun.cm')->first();
+        abort_if(! $u, 404);
+        establishSiacSession($u, $r);
+        return redirect()->route('siarc.admin.dashboard', ['lang' => webLang($r)]);
+    }
+    if ($key === 'visitor') {
+        $eid = siarcEvent()?->id ?? 0;
+        $v = DB::table('visitors')->where('event_id', $eid)->where('email', 'visiteur.demo@siarc2026.cm')->first();
+        if (! $v) {
+            $id = DB::table('visitors')->insertGetId([
+                'event_id' => $eid, 'first_name' => 'Visiteur', 'last_name' => 'Démo',
+                'email' => 'visiteur.demo@siarc2026.cm', 'type' => 'visitor', 'status' => 'registered',
+                'badge_code' => 'SIARC-VIS-DEMO', 'qr_token' => \Illuminate\Support\Str::random(40),
+                'registered_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+            ]);
+        } else {
+            $id = $v->id;
+        }
+        session(['siarc_visitor' => $id]);
+        return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)]);
+    }
+    abort(404);
+})->name('siarc.demo.login')->middleware('throttle:30,1');
