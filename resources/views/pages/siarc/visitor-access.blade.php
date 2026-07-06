@@ -55,20 +55,27 @@
                 <span class="flex-1 h-px bg-[#EAE7DE]"></span>
             </div>
             <div class="mt-3 grid grid-cols-2 gap-3">
-                <form method="POST" action="{{ url('/tableau-de-bord/siarc/acces-demo/visitor') }}">
+                @foreach([
+                    ['visitor',   'user-round',   '#157A43', $isFr ? 'Visiteur démo' : 'Demo visitor',        'SIARC-VIS-DEMO · Mon Espace'],
+                    ['vip',       'gem',          '#8A6A00', $isFr ? 'VIP démo' : 'Demo VIP',                 'SIARC-VIP-DEMO · Mon Espace'],
+                    ['exhibitor', 'store',        '#9A5F12', $isFr ? 'Exposant démo' : 'Demo exhibitor',      $isFr ? 'Badge exposant + QR' : 'Exhibitor badge + QR'],
+                    ['speaker',   'mic',          '#4C2F8F', $isFr ? 'Intervenant démo' : 'Demo speaker',     $isFr ? 'Badge intervenant + QR' : 'Speaker badge + QR'],
+                ] as [$key, $icon, $col, $label, $who])
+                <form method="POST" action="{{ url('/tableau-de-bord/siarc/acces-demo/'.$key) }}">
                     @csrf
                     <button type="submit" class="w-full rounded-xl border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] px-3 py-3 text-center transition-colors">
-                        <i data-lucide="user-round" class="w-5 h-5 mx-auto mb-1 text-[#157A43]"></i>
-                        <span class="block text-[12.5px] font-bold text-[#26251F]">{{ $isFr ? 'Visiteur démo' : 'Demo visitor' }}</span>
-                        <span class="block text-[10px] text-[#8A857A] leading-tight mt-0.5">SIARC-VIS-DEMO</span>
+                        <i data-lucide="{{ $icon }}" class="w-5 h-5 mx-auto mb-1" style="color:{{ $col }}"></i>
+                        <span class="block text-[12.5px] font-bold text-[#26251F]">{{ $label }}</span>
+                        <span class="block text-[10px] text-[#8A857A] leading-tight mt-0.5">{{ $who }}</span>
                     </button>
                 </form>
-                <form method="POST" action="{{ url('/tableau-de-bord/siarc/acces-demo/admin') }}">
+                @endforeach
+                <form method="POST" action="{{ url('/tableau-de-bord/siarc/acces-demo/admin') }}" class="col-span-2">
                     @csrf
                     <button type="submit" class="w-full rounded-xl border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] px-3 py-3 text-center transition-colors">
                         <i data-lucide="shield-check" class="w-5 h-5 mx-auto mb-1 text-[#C97A16]"></i>
                         <span class="block text-[12.5px] font-bold text-[#26251F]">{{ $isFr ? 'Admin SIARC' : 'SIARC admin' }}</span>
-                        <span class="block text-[10px] text-[#8A857A] leading-tight mt-0.5">{{ $isFr ? 'Console de gestion' : 'Management console' }}</span>
+                        <span class="block text-[10px] text-[#8A857A] leading-tight mt-0.5">{{ $isFr ? 'Console de gestion, accréditation & scanner' : 'Management console, accreditation & scanner' }}</span>
                     </button>
                 </form>
             </div>

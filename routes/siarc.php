@@ -1152,6 +1152,41 @@ Route::post('/tableau-de-bord/siarc/acces-demo/{key}', function (Request $r, str
         establishSiacSession($u, $r);
         return redirect()->route('siarc.admin.dashboard', ['lang' => webLang($r)]);
     }
+    if ($key === 'vip') {
+        $eid = siarcEvent()?->id ?? 0;
+        $v = DB::table('visitors')->where('event_id', $eid)->where('email', 'vip.demo@siarc2026.cm')->first();
+        $id = $v->id ?? DB::table('visitors')->insertGetId([
+            'event_id' => $eid, 'first_name' => 'Invité', 'last_name' => 'VIP Démo',
+            'email' => 'vip.demo@siarc2026.cm', 'type' => 'vip', 'status' => 'registered',
+            'badge_code' => 'SIARC-VIP-DEMO', 'qr_token' => \Illuminate\Support\Str::random(40),
+            'registered_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        session(['siarc_visitor' => $id]);
+        return redirect()->route('siarc.visitor.dashboard', ['lang' => webLang($r)]);
+    }
+    if ($key === 'exhibitor') {
+        $eid = siarcEvent()?->id ?? 0;
+        // Prefer an existing badged exhibitor; otherwise register a business not yet in the salon.
+        $code = DB::table('event_exhibitors')->where('event_id', $eid)->whereNotNull('badge_code')->value('badge_code');
+        if (! $code) {
+            $bid = DB::table('businesses')->whereNull('deleted_at')
+                ->whereNotIn('id', DB::table('event_exhibitors')->where('event_id', $eid)->pluck('business_id'))
+                ->value('id');
+            abort_if(! $bid, 404);
+            $code = 'SIARC-EXH-DEMO';
+            DB::table('event_exhibitors')->insert([
+                'event_id' => $eid, 'business_id' => $bid, 'booth_number' => 'A-01',
+                'badge_code' => $code, 'qr_token' => \Illuminate\Support\Str::random(40),
+                'status' => 'confirmed', 'registered_at' => now(), 'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+        return redirect()->route('siarc.badge.print', ['code' => $code, 'lang' => webLang($r)]);
+    }
+    if ($key === 'speaker') {
+        $sid = DB::table('speakers')->value('id');
+        abort_if(! $sid, 404);
+        return redirect()->route('siarc.badge.print', ['code' => 'SPK-'.$sid, 'lang' => webLang($r)]);
+    }
     if ($key === 'visitor') {
         $eid = siarcEvent()?->id ?? 0;
         $v = DB::table('visitors')->where('event_id', $eid)->where('email', 'visiteur.demo@siarc2026.cm')->first();
