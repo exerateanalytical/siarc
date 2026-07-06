@@ -116,7 +116,7 @@
     <div class="mt-4 flex flex-col lg:flex-row gap-8">
 
         <!-- Sidebar -->
-        <aside class="w-full lg:w-[250px] shrink-0">
+        <aside class="hidden lg:block w-full lg:w-[250px] shrink-0">
             <!-- Browse by official sector -->
             <div class="mb-5">@include('pages.partials.sector-browser')</div>
             <!-- Search & filter -->

@@ -1849,7 +1849,7 @@
     <div id="success-screen" class="hidden flex-col lg:flex-row items-start gap-6 pt-6">
 
         <!-- White sidebar -->
-        <aside class="lg:w-[230px] shrink-0 lg:pl-3">
+        <aside class="hidden lg:block lg:w-[230px] shrink-0 lg:pl-3">
             <h2 class="text-[15px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase leading-snug">
                 {{ $isFr ? 'Créer mon compte' : 'Create my account' }}<br>{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}
             </h2>
