@@ -9,5 +9,10 @@
     $bodyKey = str_replace('.', '-', str_replace('siarc.admin.accred.', '', $rn));
     $bodyView = 'pages.siarc.bodies.accred-'.$bodyKey;
 @endphp
-@includeIf($bodyView)
+@if(view()->exists($bodyView))
+    @include($bodyView)
+@else
+    {{-- spec-driven operations pages (config/siarc_accred_ops.php) --}}
+    @include('pages.siarc.bodies.accred-ops')
+@endif
 @endsection

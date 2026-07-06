@@ -44,6 +44,11 @@ class SiarcPagesRenderTest extends TestCase
             'siarc.admin.accred.templates', 'siarc.admin.accred.types', 'siarc.admin.accred.preview',
             'siarc.admin.accred.queue', 'siarc.admin.accred.bulk', 'siarc.admin.accred.qr',
             'siarc.admin.accred.rfid',
+            'siarc.admin.accred.readers', 'siarc.admin.accred.reader', 'siarc.admin.accred.gates',
+            'siarc.admin.accred.gate', 'siarc.admin.accred.rules', 'siarc.admin.accred.rule',
+            'siarc.admin.accred.monitor', 'siarc.admin.accred.failures', 'siarc.admin.accred.override',
+            'siarc.admin.accred.lost', 'siarc.admin.accred.activation', 'siarc.admin.accred.replace',
+            'siarc.admin.accred.revocations', 'siarc.admin.accred.health', 'siarc.admin.accred.sync',
         ] as $name) {
             $this->withSession($session)->get(route($name))->assertOk();
         }

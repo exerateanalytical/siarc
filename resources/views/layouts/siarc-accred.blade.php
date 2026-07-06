@@ -50,6 +50,10 @@
         'siarc.admin.accred.rfid'      => ['active'=>'RFID Support',       'art'=>'accred-art-rfid.png',       'top'=>['search'=>true,'scope'=>'#rfScope','searchPh'=>'Rechercher (nom, badge, ID, type...)','help'=>true]],
         'siarc.admin.accred.rfid.card' => ['active'=>'RFID Support',       'art'=>'accred-art-rfiddetail.png', 'top'=>['search'=>true,'searchPh'=>'Rechercher (nom, badge ID, RFID, email...)','help'=>true]],
     ];
+    // Spec-driven operations pages share one chrome variant.
+    foreach (array_keys(config('siarc_accred_ops', [])) as $opsRoute) {
+        $chrome[$opsRoute] = $chrome[$opsRoute] ?? ['active'=>'', 'art'=>'accred-art-rfid.png', 'top'=>['search'=>true,'scope'=>'#opsScope','searchPh'=>'Rechercher...','help'=>true]];
+    }
     $pc = $chrome[request()->route()?->getName() ?? ''] ?? ['active'=>'', 'art'=>'accred-art-templates.png', 'top'=>[]];
     $accActive  = $pc['active'];
     $accArt     = $pc['art'];

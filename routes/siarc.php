@@ -891,3 +891,29 @@ Route::get('/siarc/badge/{code}', function (Request $r, $code) {
         'lang' => $lang, 'type' => $type, 'v' => $v, 'x' => $x, 's' => $s, 'session' => $session,
     ]);
 })->name('siarc.badge.print');
+
+// ── Accreditation operations (readers / gates / rules / monitoring / badge
+//    lifecycle / sync) — spec-driven pages, see config/siarc_accred_ops.php.
+foreach ([
+    'readers'     => 'lecteurs',
+    'reader'      => 'lecteurs/detail',
+    'gates'       => 'portes',
+    'gate'        => 'portes/detail',
+    'rules'       => 'regles-acces',
+    'rule'        => 'regles-acces/detail',
+    'monitor'     => 'monitoring-acces',
+    'failures'    => 'echecs-acces',
+    'override'    => 'override-manuel',
+    'lost'        => 'badges-perdus',
+    'activation'  => 'activation-badges',
+    'replace'     => 'remplacement-badge',
+    'revocations' => 'revocations',
+    'health'      => 'sante-lecteurs',
+    'sync'        => 'synchronisation',
+] as $key => $slug) {
+    Route::get('/tableau-de-bord/admin/siarc/accreditation/'.$slug, function (Request $r) use ($key) {
+        if ($x = requireAdmin($r)) return $x;
+        $title = (config('siarc_accred_ops')['siarc.admin.accred.'.$key]['title'] ?? 'Accréditation');
+        return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => $title]);
+    })->name('siarc.admin.accred.'.$key);
+}
