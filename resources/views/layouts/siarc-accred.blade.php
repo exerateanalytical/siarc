@@ -182,8 +182,20 @@
                     </button>
                     @endif
                     @if($accTop['logoRight'])
-                    <span class="hidden sm:flex items-center gap-2 pl-2">
-                        @include('pages.siarc.partials.logo', ['onDark' => false, 'tag' => false, 'compact' => true])
+                    <span class="hidden sm:flex items-center gap-2.5 pl-2">
+                        <svg width="30" height="33" viewBox="0 0 40 44" fill="none">
+                            <circle cx="20" cy="7.5" r="5" fill="#E6B201"/>
+                            <path d="M20 14 L6 6" stroke="#C0010C" stroke-width="4.4" stroke-linecap="round"/>
+                            <path d="M20 14 L34 9" stroke="#157A43" stroke-width="4.4" stroke-linecap="round"/>
+                            <path d="M20 13 C25 20 25 28 20 30 C15 28 15 20 20 13 Z" fill="#0F4824"/>
+                            <path d="M20 29 L11 41" stroke="#C97A16" stroke-width="4.4" stroke-linecap="round"/>
+                            <path d="M20 29 L29 41" stroke="#14652F" stroke-width="4.4" stroke-linecap="round"/>
+                        </svg>
+                        <span class="leading-tight text-left">
+                            <span class="block text-[15px] font-extrabold tracking-tight"><span class="text-[#0F4824]">SIARC</span> <span class="text-[#C97A16]">2026</span></span>
+                            <span class="block text-[8.5px] font-semibold tracking-[0.08em] text-[#8A857A]">YAOUNDÉ, CAMEROUN</span>
+                        </span>
+                        <span class="inline-block w-[20px] h-[13px] rounded-[2px]" style="background:linear-gradient(90deg,#157A43 33%,#C0010C 33% 66%,#E6B201 66%)"></span>
                     </span>
                     @elseif($accTop['avatar'])
                     <span class="flex items-center gap-2.5 pl-1">

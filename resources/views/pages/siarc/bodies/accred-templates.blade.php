@@ -81,7 +81,7 @@
                     <tr data-filter-item data-filter-tags="{{ Str::lower($type) }} {{ Str::lower($statut) }}" data-filter-text="{{ $name }} {{ $sub }} {{ $type }} {{ $statut }}" class="border-b border-[#F2F1EC] hover:bg-[#FBFAF6] transition-colors">
                         <td class="px-4 py-2.5"><img src="{{ asset('images/siarc/'.$thumb) }}" alt="" class="w-[62px] h-[40px] object-cover rounded-md border border-[#EFEDE6]"></td>
                         <td class="px-4 py-2.5">
-                            <p class="text-[13px] font-semibold text-[#131313]">{{ $name }}</p>
+                            <p class="text-[13px] font-semibold text-[#131313] whitespace-nowrap">{{ $name }}</p>
                             <p class="text-[11px] text-[#8A857A]">{{ $sub }}</p>
                         </td>
                         <td class="px-4 py-2.5">
@@ -90,9 +90,9 @@
                             </span>
                         </td>
                         <td class="px-4 py-2.5"><span class="inline-flex items-center gap-1.5 text-[12px] text-[#3B382F]"><i data-lucide="smartphone" class="w-4 h-4 text-[#8A857A]"></i>Vertical</span></td>
-                        <td class="px-4 py-2.5 text-[12px] text-[#3B382F]">85.6 x 54 mm<br><span class="text-[#8A857A]">PVC</span></td>
+                        <td class="px-4 py-2.5 text-[12px] text-[#3B382F] whitespace-nowrap">85.6 x 54 mm<br><span class="text-[#8A857A]">PVC</span></td>
                         <td class="px-4 py-2.5"><span class="text-[11px] font-semibold px-2.5 py-1 rounded-md {{ $on ? 'bg-[#E8F5EC] text-[#157A43]' : 'bg-[#F1F0EB] text-[#8A857A]' }}">{{ $statut }}</span></td>
-                        <td class="px-4 py-2.5 text-[12px] text-[#3B382F]">{{ $date }}<br><span class="text-[11px] text-[#8A857A]">par Jude Nshome</span></td>
+                        <td class="px-4 py-2.5 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $date }}<br><span class="text-[11px] text-[#8A857A]">par Jude Nshome</span></td>
                         <td class="px-4 py-2.5">
                             <span class="flex items-center justify-end gap-1">
                                 <a href="{{ $previewHref }}" title="Aperçu" class="w-7 h-7 rounded-md hover:bg-[#F1F1EF] flex items-center justify-center"><i data-lucide="eye" class="w-4 h-4 text-[#8A857A]"></i></a>

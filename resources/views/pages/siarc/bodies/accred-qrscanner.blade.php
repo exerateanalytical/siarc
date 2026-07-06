@@ -135,7 +135,7 @@
         </span>
     </div>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5 pt-4 border-t {{ $ok ? 'border-[#CFE8D8]' : 'border-[#F5CFCF]' }}">
-        @foreach([['smartphone','Porte / Zone','Porte A','Entrée Principale'],['clock',"Heure d'accès",'10:24:35','27/07/2026'],['shield-check',"Niveau d'accès {{ '' }}",'Standard','Visiteur'],['user-check','Statut',$ok ? 'Autorisé' : 'Refusé','']] as [$ic,$k,$v,$s])
+        @foreach([['smartphone','Porte / Zone','Porte A','Entrée Principale'],['clock',"Heure d'accès",'10:24:35','27/07/2026'],['shield-check',"Niveau d'accès requis",'Standard','Visiteur'],['user-check','Statut',$ok ? 'Autorisé' : 'Refusé','']] as [$ic,$k,$v,$s])
         <span class="flex items-start gap-2.5">
             <i data-lucide="{{ $ic }}" class="w-[18px] h-[18px] {{ $ok ? 'text-[#157A43]' : 'text-[#C0010C]' }} shrink-0 mt-0.5"></i>
             <span><span class="block text-[11px] text-[#8A857A]">{{ $k }}</span><span class="block text-[13.5px] font-bold text-[#131313]">{{ $v }}</span>@if($s)<span class="block text-[11px] text-[#8A857A]">{{ $s }}</span>@endif</span>
