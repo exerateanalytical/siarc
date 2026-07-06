@@ -5,8 +5,11 @@
     $exUrl = $h('siarc.exhibitors');
     $eid = siarcEvent()?->id ?? 0;
     $pavilionId = \Illuminate\Support\Facades\DB::table('pavilions')->where('event_id',$eid)->value('id');
-    // Public pavilion cards drill into the exhibitors list filtered by pavilion (fallback to plain list).
+    // Public pavilion cards drill into the public pavilion profile (slug derived from the card artwork).
     $pavHref = fn($pid = null) => $exUrl ? ($pid ? $exUrl.'?pavilion='.$pid : $exUrl) : ($h('siarc.pavilions') ?? $h('siarc.home'));
+    $pavProfile = fn($img) => R::has('siarc.pavilion')
+        ? route('siarc.pavilion', ['lang' => $lang, 'slug' => str_replace(['pav-', '.png'], '', $img)])
+        : $pavHref($pavilionId);
     $planUrl = $h('siarc.pavilions') ?? $h('siarc.home');
 
     // ── Design content (transcribed verbatim from the approved PNG) ────────────
@@ -149,7 +152,7 @@
                 <div class="relative mb-10">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         @foreach($featured as $p)
-                            @php $bt = $badgeTone($p['badge']); $href = $pavHref($pavilionId); @endphp
+                            @php $bt = $badgeTone($p['badge']); $href = $pavProfile($p['img']); @endphp
                             <a href="{{ $href }}" class="siarc-card siarc-shadow siarc-lift overflow-hidden flex flex-col group">
                                 <div class="relative h-[104px] overflow-hidden">
                                     <img src="{{ asset('images/siarc/'.$p['img']) }}" alt="{{ $p['name'] }}" class="w-full h-full object-cover">
@@ -196,7 +199,7 @@
 
                 <div id="pavAllGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($allPav as $p)
-                        @php $bt = $badgeTone($p['badge']); $href = $pavHref($pavilionId); @endphp
+                        @php $bt = $badgeTone($p['badge']); $href = $pavProfile($p['img']); @endphp
                         <a href="{{ $href }}" data-filter-item data-filter-text="{{ $p['name'].' '.$p['badge'] }}" data-filter-tags="{{ \Illuminate\Support\Str::lower($p['badge']) }}" data-sort-key="{{ $p['name'] }}" class="siarc-card siarc-shadow siarc-lift overflow-hidden flex flex-col group">
                             <div class="relative h-[92px] overflow-hidden">
                                 <img src="{{ asset('images/siarc/'.$p['img']) }}" alt="{{ $p['name'] }}" class="w-full h-full object-cover">

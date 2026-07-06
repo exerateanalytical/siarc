@@ -11,7 +11,7 @@
     // Resolved routes (fall back to real list routes when detail id/slug is null)
     $speakersList  = $h('siarc.speakers');
     $programme     = $h('siarc.programme');
-    $sessionUrl    = $sessionId ? $h('siarc.admin.session', ['id'=>$sessionId]) : $programme;
+    $sessionUrl    = $sessionId ? $h('siarc.workshop.register', ['id'=>$sessionId]) : $programme; // public detail, not admin
     $companyUrl    = $exhibitorSlug ? $h('siarc.exhibitor', ['slug'=>$exhibitorSlug]) : $h('siarc.exhibitors');
     // Cameroon flag (green/red/yellow with star) — inline so it matches the PNG exactly.
     $flag = '<span class="inline-flex items-center align-middle rounded-[2px] overflow-hidden border border-black/10 shrink-0" style="width:20px;height:13px"><span style="width:6.66px;height:13px;background:#007A5E"></span><span style="width:6.66px;height:13px;background:#CE1126;display:flex;align-items:center;justify-content:center;color:#FCD116;font-size:9px;line-height:1">★</span><span style="width:6.66px;height:13px;background:#FCD116"></span></span>';

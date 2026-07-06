@@ -68,6 +68,14 @@ class SiarcPagesRenderTest extends TestCase
         }
     }
 
+    public function test_public_pavilion_profiles_render(): void
+    {
+        foreach (['cameroun', 'maroc', 'senegal', 'innovation', 'cotedivoire', 'tunisie', 'artisanat-monde', 'jeunes', 'afrique-centrale', 'diaspora'] as $slug) {
+            $this->get(route('siarc.pavilion', ['slug' => $slug]))->assertOk();
+        }
+        $this->get(route('siarc.pavilion', ['slug' => 'nope']))->assertNotFound();
+    }
+
     public function test_printable_badges_render_for_all_types(): void
     {
         $eid = \DB::table('events')->insertGetId([

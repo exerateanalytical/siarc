@@ -966,3 +966,29 @@ Route::get('/tableau-de-bord/admin/siarc/securite/kiosque-checkin', function (Re
     if ($x = requireAdmin($r)) return $x;
     return view('pages.siarc.kiosk-visitor-checkin', ['lang' => webLang($r)]);
 })->name('siarc.admin.secops.kiosk.checkin');
+
+// ── PUBLIC — Pavilion profile (the explorer's ten design pavilions) ──────────
+Route::get('/siarc/pavillons/{slug}', function (Request $r, $slug) {
+    $lang = webLang($r); $eid = siarcEvent()?->id ?? 0;
+    $pavs = [
+        'cameroun'         => ['img'=>'pav-cameroun.png',        'flag'=>'🇨🇲','badge'=>'Pays',       'name'=>'Pavillon Cameroun',            'stands'=>'48','exhib'=>'126','desc'=>"Découvrez le meilleur de l'artisanat camerounais dans un espace dédié à la diversité culturelle nationale."],
+        'maroc'            => ['img'=>'pav-maroc.png',           'flag'=>'🇲🇦','badge'=>'Pays',       'name'=>'Pavillon Maroc',               'stands'=>'32','exhib'=>'84', 'desc'=>"L'excellence marocaine à travers l'artisanat traditionnel, les tapis, la céramique et bien plus."],
+        'senegal'          => ['img'=>'pav-senegal.png',         'flag'=>'🇸🇳','badge'=>'Pays',       'name'=>'Pavillon Sénégal',             'stands'=>'28','exhib'=>'71', 'desc'=>"L'art sénégalais à l'honneur : textiles, bijoux, cuir, sculpture et design contemporain."],
+        'innovation'       => ['img'=>'pav-innovation.png',      'flag'=>null,'badge'=>'Thématique', 'name'=>'Pavillon Innovation & Design', 'stands'=>'20','exhib'=>'53', 'desc'=>"Un espace dédié aux artisans innovants et aux créations design tournées vers l'avenir."],
+        'cotedivoire'      => ['img'=>'pav-cotedivoire.png',     'flag'=>'🇨🇮','badge'=>'Pays',       'name'=>"Pavillon Côte d'Ivoire",       'stands'=>'24','exhib'=>'62', 'desc'=>"La richesse artisanale ivoirienne : tissage, sculpture sur bois et créations contemporaines."],
+        'tunisie'          => ['img'=>'pav-tunisie.png',         'flag'=>'🇹🇳','badge'=>'Pays',       'name'=>'Pavillon Tunisie',             'stands'=>'18','exhib'=>'45', 'desc'=>"L'artisanat tunisien entre héritage méditerranéen et savoir-faire millénaire."],
+        'artisanat-monde'  => ['img'=>'pav-artisanat-monde.png', 'flag'=>null,'badge'=>'Thématique', 'name'=>'Pavillon Artisanat du Monde',  'stands'=>'30','exhib'=>'88', 'desc'=>"Un tour du monde de l'artisanat : créations et savoir-faire des cinq continents."],
+        'jeunes'           => ['img'=>'pav-jeunes.png',          'flag'=>null,'badge'=>'Thématique', 'name'=>'Pavillon Jeunes Artisans',     'stands'=>'16','exhib'=>'48', 'desc'=>"La nouvelle génération d'artisans présente ses créations et son regard sur le métier."],
+        'afrique-centrale' => ['img'=>'pav-afrique-centrale.png','flag'=>'🌍','badge'=>'Régional',   'name'=>'Pavillon Afrique Centrale',    'stands'=>'22','exhib'=>'55', 'desc'=>"Les artisans d'Afrique Centrale réunis autour d'un patrimoine commun et vivant."],
+        'diaspora'         => ['img'=>'pav-diaspora.png',        'flag'=>null,'badge'=>'Régional',   'name'=>'Pavillon Diaspora Africaine',  'stands'=>'14','exhib'=>'33', 'desc'=>"La créativité de la diaspora africaine, entre racines et influences du monde entier."],
+    ];
+    abort_if(! isset($pavs[$slug]), 404);
+    $p = $pavs[$slug];
+    // Back the profile with a real DB pavilion when one matches by slug/name.
+    $p['dbId'] = DB::table('pavilions')->where('event_id', $eid)
+        ->where(fn ($q) => $q->where('slug', $slug)->orWhere('name_fr', 'like', '%'.str_replace('Pavillon ', '', $p['name']).'%'))
+        ->value('id');
+    $p['others'] = collect($pavs)->except($slug)->take(4)
+        ->map(fn ($o, $s) => [$s, $o['name'], $o['img']])->values()->all();
+    return view('pages.siarc.public', ['lang' => $lang, 'sTitle' => $p['name'], 'pavPublic' => $p]);
+})->name('siarc.pavilion');

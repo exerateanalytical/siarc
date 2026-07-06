@@ -10,8 +10,9 @@
     // ── Real IDs so detail links never 404 ──────────────────────────────────
     $eid = siarcEvent()?->id ?? 0;
     $sessionId = DB::table('programme_sessions')->where('event_id', $eid)->value('id');
-    $sessionUrl = ($sessionId && R::has('siarc.admin.session'))
-        ? route('siarc.admin.session', ['lang' => $lang, 'id' => $sessionId])
+    // Public page: link to the public workshop/session detail, never the admin console.
+    $sessionUrl = ($sessionId && R::has('siarc.workshop.register'))
+        ? route('siarc.workshop.register', ['lang' => $lang, 'id' => $sessionId])
         : $programme;
 
     // ── Header stat cards (verbatim from design) ─────────────────────────────
