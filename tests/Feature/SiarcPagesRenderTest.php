@@ -41,9 +41,33 @@ class SiarcPagesRenderTest extends TestCase
             'siarc.admin.attendance', 'siarc.admin.live', 'siarc.admin.reports',
             'siarc.admin.incidents', 'siarc.admin.vip',
             'siarc.mobile.scanner', 'siarc.mobile.exhibitor-checkin',
+            'siarc.admin.accred.templates', 'siarc.admin.accred.types', 'siarc.admin.accred.preview',
+            'siarc.admin.accred.queue', 'siarc.admin.accred.bulk', 'siarc.admin.accred.qr',
+            'siarc.admin.accred.rfid',
         ] as $name) {
             $this->withSession($session)->get(route($name))->assertOk();
         }
+
+        $this->withSession($session)
+            ->get(route('siarc.admin.accred.rfid.card', ['uid' => '04A3B27F916E80']))
+            ->assertOk()->assertSee('04 A3 B2 7F 91 6E 80');
+    }
+
+    public function test_printable_badges_render_for_all_types(): void
+    {
+        $eid = \DB::table('events')->insertGetId([
+            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'slug' => 'siarc-2026-badge-test', 'name_fr' => 'SIARC 2026',
+            'starts_at' => '2026-07-27', 'ends_at' => '2026-08-05',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        \DB::table('visitors')->insert([
+            ['event_id' => $eid, 'first_name' => 'Badge', 'last_name' => 'Visitor', 'type' => 'visitor', 'status' => 'registered', 'badge_code' => 'T-VIS-1', 'qr_token' => 'tok-vis', 'registered_at' => now(), 'created_at' => now(), 'updated_at' => now()],
+            ['event_id' => $eid, 'first_name' => 'Badge', 'last_name' => 'Vip', 'type' => 'vip', 'status' => 'registered', 'badge_code' => 'T-VIP-1', 'qr_token' => 'tok-vip', 'registered_at' => now(), 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        $this->get('/siarc/badge/T-VIS-1')->assertOk()->assertSee('BADGE VISITOR')->assertSee('T-VIS-1');
+        $this->get('/siarc/badge/T-VIP-1')->assertOk()->assertSee('VIP');
+        $this->get('/siarc/badge/NOPE-404')->assertNotFound();
     }
 
     public function test_admin_siarc_pages_render_with_seeded_data(): void

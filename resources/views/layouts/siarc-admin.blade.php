@@ -21,7 +21,7 @@
             ['Pavillons & Stands',     'Pavilions & Stands', 'building-2',       'siarc.admin.pavilions', ['siarc.admin.pavilion*','siarc.admin.stand*']],
             ['Plan du salon',          'Floor Plan',         'map',              'siarc.admin.floorplan', ['siarc.admin.floorplan']],
             ['Visiteurs',              'Visitors',           'users',            'siarc.admin.visitors', ['siarc.admin.visitor*','siarc.admin.vip']],
-            ['Accréditations',         'Accreditation',      'id-card',          'siarc.admin.entry', ['siarc.admin.entry','siarc.admin.badges','siarc.admin.checkin','siarc.mobile.scanner']],
+            ['Accréditations',         'Accreditation',      'id-card',          'siarc.admin.accred.templates', ['siarc.admin.accred.*','siarc.admin.entry','siarc.admin.badges','siarc.admin.checkin','siarc.mobile.scanner']],
             ['B2B Matchmaking',        'B2B Matchmaking',    'handshake',        'siarc.admin.b2b', ['siarc.admin.b2b','siarc.admin.meeting','siarc.admin.matchmaking']],
             ['Programme & Activités',  'Programme',          'calendar-days',    'siarc.admin.programme', ['siarc.admin.programme','siarc.admin.session']],
             ['Conférences & Ateliers', 'Talks & Workshops',  'presentation',     'siarc.admin.calendar', ['siarc.admin.calendar','siarc.admin.workshop']],

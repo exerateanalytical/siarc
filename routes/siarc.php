@@ -845,3 +845,49 @@ Route::post('/tableau-de-bord/admin/siarc/mode', function (Request $r) {
     siarcSetStandalone($r->boolean('standalone'));
     return redirect()->route('siarc.admin.mode', ['lang' => webLang($r)])->with('siarc_mode_saved', true);
 })->name('siarc.admin.mode.set')->middleware('throttle:20,1');
+
+// ─────────────────── ADMIN — Accréditation (badge system) ───────────────────
+// Eight approved designs (Badge Templates / Types de Badges / Badge Preview /
+// Print Queue / Bulk Printing / QR Code Generation / RFID Support / RFID Card
+// Detail) rendered pixel-faithful through the pages.siarc.accred scaffold.
+
+foreach ([
+    'templates'  => ['badge-templates',    'Badge Templates'],
+    'types'      => ['types-de-badges',    'Types de Badges'],
+    'preview'    => ['apercu-badge',       'Badge Preview'],
+    'queue'      => ['file-impression',    'Print Queue'],
+    'bulk'       => ['impression-lot',     'Bulk Printing'],
+    'qr'         => ['generation-qr',      'QR Code Generation'],
+    'rfid'       => ['rfid',               'RFID Support'],
+] as $key => [$slug, $title]) {
+    Route::get('/tableau-de-bord/admin/siarc/accreditation/'.$slug, function (Request $r) use ($title) {
+        if ($x = requireAdmin($r)) return $x;
+        return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => $title]);
+    })->name('siarc.admin.accred.'.$key);
+}
+
+Route::get('/tableau-de-bord/admin/siarc/accreditation/rfid/{uid}', function (Request $r, $uid) {
+    if ($x = requireAdmin($r)) return $x;
+    return view('pages.siarc.accred', ['lang' => webLang($r), 'sTitle' => 'RFID Card Detail', 'rfidUid' => $uid]);
+})->name('siarc.admin.accred.rfid.card');
+
+// ───────────────── Printable badges (visitor / exhibitor / VIP / speaker) ────
+Route::get('/siarc/badge/{code}', function (Request $r, $code) {
+    $lang = webLang($r); $eid = siarcEvent()?->id ?? 0;
+    $v = DB::table('visitors')->where('badge_code', $code)->first();
+    $x = $v ? null : DB::table('event_exhibitors as ee')
+        ->leftJoin('businesses as b', 'b.id', '=', 'ee.business_id')
+        ->leftJoin('pavilions as p', 'p.id', '=', 'ee.pavilion_id')
+        ->where('ee.badge_code', $code)
+        ->first(['ee.*', 'b.name_fr as company', 'b.slug as company_slug', 'p.name_fr as pavilion']);
+    $s = ($v || $x) ? null : DB::table('speakers')->where('id', str_replace('SPK-', '', $code))->first();
+    abort_if(! $v && ! $x && ! $s, 404);
+    $type = $v ? (in_array($v->type, ['vip']) ? 'vip' : 'visitor') : ($x ? 'exhibitor' : 'speaker');
+    $session = $s ? DB::table('programme_sessions as ps')
+        ->leftJoin('session_speaker as ss', 'ss.session_id', '=', 'ps.id')
+        ->where(fn ($q) => $q->where('ss.speaker_id', $s->id)->orWhere('ps.speaker_id', $s->id))
+        ->first(['ps.title_fr', 'ps.room as venue_fr', 'ps.starts_at']) : null;
+    return view('pages.siarc.badge', [
+        'lang' => $lang, 'type' => $type, 'v' => $v, 'x' => $x, 's' => $s, 'session' => $session,
+    ]);
+})->name('siarc.badge.print');
