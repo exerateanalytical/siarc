@@ -4,6 +4,7 @@ namespace App\Modules\Auth\Services;
 
 use App\Modules\Auth\Models\OtpVerification;
 use App\Modules\Auth\Services\Otp\OtpSender;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class OtpService
@@ -24,10 +25,25 @@ class OtpService
         if (RateLimiter::tooManyAttempts($limiterKey, self::SENDS_PER_10M)) {
             return false;
         }
-        RateLimiter::hit($limiterKey, 600);
-
         $code = $this->generate($identifier, $type, $userId, $channel);
-        $this->sender($channel)->send($identifier, $code, $lang);
+
+        try {
+            $this->sender($channel)->send($identifier, $code, $lang);
+        } catch (\Throwable $e) {
+            // A transport failure (SMTP down, bad relay credentials) must never
+            // consume the user's send quota or bubble up as a 500 — otherwise a
+            // new member is permanently locked out of a platform they just
+            // joined. Log it and let the caller show a retry/support message.
+            Log::error('OTP dispatch failed', [
+                'channel' => $channel,
+                'type'    => $type,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+
+        RateLimiter::hit($limiterKey, 600);
 
         return true;
     }

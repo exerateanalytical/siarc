@@ -7,9 +7,8 @@
     // [key, label, badge, url]
     $tabs = [
         ['details',    $isFr ? 'Détails de la proposition' : 'Proposal details', null, null],
-        ['messages',   $isFr ? 'Messages & Négociation' : 'Messages & Negotiation', '2', route('quotes.negotiation', ['lang' => $lang])],
-        ['fichiers',   $isFr ? 'Fichiers joints' : 'Attached files', '3', route('quotes.negotiation', ['lang' => $lang])],
-        ['historique', $isFr ? 'Historique' : 'History', '4', route('quotes.index', ['lang' => $lang])],
+        ['messages',   $isFr ? 'Messages & Négociation' : 'Messages & Negotiation', null, route('messages.inbox', ['lang' => $lang])],
+        ['historique', $isFr ? 'Historique' : 'History', null, route('quotes.index', ['lang' => $lang])],
     ];
 
     // [thumb, name, desc, qty, unit, price, discount, tax, total]
@@ -298,13 +297,9 @@
                             <i data-lucide="file-text" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                             {{ $isFr ? 'Voir le bon de commande' : 'View the purchase order' }}
                         </a>
-                        @else
-                        <a href="{{ route('quotes.accept', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
-                            <i data-lucide="circle-check" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
-                            {{ $isFr ? 'Accepter la proposition' : 'Accept the proposal' }}
-                        </a>
                         @endif
-                        <a href="{{ route('quotes.negotiation', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#EFCF9E] hover:border-[#C97A16] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#C97A16] transition-colors">
+                        {{-- Negotiation happens in the conversation thread opened with the RFQ. --}}
+                        <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#EFCF9E] hover:border-[#C97A16] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#C97A16] transition-colors">
                             <i data-lucide="square-pen" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                             {{ $isFr ? 'Demander des modifications' : 'Request modifications' }}
                         </a>
@@ -316,11 +311,6 @@
                                 {{ $isFr ? 'Refuser la proposition' : 'Refuse the proposal' }}
                             </button>
                         </form>
-                        @else
-                        <a href="{{ route('quotes.index', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#F5C9C9] hover:border-[#E5484D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#E5484D] transition-colors">
-                            <i data-lucide="x" class="w-[17px] h-[17px]" style="stroke-width:2"></i>
-                            {{ $isFr ? 'Refuser la proposition' : 'Refuse the proposal' }}
-                        </a>
                         @endif
                         <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#1B1B18] transition-colors">
                             <i data-lucide="message-circle" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
@@ -329,13 +319,15 @@
                     </div>
                 </section>
 
+                @if($isReal && (int) $rp->discount_amount > 0)
                 <section class="bg-[#EFF6F1] rounded-2xl px-5 py-4 flex items-start gap-3">
                     <i data-lucide="piggy-bank" class="w-[22px] h-[22px] shrink-0 text-[#1F8A4C]" style="stroke-width:1.7"></i>
                     <p class="text-[12px] leading-relaxed">
                         <span class="font-bold text-[#157A43]">{{ $isFr ? 'Vous économisez' : 'You save' }}</span><br>
-                        <span class="text-[#3B382F]">95,035 FCFA {{ $isFr ? 'sur cette proposition' : 'on this proposal' }}</span>
+                        <span class="text-[#3B382F]">{{ number_format((int) $rp->discount_amount) }} FCFA {{ $isFr ? 'sur cette proposition' : 'on this proposal' }}</span>
                     </p>
                 </section>
+                @endif
 
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                     <h2 class="text-[13.5px] font-bold text-[#3565DE]">{{ $isFr ? 'Informations importantes' : 'Important information' }}</h2>

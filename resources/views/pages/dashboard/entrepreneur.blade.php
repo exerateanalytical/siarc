@@ -53,13 +53,12 @@
 
     $quickActions = [
         ['plus-square',    $isFr ? 'Ajouter un produit' : 'Add a product',        route('products.web-create'), null],
-        ['package',        $isFr ? 'Gérer produits' : 'Manage products',          $ownStoreUrl, null],
+        ['package',        $isFr ? 'Gérer produits' : 'Manage products',          route('products.web-index'), (string) count($products)],
         ['calendar-plus',  $isFr ? 'Ajouter un événement' : 'Add an event',       route('events.index'), null],
-        ['clipboard-list', $isFr ? 'Voir commandes' : 'View orders',              route('dashboard.quotes'), (string) $ordersCount],
+        ['clipboard-list', $isFr ? 'Voir commandes' : 'View orders',              route('orders.index'), (string) $ordersCount],
         ['message-circle', 'Messages',                                             route('messages.inbox'), (string) $messageCount],
-        ['tags',           $isFr ? 'Créer une promotion' : 'Create a promotion',  route('contact'), null],
-        ['truck',          $isFr ? 'Gérer expéditions' : 'Manage shipping',       route('support.index'), null],
-        ['layers',         $isFr ? 'Mes collections' : 'My collections',          route('saved.index'), null],
+        ['badge-check',    $isFr ? 'Vérification' : 'Verification',               route('verification.show'), null],
+        ['building-2',     $isFr ? 'Mon entreprise' : 'My business',              route('business.edit'), null],
         ['store',          $isFr ? 'Voir ma boutique' : 'View my shop',           $ownStoreUrl, null],
     ];
 @endphp

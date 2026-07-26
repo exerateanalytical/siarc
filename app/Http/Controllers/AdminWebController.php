@@ -232,6 +232,27 @@ class AdminWebController extends Controller
         return back()->with('success', $lang === 'fr' ? 'Statut mis à jour.' : 'Status updated.');
     }
 
+    /**
+     * Manually mark a member's email as verified.
+     *
+     * Support override for the case where OTP delivery fails on the member's
+     * side (dead mailbox, blocked relay). Without it an unverified member can
+     * never create a business, publish a product, or send a message.
+     */
+    public function verifyUserEmail(Request $request, string $id): RedirectResponse
+    {
+        $lang = $this->lang($request);
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $user = User::findOrFail($id);
+        $user->update(['is_email_verified' => 1]);
+
+        \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'user.email_verified_manually', 'user', null, null, ['target_user' => $user->email]);
+
+        return back()->with('success', $lang === 'fr' ? 'Adresse email marquée comme vérifiée.' : 'Email address marked as verified.');
+    }
+
     public function partners(Request $request)
     {
         $lang = $this->lang($request);

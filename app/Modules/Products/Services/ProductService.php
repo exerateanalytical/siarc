@@ -77,6 +77,16 @@ class ProductService
         return $product;
     }
 
+    /**
+     * Remove a product from the catalogue. Soft delete — quote requests and
+     * purchase orders that reference it keep resolving.
+     */
+    public function delete(Product $product): void
+    {
+        $product->update(['is_available' => false, 'status' => 'draft']);
+        $product->delete();
+    }
+
     private function syncAttributes(Product $product, array $attributes): void
     {
         $product->attributes()->delete();

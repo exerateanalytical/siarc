@@ -102,11 +102,14 @@ Route::get('/api-interne/villes/{regionId}', [BusinessWebController::class, 'cit
 
 use App\Http\Controllers\ProductWebController;
 
+Route::get('/tableau-de-bord/produits', [ProductWebController::class, 'index'])->name('products.web-index');
 Route::get('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'create'])->name('products.web-create');
 Route::post('/tableau-de-bord/produits/nouveau', [ProductWebController::class, 'store'])->name('products.web-store')->middleware('verified.email');
 Route::get('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'edit'])->name('products.web-edit');
 Route::post('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'update'])->name('products.web-update')->middleware('verified.email');
 Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/supprimer', [ProductWebController::class, 'destroyImage'])->name('products.web-delete-image');
+Route::post('/tableau-de-bord/produits/{slug}/statut', [ProductWebController::class, 'toggleStatus'])->name('products.web-toggle-status')->middleware('verified.email');
+Route::post('/tableau-de-bord/produits/{slug}/supprimer', [ProductWebController::class, 'destroy'])->name('products.web-destroy')->middleware('verified.email');
 
 use App\Http\Controllers\VerificationWebController;
 
@@ -1009,6 +1012,7 @@ Route::get('/tableau-de-bord/admin/utilisateurs', function (Request $request) {
 Route::get('/tableau-de-bord/admin/utilisateurs/{id}', [AdminWebController::class, 'userDetail'])->name('admin.users.detail');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/role', [AdminWebController::class, 'updateUserRole'])->name('admin.users.update-role');
+Route::post('/tableau-de-bord/admin/utilisateurs/{id}/verifier-email', [AdminWebController::class, 'verifyUserEmail'])->name('admin.users.verify-email');
 Route::get('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 'partners'])->name('admin.partners');
 Route::post('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 'storePartner'])->name('admin.partners.store');
 Route::post('/tableau-de-bord/admin/partenaires/{id}', [AdminWebController::class, 'updatePartner'])->name('admin.partners.update');
@@ -2819,21 +2823,23 @@ Route::post('/tableau-de-bord/demandes/{quoteRequest}/proposition', [App\Http\Co
 Route::post('/tableau-de-bord/propositions/{proposal}/accepter', [App\Http\Controllers\QuoteWebController::class, 'acceptProposal'])->name('quotes.accept-proposal');
 Route::post('/tableau-de-bord/propositions/{proposal}/refuser', [App\Http\Controllers\QuoteWebController::class, 'refuseProposal'])->name('quotes.refuse-proposal');
 Route::post('/tableau-de-bord/factures/{invoice}/basculer', [App\Http\Controllers\QuoteWebController::class, 'toggleInvoice'])->name('quotes.toggle-invoice');
+Route::get('/tableau-de-bord/commandes', [App\Http\Controllers\QuoteWebController::class, 'orders'])->name('orders.index');
+Route::post('/tableau-de-bord/commandes/{order}/statut', [App\Http\Controllers\QuoteWebController::class, 'updateOrderStatus'])->name('orders.update-status');
 
 // Quote-flow detail pages (pixel replicas of "accepte le devis.png", "comparison de version.png",
 // "bonne de demand.png" and "demands and devis.png")
+// Only pages that bind a real record survive. The design set also shipped
+// accept / compare / negotiation / sent / review / production replicas, but
+// none of them had a real-data branch — they rendered an invented buyer, fake
+// totals and a pre-filled e-signature no matter who was logged in. Acceptance
+// now happens inline on `quotes.detail`, negotiation in the message thread,
+// and order progress on `orders.index`.
 foreach ([
-    '/tableau-de-bord/propositions/accepter'    => ['quotes.accept',   'pages.quotes.accept'],
-    '/tableau-de-bord/propositions/comparaison' => ['quotes.compare',  'pages.quotes.compare'],
     '/tableau-de-bord/commandes/bon'            => ['quotes.po',       'pages.quotes.po'],
     '/tableau-de-bord/propositions/apercu'      => ['quotes.proposal', 'pages.quotes.proposal'],
     '/tableau-de-bord/propositions/articles'    => ['quotes.builder',  'pages.quotes.builder'],
     '/tableau-de-bord/factures/detail'          => ['quotes.invoice',  'pages.quotes.invoice'],
-    '/tableau-de-bord/propositions/negociation' => ['quotes.negotiation', 'pages.quotes.negotiation'],
-    '/tableau-de-bord/propositions/envoyee'     => ['quotes.sent',     'pages.quotes.sent'],
     '/tableau-de-bord/propositions/detail'      => ['quotes.detail',   'pages.quotes.detail'],
-    '/tableau-de-bord/commandes/production'     => ['quotes.production', 'pages.quotes.production'],
-    '/tableau-de-bord/propositions/envoi'       => ['quotes.review',   'pages.quotes.review'],
 ] as $qfPath => [$qfName, $qfView]) {
     Route::get($qfPath, function (Request $request) use ($qfPath, $qfView) {
         $siacUser = session('siac_user');
@@ -3064,7 +3070,9 @@ Route::post('/verification-email/envoyer', function (Request $request) {
 
     return back()->with($sent ? 'status' : 'error', $sent
         ? ($lang === 'fr' ? 'Code envoyé à ' . $user->email . '.' : 'Code sent to ' . $user->email . '.')
-        : ($lang === 'fr' ? 'Trop de demandes. Réessayez dans quelques minutes.' : 'Too many requests. Try again in a few minutes.'));
+        : ($lang === 'fr'
+            ? 'Nous n\'avons pas pu envoyer le code. Réessayez dans quelques minutes ou contactez le support.'
+            : 'We could not send the code. Try again in a few minutes or contact support.'));
 })->name('email.verify.send');
 
 Route::post('/verification-email/confirmer', function (Request $request) {

@@ -51,6 +51,72 @@ class ProductWebController extends Controller
         return $scoped->isNotEmpty() ? $scoped : ProductCategory::where('is_active', true)->orderBy('name_fr')->get();
     }
 
+    /**
+     * "Mes produits" — the seller's own catalogue.
+     *
+     * The dashboard only ever showed the 6 most recent products, so a seller
+     * with a larger catalogue had no way to reach the rest. This is the full,
+     * paginated, editable list.
+     */
+    public function index(Request $request)
+    {
+        $lang = $this->lang($request);
+        $business = $this->myBusiness($request);
+        if ($business instanceof RedirectResponse) return $business;
+
+        $status = $request->query('status');
+        $q      = trim((string) $request->query('q', ''));
+
+        $products = Product::where('business_id', $business->id)
+            ->when(in_array($status, ['draft', 'published'], true), fn ($qq) => $qq->where('status', $status))
+            ->when($q !== '', fn ($qq) => $qq->where(fn ($w) => $w
+                ->where('name_fr', 'like', "%{$q}%")
+                ->orWhere('name_en', 'like', "%{$q}%")))
+            ->with(['images', 'category'])
+            ->latest('created_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        $counts = [
+            'all'       => Product::where('business_id', $business->id)->count(),
+            'published' => Product::where('business_id', $business->id)->where('status', 'published')->count(),
+            'draft'     => Product::where('business_id', $business->id)->where('status', 'draft')->count(),
+        ];
+
+        return view('pages.dashboard.products', compact('lang', 'business', 'products', 'counts', 'status', 'q'));
+    }
+
+    public function destroy(Request $request, string $slug): RedirectResponse
+    {
+        $business = $this->myBusiness($request);
+        if ($business instanceof RedirectResponse) return $business;
+
+        $product = Product::where('business_id', $business->id)->where('slug', $slug)->firstOrFail();
+        $this->service->delete($product);
+
+        return redirect()->route('products.web-index')
+            ->with('success', $this->lang($request) === 'fr' ? 'Produit supprimé.' : 'Product deleted.');
+    }
+
+    /** Publish ⇄ unpublish without going through the full edit form. */
+    public function toggleStatus(Request $request, string $slug): RedirectResponse
+    {
+        $business = $this->myBusiness($request);
+        if ($business instanceof RedirectResponse) return $business;
+
+        $product = Product::where('business_id', $business->id)->where('slug', $slug)->firstOrFail();
+
+        $product->status === 'published'
+            ? $this->service->unpublish($product)
+            : $this->service->publish($product);
+
+        $isFr = $this->lang($request) === 'fr';
+
+        return back()->with('success', $product->fresh()->status === 'published'
+            ? ($isFr ? 'Produit publié.' : 'Product published.')
+            : ($isFr ? 'Produit retiré de la boutique.' : 'Product unpublished.'));
+    }
+
     public function create(Request $request)
     {
         $lang = $this->lang($request);
@@ -74,7 +140,7 @@ class ProductWebController extends Controller
         $this->service->publish($product);
         $this->handleImages($request, $product);
 
-        return redirect()->route('dashboard.entrepreneur')
+        return redirect()->route('products.web-index')
             ->with('success', $this->lang($request) === 'fr' ? 'Produit créé et publié.' : 'Product created and published.');
     }
 

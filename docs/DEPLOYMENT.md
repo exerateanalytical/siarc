@@ -27,10 +27,30 @@ SESSION_DRIVER=database
 QUEUE_CONNECTION=database
 CACHE_STORE=file           # or redis if available
 
-MAIL_MAILER=smtp           # 'log' in dev; contact-form mail for guests needs a real mailer
+MAIL_MAILER=log            # see "Mail" below before switching to smtp
 ```
 
 Then generate the key once: `php artisan key:generate`.
+
+### Mail
+
+Email delivery is not cosmetic here: signup sends a 6-digit verification code,
+and until a member confirms it the `verified.email` middleware blocks business
+creation, product publishing and messaging.
+
+Deploy with `MAIL_MAILER=log` first. Codes are written to
+`storage/logs/laravel.log`, so nobody is locked out while the relay is being
+set up. Then configure `MAIL_HOST`/`MAIL_USERNAME`/`MAIL_PASSWORD`, switch to
+`MAIL_MAILER=smtp`, and confirm delivery with:
+
+```bash
+php artisan tinker --execute="Mail::raw('test', fn(\$m) => \$m->to('you@example.com')->subject('test'));"
+```
+
+If a send fails at runtime the code is logged and the member sees a retry
+message rather than a 500 — the send quota is not consumed. As a last resort,
+an admin can unblock any member from **Admin → Utilisateurs → Marquer l'email
+vérifié**.
 
 ## Deploy steps
 

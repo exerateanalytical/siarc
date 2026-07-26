@@ -220,6 +220,14 @@
                                     </button>
                                 </form>
                                 @endif
+                                @if(! ($u->is_email_verified ?? false))
+                                <form method="POST" action="{{ route('admin.users.verify-email', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-1">
+                                    @csrf
+                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] hover:text-[#14532D] py-1.5">
+                                        <i data-lucide="mail-check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Marquer l\'email vérifié' : 'Mark email verified' }}
+                                    </button>
+                                </form>
+                                @endif
                                 <form method="POST" action="{{ route('admin.users.update-role', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-2">
                                     @csrf
                                     <p class="text-[10.5px] font-bold uppercase tracking-[0.05em] text-[#8A6D1F] mb-1.5">{{ $isFr ? 'Changer le rôle' : 'Change role' }}</p>

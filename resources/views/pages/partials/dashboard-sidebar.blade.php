@@ -79,7 +79,7 @@
                 ['events.index', 'calendar-days', 'Événements', 'Events'],
             ]],
             [['fr' => 'Ma boutique', 'en' => 'My shop'], [
-                ['products.web-create', 'package', 'Produits', 'Products'],
+                ['products.web-index', 'package', 'Mes produits', 'My products'],
                 ['business.edit', 'building-2', 'Mon entreprise', 'My business'],
                 ['verification.show', 'badge-check', 'Vérification', 'Verification'],
                 ['membership.certificate', 'award', 'Mon certificat', 'My certificate'],

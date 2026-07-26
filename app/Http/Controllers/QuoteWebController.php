@@ -267,6 +267,95 @@ class QuoteWebController extends Controller
             ->with('success', $lang === 'fr' ? 'Proposition refusée.' : 'Proposal refused.');
     }
 
+    /**
+     * The order book, for both sides of the marketplace.
+     *
+     * A seller sees every purchase order raised against their business; a buyer
+     * sees their own. Previously orders were only visible as the four most
+     * recent rows on the dashboard, so anything older was unreachable.
+     */
+    public function orders(Request $request)
+    {
+        $siacUser = $this->webUser();
+        if (! $siacUser) {
+            return redirect('/login?next=' . urlencode(route('orders.index', [], false)));
+        }
+
+        $lang = $this->lang($request);
+        $business = Business::where('user_id', $siacUser['id'])->first();
+        $isSeller = (bool) $business;
+        $status   = $request->query('status');
+
+        $orders = PurchaseOrder::query()
+            ->with(['proposal.request.business', 'invoice'])
+            ->whereHas('proposal.request', function ($q) use ($isSeller, $business, $siacUser) {
+                $isSeller
+                    ? $q->where('business_id', $business->id)
+                    : $q->where('buyer_id', $siacUser['id']);
+            })
+            ->when(in_array($status, self::ORDER_STATUSES, true), fn ($q) => $q->where('status', $status))
+            ->latest('created_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('pages.dashboard.orders', [
+            'lang' => $lang, 'isSeller' => $isSeller, 'orders' => $orders,
+            'status' => $status, 'business' => $business,
+        ]);
+    }
+
+    /** Ordered lifecycle a seller can walk a purchase order through. */
+    public const ORDER_STATUSES = ['confirmed', 'in_production', 'shipped', 'delivered', 'cancelled'];
+
+    /** Seller advances a purchase order along its lifecycle. */
+    public function updateOrderStatus(Request $request, int $orderId): RedirectResponse
+    {
+        $siacUser = $this->webUser();
+        if (! $siacUser) {
+            return redirect('/login');
+        }
+
+        $lang  = $this->lang($request);
+        $order = PurchaseOrder::with('proposal.request.business')->findOrFail($orderId);
+
+        if ($order->proposal->request->business->user_id !== $siacUser['id'] && empty($siacUser['is_admin'])) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'status' => ['required', 'in:' . implode(',', self::ORDER_STATUSES)],
+        ]);
+
+        $order->update(['status' => $data['status']]);
+
+        $labels = [
+            'confirmed'     => ['Confirmée', 'Confirmed'],
+            'in_production' => ['En production', 'In production'],
+            'shipped'       => ['Expédiée', 'Shipped'],
+            'delivered'     => ['Livrée', 'Delivered'],
+            'cancelled'     => ['Annulée', 'Cancelled'],
+        ];
+        $label = $labels[$data['status']][$lang === 'fr' ? 0 : 1];
+
+        $buyer = User::find($order->proposal->request->buyer_id);
+        if ($buyer) {
+            $this->notifyUser(
+                $buyer->id,
+                $buyer->email,
+                'order_status',
+                $lang === 'fr' ? 'Commande mise à jour' : 'Order updated',
+                ($lang === 'fr'
+                    ? "Votre commande {$order->reference} est maintenant : {$label}."
+                    : "Your order {$order->reference} is now: {$label}."),
+                route('quotes.po', ['lang' => $lang, 'po' => $order->id])
+            );
+        }
+
+        return back()->with('success', $lang === 'fr'
+            ? "Commande {$order->reference} — statut : {$label}."
+            : "Order {$order->reference} — status: {$label}.");
+    }
+
     /** Mark the invoice of a purchase order as paid / unpaid. */
     public function toggleInvoice(Request $request, int $invoiceId): RedirectResponse
     {
