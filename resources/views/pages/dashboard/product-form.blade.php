@@ -20,13 +20,13 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
     @endif
 
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
+    <div class="bg-[#E2F3E8] border border-[#BFDCC8] text-[#14532D] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
         <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
     </div>
     @endif
 
     @if($errors->any())
-    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3.5 mb-4">
+    <div class="bg-[#FDE8E8] border border-[#F5C9C9] text-[#B42025] text-sm rounded-xl p-3.5 mb-4">
         <p class="font-medium mb-1">{{ $lang === 'fr' ? 'Merci de corriger les erreurs suivantes :' : 'Please fix the following errors:' }}</p>
         <ul class="list-disc list-inside space-y-0.5">
             @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
@@ -42,36 +42,36 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
 
             <div class="mb-4">
                 <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Catégorie' : 'Category' }} *</label>
-                <select name="category_id" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                <select name="category_id" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                     <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
                     @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ $v('category_id') == $cat->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $cat->sector->name_fr . ' — ' . $cat->name_fr : $cat->sector->name_en . ' — ' . $cat->name_en }}</option>
+                    <option value="{{ $cat->id }}" {{ $v('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->sector ? ($lang === 'fr' ? $cat->sector->name_fr . ' — ' . $cat->name_fr : $cat->sector->name_en . ' — ' . $cat->name_en) : ($lang === 'fr' ? $cat->name_fr : $cat->name_en) }}</option>
                     @endforeach
                 </select>
                 @if($categories->isEmpty())
-                <p class="text-xs text-amber-600 mt-1">{{ $lang === 'fr' ? 'Aucune catégorie disponible pour votre secteur pour le moment.' : 'No categories available for your industry yet.' }}</p>
+                <p class="text-xs text-[#C9942E] mt-1">{{ $lang === 'fr' ? 'Aucune catégorie disponible pour le moment.' : 'No categories available yet.' }}</p>
                 @endif
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Nom (français)' : 'Name (French)' }} *</label>
-                    <input name="name_fr" required value="{{ $v('name_fr') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="name_fr" required value="{{ $v('name_fr') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Nom (anglais)' : 'Name (English)' }}</label>
-                    <input name="name_en" value="{{ $v('name_en') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="name_en" value="{{ $v('name_en') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Description (français)' : 'Description (French)' }}</label>
-                    <textarea name="description_fr" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 resize-none">{{ $v('description_fr') }}</textarea>
+                    <textarea name="description_fr" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none">{{ $v('description_fr') }}</textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Description (anglais)' : 'Description (English)' }}</label>
-                    <textarea name="description_en" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 resize-none">{{ $v('description_en') }}</textarea>
+                    <textarea name="description_en" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none">{{ $v('description_en') }}</textarea>
                 </div>
             </div>
         </div>
@@ -81,19 +81,19 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Qté disponible' : 'Available qty' }}</label>
-                    <input type="number" name="quantity_available" value="{{ $v('quantity_available') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="number" name="quantity_available" value="{{ $v('quantity_available') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Unité' : 'Unit' }}</label>
-                    <input name="quantity_unit" value="{{ $v('quantity_unit') }}" placeholder="kg, pièce..." class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="quantity_unit" value="{{ $v('quantity_unit') }}" placeholder="kg, pièce..." class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">MOQ</label>
-                    <input type="number" name="moq" value="{{ $v('moq') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="number" name="moq" value="{{ $v('moq') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Unité MOQ' : 'MOQ unit' }}</label>
-                    <input name="moq_unit" value="{{ $v('moq_unit') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="moq_unit" value="{{ $v('moq_unit') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
             </div>
         </div>
@@ -104,7 +104,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Type' : 'Type' }}</label>
-                    <select name="price_type" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <select name="price_type" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                         @foreach(['contact' => ($lang === 'fr' ? 'Sur demande' : 'On request'), 'retail' => ($lang === 'fr' ? 'Détail' : 'Retail'), 'wholesale' => ($lang === 'fr' ? 'Gros' : 'Wholesale'), 'negotiable' => ($lang === 'fr' ? 'Négociable' : 'Negotiable')] as $val => $label)
                         <option value="{{ $val }}" {{ $v('price_type', 'contact') === $val ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
@@ -112,11 +112,11 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Montant (interne)' : 'Amount (internal)' }}</label>
-                    <input type="number" step="0.01" name="price_amount" value="{{ $v('price_amount') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="number" step="0.01" name="price_amount" value="{{ $v('price_amount') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Par' : 'Per' }}</label>
-                    <input name="price_unit" value="{{ $v('price_unit') }}" placeholder="kg, unité..." class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="price_unit" value="{{ $v('price_unit') }}" placeholder="kg, unité..." class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
             </div>
         </div>
@@ -134,7 +134,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
                     'is_custom_order' => $lang === 'fr' ? 'Sur commande' : 'Custom order',
                 ] as $field => $label)
                 <label class="flex items-center gap-2 text-sm text-[#3B382F] cursor-pointer">
-                    <input type="checkbox" name="{{ $field }}" value="1" {{ $vb($field, in_array($field, ['is_available','is_retail'])) ? 'checked' : '' }} class="rounded border-[#E4DECF] text-forest-600 focus:ring-forest-400">
+                    <input type="checkbox" name="{{ $field }}" value="1" {{ $vb($field, in_array($field, ['is_available','is_retail'])) ? 'checked' : '' }} class="rounded border-[#EFEBE2] text-forest-600 focus:ring-forest-400">
                     {{ $label }}
                 </label>
                 @endforeach
@@ -151,7 +151,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier le produit' : 'Edit product')
                     <img src="{{ $img->url }}" alt="" class="w-full h-full object-cover">
                     <form method="POST" action="{{ route('products.web-delete-image', ['slug' => $product->slug, 'imageId' => $img->id]) }}" class="absolute top-1 right-1">
                         @csrf
-                        <button type="submit" class="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button type="submit" class="w-6 h-6 bg-[#B42025] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <i data-lucide="x" class="w-3 h-3"></i>
                         </button>
                     </form>

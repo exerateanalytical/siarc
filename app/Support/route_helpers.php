@@ -162,51 +162,6 @@ if (! function_exists('requireAdmin')) {
     }
 }
 
-if (! function_exists('siarcEvent')) {
-    /** The current SIARC salon event (most recent one whose slug starts with "siarc"). */
-    function siarcEvent(): ?object
-    {
-        // Memoized on the container (per request in production, per test in phpunit)
-        // — a process-wide static would leak an empty-DB null across test cases.
-        $app = app();
-        if (! $app->bound('siarc.event.memo')) {
-            $app->instance('siarc.event.memo',
-                DB::table('events')->where('slug', 'like', 'siarc%')->orderByDesc('starts_at')->first() ?? false);
-        }
-        $memo = $app->make('siarc.event.memo');
-
-        return $memo === false ? null : $memo;
-    }
-}
-
-if (! function_exists('siarcStandalone')) {
-    /**
-     * SIARC "overall" mode: when true the whole platform presents as SIARC 2026
-     * (root landing becomes the SIARC home). Runtime toggle is stored durably in
-     * the cache; falls back to config('siarc.standalone').
-     */
-    function siarcStandalone(): bool
-    {
-        try {
-            return (bool) \Illuminate\Support\Facades\Cache::get('siarc.standalone', (bool) config('siarc.standalone', false));
-        } catch (\Throwable $e) {
-            return (bool) config('siarc.standalone', false);
-        }
-    }
-}
-
-if (! function_exists('siarcSetStandalone')) {
-    /** Turn SIARC overall mode on/off, persisted across requests. */
-    function siarcSetStandalone(bool $on): void
-    {
-        try {
-            \Illuminate\Support\Facades\Cache::forever('siarc.standalone', $on);
-        } catch (\Throwable $e) {
-            // cache unavailable (e.g. some CLI contexts) — silently ignore
-        }
-    }
-}
-
 if (! function_exists('certNumberFor')) {
     /** Deterministic membership-certificate number for a business (single source of truth). */
     function certNumberFor(int $businessId, $createdAt = null): string

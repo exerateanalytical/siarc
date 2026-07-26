@@ -15,7 +15,7 @@ $statusLabels = [
 <div class="max-w-2xl">
 
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
+    <div class="bg-[#E2F3E8] border border-[#BFDCC8] text-[#14532D] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
         <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
     </div>
     @endif
@@ -32,8 +32,8 @@ $statusLabels = [
             </div>
             <span @class([
                 'text-xs font-medium px-2 py-1 rounded-full shrink-0',
-                'bg-amber-100 text-amber-700' => in_array($ticket->status, ['open', 'in_progress']),
-                'bg-green-100 text-green-700' => $ticket->status === 'resolved',
+                'bg-[#F6E4BE] text-[#8A6D1F]' => in_array($ticket->status, ['open', 'in_progress']),
+                'bg-[#CFE5D6] text-[#14532D]' => $ticket->status === 'resolved',
                 'bg-[#F1EDE4] text-[#8A857A]' => $ticket->status === 'closed',
             ])>{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
         </a>
@@ -47,15 +47,15 @@ $statusLabels = [
         <form method="POST" action="{{ route('support.store') }}" class="space-y-3">
             @csrf
             @if($categories->isNotEmpty())
-            <select name="category_id" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+            <select name="category_id" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 <option value="">{{ $lang === 'fr' ? 'Catégorie (optionnel)' : 'Category (optional)' }}</option>
                 @foreach($categories as $cat)
                 <option value="{{ $cat->id }}">{{ $lang === 'fr' ? $cat->name_fr : ($cat->name_en ?? $cat->name_fr) }}</option>
                 @endforeach
             </select>
             @endif
-            <input name="subject" required maxlength="255" placeholder="{{ $lang === 'fr' ? 'Sujet' : 'Subject' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
-            <textarea name="body" required rows="4" maxlength="3000" placeholder="{{ $lang === 'fr' ? 'Décrivez votre problème...' : 'Describe your issue...' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 resize-none"></textarea>
+            <input name="subject" required maxlength="255" placeholder="{{ $lang === 'fr' ? 'Sujet' : 'Subject' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+            <textarea name="body" required rows="4" maxlength="3000" placeholder="{{ $lang === 'fr' ? 'Décrivez votre problème...' : 'Describe your issue...' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none"></textarea>
             <button type="submit" class="bg-forest-600 hover:bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2">
                 <i data-lucide="send" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Envoyer' : 'Submit' }}

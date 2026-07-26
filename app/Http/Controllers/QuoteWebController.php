@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Modules\Auth\Models\User;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Messaging\Services\ConversationService;
+use App\Modules\Notifications\Models\UserNotification;
 use App\Modules\Quotes\Models\Invoice;
 use App\Modules\Quotes\Models\PurchaseOrder;
 use App\Modules\Quotes\Models\QuoteProposal;
 use App\Modules\Quotes\Models\QuoteRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Quotation system write-endpoints: RFQ → proposal → acceptance →
@@ -29,6 +31,18 @@ class QuoteWebController extends Controller
     private function webUser(): ?array
     {
         return session('siac_user');
+    }
+
+    /** In-app + email notification, mirroring MessagingWebController's pattern. */
+    private function notifyUser(string $userId, ?string $email, string $type, string $title, string $body, string $link): void
+    {
+        UserNotification::notify($userId, $type, $title, mb_substr($body, 0, 140), $link);
+
+        if ($email) {
+            Mail::raw($body . "\n\n" . $link, function ($message) use ($email, $title) {
+                $message->to($email)->subject('[Artisan Hub 237] ' . $title);
+            });
+        }
     }
 
     /** Buyer submits an RFQ: creates the quote request AND opens a real conversation. */
@@ -74,6 +88,17 @@ class QuoteWebController extends Controller
             'desired_response_date' => $data['desired_response_date'] ?? null,
             'status'          => 'pending',
         ]);
+
+        $this->notifyUser(
+            $business->user_id,
+            $business->email,
+            'quote_request',
+            $lang === 'fr' ? 'Nouvelle demande de devis' : 'New quote request',
+            ($lang === 'fr'
+                ? "{$buyer->name} vous a envoyé une demande de devis « {$data['title']} »."
+                : "{$buyer->name} sent you a quote request \"{$data['title']}\"."),
+            route('dashboard.quotes', ['lang' => $lang])
+        );
 
         return redirect()->route('quotes.index', ['lang' => $lang])
             ->with('success', $lang === 'fr'
@@ -144,6 +169,20 @@ class QuoteWebController extends Controller
         $proposal->recalculateTotals();
         $quoteRequest->update(['status' => 'quoted']);
 
+        $buyer = $quoteRequest->buyer ?? User::find($quoteRequest->buyer_id);
+        if ($buyer) {
+            $this->notifyUser(
+                $buyer->id,
+                $buyer->email,
+                'quote_proposal',
+                $lang === 'fr' ? 'Proposition de devis reçue' : 'Quote proposal received',
+                ($lang === 'fr'
+                    ? "{$quoteRequest->business->name_fr} vous a envoyé une proposition pour « {$quoteRequest->title} »."
+                    : "{$quoteRequest->business->name_fr} sent you a proposal for \"{$quoteRequest->title}\"."),
+                route('quotes.index', ['lang' => $lang])
+            );
+        }
+
         return redirect()->route('dashboard.quotes', ['lang' => $lang])
             ->with('success', $lang === 'fr'
                 ? "Proposition {$proposal->reference} envoyée."
@@ -159,7 +198,7 @@ class QuoteWebController extends Controller
         }
 
         $lang = $this->lang($request);
-        $proposal = QuoteProposal::with('request')->findOrFail($proposalId);
+        $proposal = QuoteProposal::with('request.business')->findOrFail($proposalId);
 
         if ($proposal->request->buyer_id !== $siacUser['id'] && empty($siacUser['is_admin'])) {
             abort(403);
@@ -185,6 +224,20 @@ class QuoteWebController extends Controller
             'total'             => $order->total,
             'due_date'          => now()->addDays(14),
         ]);
+
+        $business = $proposal->request->business;
+        if ($business) {
+            $this->notifyUser(
+                $business->user_id,
+                $business->email,
+                'quote_accepted',
+                $lang === 'fr' ? 'Devis accepté' : 'Quote accepted',
+                ($lang === 'fr'
+                    ? "Votre proposition pour « {$proposal->request->title} » a été acceptée — bon de commande {$order->reference} généré."
+                    : "Your proposal for \"{$proposal->request->title}\" was accepted — purchase order {$order->reference} generated."),
+                route('dashboard.quotes', ['lang' => $lang])
+            );
+        }
 
         return redirect()->route('quotes.po', ['lang' => $lang, 'po' => $order->id])
             ->with('success', $lang === 'fr'

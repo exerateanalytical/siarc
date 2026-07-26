@@ -13,14 +13,14 @@ $channelMeta = [
 <div class="max-w-2xl space-y-6">
 
     @if(session('success'))
-        <div class="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+        <div class="flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
             <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
             {{ session('success') }}
         </div>
     @endif
 
     @if($errors->any())
-        <div class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
+        <div class="flex items-start gap-2 bg-[#FDE8E8] border border-[#F5C9C9] rounded-lg px-4 py-3 text-sm text-[#B42025]">
             <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
             {{ $errors->first() }}
         </div>
@@ -28,17 +28,17 @@ $channelMeta = [
 
     {{-- Fresh recovery codes — shown exactly once --}}
     @if($freshRecoveryCodes)
-    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+    <div class="bg-[#FBF1DD] border border-[#EFD08A] rounded-xl p-5">
         <div class="flex items-center gap-2 mb-2">
-            <i data-lucide="life-buoy" class="w-4 h-4 text-amber-600"></i>
-            <h2 class="text-sm font-bold text-amber-800">{{ $lang === 'fr' ? 'Codes de récupération — copiez-les maintenant' : 'Recovery codes — copy them now' }}</h2>
+            <i data-lucide="life-buoy" class="w-4 h-4 text-[#C9942E]"></i>
+            <h2 class="text-sm font-bold text-[#8A6D1F]">{{ $lang === 'fr' ? 'Codes de récupération — copiez-les maintenant' : 'Recovery codes — copy them now' }}</h2>
         </div>
-        <p class="text-xs text-amber-700 mb-3">
+        <p class="text-xs text-[#8A6D1F] mb-3">
             {{ $lang === 'fr'
                 ? 'Chaque code ne fonctionne qu\'une fois. Ils ne seront plus jamais affichés. Conservez-les en lieu sûr.'
                 : 'Each code works only once. They will never be shown again. Store them somewhere safe.' }}
         </p>
-        <div class="grid grid-cols-2 gap-2 font-mono text-sm text-amber-900 bg-white border border-amber-100 rounded-lg p-4">
+        <div class="grid grid-cols-2 gap-2 font-mono text-sm text-[#6B5318] bg-white border border-[#F6E4BE] rounded-lg p-4">
             @foreach($freshRecoveryCodes as $code)
             <span>{{ $code }}</span>
             @endforeach
@@ -63,7 +63,7 @@ $channelMeta = [
                 {{ $lang === 'fr' ? 'Ajouter' : 'Add passkey' }}
             </button>
         </div>
-        <div id="passkey-error" class="hidden px-5 py-3 text-xs text-red-600 border-b border-[#FBF9F4]"></div>
+        <div id="passkey-error" class="hidden px-5 py-3 text-xs text-[#B42025] border-b border-[#FBF9F4]"></div>
         @forelse($passkeys as $pk)
         <div class="flex items-center gap-3 px-5 py-3 border-b border-[#FBF9F4] last:border-0">
             <i data-lucide="key-round" class="w-4 h-4 text-[#A8A296] shrink-0"></i>
@@ -77,7 +77,7 @@ $channelMeta = [
             <form method="POST" action="{{ route('security.passkeys.delete', $pk->id) }}"
                 onsubmit="return confirm('{{ $lang === 'fr' ? 'Supprimer cette passkey ?' : 'Delete this passkey?' }}')">
                 @csrf
-                <button type="submit" class="text-xs font-semibold text-red-500 hover:text-red-600">
+                <button type="submit" class="text-xs font-semibold text-[#B42025] hover:text-[#B42025]">
                     {{ $lang === 'fr' ? 'Supprimer' : 'Delete' }}
                 </button>
             </form>
@@ -100,7 +100,7 @@ $channelMeta = [
                 </div>
             </div>
             @if($totpEnabled)
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#E2F3E8] text-[#14532D] text-xs font-semibold">
                 <i data-lucide="check" class="w-3 h-3"></i> {{ $lang === 'fr' ? 'Activée' : 'Enabled' }}
             </span>
             @endif
@@ -112,9 +112,9 @@ $channelMeta = [
                     <div class="flex-1">
                         <label class="block text-xs font-medium text-[#8A857A] mb-1.5">{{ $lang === 'fr' ? 'Mot de passe (pour désactiver)' : 'Password (to disable)' }}</label>
                         <input name="password" type="password" required autocomplete="current-password"
-                            class="w-full px-3.5 py-2 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                            class="w-full px-3.5 py-2 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                     </div>
-                    <button type="submit" class="px-3.5 py-2 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors whitespace-nowrap">
+                    <button type="submit" class="px-3.5 py-2 rounded-lg bg-[#FDE8E8] text-[#B42025] text-xs font-semibold hover:bg-[#F5C9C9] transition-colors whitespace-nowrap">
                         {{ $lang === 'fr' ? 'Désactiver' : 'Disable' }}
                     </button>
                 </form>
@@ -133,7 +133,7 @@ $channelMeta = [
                         <form method="POST" action="{{ route('security.totp.confirm') }}" class="flex items-center gap-2">
                             @csrf
                             <input name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required placeholder="000000"
-                                class="w-32 px-3.5 py-2 border border-[#E4DECF] rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                                class="w-32 px-3.5 py-2 border border-[#EFEBE2] rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                             <button type="submit" class="px-3.5 py-2 rounded-lg bg-forest-500 text-white text-xs font-semibold hover:bg-forest-600 transition-colors">
                                 {{ $lang === 'fr' ? 'Confirmer' : 'Confirm' }}
                             </button>
@@ -165,7 +165,7 @@ $channelMeta = [
                 </div>
             </div>
             @if($channel)
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#E2F3E8] text-[#14532D] text-xs font-semibold">
                 <i data-lucide="{{ $channelMeta[$channel]['icon'] ?? 'check' }}" class="w-3 h-3"></i>
                 {{ $channelMeta[$channel][$lang] ?? $channel }}
             </span>
@@ -178,9 +178,9 @@ $channelMeta = [
                     <div class="flex-1">
                         <label class="block text-xs font-medium text-[#8A857A] mb-1.5">{{ $lang === 'fr' ? 'Mot de passe (pour désactiver)' : 'Password (to disable)' }}</label>
                         <input name="password" type="password" required autocomplete="current-password"
-                            class="w-full px-3.5 py-2 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                            class="w-full px-3.5 py-2 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                     </div>
-                    <button type="submit" class="px-3.5 py-2 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors whitespace-nowrap">
+                    <button type="submit" class="px-3.5 py-2 rounded-lg bg-[#FDE8E8] text-[#B42025] text-xs font-semibold hover:bg-[#F5C9C9] transition-colors whitespace-nowrap">
                         {{ $lang === 'fr' ? 'Désactiver' : 'Disable' }}
                     </button>
                 </form>
@@ -190,13 +190,13 @@ $channelMeta = [
                         ? 'Un code vous a été envoyé via ' . ($channelMeta[$pendingChannel][$lang] ?? $pendingChannel) . '. Saisissez-le pour confirmer.'
                         : 'A code was sent via ' . ($channelMeta[$pendingChannel][$lang] ?? $pendingChannel) . '. Enter it to confirm.' }}
                     @if($pendingChannel === 'whatsapp' && ! config('services.twilio.sid'))
-                    <span class="block mt-1 text-amber-600">{{ $lang === 'fr' ? '(Twilio non configuré : le code est visible dans storage/logs/laravel.log)' : '(Twilio not configured yet: the code is written to storage/logs/laravel.log)' }}</span>
+                    <span class="block mt-1 text-[#C9942E]">{{ $lang === 'fr' ? '(Twilio non configuré : le code est visible dans storage/logs/laravel.log)' : '(Twilio not configured yet: the code is written to storage/logs/laravel.log)' }}</span>
                     @endif
                 </p>
                 <form method="POST" action="{{ route('security.channel.confirm') }}" class="flex items-center gap-2">
                     @csrf
                     <input name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required placeholder="000000"
-                        class="w-32 px-3.5 py-2 border border-[#E4DECF] rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                        class="w-32 px-3.5 py-2 border border-[#EFEBE2] rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                     <button type="submit" class="px-3.5 py-2 rounded-lg bg-forest-500 text-white text-xs font-semibold hover:bg-forest-600 transition-colors">
                         {{ $lang === 'fr' ? 'Confirmer' : 'Confirm' }}
                     </button>
@@ -216,7 +216,7 @@ $channelMeta = [
                     <div id="phone-field" class="hidden">
                         <label class="block text-xs font-medium text-[#8A857A] mb-1.5">{{ $lang === 'fr' ? 'Numéro de téléphone (format international)' : 'Phone number (international format)' }}</label>
                         <input name="phone" type="tel" value="{{ $user->phone }}" placeholder="+2376XXXXXXXX"
-                            class="w-full px-3.5 py-2 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                            class="w-full px-3.5 py-2 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                     </div>
                     <button type="submit" class="inline-flex items-center gap-2 bg-forest-500 hover:bg-forest-600 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors">
                         <i data-lucide="send" class="w-4 h-4"></i>
@@ -245,7 +245,7 @@ $channelMeta = [
                 <div class="flex-1">
                     <label class="block text-xs font-medium text-[#8A857A] mb-1.5">{{ $lang === 'fr' ? 'Mot de passe (pour régénérer)' : 'Password (to regenerate)' }}</label>
                     <input name="password" type="password" required autocomplete="current-password"
-                        class="w-full px-3.5 py-2 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                        class="w-full px-3.5 py-2 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <button type="submit" class="px-3.5 py-2 rounded-lg bg-[#F1EDE4] text-[#3B382F] text-xs font-semibold hover:bg-[#EFEBE2] transition-colors whitespace-nowrap">
                     {{ $lang === 'fr' ? 'Régénérer' : 'Regenerate' }}

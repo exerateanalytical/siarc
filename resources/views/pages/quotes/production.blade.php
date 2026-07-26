@@ -60,7 +60,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Suivi de production — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Production tracking — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Suivi de production — Artisan Hub 237' : 'Production tracking — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
@@ -225,7 +225,6 @@
                             <img src="{{ asset('images/landing/qv-photo-' . $ph . '.png') }}" alt="" class="w-full h-[110px] rounded-xl object-cover">
                             @endfor
                         </div>
-                        <button type="button" onclick="window.print()" class="mt-4 inline-flex items-center border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2 text-[12.5px] font-semibold text-[#1B1B18] transition-colors">{{ $isFr ? 'Voir toutes les photos' : 'View all the photos' }}</button>
                     </section>
                 </div>
 
@@ -273,7 +272,6 @@
                                 <span class="block text-[12.5px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ $dcName }}</span>
                                 <span class="block text-[11px] text-[#6F6B60]">{{ $dcSize }}</span>
                             </span>
-                            <button type="button" onclick="window.print()" class="shrink-0 text-[#3B382F] hover:text-[#14652F]"><i data-lucide="download" class="w-4 h-4" style="stroke-width:1.7"></i></button>
                         </div>
                         @endforeach
                     </div>

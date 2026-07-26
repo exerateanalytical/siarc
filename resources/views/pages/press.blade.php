@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Presse — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Press — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Presse — Artisan Hub 237' : 'Press — Artisan Hub 237' }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf: '#164C28', gold: '#D9A439', goldbt: '#E9A830' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
@@ -28,7 +28,7 @@
 <section class="bg-[#0B2C1E]">
     <div class="max-w-[900px] mx-auto px-5 py-10 text-center">
         <h1 class="text-[26px] font-bold text-white">{{ $isFr ? 'Espace presse' : 'Press room' }}</h1>
-        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Informations, chiffres clés et contact média de la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun.' : 'Information, key figures and media contact for the National Virtual Gallery of Cameroonian Crafts.' }}</p>
+        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Informations, chiffres clés et contact média d\'Artisan Hub 237.' : 'Information, key figures and media contact for Artisan Hub 237.' }}</p>
     </div>
 </section>
 
@@ -37,8 +37,8 @@
         <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'À propos de la plateforme' : 'About the platform' }}</h2>
         <p class="mt-2.5 text-[13px] text-[#55524A] leading-relaxed">
             {{ $isFr
-                ? "La Galerie Virtuelle Nationale de l'Artisanat du Cameroun est la plateforme officielle de promotion et de valorisation du savoir-faire artisanal camerounais à travers le digital. Elle connecte artisans, coopératives et entreprises à des acheteurs locaux et internationaux : vitrines vérifiées, demandes de devis, événements et certification des membres."
-                : 'The National Virtual Gallery of Cameroonian Crafts is the official platform promoting Cameroonian craftsmanship through digital. It connects artisans, cooperatives and businesses with local and international buyers: verified showcases, quote requests, events and member certification.'
+                ? "La Artisan Hub 237 est la plateforme officielle de promotion et de valorisation du savoir-faire artisanal camerounais à travers le digital. Elle connecte artisans, coopératives et entreprises à des acheteurs locaux et internationaux : vitrines vérifiées, demandes de devis, événements et certification des membres."
+                : 'The Artisan Hub 237 is the official platform promoting Cameroonian craftsmanship through digital. It connects artisans, cooperatives and businesses with local and international buyers: verified showcases, quote requests, events and member certification.'
             }}
         </p>
     </section>

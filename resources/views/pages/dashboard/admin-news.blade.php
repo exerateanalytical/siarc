@@ -293,13 +293,17 @@
 
                     {{-- Activités récentes --}}
                     @php
-                        $recentActivity = [
-                            ['check-circle-2', '#157A43', '#E2F3E8', $isFr ? 'Nouvelle actualité publiée' : 'New news item published', 'Lancement du Festival International de l\'Artisanat 2025', $isFr ? 'Il y a 15 min' : '15 min ago'],
-                            ['calendar-clock', '#2563EB', '#E3EDFB', $isFr ? 'Actualité planifiée' : 'News item scheduled', 'Formation des jeunes artisans de l\'Adamaoua', $isFr ? 'Il y a 1 h' : '1 h ago'],
-                            ['megaphone', '#C97A16', '#FDF0DC', $isFr ? 'Annonce mise à jour' : 'Announcement updated', 'Salon des Métiers d\'Art et du Design', $isFr ? 'Il y a 3 h' : '3 h ago'],
-                            ['pencil-line', '#7C3AED', '#F3E8FD', $isFr ? 'Brouillon enregistré' : 'Draft saved', 'Portrait : Femme artisan de la semaine', $isFr ? 'Il y a 5 h' : '5 h ago'],
-                            ['tag', '#0E9F6E', '#E2F3E8', $isFr ? 'Catégorie créée' : 'Category created', 'Portraits', $isFr ? 'Il y a 1 jour' : '1 day ago'],
+                        // Real recently-updated articles (no dedicated activity log exists)
+                        $raStatusMeta = [
+                            'published' => ['check-circle-2', '#157A43', '#E2F3E8', $isFr ? 'Actualité publiée' : 'News item published'],
+                            'scheduled' => ['calendar-clock', '#2563EB', '#E3EDFB', $isFr ? 'Actualité planifiée' : 'News item scheduled'],
+                            'draft'     => ['pencil-line', '#7C3AED', '#F3E8FD', $isFr ? 'Brouillon enregistré' : 'Draft saved'],
                         ];
+                        $recentActivity = collect($announcements->items())->sortByDesc('updated_at')->take(5)->map(function ($a) use ($isFr, $raStatusMeta) {
+                            [$icon, $color, $bg, $label] = $raStatusMeta[$a->status] ?? ['megaphone', '#C97A16', '#FDF0DC', $isFr ? 'Annonce mise à jour' : 'Announcement updated'];
+                            $title = $isFr ? $a->title_fr : ($a->title_en ?? $a->title_fr);
+                            return [$icon, $color, $bg, $label, $title, \Illuminate\Support\Carbon::parse($a->updated_at)->diffForHumans(null, true, false, 1)];
+                        });
                     @endphp
                     <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
                         <div class="flex items-center justify-between">
@@ -307,7 +311,7 @@
                             <a href="{{ route('admin.audit-log') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <ul class="mt-3 space-y-3">
-                            @foreach($recentActivity as [$raIcon, $raColor, $raBg, $raTitle, $raSub, $raWhen])
+                            @forelse($recentActivity as [$raIcon, $raColor, $raBg, $raTitle, $raSub, $raWhen])
                             <li class="flex items-start gap-3">
                                 <span class="shrink-0 w-[28px] h-[28px] rounded-lg flex items-center justify-center" style="background: {{ $raBg }}">
                                     <i data-lucide="{{ $raIcon }}" class="w-[14px] h-[14px]" style="color: {{ $raColor }}"></i>
@@ -318,7 +322,9 @@
                                 </div>
                                 <span class="shrink-0 text-[10px] text-[#8A857A] whitespace-nowrap">{{ $raWhen }}</span>
                             </li>
-                            @endforeach
+                            @empty
+                            <li class="text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</li>
+                            @endforelse
                         </ul>
                     </section>
                 </aside>
@@ -326,7 +332,7 @@
 
             {{-- Footer strip --}}
             <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAE4D6] pt-4">
-                <p class="text-[11px] text-[#6F6B60]">© 2025 {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+                <p class="text-[11px] text-[#6F6B60]">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
                 <div class="flex items-center gap-5">
                     <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>
                     <a href="{{ route('contact') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>

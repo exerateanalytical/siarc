@@ -90,7 +90,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Créer une proposition de devis — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Create a quote proposal — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Créer une proposition de devis — Artisan Hub 237' : 'Create a quote proposal — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
@@ -212,7 +212,7 @@
                     <div class="flex items-center gap-3.5">
                         <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
                         <div>
-                            <p class="text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase leading-snug">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}<br>{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</p>
+                            <p class="text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase leading-snug">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</p>
                             <p class="mt-1 text-[13.5px] font-bold text-[#157A43]">{{ $isFr ? 'Devis / Proposition' : 'Quote / Proposal' }}</p>
                         </div>
                     </div>

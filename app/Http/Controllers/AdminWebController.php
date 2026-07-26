@@ -789,7 +789,7 @@ class AdminWebController extends Controller
                     'From' => 'whatsapp:' . $creds['from'],
                     'To'   => 'whatsapp:' . $data['test_phone'],
                     'Body' => $lang === 'fr'
-                        ? 'Message de test — Galerie virtuelle de l\'artisanat du Cameroun.'
+                        ? 'Message de test — Artisan Hub 237.'
                         : 'Test message — Virtual gallery of Cameroonian crafts.',
                 ]);
         } catch (\Illuminate\Http\Client\ConnectionException $e) {

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $description ?? ($lang === 'fr' ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun — Découvrez les artisans et producteurs camerounais.' : 'National Virtual Gallery of Cameroonian Crafts — Discover Cameroonian artisans and producers.') }}">
-    <title>{{ $title ?? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' }}</title>
+    <meta name="description" content="{{ $description ?? ($lang === 'fr' ? 'Artisan Hub 237 — Découvrez les artisans et producteurs camerounais.' : 'Artisan Hub 237 — Discover Cameroonian artisans and producers.') }}">
+    <title>{{ $title ?? 'Artisan Hub 237' }}</title>
 
     <!-- Tailwind CSS (local vendor copy — keeps the platform styled offline) -->
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
@@ -94,7 +94,7 @@
             'active' => request()->is('tableau-de-bord/messages*'),
         ],
         [
-            'href'   => $siacUser ? '/tableau-de-bord' : '/login',
+            'href'   => $siacUser ? route('dashboard.siac') : route('login'),
             'icon'   => 'user',
             'label'  => $bottomNavLang === 'fr' ? 'Profil' : 'Profile',
             'active' => request()->is('tableau-de-bord') || request()->is('tableau-de-bord/entrepreneur') || request()->is('tableau-de-bord/admin*') || request()->is('login') || request()->is('inscription'),

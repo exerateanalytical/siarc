@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 // ─────────────────────────────────────────────
 
 // ─────────────────────────────────────────────
-// SIARC Platform — API landing
+// Artisan Hub 237 — API landing
 // ─────────────────────────────────────────────
 use App\Http\Controllers\FrontendController;
 
@@ -26,6 +26,7 @@ Route::get('/galerie/secteurs', [FrontendController::class, 'industriesIndex'])-
 Route::get('/galerie/recherche', [FrontendController::class, 'search'])->name('gallery.search');
 Route::get('/galerie/produits', [FrontendController::class, 'productsIndex'])->name('products.index');
 Route::get('/galerie/produits/{slug}', [FrontendController::class, 'productShow'])->name('products.show');
+Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;
 
@@ -238,7 +239,6 @@ Route::get('/tableau-de-bord/admin/roles', function (Request $request) {
         'reports'    => ['Analyses & Rapports', 'Analytics & Reports'],
         'kyc'        => ['Vérifications KYC', 'KYC Verifications'],
         'partners'   => ['Partenaires', 'Partners'],
-        'siarc'      => ['SIARC 2026', 'SIARC 2026'],
         'moderation' => ['Modération', 'Moderation'],
         'settings'   => ['Paramètres', 'Settings'],
     ];
@@ -762,8 +762,11 @@ Route::get('/tableau-de-bord/admin/notifications', function (Request $request) {
         'total'   => (int) DB::table('user_notifications')->count(),
         'unread'  => (int) DB::table('user_notifications')->whereNull('read_at')->count(),
         'read'    => (int) DB::table('user_notifications')->whereNotNull('read_at')->count(),
+        'this_month' => (int) DB::table('user_notifications')->where('created_at', '>=', now()->startOfMonth())->count(),
     ];
-    return view('pages.dashboard.admin-notifications', compact('lang', 'siacUser', 'notifications', 'stats'));
+    $typeCounts = DB::table('user_notifications')->groupBy('type')->get(['type', DB::raw('count(*) as total')])->pluck('total', 'type');
+
+    return view('pages.dashboard.admin-notifications', compact('lang', 'siacUser', 'notifications', 'stats', 'typeCounts'));
 })->name('admin.notifications');
 
 // Notification detail (design: "heritage bbranded notification detail page.png")
@@ -1503,7 +1506,7 @@ Route::post('/creer-mon-compte', function (Request $request) {
 })->name('onboarding.store')->middleware('throttle:10,1');
 
 // ─────────────────────────────────────────────
-// SIARC — Dashboards
+// Dashboards
 // ─────────────────────────────────────────────
 Route::get('/tableau-de-bord', function (Request $request) {
     $siacUser = session('siac_user');
@@ -1553,7 +1556,112 @@ Route::get('/tableau-de-bord/admin', function (Request $request) {
         ->where('status', 'pending')
         ->count();
 
-    return view('pages.dashboard.admin', compact('lang', 'siacUser', 'stats', 'recentBusinesses', 'pendingVerifications'));
+    // Real admin dashboard aggregates (replaces design-static fixtures)
+    $ordersCount = DB::table('purchase_orders')->count();
+    $revenueTotal = DB::table('invoices')->where('status', 'paid')->sum('total');
+    $platformVisits = DB::table('business_views')->count();
+    $uniqueVisitors = DB::table('business_views')->distinct('viewer_ip')->count('viewer_ip');
+
+    $adRegions = DB::table('businesses as b')
+        ->join('regions as r', 'r.id', '=', 'b.region_id')
+        ->whereNull('b.deleted_at')
+        ->groupBy('r.id', 'r.name_fr')
+        ->orderByDesc(DB::raw('count(*)'))
+        ->get(['r.name_fr', DB::raw('count(*) as total')]);
+    $adRegionsTotal = max(1, $adRegions->sum('total'));
+
+    // Per-region activity table: businesses, products, visits
+    $adRegionProducts = DB::table('products as p')
+        ->join('businesses as b', 'b.id', '=', 'p.business_id')
+        ->whereNull('p.deleted_at')->whereNotNull('b.region_id')
+        ->groupBy('b.region_id')
+        ->get(['b.region_id', DB::raw('count(*) as total')])
+        ->pluck('total', 'region_id');
+    $adRegionVisits = DB::table('business_views as bv')
+        ->join('businesses as b', 'b.id', '=', 'bv.business_id')
+        ->whereNotNull('b.region_id')
+        ->groupBy('b.region_id')
+        ->get(['b.region_id', DB::raw('count(*) as total')])
+        ->pluck('total', 'region_id');
+    $adRegionTable = DB::table('businesses as b')
+        ->join('regions as r', 'r.id', '=', 'b.region_id')
+        ->whereNull('b.deleted_at')
+        ->groupBy('r.id', 'r.name_fr')
+        ->orderByDesc(DB::raw('count(*)'))
+        ->get(['r.id', 'r.name_fr', DB::raw('count(*) as businesses_total')])
+        ->map(function ($row) use ($adRegionProducts, $adRegionVisits) {
+            $row->products_total = $adRegionProducts->get($row->id, 0);
+            $row->visits_total = $adRegionVisits->get($row->id, 0);
+            return $row;
+        });
+
+    $adTopCats = DB::table('products as p')
+        ->join('businesses as b', 'b.id', '=', 'p.business_id')
+        ->join('industries as i', 'i.id', '=', 'b.industry_id')
+        ->whereNull('p.deleted_at')
+        ->groupBy('i.id', 'i.name_fr')
+        ->orderByDesc(DB::raw('count(*)'))
+        ->limit(5)
+        ->get(['i.name_fr', DB::raw('count(*) as total')]);
+    $adTopCatsMax = max(1, (int) ($adTopCats->first()->total ?? 1));
+
+    $adKycRaw = DB::table('verification_applications')
+        ->groupBy('status')
+        ->get(['status', DB::raw('count(*) as total')])
+        ->pluck('total', 'status');
+    $adKycTotal = max(1, $adKycRaw->sum());
+
+    $adBizStatusRaw = DB::table('businesses')->whereNull('deleted_at')
+        ->groupBy('status')
+        ->get(['status', DB::raw('count(*) as total')])
+        ->pluck('total', 'status');
+    $adBizStatusTotal = max(1, $adBizStatusRaw->sum());
+
+    // Recent activity: newest businesses + newest verification submissions + newest orders
+    $isFr = $lang === 'fr';
+    $adActivities = collect();
+    foreach (DB::table('businesses')->whereNull('deleted_at')->orderByDesc('created_at')->limit(3)->get(['name_fr', 'created_at', 'region_id']) as $b) {
+        $adActivities->push(['building-2', '#1D4ED8', '#E9EFFC', $isFr ? 'Nouvelle entreprise inscrite' : 'New business registered', $b->name_fr, $b->created_at]);
+    }
+    foreach (DB::table('verification_applications')->orderByDesc('created_at')->limit(3)->get(['business_id', 'created_at']) as $v) {
+        $bizName = DB::table('businesses')->where('id', $v->business_id)->value('name_fr') ?? '—';
+        $adActivities->push(['user-plus', '#157A43', '#E8F2EC', $isFr ? 'Nouvelle demande de vérification' : 'New verification request', $bizName, $v->created_at]);
+    }
+    foreach (DB::table('purchase_orders')->orderByDesc('created_at')->limit(3)->get(['reference', 'created_at']) as $po) {
+        $adActivities->push(['badge-check', '#157A43', '#E8F2EC', $isFr ? 'Nouvelle commande' : 'New order', $po->reference, $po->created_at]);
+    }
+    $adActivities = $adActivities->sortByDesc(fn ($a) => $a[5])->take(5)->map(function ($a) {
+        $a[5] = \Illuminate\Support\Carbon::parse($a[5])->diffForHumans(null, true, false, 1);
+        return $a;
+    })->values();
+
+    // Revenue bars for the last 6 months, from paid invoices
+    $adRevenue = collect(range(5, 0))->map(function ($monthsAgo) use ($isFr) {
+        $month = now()->subMonths($monthsAgo);
+        $total = DB::table('invoices')->where('status', 'paid')
+            ->whereYear('paid_at', $month->year)->whereMonth('paid_at', $month->month)
+            ->sum('total');
+        $label = $isFr
+            ? ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'][$month->month - 1]
+            : $month->format('M');
+        return ['label' => $label, 'total' => $total];
+    });
+    $adRevenueMax = max(1, $adRevenue->max('total'));
+
+    $featuredBusiness = DB::table('businesses as b')
+        ->leftJoin('industries as i', 'i.id', '=', 'b.industry_id')
+        ->leftJoin('regions as r', 'r.id', '=', 'b.region_id')
+        ->whereNull('b.deleted_at')->where('b.status', 'published')->where('b.is_featured', true)
+        ->orderByDesc('b.views_count')
+        ->first(['b.name_fr', 'b.logo', 'i.name_fr as industry_fr', 'r.name_fr as region_fr']);
+
+    return view('pages.dashboard.admin', compact(
+        'lang', 'siacUser', 'stats', 'recentBusinesses', 'pendingVerifications',
+        'ordersCount', 'revenueTotal', 'platformVisits', 'uniqueVisitors',
+        'adRegions', 'adRegionsTotal', 'adRegionTable', 'adTopCats', 'adTopCatsMax',
+        'adKycRaw', 'adKycTotal', 'adBizStatusRaw', 'adBizStatusTotal',
+        'adActivities', 'adRevenue', 'adRevenueMax', 'featuredBusiness'
+    ));
 })->name('dashboard.admin');
 
 // New admin sections introduced with the admin-panel replica (2026-07-03)
@@ -1851,13 +1959,6 @@ Route::get('/tableau-de-bord/admin/categories', function (Request $request) {
         'filtering', 'visibleIds'
     ));
 })->name('admin.industries');
-
-Route::get('/tableau-de-bord/admin/siarc', function (Request $request) {
-    $siacUser = session('siac_user');
-    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
-    // Superseded by the full SIARC 2026 module — hand over to its dashboard.
-    return redirect()->route('siarc.admin.dashboard', ['lang' => webLang($request)]);
-})->name('admin.siarc');
 
 // ─── Admin replica pages, 2026-07-04 wave (designs: gestion dartisans / gestion de
 //     command / collection heritage / actualites / medias / payment / analytique /
@@ -2536,7 +2637,45 @@ Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
             ->get()
         : collect();
 
-    return view('pages.dashboard.entrepreneur', compact('lang', 'siacUser', 'business', 'productCount', 'products', 'messageCount', 'latestVerification', 'eventParticipations'));
+    // Real orders/revenue/reviews for the dashboard KPIs (no design fixtures)
+    $bizPurchaseOrders = $business
+        ? DB::table('purchase_orders as po')
+            ->join('quote_proposals as qp', 'qp.id', '=', 'po.quote_proposal_id')
+            ->join('quote_requests as qr', 'qr.id', '=', 'qp.quote_request_id')
+            ->leftJoin('invoices as inv', 'inv.purchase_order_id', '=', 'po.id')
+            ->leftJoin('users as buyer', 'buyer.id', '=', 'qr.buyer_id')
+            ->where('qr.business_id', $business->id)
+            ->orderByDesc('po.created_at')
+            ->select('po.id', 'po.reference', 'po.status', 'po.created_at', 'qr.title', 'inv.total', 'inv.status as invoice_status', 'buyer.name as buyer_name')
+            ->get()
+        : collect();
+    $ordersCount = $bizPurchaseOrders->count();
+    $revenueTotal = $bizPurchaseOrders->where('invoice_status', 'paid')->sum('total');
+    $pendingInvoiceTotal = $bizPurchaseOrders->where('invoice_status', 'unpaid')->sum('total');
+
+    $reviewsCount = $business
+        ? DB::table('business_reviews')->where('business_id', $business->id)->where('status', 'published')->count()
+        : 0;
+    $positiveReviewsPct = $reviewsCount
+        ? (int) round(DB::table('business_reviews')->where('business_id', $business->id)->where('status', 'published')->where('rating', '>=', 4)->count() / $reviewsCount * 100)
+        : null;
+
+    $recentMessages = $business
+        ? DB::table('conversations as c')
+            ->join('messages as m', 'm.conversation_id', '=', 'c.id')
+            ->where('c.business_id', $business->id)
+            ->orderByDesc('m.created_at')
+            ->limit(3)
+            ->get(['m.body', 'm.created_at'])
+        : collect();
+
+    $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
+
+    return view('pages.dashboard.entrepreneur', compact(
+        'lang', 'siacUser', 'business', 'productCount', 'products', 'messageCount', 'latestVerification', 'eventParticipations',
+        'bizPurchaseOrders', 'ordersCount', 'revenueTotal', 'pendingInvoiceTotal', 'reviewsCount', 'positiveReviewsPct', 'recentMessages',
+        'notificationCount'
+    ));
 })->name('dashboard.entrepreneur');
 
 // Quote-centric artisan dashboard (pixel replica of the "onboarding step 11" design)
@@ -2562,7 +2701,7 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
         ->orWhere('business_id', $business->id ?? 0)
         ->count();
 
-    $siacEvent = DB::table('events')->where('slug', 'like', 'siarc%')->first();
+    $siacEvent = null;
 
     $topProductImages = $topProducts->isNotEmpty()
         ? DB::table('product_images')->whereIn('product_id', $topProducts->pluck('id'))
@@ -2578,21 +2717,80 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
             ->get()
         : collect();
 
-    return view('pages.dashboard.quotes', compact('lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs'));
+    // Real KPI/pipeline/activity data for the dashboard (no design fixtures)
+    $allRfqs = $business
+        ? \App\Modules\Quotes\Models\QuoteRequest::where('business_id', $business->id)->get(['id', 'status', 'buyer_id', 'created_at'])
+        : collect();
+    $rfqCountsByStatus = $allRfqs->countBy('status');
+    $ordersCount = $business
+        ? DB::table('purchase_orders as po')
+            ->join('quote_proposals as qp', 'qp.id', '=', 'po.quote_proposal_id')
+            ->join('quote_requests as qr', 'qr.id', '=', 'qp.quote_request_id')
+            ->where('qr.business_id', $business->id)
+            ->count()
+        : 0;
+    $quotesSentCount = $business
+        ? DB::table('quote_proposals as qp')
+            ->join('quote_requests as qr', 'qr.id', '=', 'qp.quote_request_id')
+            ->where('qr.business_id', $business->id)
+            ->count()
+        : 0;
+    $activeClientsCount = $allRfqs->pluck('buyer_id')->unique()->count();
+    $thisMonthRfqs = $allRfqs->filter(fn ($r) => $r->created_at >= now()->startOfMonth())->count();
+
+    $businessDocuments = $business
+        ? DB::table('business_documents')->where('business_id', $business->id)->orderByDesc('issued_at')->get()
+        : collect();
+
+    $recentReviews = $business
+        ? DB::table('business_reviews')->where('business_id', $business->id)->where('status', 'published')->orderByDesc('created_at')->limit(3)->get()
+        : collect();
+
+    $recentMessages = $business
+        ? DB::table('conversations as c')
+            ->join('messages as m', 'm.conversation_id', '=', 'c.id')
+            ->where('c.business_id', $business->id)
+            ->orderByDesc('m.created_at')
+            ->limit(3)
+            ->get(['m.body', 'm.created_at', 'c.id as conversation_id'])
+        : collect();
+
+    $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
+
+    return view('pages.dashboard.quotes', compact(
+        'lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs',
+        'rfqCountsByStatus', 'ordersCount', 'quotesSentCount', 'activeClientsCount', 'thisMonthRfqs',
+        'businessDocuments', 'recentReviews', 'recentMessages', 'notificationCount'
+    ));
 })->name('dashboard.quotes');
 
 // Buyer RFQ wizard + listing (pixel replicas of "create un demande.png" / "quote propositions.png")
 Route::get('/tableau-de-bord/demandes/creer', function (Request $request) {
     $siacUser = session('siac_user');
-    if (!$siacUser) return redirect('/login?next=' . urlencode('/tableau-de-bord/demandes/creer'));
+    if (!$siacUser) return redirect('/login?next=' . urlencode($request->fullUrl()));
 
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
-    $quoteVendor = DB::table('businesses')->whereNull('deleted_at')->where('slug', 'art-bois-nature')->first();
+    // The business to request a quote from is passed explicitly (e.g. from a
+    // business/product page's "Demander un devis" button) — no default vendor.
+    $quoteVendor = $request->query('business')
+        ? DB::table('businesses as b')
+            ->leftJoin('cities as c', 'c.id', '=', 'b.city_id')
+            ->leftJoin('regions as r', 'r.id', '=', 'b.region_id')
+            ->whereNull('b.deleted_at')->where('b.status', 'published')->where('b.slug', $request->query('business'))
+            ->first(['b.*', 'c.name_fr as city_name', 'r.name_fr as region_name'])
+        : null;
+    if (! $quoteVendor) {
+        return redirect()->route('businesses.index', ['lang' => $lang])
+            ->with('error', $lang === 'fr'
+                ? 'Veuillez choisir un artisan ou une entreprise avant de demander un devis.'
+                : 'Please choose an artisan or business before requesting a quote.');
+    }
     $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
+    $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
-    return view('pages.quotes.create', compact('lang', 'siacUser', 'quoteVendor', 'messageCount'));
+    return view('pages.quotes.create', compact('lang', 'siacUser', 'quoteVendor', 'messageCount', 'notificationCount'));
 })->name('quotes.create');
 
 Route::get('/tableau-de-bord/demandes', function (Request $request) {
@@ -2603,6 +2801,7 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
     $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
+    $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
     // Real RFQs of this buyer (rendered ahead of the design demo rows)
     $realRequests = \App\Modules\Quotes\Models\QuoteRequest::with(['business', 'proposals' => fn ($q) => $q->orderByDesc('version')])
@@ -2611,7 +2810,7 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
         ->limit(25)
         ->get();
 
-    return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount', 'realRequests'));
+    return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount', 'realRequests', 'notificationCount'));
 })->name('quotes.index');
 
 // Quotation system write-endpoints (real backend behind the replica pages)
@@ -2645,6 +2844,7 @@ foreach ([
 
         $quoteVendor = DB::table('businesses')->whereNull('deleted_at')->where('slug', 'art-bois-nature')->first();
         $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
+        $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
         // Real records (optional query params); pages fall back to the design demo content.
         $canSee = function ($rfq) use ($siacUser) {
@@ -2677,7 +2877,7 @@ foreach ([
             $builderRfq = ($r && (optional($r->business)->user_id === $siacUser['id'] || !empty($siacUser['is_admin']))) ? $r : null;
         }
 
-        return view($qfView, compact('lang', 'siacUser', 'quoteVendor', 'messageCount', 'realProposal', 'realPo', 'realInvoice', 'builderRfq'));
+        return view($qfView, compact('lang', 'siacUser', 'quoteVendor', 'messageCount', 'notificationCount', 'realProposal', 'realPo', 'realInvoice', 'builderRfq'));
     })->name($qfName);
 }
 
@@ -2721,7 +2921,9 @@ Route::get('/tableau-de-bord/acheteur', function (Request $request) {
         'industries' => DB::table('industries')->where('is_active', 1)->count(),
     ];
 
-    return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats', 'buyerSince'));
+    $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
+
+    return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats', 'buyerSince', 'notificationCount'));
 })->name('dashboard.buyer');
 
 // ─────────────────────────────────────────────
@@ -3237,8 +3439,12 @@ Route::get('/faq', function (Request $request) {
 Route::get('/actualites', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
-    $newsEvents = DB::table('events')->orderByDesc('starts_at')->limit(12)->get();
-    return view('pages.news', compact('lang', 'newsEvents'));
+    $articles = DB::table('announcements')
+        ->where('status', 'published')
+        ->orderByDesc('published_at')
+        ->limit(12)
+        ->get();
+    return view('pages.news', compact('lang', 'articles'));
 })->name('news.index');
 
 Route::get('/carrieres', function (Request $request) {

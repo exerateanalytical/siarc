@@ -39,11 +39,16 @@ class ProductWebController extends Controller
 
     private function categoriesForIndustry(?int $industryId)
     {
-        return ProductCategory::whereHas('sector', fn ($q) => $q->where('industry_id', $industryId))
+        $scoped = ProductCategory::whereHas('sector', fn ($q) => $q->where('industry_id', $industryId))
             ->where('is_active', true)
             ->with('sector')
             ->orderBy('name_fr')
             ->get();
+
+        // Category-to-sector mapping is sparse (the `sectors` bridge table isn't
+        // populated for most industries yet) — never block product creation on
+        // an empty dropdown; fall back to the full active category list.
+        return $scoped->isNotEmpty() ? $scoped : ProductCategory::where('is_active', true)->orderBy('name_fr')->get();
     }
 
     public function create(Request $request)

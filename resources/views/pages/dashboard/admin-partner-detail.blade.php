@@ -23,29 +23,13 @@
         [$isFr?'Renouvellement auto.':'Auto-renewal', $partner->auto_renew ? ($isFr?'Oui':'Yes') : ($isFr?'Non':'No'), 'toggle'],
         [$isFr?'Statut légal':'Legal status', $partner->legal_verified ? ($isFr?'Vérifié':'Verified') : '—', 'verified'],
     ];
-    $indicateurs = [
-        ['users', '#157A43', '#E8F2EC', '8', $isFr?'Projets collaboratifs':'Collaborative projects', '+2 '.($isFr?'ce mois':'this month')],
-        ['heart-handshake', '#7C4FE0', '#F0EAFB', '245', $isFr?'Artisans soutenus':'Artisans supported', '+18 '.($isFr?'ce mois':'this month')],
-        ['calendar-days', '#3565DE', '#E8EFFB', '12', $isFr?'Événements réalisés':'Events held', '+1 '.($isFr?'ce mois':'this month')],
-        ['trending-up', '#C97A16', '#FDF3E0', '1.2M', $isFr?'Visibilité générée':'Visibility generated', '+15.5% '.($isFr?'ce mois':'this month')],
-    ];
-    $activites = [
-        [$isFr?'Participation au SIARC 2024':'SIARC 2024 participation', '08 '.($isFr?'Mai':'May').' 2025'],
-        [$isFr?'Atelier de formation des artisans':'Artisan training workshop', '22 '.($isFr?'Avr.':'Apr.').' 2025'],
-        [$isFr?'Campagne de valorisation':'Promotion campaign', '15 '.($isFr?'Avr.':'Apr.').' 2025'],
-        [$isFr?'Visite officielle au MINAC':'Official visit to MINAC', '03 '.($isFr?'Mar.':'Mar.').' 2025'],
-        [$isFr?'Réunion stratégique':'Strategic meeting', '12 '.($isFr?'Fév.':'Feb.').' 2025'],
-    ];
-    $documents = [
-        ['pdf', $isFr?'Convention de partenariat':'Partnership agreement', '12 '.($isFr?'Mai':'May').' 2024'],
-        ['pdf', $isFr?'Accord de collaboration':'Collaboration agreement', '12 '.($isFr?'Mai':'May').' 2024'],
-        ['doc', $isFr?'Plan d\'action 2024-2027':'Action plan 2024-2027', '15 '.($isFr?'Mai':'May').' 2024'],
-        ['pdf', $isFr?'Charte de partenariat':'Partnership charter', '20 '.($isFr?'Mai':'May').' 2024'],
-    ];
+    // No real tables exist yet for partner projects/activity/documents/history —
+    // show honest empty states instead of fabricated per-partner figures.
+    $indicateurs = [];
+    $activites = [];
+    $documents = [];
     $historique = [
-        [$isFr?'Statut changé à Actif':'Status changed to Active', 'Admin Super', '12 '.($isFr?'Mai':'May').' 2024 à 14:30'],
-        [$isFr?'Accord de partenariat ajouté':'Partnership agreement added', 'Admin Super', '12 '.($isFr?'Mai':'May').' 2024 à 14:25'],
-        [$isFr?'Partenaire créé':'Partner created', 'Admin Super', '12 '.($isFr?'Mai':'May').' 2024 à 14:20'],
+        [$isFr?'Partenaire créé':'Partner created', '—', $dt($partner->created_at)],
     ];
     $avantages = [
         ['globe', $isFr?'Visibilité nationale':'National visibility', $isFr?'Promotion sur la plateforme et réseaux partenaires':'Promotion on the platform and partner networks'],
@@ -134,17 +118,15 @@
                     {{-- Indicateurs --}}
                     <section class="mt-5 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
                         <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1B1B18] uppercase">{{ $isFr?'Indicateurs de performance':'Performance indicators' }}</h2>
+                        @if(count($indicateurs))
                         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
                             @foreach($indicateurs as [$iIcon, $iColor, $iTile, $iVal, $iLabel, $iSub])
                             <div class="border border-[#EFF0EF] rounded-xl px-3.5 py-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center" style="background-color: {{ $iTile }}"><i data-lucide="{{ $iIcon }}" class="w-[18px] h-[18px]" style="color: {{ $iColor }}"></i></span><p class="mt-2 text-[20px] font-bold text-[#1B1B18] leading-none">{{ $iVal }}</p><p class="text-[11px] font-semibold text-[#3B382F]">{{ $iLabel }}</p><p class="text-[10px] text-[#157A43]">{{ $iSub }}</p></div>
                             @endforeach
                         </div>
-                        <div class="mt-4">
-                            <div class="flex items-center justify-between text-[11.5px]"><span class="text-[#6F6B60]">{{ $isFr?'Niveau d\'engagement':'Engagement level' }}</span><span class="font-semibold text-[#1B1B18]">85%</span></div>
-                            <div class="mt-1.5 h-2 rounded-full bg-[#F0EFEA] overflow-hidden"><span class="block h-full rounded-full bg-[#157A43]" style="width:85%"></span></div>
-                            <p class="mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-[#157A43]"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>{{ $isFr?'Excellent partenariat':'Excellent partnership' }}</p>
-                        </div>
-                    </section>
+                        @else
+                        <p class="mt-4 text-[12px] text-[#8A857A]">{{ $isFr?'Le suivi des projets collaboratifs arrive bientôt.':'Collaborative project tracking is coming soon.' }}</p>
+                        @endif
 
                     {{-- Avantages --}}
                     <section class="mt-5 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
@@ -161,15 +143,17 @@
                 <aside class="space-y-4">
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                         <h2 class="text-[12px] font-bold tracking-[0.06em] text-[#1B1B18] uppercase">{{ $isFr?'Statut du partenaire':'Partner status' }}</h2>
-                        <div class="mt-3 flex items-center gap-3"><span class="w-11 h-11 rounded-full bg-[#E2F3E8] flex items-center justify-center"><i data-lucide="check-circle-2" class="w-6 h-6 text-[#157A43]"></i></span><div><p class="text-[13px] font-bold text-[#157A43]">{{ $isFr?'Partenaire Actif':'Active Partner' }}</p><p class="text-[11px] text-[#6F6B60]">{{ $isFr?'Partenariat en cours depuis 1 an':'Partnership ongoing for 1 year' }}</p></div></div>
+                        <div class="mt-3 flex items-center gap-3"><span class="w-11 h-11 rounded-full bg-[#E2F3E8] flex items-center justify-center"><i data-lucide="check-circle-2" class="w-6 h-6 text-[#157A43]"></i></span><div><p class="text-[13px] font-bold text-[#157A43]">{{ $partner->is_active ? ($isFr?'Partenaire Actif':'Active Partner') : ($isFr?'Partenaire Inactif':'Inactive Partner') }}</p>@if($partner->since_year)<p class="text-[11px] text-[#6F6B60]">{{ $isFr?'Partenaire depuis ':'Partner since ' }}{{ $partner->since_year }}</p>@endif</div></div>
                         <div class="mt-3 flex items-center justify-between border-t border-[#F0F1F0] pt-3"><span class="text-[11.5px] text-[#6F6B60]">{{ $isFr?'Fiabilité':'Reliability' }}</span><span class="flex items-center gap-1 text-[#C9942E]">@for($i=0;$i<5;$i++)<i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>@endfor<span class="ml-1 text-[12px] font-semibold text-[#1B1B18]">{{ $partner->reliability }}/5</span></span></div>
                     </section>
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                         <div class="flex items-center justify-between"><h2 class="text-[12px] font-bold tracking-[0.06em] text-[#1B1B18] uppercase">{{ $isFr?'Documents principaux':'Main documents' }}</h2><a href="{{ route('admin.cms', ['lang'=>$lang]) }}" class="text-[11px] font-semibold text-[#157A43]">{{ $isFr?'Voir tout':'View all' }}</a></div>
                         <div class="mt-3 space-y-2.5">
-                            @foreach($documents as [$dType, $dName, $dDate])
+                            @forelse($documents as [$dType, $dName, $dDate])
                             <a href="{{ route('admin.cms', ['lang'=>$lang]) }}" class="flex items-center gap-3 group"><span class="w-7 h-8 rounded flex items-center justify-center {{ $dType==='pdf'?'bg-[#FDE8E8] text-[#DC2626]':'bg-[#E8EFFB] text-[#3565DE]' }}"><i data-lucide="file-text" class="w-4 h-4"></i></span><span class="min-w-0 flex-1"><span class="block text-[12px] font-medium text-[#1B1B18] truncate group-hover:text-[#157A43]">{{ $dName }}</span><span class="block text-[10.5px] text-[#8A857A]">{{ $dDate }}</span></span></a>
-                            @endforeach
+                            @empty
+                            <p class="text-[11.5px] text-[#8A857A]">{{ $isFr?'Aucun document.':'No documents.' }}</p>
+                            @endforelse
                         </div>
                     </section>
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
@@ -191,5 +175,5 @@
                     </section>
                 </aside>
             </div>
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

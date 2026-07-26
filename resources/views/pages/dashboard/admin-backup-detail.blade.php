@@ -16,7 +16,7 @@
     $tabs = [[$isFr?'Informations générales':'General info', true], ['Contenu', false], ['Historique', false], [$isFr?'Logs associés':'Related logs', false]];
     $metaRow = [
         ['calendar', $dt($backup->created_at), $isFr?'Date & heure':'Date & time'],
-        ['server', $settings['backup_server'] ?? 'GVNA-Server-01', $isFr?'Serveur':'Server'],
+        ['server', $settings['backup_server'] ?? 'AH237-Server-01', $isFr?'Serveur':'Server'],
         ['tag', $backup->type === 'full' ? ($isFr?'Complet':'Full') : ($isFr?'Base de données':'Database'), $isFr?'Type de sauvegarde':'Backup type'],
         ['database', $settings['backup_db'] ?? 'MySQL 8.0', $isFr?'Base de données':'Database'],
         ['user', $backup->mode === 'manual' ? ($isFr?'Manuel':'Manual') : ($isFr?'Système':'System'), $isFr?'Créé par':'Created by'],
@@ -25,9 +25,8 @@
         [$isFr?'Nom du fichier':'Filename', $backup->filename],
         ['Type', $backup->type === 'full' ? ($isFr?'Sauvegarde complète':'Full backup') : ($isFr?'Base de données':'Database')],
         [$isFr?'Taille':'Size', $sizeGb.' GB ('.$octets.' '.($isFr?'octets':'bytes').')'],
-        ['Statut', $isFr?'Réussi':'Success'],
-        [$isFr?'Durée':'Duration', '00:18:42'],
-        [$isFr?'Méthode':'Method', $isFr?'Dump + Fichiers':'Dump + Files'],
+        ['Statut', $backup->status === 'success' ? ($isFr?'Réussi':'Success') : ucfirst($backup->status)],
+        [$isFr?'Méthode':'Method', $backup->contents ?? ($isFr?'Dump + Fichiers':'Dump + Files')],
         [$isFr?'Chemin de stockage':'Storage path', ($settings['backup_path'] ?? '/backups/gvna').'/'.$created->format('Y/m/d').'/'],
     ];
     $infoRight = [
@@ -39,14 +38,10 @@
         [$isFr?'Rétention':'Retention', $settings['backup_retention'] ?? '30 jours'],
         [$isFr?'Prochain backup':'Next backup', $dt($created->copy()->addDay())],
     ];
-    $bkLogs = [
-        ['02:30:00', 'info', $isFr?'Démarrage de la sauvegarde':'Backup started', $isFr?'Initialisation du processus':'Process initialisation', '00:00:02'],
-        ['02:30:05', 'info', $isFr?'Vérification système':'System check', $isFr?'Vérification de l\'espace disque':'Disk space check', '00:00:03'],
-        ['02:30:08', 'info', $isFr?'Sauvegarde base de données':'Database backup', $isFr?'Dump de la base en cours':'Database dump running', '00:12:45'],
-        ['02:42:53', 'info', $isFr?'Sauvegarde fichiers':'Files backup', $isFr?'Copie des fichiers et médias':'Copying files and media', '00:04:32'],
-        ['02:47:25', 'info', 'Compression', $isFr?'Compression en archive ZIP':'ZIP archive compression', '00:01:05'],
-        ['02:48:30', 'success', $isFr?'Sauvegarde terminée':'Backup complete', $isFr?'Sauvegarde complète créée avec succès':'Full backup created successfully', '00:00:12'],
-    ];
+    // Real system log entries (not backup-specific — backup_logs has no per-backup link)
+    $bkLogs = ($logs ?? collect())->map(fn ($l) => [
+        \Illuminate\Support\Carbon::parse($l->logged_at)->format('H:i:s'), $l->level, $l->event, $l->description, null,
+    ]);
     $apercu = [
         [$isFr?'Base de données':'Database', '12.4 GB', '67%', '#157A43'],
         [$isFr?'Fichiers & Médias':'Files & Media', '4.2 GB', '23%', '#C9942E'],
@@ -60,7 +55,7 @@
         [$isFr?'Espace libre':'Free space', '243.2 GB (49%)'],
     ];
     $sysInfo = [
-        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'GVNA-Server-01'],
+        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'AH237-Server-01'],
         [$isFr?'Système d\'exploitation':'OS', $settings['backup_os'] ?? 'Ubuntu 22.04 LTS'],
         ['PHP Version', PHP_VERSION],
         [$isFr?'Fuseau horaire':'Timezone', 'Africa/Douala (UTC+1)'],
@@ -87,7 +82,7 @@
                             <div class="flex items-center gap-3.5">
                                 <span class="w-[54px] h-[54px] rounded-xl bg-[#E8F2EC] flex items-center justify-center"><i data-lucide="database" class="w-7 h-7 text-[#157A43]"></i></span>
                                 <div>
-                                    <span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold bg-[#E2F3E8] text-[#157A43]">{{ $isFr?'Réussi':'Success' }}</span>
+                                    <span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold bg-[#E2F3E8] text-[#157A43]">{{ $backup->status === 'success' ? ($isFr?'Réussi':'Success') : ucfirst($backup->status) }}</span>
                                     <p class="mt-1 text-[18px] font-bold text-[#1B1B18]">{{ $backup->filename }}</p>
                                 </div>
                             </div>
@@ -184,5 +179,5 @@
                     </section>
                 </aside>
             </div>
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

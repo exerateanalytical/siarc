@@ -36,7 +36,7 @@ class SecurityWebController extends Controller
 
     private function webAuthn(Request $request): WebAuthn
     {
-        return new WebAuthn('Galerie Artisanat Cameroun', $request->getHost(), ['none']);
+        return new WebAuthn('Artisan Hub 237', $request->getHost(), ['none']);
     }
 
     // ─────────────────────────────────────────

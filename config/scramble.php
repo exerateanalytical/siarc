@@ -54,7 +54,7 @@ return [
     ],
 
     'ui' => [
-        'title' => 'Galerie virtuelle de l\'artisanat du Cameroun API',
+        'title' => 'Artisan Hub 237 API',
     ],
 
     'renderer' => 'elements',

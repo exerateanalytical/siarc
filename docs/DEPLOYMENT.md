@@ -1,4 +1,4 @@
-# Deployment guide — Galerie Virtuelle Nationale de l'Artisanat du Cameroun
+# Deployment guide — Artisan Hub 237
 
 Production checklist for deploying this Laravel application at national scale.
 
@@ -16,7 +16,7 @@ Copy `.env.example` and set at minimum:
 ```ini
 APP_ENV=production
 APP_DEBUG=false            # NEVER true in production
-APP_URL=https://your-domain.cm   # must match the public host — asset() and the sitemap use it
+APP_URL=https://artisanhub237.com   # must match the public host — asset() and the sitemap use it
 
 DB_CONNECTION=mysql
 DB_DATABASE=...
@@ -114,8 +114,8 @@ Nothing currently requires the scheduler.
 
 ```bash
 php artisan test          # full suite must be green (55 tests)
-curl -I https://your-domain.cm/robots.txt
-curl -I https://your-domain.cm/sitemap.xml
+curl -I https://artisanhub237.com/robots.txt
+curl -I https://artisanhub237.com/sitemap.xml
 ```
 
 Then log in with a demo account and walk the quote flow:

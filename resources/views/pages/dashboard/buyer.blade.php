@@ -46,7 +46,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Tableau de bord — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Dashboard — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Tableau de bord — Artisan Hub 237' : 'Dashboard — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -82,7 +82,7 @@
     <div class="bg-[#031E12] px-5 py-4 flex items-center gap-3">
         <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] object-contain shrink-0">
         <span class="text-[11.5px] font-bold tracking-[0.02em] text-white uppercase leading-[1.4]">
-            {{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}<br>
+            {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
             {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
         </span>
     </div>
@@ -129,13 +129,15 @@
     <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
         <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
         <span class="leading-tight min-w-0">
-            <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
+            <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
             <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
             <span class="block text-[9.5px] text-[#55524A] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
         </span>
         <a href="{{ route('notifications.index') }}" class="relative ml-auto p-1 shrink-0" aria-label="Notifications">
             <i data-lucide="bell" class="w-[24px] h-[24px] text-[#1B1B18]" style="stroke-width:1.8"></i>
-            <span class="absolute -top-1.5 -right-1.5 bg-[#D40C0F] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">3</span>
+            @if(($notificationCount ?? 0) > 0)
+            <span class="absolute -top-1.5 -right-1.5 bg-[#D40C0F] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
+            @endif
         </a>
         <button type="button" class="bm-menu-btn p-1 shrink-0" aria-label="Menu">
             <i data-lucide="menu" class="w-[26px] h-[26px] text-[#1B1B18]" style="stroke-width:2.2"></i>

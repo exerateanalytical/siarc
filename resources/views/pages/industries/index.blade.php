@@ -41,7 +41,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $isFr ? 'Toutes les catégories de l\'artisanat camerounais — explorez nos créations par catégorie.' : 'All categories of Cameroonian crafts — explore our creations by category.' }}">
-    <title>{{ $isFr ? 'Toutes les catégories — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'All categories — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Toutes les catégories — Artisan Hub 237' : 'All categories — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>

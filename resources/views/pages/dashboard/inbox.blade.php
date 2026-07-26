@@ -23,7 +23,7 @@
                     <div class="flex items-center gap-2">
                         <p class="text-sm font-semibold text-[#1B1B18] truncate">{{ $otherName ?: ($lang === 'fr' ? 'Utilisateur' : 'User') }}</p>
                         @if($unread > 0)
-                        <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+                        <span class="w-2 h-2 rounded-full bg-[#DC0508] shrink-0"></span>
                         @endif
                     </div>
                     <p class="text-xs text-[#8A857A] truncate">{{ $conv->subject }}</p>
@@ -34,7 +34,7 @@
                 <div class="text-right shrink-0">
                     <p class="text-xs text-[#A8A296]">{{ $conv->last_message_at?->diffForHumans() }}</p>
                     @if($unread > 0)
-                    <span class="inline-block mt-1 px-1.5 py-0.5 bg-blue-500 text-white text-[10px] font-bold rounded-full">{{ $unread }}</span>
+                    <span class="inline-block mt-1 px-1.5 py-0.5 bg-[#DC0508] text-white text-[10px] font-bold rounded-full">{{ $unread }}</span>
                     @endif
                 </div>
             </a>

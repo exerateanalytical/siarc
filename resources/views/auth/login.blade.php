@@ -21,12 +21,12 @@
     ];
 
     $demoAccounts = [
-        ['email' => 'admin@artisanatcameroun.cm', 'password' => 'Admin@SIARC2026', 'label' => ['fr' => 'Admin', 'en' => 'Admin']],
-        ['email' => 'entrepreneur@siarc2026.cm',   'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
-        ['email' => 'acheteur@siarc2026.cm',       'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
-        ['email' => 'regional@siarc2026.cm',       'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
-        ['email' => 'ministry@siarc2026.cm',       'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Ministère', 'en' => 'Ministry']],
-        ['email' => 'technique@siarc2026.cm',      'password' => 'Demo@SIARC2026',  'label' => ['fr' => 'Technique', 'en' => 'Technical']],
+        ['email' => 'admin@artisanatcameroun.cm', 'password' => 'Admin@ArtisanHub237', 'label' => ['fr' => 'Admin', 'en' => 'Admin']],
+        ['email' => 'entrepreneur@artisanhub237.com', 'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
+        ['email' => 'acheteur@artisanhub237.com',     'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
+        ['email' => 'regional@artisanhub237.com',     'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
+        ['email' => 'ministry@artisanhub237.com',      'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Ministère', 'en' => 'Ministry']],
+        ['email' => 'technique@artisanhub237.com',    'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Technique', 'en' => 'Technical']],
     ];
 @endphp
 <!DOCTYPE html>
@@ -34,8 +34,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Connectez-vous à la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun.' : 'Sign in to the National Virtual Gallery of Cameroonian Crafts.' }}">
-    <title>{{ $isFr ? 'Se connecter — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Sign in — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <meta name="description" content="{{ $isFr ? 'Connectez-vous à Artisan Hub 237.' : 'Sign in to Artisan Hub 237.' }}">
+    <title>{{ $isFr ? 'Se connecter — Artisan Hub 237' : 'Sign in — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -91,7 +91,7 @@
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[64px] h-[70px] object-contain shrink-0">
                     <span class="pt-1">
                         <span class="block text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
-                            {{ $isFr ? 'Galerie Virtuelle' : 'National Virtual' }}<br>
+                            {{ $isFr ? 'Artisan Hub 237' : 'National Virtual' }}<br>
                             {{ $isFr ? 'Nationale de l\'Artisanat' : 'Gallery of Crafts' }}<br>
                             {{ $isFr ? 'du Cameroun' : 'of Cameroon' }}
                         </span>
@@ -153,7 +153,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="/login" id="login-form" class="mt-7">
+            <form method="POST" action="{{ route('login') }}" id="login-form" class="mt-7">
                 @csrf
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 @if(request('next'))
@@ -210,7 +210,7 @@
             </div>
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 @foreach([
-                    ['admin',  'shield-check', $isFr ? 'Admin' : 'Admin', 'Administrateur SIARC', '#157A43'],
+                    ['admin',  'shield-check', $isFr ? 'Admin' : 'Admin', $isFr ? 'Administrateur' : 'Administrator', '#157A43'],
                     ['vendor', 'store',        $isFr ? 'Vendeur' : 'Vendor', 'Paul Nguema · Atelier Nguéma', '#C97A16'],
                     ['buyer',  'shopping-bag', $isFr ? 'Acheteur' : 'Buyer', 'Test Buyer', '#3565DE'],
                 ] as [$key, $icon, $label, $who, $col])
@@ -266,7 +266,7 @@
 
             <p class="mt-7 text-center text-[14.5px] text-[#26251F] lg:whitespace-nowrap">
                 {{ $isFr ? 'Vous n\'avez pas encore de compte ?' : 'Don\'t have an account yet?' }}
-                <a href="/inscription?lang={{ $lang }}" class="ml-1 font-semibold text-gold hover:text-goldlt transition-colors">
+                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="ml-1 font-semibold text-gold hover:text-goldlt transition-colors">
                     {{ $isFr ? 'Créer un compte' : 'Create an account' }}
                 </a>
             </p>
@@ -369,7 +369,7 @@
             });
             const j = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(j.message || ('login: ' + res.status));
-            window.location.href = j.redirect || '/tableau-de-bord';
+            window.location.href = j.redirect || '{{ route('dashboard.siac') }}';
         } catch (e) {
             errBox.textContent = e.message || e;
             errBox.classList.remove('hidden');

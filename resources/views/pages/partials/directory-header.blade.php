@@ -3,13 +3,46 @@
      Expects: $lang, $isFr, $siacUser
      Optional: $dirSearchCategories (slug/label pairs for the select),
                $dirSearchPlaceholder, $dirIconVariant ('products': Favoris+Demandes |
-               'vendors': Favoris+Messages+Panier(3)), $dirNavActive (renders the
-               secondary icon nav bar with that key active) --}}
+               'vendors': Favoris+Messages+Panier(3)), $dirNavActive (override which
+               key is highlighted — auto-detected from the current route if omitted).
+     The nav item list below (desktop bar + mobile menu) is the single canonical
+     platform menu: every page that includes this header gets the identical set,
+     in the identical order — this partial must not be forked per page. --}}
 
 @php
     $dirIconVariant = $dirIconVariant ?? 'products';
     $dirSearchPlaceholder = $dirSearchPlaceholder
         ?? ($isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...');
+
+    // Canonical platform menu — one array, shared by the desktop bar and the
+    // mobile menu below, so they can never drift apart again.
+    // [key, icon, label, route]
+    // Collections, Centres and FAQ live in the footer menu, not here.
+    $dirNavItems = [
+        ['home',        'home',          $isFr ? 'Accueil' : 'Home',                    route('home', ['lang' => $lang])],
+        ['products',    'package',       $isFr ? 'Produits' : 'Products',               route('products.index', ['lang' => $lang])],
+        ['categories',  'layout-grid',   $isFr ? 'Catégories' : 'Categories',           route('industries.index', ['lang' => $lang])],
+        ['businesses',  'users',         $isFr ? 'Artisans & Entreprises' : 'Artisans & Businesses', route('businesses.index', ['lang' => $lang])],
+        ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',               route('events.index', ['lang' => $lang])],
+        ['partners',    'handshake',    $isFr ? 'Partenaires' : 'Partners',             route('partners.index', ['lang' => $lang])],
+        ['news',        'newspaper',    $isFr ? 'Actualités' : 'News',                  route('news.index', ['lang' => $lang])],
+        ['about',       'info',         $isFr ? 'À propos' : 'About',                   route('about', ['lang' => $lang])],
+        ['contact',     'message-circle', $isFr ? 'Contact' : 'Contact',                route('contact', ['lang' => $lang])],
+    ];
+
+    // Auto-detect the active item from the current route when the including
+    // page doesn't force one — no page should have to remember to set this.
+    if (! isset($dirNavActive)) {
+        // Collections/Centres/FAQ aren't header items (they live in the footer),
+        // so pages under those routes simply have no highlighted header item.
+        $dirRouteMap = [
+            'home' => 'home', 'products.*' => 'products', 'industries.*' => 'categories',
+            'businesses.*' => 'businesses', 'events.*' => 'events',
+            'partners.*' => 'partners', 'news.*' => 'news',
+            'about' => 'about', 'contact' => 'contact',
+        ];
+        $dirNavActive = collect($dirRouteMap)->first(fn ($key, $pattern) => request()->routeIs($pattern));
+    }
 
     $dhCategories = $dirSearchCategories ?? [
         ['arts-decoration',          $isFr ? 'Arts & Décoration' : 'Arts & Decoration'],
@@ -39,9 +72,9 @@
     <div class="flex-1 bg-[#FBB604] hidden sm:flex items-center justify-end pr-4 sm:pr-6 text-[#3A2E08] font-medium whitespace-nowrap">
         <a href="{{ route('partners.index') }}" class="hover:underline">{{ $isFr ? 'Devenir partenaire' : 'Become a partner' }}</a>
         <span class="mx-2 opacity-50">|</span>
-        <a href="/login?lang={{ $lang }}" class="hover:underline">{{ $isFr ? 'Espace Artisan' : 'Artisan area' }}</a>
+        <a href="{{ route('login', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Espace Artisan' : 'Artisan area' }}</a>
         <span class="mx-2 opacity-50">|</span>
-        <a href="/login?lang={{ $lang }}" class="hover:underline">{{ $isFr ? 'Espace Entreprise' : 'Business area' }}</a>
+        <a href="{{ route('login', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Espace Entreprise' : 'Business area' }}</a>
         <span class="mx-2 opacity-50">|</span>
         <a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Aide' : 'Help' }}</a>
     </div>
@@ -66,7 +99,7 @@
             <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
                 <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] object-contain">
                 <span class="leading-tight">
-                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
+                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                     <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
                     <span class="block text-[10px] text-[#6F6B60] mt-0.5 whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
@@ -148,11 +181,11 @@
                 </div>
 
                 @if($siacUser)
-                <a href="/tableau-de-bord" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
+                <a href="{{ route('dashboard.siac') }}" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
                     {{ $isFr ? 'Tableau de bord' : 'Dashboard' }}
                 </a>
                 @else
-                <a href="/login?lang={{ $lang }}" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
+                <a href="{{ route('login', ['lang' => $lang]) }}" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
                     {{ $isFr ? 'Se connecter' : 'Sign in' }}
                 </a>
                 @endif
@@ -181,32 +214,19 @@
                     <i data-lucide="shopping-bag" class="w-4 h-4"></i>{{ $isFr ? 'Demandes' : 'Inquiries' }}
                 </a>
             </div>
-            {{-- Main page links (canonical platform menu) --}}
+            {{-- Main page links — same $dirNavItems array as the desktop bar below --}}
             <div class="mb-2">
-                @foreach([
-                    ['home',          $isFr ? 'Accueil' : 'Home',            route('home', ['lang' => $lang])],
-                    ['package',       $isFr ? 'Produits' : 'Products',       route('products.index', ['lang' => $lang])],
-                    ['layout-grid',   $isFr ? 'Catégories' : 'Categories',   route('industries.index', ['lang' => $lang])],
-                    ['layers',        'Collections',                         route('collections.index', ['lang' => $lang])],
-                    ['users',         'Artisans',                            route('businesses.index', ['lang' => $lang])],
-                    ['building-2',    $isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
-                    ['map-pin',       $isFr ? 'Centres d\'artisanat' : 'Craft Centres', route('centres.index', ['lang' => $lang])],
-                    ['calendar-days', $isFr ? 'Événements' : 'Events',       route('events.index', ['lang' => $lang])],
-                    ['tent',          'SIARC 2026',                          route('siarc.home', ['lang' => $lang])],
-                    ['info',          $isFr ? 'À propos' : 'About',          route('about')],
-                    ['circle-help',   'FAQ',                                 route('faq', ['lang' => $lang])],
-                    ['message-circle', $isFr ? 'Contact' : 'Contact',        route('contact', ['lang' => $lang])],
-                ] as [$mmIcon, $mmLabel, $mmHref])
-                <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] text-[#1D1B16] hover:text-leaf">
+                @foreach($dirNavItems as [$mmKey, $mmIcon, $mmLabel, $mmHref])
+                <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $mmKey === $dirNavActive ? 'font-semibold text-leaf' : 'text-[#1D1B16] hover:text-leaf' }}">
                     <i data-lucide="{{ $mmIcon }}" class="w-4 h-4 text-[#55524A]"></i>{{ $mmLabel }}
                 </a>
                 @endforeach
             </div>
             <div class="border-t border-[#E7E1D4] pt-2 flex items-center justify-between px-1">
                 @if($siacUser)
-                <a href="/tableau-de-bord" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
+                <a href="{{ route('dashboard.siac') }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
                 @else
-                <a href="/login?lang={{ $lang }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
                 <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 border border-[#02301B] text-[#02301B] text-[13px] font-semibold px-4 py-2 rounded-lg"><i data-lucide="zap" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
                 @endif
                 <span class="flex items-center gap-2 text-[13px] font-semibold">
@@ -218,26 +238,10 @@
     </div>
 </header>
 
-@isset($dirNavActive)
-@php
-    $dirNavItems = [
-        ['home',        'home',          $isFr ? 'Accueil' : 'Home',            route('home', ['lang' => $lang])],
-        ['products',    'package',       $isFr ? 'Produits' : 'Products',       route('products.index', ['lang' => $lang])],
-        ['categories',  'layout-grid',   $isFr ? 'Catégories' : 'Categories',   route('industries.index', ['lang' => $lang])],
-        ['artisans',    'users',         'Artisans',                            route('businesses.index', ['lang' => $lang])],
-        ['businesses',  'building-2',    $isFr ? 'Entreprises' : 'Businesses',  route('businesses.index', ['lang' => $lang])],
-        ['regions',     'map-pin',       $isFr ? 'Régions' : 'Regions',         route('businesses.index', ['lang' => $lang])],
-        ['collections', 'layers',        'Collections',                         route('collections.index', ['lang' => $lang])],
-        ['centres',     'landmark',      $isFr ? 'Centres' : 'Centres',         route('centres.index', ['lang' => $lang])],
-        ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',       route('events.index')],
-        ['siarc',       'tent',          'SIARC 2026',                          route('siarc.home', ['lang' => $lang])],
-        ['about',       'info',          $isFr ? 'À propos' : 'About',          route('about')],
-    ];
-@endphp
-<!-- Secondary icon nav bar -->
+{{-- Secondary icon nav bar — always rendered, same $dirNavItems as the mobile menu above --}}
 <div class="hidden lg:block bg-[#FEFEFE] border-b border-[#EFEDEA]">
-    <div class="max-w-[1472px] mx-auto px-4 sm:px-6">
-        <nav class="flex items-center justify-center gap-8 xl:gap-12">
+    <div class="max-w-[1472px] mx-auto px-4 sm:px-6 overflow-x-auto">
+        <nav class="flex items-center justify-center gap-6 xl:gap-9 w-max mx-auto">
             @foreach($dirNavItems as [$dnKey, $dnIcon, $dnLabel, $dnHref])
             @if($dnKey === 'categories' && !empty($navSectors) && $navSectors->count())
             {{-- Categories megamenu: official sectors → filières --}}
@@ -283,4 +287,3 @@
         </nav>
     </div>
 </div>
-@endisset

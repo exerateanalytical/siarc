@@ -33,8 +33,8 @@
          'sub' => "Sculpteurs, tisserands, potiers, bijoutiers :\ndes talents authentiques à découvrir\net à contacter directement."],
         ['l1' => 'Des créations authentiques,', 'l2' => 'faites main,', 'gold' => 'avec fierté et passion.',
          'sub' => "Chaque pièce raconte une histoire.\nParcourez des milliers de produits uniques\nissus de nos terroirs."],
-        ['l1' => 'SIARC 2026,', 'l2' => 'le grand rendez-vous,', 'gold' => 'de nos filières artisanales.',
-         'sub' => "Salon international, expositions, rencontres :\nvivez les événements qui font rayonner\nle savoir-faire camerounais."],
+        ['l1' => 'Nos événements,', 'l2' => 'le grand rendez-vous,', 'gold' => 'de nos filières artisanales.',
+         'sub' => "Salons, expositions, rencontres :\nvivez les événements qui font rayonner\nle savoir-faire camerounais."],
         ['l1' => 'Un héritage séculaire,', 'l2' => 'une vitrine nationale,', 'gold' => 'ouverte sur le monde.',
          'sub' => "La galerie virtuelle officielle qui connecte\nles artisans camerounais aux acheteurs\net partenaires du monde entier."],
     ] : [
@@ -44,8 +44,8 @@
          'sub' => "Sculptors, weavers, potters, jewellers:\nauthentic talents to discover\nand contact directly."],
         ['l1' => 'Authentic creations,', 'l2' => 'entirely handmade,', 'gold' => 'with pride and passion.',
          'sub' => "Every piece tells a story.\nBrowse thousands of unique products\nfrom our regions."],
-        ['l1' => 'SIARC 2026,', 'l2' => 'the flagship event,', 'gold' => 'of our craft industries.',
-         'sub' => "International fair, exhibitions, meetings:\nexperience the events that showcase\nCameroonian craftsmanship."],
+        ['l1' => 'Our events,', 'l2' => 'the flagship gatherings,', 'gold' => 'of our craft industries.',
+         'sub' => "Fairs, exhibitions, meetings:\nexperience the events that showcase\nCameroonian craftsmanship."],
         ['l1' => 'An ancestral heritage,', 'l2' => 'a national showcase,', 'gold' => 'open to the world.',
          'sub' => "The official virtual gallery connecting\nCameroonian artisans with buyers\nand partners worldwide."],
     ];
@@ -107,8 +107,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun — Notre héritage, notre fierté, notre avenir. Découvrez les artisans et producteurs camerounais.' : 'National Virtual Gallery of Cameroonian Crafts — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.' }}">
-    <title>{{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <meta name="description" content="{{ $isFr ? 'Artisan Hub 237 — Notre héritage, notre fierté, notre avenir. Découvrez les artisans et producteurs camerounais.' : 'Artisan Hub 237 — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.' }}">
+    <title>{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -343,14 +343,14 @@
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="text-[11px] font-semibold tracking-[0.18em] text-gold uppercase">
-                            SIARC {{ $isFr ? 'Focus' : 'Focus' }}{{ $evIndustry ? ' — ' . mb_strtoupper(\Illuminate\Support\Str::before($evIndustry, ' &')) : '' }}
+                            {{ $isFr ? 'Focus' : 'Focus' }}{{ $evIndustry ? ' — ' . mb_strtoupper(\Illuminate\Support\Str::before($evIndustry, ' &')) : '' }}
                         </span>
                         <span class="border border-white/25 rounded px-2.5 py-1 text-[9.5px] font-medium tracking-[0.12em] text-white/85 uppercase">
                             {{ $evOngoing ? ($isFr ? 'Événement actuel' : 'Current event') : ($isFr ? 'Événement à venir' : 'Upcoming event') }}
                         </span>
                     </div>
 
-                    <h2 class="mt-5 font-serif text-[28px] text-white font-medium leading-none">SIARC {{ $evYear }}</h2>
+                    <h2 class="mt-5 font-serif text-[28px] text-white font-medium leading-none">{{ $evYear }}</h2>
                     <p class="mt-3 text-[14.5px] font-semibold text-white leading-snug">
                         {{ $isFr ? $currentEvent->name_fr : ($currentEvent->name_en ?? $currentEvent->name_fr) }}
                     </p>
@@ -381,7 +381,6 @@
         </div>
         @else
         <div class="rounded-xl bg-gradient-to-br from-deepgr to-inkgr p-7 flex flex-col items-start justify-center">
-            <span class="text-[11px] font-semibold tracking-[0.18em] text-gold uppercase">SIARC</span>
             <h2 class="mt-4 font-serif text-[28px] text-white font-medium">{{ $isFr ? 'Événements à venir' : 'Upcoming events' }}</h2>
             <p class="mt-3 text-[13px] text-white/70">{{ $isFr ? 'Les prochains événements seront annoncés bientôt.' : 'Upcoming events will be announced soon.' }}</p>
             <a href="{{ route('events.index') }}" class="mt-5 inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[12.5px] font-medium px-5 py-2.5 rounded transition-colors">
@@ -494,7 +493,7 @@
             ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
             ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
             ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? '/tableau-de-bord' : '/login', 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
         ];
     @endphp
     @foreach($bottomTabs as $tab)

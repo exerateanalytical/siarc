@@ -60,7 +60,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $isFr ? 'Annuaire des produits — Découvrez des milliers de créations authentiques fabriquées par nos artisans et entreprises.' : 'Product directory — Discover thousands of authentic creations made by our artisans and businesses.' }}">
-    <title>{{ $isFr ? 'Annuaire des produits — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Product directory — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Annuaire des produits — Artisan Hub 237' : 'Product directory — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -237,7 +237,7 @@
                         @elseif($product['badge'] === 'best')
                         <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
                         @endif
-                        <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                        <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                             class="absolute top-2 right-2 w-8 h-8 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
                             <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
                         </a>

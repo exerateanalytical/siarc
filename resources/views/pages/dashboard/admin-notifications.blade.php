@@ -9,15 +9,21 @@
     $fmt = fn($n)=> number_format($n, 0, ',', ' ');
     $dtf = fn($v)=> $v ? \Carbon\Carbon::parse($v)->format('d M Y, H:i') : '—';
     $cards = [
-        ['bell', '#157A43', '#E8F2EC', $fmt($stats['total']), $isFr?'Total Notifications':'Total Notifications', '+18 '.($isFr?'ce mois':'this month')],
-        ['mail', '#C97A16', '#FDF3E0', $fmt($stats['unread']), $isFr?'Non lues':'Unread', '+5 '.($isFr?'ce mois':'this month')],
-        ['check-circle-2', '#157A43', '#E8F2EC', $fmt($stats['read']), $isFr?'Lues':'Read', '+13 '.($isFr?'ce mois':'this month')],
-        ['send', '#3565DE', '#E8EFFB', '1 238', $isFr?'Envoyées':'Sent', '+46 '.($isFr?'ce mois':'this month')],
-        ['calendar-days', '#7C4FE0', '#F0EAFB', '24', $isFr?'Planifiées':'Scheduled', '+6 '.($isFr?'ce mois':'this month')],
+        ['bell', '#157A43', '#E8F2EC', $fmt($stats['total']), $isFr?'Total Notifications':'Total Notifications', '+'.$stats['this_month'].' '.($isFr?'ce mois':'this month')],
+        ['mail', '#C97A16', '#FDF3E0', $fmt($stats['unread']), $isFr?'Non lues':'Unread', null],
+        ['check-circle-2', '#157A43', '#E8F2EC', $fmt($stats['read']), $isFr?'Lues':'Read', null],
     ];
-    $tabs = [[$isFr?'Toutes':'All',true],[$isFr?'Non lues':'Unread '.'('.$stats['unread'].')',false],[$isFr?'Lues':'Read',false],[$isFr?'Envoyées':'Sent',false],[$isFr?'Planifiées':'Scheduled',false],[$isFr?'Brouillons':'Drafts',false]];
     $typeMeta = ['support'=>['file-text','#157A43','#E8F2EC'],'message'=>['user','#C97A16','#FDF3E0'],'article'=>['book-open','#7C4FE0','#F0EAFB'],'announcement'=>['megaphone','#157A43','#E8F2EC'],'account'=>['user-plus','#3565DE','#E8EFFB'],'reminder'=>['clock','#C97A16','#FDF3E0']];
-    $canaux = [['Email','256','53%','#157A43'],['In-App','142','29%','#3565DE'],['SMS','54','11%','#C97A16'],['WhatsApp','30','7%','#7C4FE0']];
+    // Real per-type breakdown (no channel/send-status data exists to fabricate)
+    $typeLabels = ['support'=>$isFr?'Support':'Support','message'=>'Messages','article'=>$isFr?'Articles':'Articles','announcement'=>$isFr?'Annonces':'Announcements','account'=>$isFr?'Compte':'Account','reminder'=>$isFr?'Rappels':'Reminders'];
+    $typeTotal = max(1, $typeCounts->sum());
+    $canaux = collect($typeCounts)->map(function ($count, $type) use ($typeLabels, $typeMeta, $typeTotal) {
+        $label = $typeLabels[$type] ?? ucfirst($type);
+        $icon = ($typeMeta[$type] ?? ['bell'])[0];
+        $color = ($typeMeta[$type] ?? [null, '#8A857A'])[1];
+        return [$label, number_format($count), round($count / $typeTotal * 100) . '%', $color, $icon];
+    })->values();
+    $tabs = [[$isFr?'Toutes':'All',true],[($isFr?'Non lues':'Unread').' ('.$stats['unread'].')',false],[$isFr?'Lues':'Read',false]];
 @endphp
 
 @section('content')
@@ -28,7 +34,7 @@
                     <span class="w-[46px] h-[46px] mx-auto rounded-full flex items-center justify-center" style="background-color:{{ $cT }}"><i data-lucide="{{ $cI }}" class="w-[22px] h-[22px]" style="color:{{ $cC }}"></i></span>
                     <p class="mt-2 text-[11px] text-[#6F6B60]">{{ $cL }}</p>
                     <p class="text-[22px] font-bold text-[#1B1B18] leading-none">{{ $cV }}</p>
-                    <p class="mt-1 text-[10.5px] text-[#157A43]">↗ {{ $cS }}</p>
+                    @if($cS)<p class="mt-1 text-[10.5px] text-[#157A43]">↗ {{ $cS }}</p>@endif
                 </div>
                 @endforeach
             </section>
@@ -76,8 +82,8 @@
 
                 <aside class="space-y-4">
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Résumé par canal':'By channel' }}</h2>
-                        <div class="mt-3.5 space-y-3">@foreach($canaux as [$cnL,$cnN,$cnP,$cnC])<div><div class="flex items-center justify-between text-[12px]"><span class="flex items-center gap-2 text-[#3B382F]"><i data-lucide="{{ $cnL==='WhatsApp'?'message-circle':($cnL==='SMS'?'message-square':'mail') }}" class="w-3.5 h-3.5" style="color:{{ $cnC }}"></i>{{ $cnL }}</span><span class="font-semibold text-[#1B1B18]">{{ $cnN }} ({{ $cnP }})</span></div><div class="mt-1 h-1.5 rounded-full bg-[#F0EFEA] overflow-hidden"><span class="block h-full rounded-full" style="width:{{ $cnP }};background-color:{{ $cnC }}"></span></div></div>@endforeach</div>
+                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Résumé par type':'By type' }}</h2>
+                        <div class="mt-3.5 space-y-3">@forelse($canaux as [$cnL,$cnN,$cnP,$cnC,$cnI])<div><div class="flex items-center justify-between text-[12px]"><span class="flex items-center gap-2 text-[#3B382F]"><i data-lucide="{{ $cnI }}" class="w-3.5 h-3.5" style="color:{{ $cnC }}"></i>{{ $cnL }}</span><span class="font-semibold text-[#1B1B18]">{{ $cnN }} ({{ $cnP }})</span></div><div class="mt-1 h-1.5 rounded-full bg-[#F0EFEA] overflow-hidden"><span class="block h-full rounded-full" style="width:{{ $cnP }};background-color:{{ $cnC }}"></span></div></div>@empty<p class="text-[12px] text-[#8A857A]">{{ $isFr?'Aucune notification.':'No notifications.' }}</p>@endforelse</div>
                     </section>
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                         <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Paramètres rapides':'Quick settings' }}</h2>
@@ -89,5 +95,5 @@
                     </section>
                 </aside>
             </div>
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

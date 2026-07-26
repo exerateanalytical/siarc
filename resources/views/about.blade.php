@@ -94,8 +94,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'À propos de la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun — notre vision, notre mission et nos valeurs.' : 'About the National Virtual Gallery of Cameroonian Crafts — our vision, our mission and our values.' }}">
-    <title>{{ $isFr ? 'À propos — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'About — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <meta name="description" content="{{ $isFr ? 'À propos d\'Artisan Hub 237 — notre vision, notre mission et nos valeurs.' : 'About Artisan Hub 237 — our vision, our mission and our values.' }}">
+    <title>{{ $isFr ? 'À propos — Artisan Hub 237' : 'About — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -161,9 +161,8 @@
             <p class="text-[11.5px] font-semibold tracking-[0.2em] text-goldlt uppercase">{{ $isFr ? 'À propos de nous' : 'About us' }}</p>
 
             <h1 class="mt-4 font-serif text-[30px] sm:text-[36px] lg:text-[40px] leading-[1.2] text-white font-medium">
-                {{ $isFr ? 'À propos de la Galerie' : 'About the National' }}<br>
-                {{ $isFr ? 'Virtuelle Nationale' : 'Virtual Gallery' }}<br>
-                {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
+                {{ $isFr ? 'À propos d\'' : 'About' }}<br>
+                Artisan Hub 237
             </h1>
 
             <div class="mt-6 h-[2px] w-10 bg-goldlt"></div>
@@ -332,7 +331,7 @@
             ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
             ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
             ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? '/tableau-de-bord' : '/login', 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
         ];
     @endphp
     @foreach($bottomTabs as $tab)

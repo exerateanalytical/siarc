@@ -18,7 +18,7 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
 <div class="max-w-2xl">
 
     @if(session('success'))
-        <div class="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+        <div class="mb-4 flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
             <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
             {{ session('success') }}
         </div>
@@ -58,7 +58,7 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
                         <span class="sm:hidden text-[9px] font-semibold text-[#A8A296] uppercase">{{ $chLabel }}</span>
                         <input type="checkbox" name="prefs[{{ $catKey }}][{{ $chKey }}]" value="1"
                             {{ $isOn($catKey, $chKey) ? 'checked' : '' }}
-                            class="w-4 h-4 rounded border-[#E4DECF] text-forest-500 focus:ring-forest-400">
+                            class="w-4 h-4 rounded border-[#EFEBE2] text-forest-500 focus:ring-forest-400">
                     </label>
                     @endforeach
                 </div>

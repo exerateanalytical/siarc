@@ -18,69 +18,40 @@
         ? $day . ' ' . ucfirst(mb_strtolower($frMonthsFull[(int) $event->starts_at->format('n')])) . ' ' . $year
         : $event->starts_at->format('d F Y');
 
-    // Per-design-event display data (city line, venue, badge, chips, price); generic fallbacks otherwise
-    $eventMeta = [
-        'journees-nationales-artisanat-camerounais-2025' => [
-            'city' => 'Yaoundé, Centre', 'venue' => 'Palais des Congrès de Yaoundé',
-            'badge' => $isFr ? 'Événement national' : 'National event', 'badgeColor' => '#C1272D',
-            'price' => $isFr ? 'Entrée Gratuite' : 'Free entry',
-            'chips' => [['calendar-days', 'Expositions'], ['message-square', $isFr ? 'Conférences' : 'Conferences'], ['users', 'Ateliers'], ['share-2', 'Networking'], ['trophy', $isFr ? 'Prix & Concours' : 'Awards & Competitions']],
-        ],
-        'festival-arts-traditions-bamoun' => [
-            'city' => 'Foumban, Ouest', 'venue' => 'Palais Royal de Foumban',
-            'badge' => $isFr ? 'Festival culturel' : 'Cultural festival', 'badgeColor' => '#E9A825',
-            'price' => '2 000 FCFA',
-            'chips' => [['palette', 'Arts'], ['music', 'Musique'], ['sparkles', $isFr ? 'Danse' : 'Dance'], ['hand', 'Artisanat']],
-        ],
-        'atelier-poterie-traditionnelle' => [
-            'city' => 'Maroua, Extrême-Nord', 'venue' => 'Centre d\'Artisanat de Maroua',
-            'badge' => $isFr ? 'Atelier & Formation' : 'Workshop & Training', 'badgeColor' => '#0E5A2F',
-            'price' => '5 000 FCFA',
-            'chips' => [['graduation-cap', 'Formation'], ['hand', 'Pratique'], ['layers', $isFr ? 'Matériaux' : 'Materials'], ['badge-check', 'Certification']],
-        ],
-        'marche-createurs-eco-responsables' => [
-            'city' => 'Douala, Littoral', 'venue' => 'Place des Fêtes de Douala',
-            'badge' => $isFr ? 'Marché & Foire' : 'Market & Fair', 'badgeColor' => '#E9A825',
-            'price' => $isFr ? 'Entrée Gratuite' : 'Free entry',
-            'chips' => [['leaf', $isFr ? 'Produits Éco' : 'Eco products'], ['users', 'Rencontres'], ['hand', 'Ateliers'], ['shopping-bag', 'Ventes']],
-        ],
-        'conference-artisanat-developpement-durable' => [
-            'city' => 'Yaoundé, Centre', 'venue' => 'Institut Français du Cameroun',
-            'badge' => $isFr ? 'Conférence' : 'Conference', 'badgeColor' => '#C1272D',
-            'price' => '3 000 FCFA',
-            'chips' => [['message-square', $isFr ? 'Conférence' : 'Conference'], ['users', 'Panel'], ['repeat', 'Échanges'], ['share-2', 'Réseautage']],
-        ],
-        'prix-national-jeune-artisan-2025' => [
-            'city' => 'Yaoundé, Centre', 'venue' => 'Palais des Congrès de Yaoundé',
-            'badge' => $isFr ? 'Concours & Prix' : 'Competition & Award', 'badgeColor' => '#E9A825',
-            'price' => $isFr ? 'Entrée Gratuite' : 'Free entry',
-            'chips' => [['trophy', 'Compétition'], ['lightbulb', 'Innovation'], ['users', $isFr ? 'Jeunes Talents' : 'Young talents'], ['award', 'Récompenses']],
-        ],
+    // Badge shown per real event_type column — same badge for every event of that type
+    $typeBadges = [
+        'salons'      => [$isFr ? 'Salon' : 'Trade fair', '#0E5A2F'],
+        'festivals'   => [$isFr ? 'Festival culturel' : 'Cultural festival', '#E9A825'],
+        'ateliers'    => [$isFr ? 'Atelier & Formation' : 'Workshop & Training', '#0E5A2F'],
+        'marches'     => [$isFr ? 'Marché & Foire' : 'Market & Fair', '#E9A825'],
+        'conferences' => [$isFr ? 'Conférence' : 'Conference', '#C1272D'],
+        'concours'    => [$isFr ? 'Concours & Prix' : 'Competition & Award', '#E9A825'],
     ];
-    $locParts = array_map('trim', explode(',', (string) $location));
-    $meta = $eventMeta[$event->slug] ?? [
-        'city' => count($locParts) > 1 ? end($locParts) : ($location ?: '—'),
+    [$badge, $badgeColor] = $typeBadges[$event->event_type] ?? [$isFr ? 'Événement' : 'Event', '#0E5A2F'];
+
+    $locParts = array_map('trim', explode(',', (string) ($event->city_fr ?? $location)));
+    $meta = [
+        'city'  => $event->city_fr ?: (count($locParts) > 1 ? end($locParts) : ($location ?: '—')),
         'venue' => $locParts[0] ?? ($location ?: '—'),
-        'badge' => $isFr ? 'Événement' : 'Event', 'badgeColor' => '#0E5A2F',
-        'price' => $isFr ? 'Entrée Gratuite' : 'Free entry',
-        'chips' => [['calendar-days', 'Expositions'], ['users', 'Ateliers'], ['share-2', 'Networking']],
+        'badge' => $badge, 'badgeColor' => $badgeColor,
+        'price' => ($isFr ? $event->price_fr : ($event->price_en ?? $event->price_fr)) ?: ($isFr ? 'Entrée Gratuite' : 'Free entry'),
     ];
 
-    $eventStats = [
-        ['users',          '500+', $isFr ? 'Participants attendus' : 'Expected participants'],
-        ['briefcase',      '50+',  $isFr ? 'Exposants' : 'Exhibitors'],
-        ['share-2',        '20+',  $isFr ? 'Ateliers & Conférences' : 'Workshops & Conferences'],
-        ['settings-2',     '10+',  $isFr ? 'Régions représentées' : 'Regions represented'],
-        ['calendar-check', '1',    $isFr ? 'Grande célébration' : 'Grand celebration'],
-    ];
+    $exhibitorRegionsCount = $event->exhibitingBusinesses->pluck('region_id')->filter()->unique()->count();
+    $eventStats = array_values(array_filter([
+        ['users',      number_format($attendeeCount), $isFr ? 'Participants inscrits' : 'Registered participants'],
+        $event->exhibitingBusinesses->count() > 0
+            ? ['briefcase', number_format($event->exhibitingBusinesses->count()), $isFr ? 'Exposants' : 'Exhibitors']
+            : null,
+        $exhibitorRegionsCount > 0
+            ? ['settings-2', number_format($exhibitorRegionsCount), $isFr ? 'Régions représentées' : 'Regions represented']
+            : null,
+    ]));
 
     $tabs = [
         ['apropos',     $isFr ? 'À propos' : 'About',           'info'],
+        ['exposants',   ($isFr ? 'Exposants' : 'Exhibitors') . ' (' . $event->exhibitingBusinesses->count() . ')', 'store'],
         ['programme',   'Programme',                            'calendar-days'],
-        ['exposants',   $isFr ? 'Exposants' : 'Exhibitors',     'store'],
-        ['ateliers',    'Ateliers',                             'users'],
-        ['conferences', $isFr ? 'Conférences' : 'Conferences',  'message-square'],
-        ['concours',    $isFr ? 'Concours & Prix' : 'Competitions & Awards', 'trophy'],
         ['faq',         'FAQ',                                  'help-circle'],
     ];
 
@@ -159,7 +130,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) $descriptionText), 150) }}">
-    <title>{{ $name }} — {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $name }} — {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -247,16 +218,6 @@
                         @if($descriptionText)
                         <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">{{ $descriptionText }}</p>
                         @endif
-                        <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-                            @foreach($meta['chips'] as [$chipIcon, $chipLabel])
-                            <span class="flex flex-col items-center gap-1 text-[10px] text-[#55524A]">
-                                <span class="w-8 h-8 rounded-lg border border-[#E3DCCB] flex items-center justify-center bg-white/60">
-                                    <i data-lucide="{{ $chipIcon }}" class="w-[14px] h-[14px] text-[#3A3A35]"></i>
-                                </span>
-                                {{ $chipLabel }}
-                            </span>
-                            @endforeach
-                        </div>
                     </div>
                 </div>
             </div>
@@ -294,11 +255,7 @@
                             <div>
                                 <h2 class="text-[15.5px] font-bold text-[#1D1B16]">{{ $isFr ? 'À propos de l\'événement' : 'About the event' }}</h2>
                                 <p class="mt-3 text-[12.5px] text-[#3A3A35] leading-relaxed">
-                                    {{ $event->slug === 'journees-nationales-artisanat-camerounais-2025'
-                                        ? ($isFr
-                                            ? 'Les Journées Nationales de l\'Artisanat Camerounais sont le rendez-vous incontournable des artisans, créateurs, entrepreneurs, investisseurs et passionnés de culture. Cet événement d\'envergure nationale vise à promouvoir le savoir-faire artisanal, renforcer la compétitivité des artisans et valoriser l\'artisanat comme levier de développement économique et culturel.'
-                                            : 'The National Days of Cameroonian Craftsmanship are the essential meeting point for artisans, creators, entrepreneurs, investors and culture enthusiasts. This nationwide event aims to promote artisanal know-how, strengthen artisans\' competitiveness and position craftsmanship as a lever for economic and cultural development.')
-                                        : $descriptionText }}
+                                    {{ $descriptionText ?: ($isFr ? 'Aucune description disponible pour cet événement.' : 'No description available for this event.') }}
                                 </p>
                                 <h3 class="mt-5 text-[13.5px] font-bold text-[#1D1B16]">{{ $isFr ? 'Objectifs' : 'Objectives' }}</h3>
                                 <ul class="mt-3 space-y-2.5">
@@ -315,21 +272,26 @@
                             </a>
                         </div>
                     </div>
-                    <div class="tab-panel hidden" data-panel="programme">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Le programme détaillé sera publié prochainement. Inscrivez-vous pour être notifié.' : 'The detailed programme will be published soon. Sign up to be notified.' }}</p>
-                    </div>
                     <div class="tab-panel hidden" data-panel="exposants">
+                        @if($event->exhibitingBusinesses->isNotEmpty())
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @foreach($event->exhibitingBusinesses as $exBiz)
+                            <a href="{{ route('businesses.show', ['slug' => $exBiz->slug, 'lang' => $lang]) }}" class="flex items-center gap-3 border border-[#EDE6D6] rounded-lg p-3 hover:border-[#14652F] transition-colors">
+                                <span class="w-9 h-9 rounded-lg bg-[#F6F1E4] flex items-center justify-center shrink-0"><i data-lucide="store" class="w-4 h-4 text-[#C9942E]"></i></span>
+                                <span>
+                                    <span class="block text-[12.5px] font-semibold text-[#1D1B16]">{{ $isFr ? $exBiz->name_fr : ($exBiz->name_en ?? $exBiz->name_fr) }}</span>
+                                    @if($exBiz->industry)<span class="block text-[11px] text-[#6F6B60]">{{ $isFr ? $exBiz->industry->name_fr : ($exBiz->industry->name_en ?? $exBiz->industry->name_fr) }}</span>@endif
+                                </span>
+                            </a>
+                            @endforeach
+                        </div>
+                        @else
                         <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'La liste des exposants sera annoncée prochainement.' : 'The list of exhibitors will be announced soon.' }}
                             <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="font-semibold text-[#14532D] hover:underline">{{ $isFr ? 'Découvrir les artisans & entreprises' : 'Discover the artisans & businesses' }}</a></p>
+                        @endif
                     </div>
-                    <div class="tab-panel hidden" data-panel="ateliers">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Ateliers et formations animés par des experts — programme à venir.' : 'Workshops and training led by experts — programme coming soon.' }}</p>
-                    </div>
-                    <div class="tab-panel hidden" data-panel="conferences">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Conférences et panels avec des leaders du secteur — programme à venir.' : 'Conferences and panels with sector leaders — programme coming soon.' }}</p>
-                    </div>
-                    <div class="tab-panel hidden" data-panel="concours">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Concours et prix récompensant les meilleurs artisans et innovations.' : 'Competitions and awards celebrating the best artisans and innovations.' }}</p>
+                    <div class="tab-panel hidden" data-panel="programme">
+                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Le programme détaillé (ateliers, conférences, concours) sera publié prochainement. Inscrivez-vous pour être notifié.' : 'The detailed programme (workshops, conferences, competitions) will be published soon. Sign up to be notified.' }}</p>
                     </div>
                     <div class="tab-panel hidden" data-panel="faq">
                         <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Une question sur cet événement ? Contactez-nous via la page contact.' : 'A question about this event? Reach us via the contact page.' }}
@@ -509,7 +471,8 @@
             <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
                 <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Restez informé' : 'Stay informed' }}</h2>
                 <p class="mt-2 text-[11.5px] text-[#6F6B60] leading-relaxed">{{ $isFr ? 'Recevez les dernières actualités sur cet événement.' : 'Receive the latest news about this event.' }}</p>
-                <form action="/inscription" method="GET" class="mt-3.5 flex gap-2">
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-3.5 flex gap-2">
+                    @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre adresse email' : 'Your email address' }}"
                         class="flex-1 min-w-0 h-[38px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12px] text-[#3A3A35] placeholder-[#8A857A] focus:outline-none focus:border-gold">

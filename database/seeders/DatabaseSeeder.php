@@ -13,12 +13,13 @@ class DatabaseSeeder extends Seeder
         // SiacRolesSeeder under the 'sanctum' guard, plus the permissions-catalog
         // migration. The old RolesAndPermissionsSeeder seeded a divergent, unused
         // 'api'-guard fintech RBAC and has been removed to keep one source of truth.
+        // TaxonomySeeder (regions/cities/industries/verification_tiers against a
+        // schema that no longer exists) was superseded by SiacSeeder's own
+        // regions/taxonomy seeders and has been removed for the same reason.
         $this->call([
-            TaxonomySeeder::class,
             SystemSettingsSeeder::class,
         ]);
 
-        // SIARC platform — the active product
         $this->call(SiacSeeder::class);
     }
 }

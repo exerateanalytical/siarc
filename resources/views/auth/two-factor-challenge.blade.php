@@ -103,7 +103,7 @@
             </div>
 
             <div class="mt-6 pt-5 border-t border-gray-100 text-center">
-                <a href="/login" class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors">
                     <i data-lucide="arrow-left" class="w-3 h-3"></i>
                     {{ $lang === 'fr' ? 'Retour à la connexion' : 'Back to login' }}
                 </a>

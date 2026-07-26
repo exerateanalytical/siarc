@@ -76,9 +76,11 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
-        // SIARC "overall" mode: the whole platform becomes SIARC — land on the SIARC home.
-        if (function_exists('siarcStandalone') && siarcStandalone()) {
-            return redirect()->route('siarc.home', ['lang' => $lang]);
+        // Admin-configurable landing page: the site root can show either the
+        // marketing home or the artisan directory, set via Paramètres Généraux.
+        $landingPage = DB::table('platform_settings')->where('key', 'landing_page')->value('value') ?? 'directory';
+        if ($landingPage === 'directory') {
+            return $this->businessIndex($request);
         }
 
         $industries = Industry::withCount('businesses')
@@ -115,18 +117,12 @@ class FrontendController extends Controller
 
         $partners = \App\Modules\Cms\Models\Partner::active()->orderBy('tier')->orderBy('sort_order')->limit(9)->get();
 
-        // Spotlight: prefer the flagship SIARC event, else the next upcoming one
+        // Spotlight: next upcoming published event
         $currentEvent = \App\Modules\Events\Models\Event::published()
             ->with('industry')
             ->where('ends_at', '>=', now())
-            ->where('slug', 'like', 'siarc%')
             ->orderBy('starts_at')
             ->first()
-            ?? \App\Modules\Events\Models\Event::published()
-                ->with('industry')
-                ->where('ends_at', '>=', now())
-                ->orderBy('starts_at')
-                ->first()
             ?? \App\Modules\Events\Models\Event::published()->with('industry')->orderByDesc('starts_at')->first();
 
         $upcomingEvents = \App\Modules\Events\Models\Event::published()
@@ -138,6 +134,34 @@ class FrontendController extends Controller
 
         return response(
             view('pages.home', compact('lang', 'industries', 'featured', 'aquaculture', 'stats', 'heroStats', 'partners', 'currentEvent', 'upcomingEvents'))
+        )->cookie('lang', $lang, 60 * 24 * 30);
+    }
+
+    public function collectionShow(Request $request, string $slug)
+    {
+        $lang = $this->lang($request);
+
+        $collection = DB::table('heritage_collections')
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->where('visibility', 'public')
+            ->first();
+        abort_unless($collection, 404);
+
+        $productIds = DB::table('heritage_collection_product')
+            ->where('collection_id', $collection->id)
+            ->pluck('product_id');
+
+        $products = Product::with(['images', 'business.industry', 'business.region'])
+            ->whereIn('id', $productIds)
+            ->where('status', 'published')
+            ->whereHas('business', fn ($q) => $q->where('status', 'published'))
+            ->orderByDesc('created_at')
+            ->paginate(24)
+            ->withQueryString();
+
+        return response(
+            view('pages.collection-show', compact('lang', 'collection', 'products'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
@@ -253,8 +277,24 @@ class FrontendController extends Controller
             );
         }
 
+        // Real business stats for the hero band and tab labels
+        $publishedProductsCount = $business->products->where('status', 'published')->count();
+        $ordersCount = DB::table('purchase_orders as po')
+            ->join('quote_proposals as qp', 'qp.id', '=', 'po.quote_proposal_id')
+            ->join('quote_requests as qr', 'qr.id', '=', 'qp.quote_request_id')
+            ->where('qr.business_id', $business->id)
+            ->count();
+        $reviewsCount = $business->reviews()->count();
+        $satisfiedPct = $reviewsCount
+            ? round($business->reviews()->where('rating', '>=', 4)->count() / $reviewsCount * 100)
+            : null;
+        $tenureYears = $business->created_at ? max(0, $business->created_at->diffInYears(now())) : null;
+
         return response(
-            view('pages.businesses.show', compact('lang', 'business', 'featuredProducts'))
+            view('pages.businesses.show', compact(
+                'lang', 'business', 'featuredProducts',
+                'publishedProductsCount', 'ordersCount', 'satisfiedPct', 'tenureYears'
+            ))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 

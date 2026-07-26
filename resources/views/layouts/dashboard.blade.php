@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Tableau de bord — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' }}</title>
+    <title>{{ $title ?? 'Tableau de bord — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -11,9 +11,11 @@
             theme: {
                 extend: {
                     colors: {
-                        // Semantic palette kept for content sections that still reference brand/forest tints
-                        brand:  { 50:'#fef9ee',100:'#fdf0d3',200:'#fada9a',300:'#f7c062',400:'#f4a32a',500:'#e8880e',600:'#cc6a09',700:'#a84e0b',800:'#873d10',900:'#6e3311' },
-                        forest: { 50:'#f0f9f4',100:'#dbf0e3',200:'#b8e0c9',300:'#8cc9a8',400:'#5ba883',500:'#2d6a4f',600:'#1b4332',700:'#0d2b1e',800:'#082018',900:'#03130e' },
+                        // Semantic scales re-pointed onto the canonical heritage palette,
+                        // so every existing forest-*/brand-* class inherits site branding.
+                        // brand = platform gold, forest = platform green.
+                        brand:  { 50:'#FBF1DD',100:'#F6E4BE',200:'#EFD08A',300:'#E9BC5C',400:'#E5A82E',500:'#C9942E',600:'#A87A22',700:'#8A6D1F',800:'#6B5318',900:'#4A3910' },
+                        forest: { 50:'#E2F3E8',100:'#CFE5D6',200:'#BFDCC8',300:'#8CC9A8',400:'#2E7D4F',500:'#157A43',600:'#14532D',700:'#0B3D28',800:'#02301B',900:'#01200F' },
                         leaf:   '#14652F',
                     },
                     fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
@@ -25,7 +27,7 @@
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     <style>body { font-family: 'Poppins', system-ui, sans-serif; }</style>
 </head>
-<body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 
 @php
     $siacUser = session('siac_user') ?? [];
@@ -65,7 +67,6 @@
                     ['admin.products', 'package', 'Produits & Services', 'Products & Services'],
                     ['admin.quotes', 'file-text', 'Devis & Commandes', 'Quotes & Orders'],
                     ['admin.industries', 'tags', 'Catégories & Régions', 'Categories & Regions'],
-                    ['admin.siarc', 'store', 'SIARC 2026', 'SIARC 2026'],
                     ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
                     ['admin.moderation', 'flag', 'Modération', 'Moderation'],
                     ['admin.api-consumers', 'key-round', 'API & Développeurs', 'API & Developers'],
@@ -160,61 +161,8 @@
     <!-- Sidebar overlay (mobile) -->
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
 
-    <!-- Sidebar -->
-    <aside id="dashboard-sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-[268px] shrink-0 -translate-x-full lg:translate-x-0 bg-white border-r border-[#EEEFEE] flex flex-col h-full">
-        <div class="h-[64px] flex items-center gap-3 px-4 border-b border-[#F0F1F0] shrink-0">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[34px] h-[37px] object-contain">
-            <span class="leading-tight min-w-0">
-                <span class="block text-[11px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $lang === 'fr' ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
-                <span class="block text-[9.5px] font-semibold text-[#157A43] whitespace-nowrap">{{ $lang === 'fr' ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
-            </span>
-        </div>
-
-        <div class="px-4 py-3.5 border-b border-[#F0F1F0] shrink-0">
-            <div class="border border-[#EDEEED] bg-[#FBFBFA] rounded-xl px-3 py-2.5 flex items-center gap-3">
-                <span class="w-[38px] h-[38px] shrink-0 rounded-full bg-[#DFEDE3] flex items-center justify-center text-[14px] font-semibold text-[#14652F]">{{ $dashInitials }}</span>
-                <div class="min-w-0">
-                    <p class="text-[12.5px] font-bold text-[#1B1B18] truncate">{{ $dashName }}</p>
-                    <p class="flex items-center gap-1.5 text-[11px] font-semibold text-[#157A43]">
-                        <i data-lucide="{{ $meta['icon'] }}" class="w-3 h-3 shrink-0"></i>
-                        <span class="truncate">{{ $meta['label'][$lang] }}</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto py-3">
-            @foreach($navGroups as $group)
-            <div class="px-3 mb-4">
-                @if($group['title'])
-                <p class="px-2.5 text-[10.5px] font-bold text-[#157A43] uppercase tracking-[0.08em] mb-1.5">{{ $group['title'][$lang] }}</p>
-                @endif
-                @foreach($group['items'] as [$routeName, $icon, $labelFr, $labelEn])
-                    @php $active = request()->routeIs($routeName) || request()->routeIs($routeName . '.*'); @endphp
-                    <a href="{{ \Illuminate\Support\Facades\Route::has($routeName) ? route($routeName) : '#' }}"
-                        class="flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] mb-0.5 transition-colors {{ $active ? 'bg-[#E7F1EA] text-[#14652F] font-bold' : 'text-[#3B382F] hover:bg-[#F6F7F6]' }}">
-                        <i data-lucide="{{ $icon }}" class="w-[17px] h-[17px] shrink-0 {{ $active ? 'text-[#14652F]' : 'text-[#55524A]' }}" style="stroke-width:1.7"></i>
-                        <span class="truncate">{{ $lang === 'fr' ? $labelFr : $labelEn }}</span>
-                    </a>
-                @endforeach
-            </div>
-            @endforeach
-        </nav>
-
-        <div class="p-3 border-t border-[#F0F1F0] shrink-0 space-y-0.5">
-            <a href="/" class="flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] text-[#55524A] hover:bg-[#F6F7F6] transition-colors">
-                <i data-lucide="arrow-left" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.7"></i>
-                {{ $lang === 'fr' ? 'Retour au site' : 'Back to site' }}
-            </a>
-            <form method="POST" action="/logout">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] text-[#B42025] hover:bg-[#FDE8E8] transition-colors text-left">
-                    <i data-lucide="log-out" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.7"></i>
-                    {{ $lang === 'fr' ? 'Déconnexion' : 'Logout' }}
-                </button>
-            </form>
-        </div>
-    </aside>
+    {{-- Canonical dashboard sidebar — shared with every other dashboard --}}
+    @include("pages.partials.dashboard-sidebar", ["sidebarId" => "dashboard-sidebar"])
 
     <!-- Main column -->
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
@@ -255,8 +203,9 @@
     var sidebar = document.getElementById('dashboard-sidebar');
     var overlay = document.getElementById('sidebar-overlay');
     var toggle = document.getElementById('sidebar-toggle');
-    function openSidebar() { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); }
-    function closeSidebar() { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); }
+    // Same `.open` convention as every other dashboard (see partials/dashboard-sidebar)
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.remove('hidden'); }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.add('hidden'); }
     if (toggle) toggle.addEventListener('click', openSidebar);
     if (overlay) overlay.addEventListener('click', closeSidebar);
 </script>

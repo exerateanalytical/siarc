@@ -29,7 +29,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Guide de l\'artisan — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Artisan guide — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Guide de l\'artisan — Artisan Hub 237' : 'Artisan guide — Artisan Hub 237' }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf: '#164C28', gold: '#D9A439', goldbt: '#E9A830' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
@@ -43,7 +43,7 @@
 <section class="bg-[#0B2C1E]">
     <div class="max-w-[1024px] mx-auto px-5 py-10 text-center">
         <h1 class="text-[26px] font-bold text-white">{{ $isFr ? 'Guide de l\'artisan' : 'The artisan guide' }}</h1>
-        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'De l\'inscription à vos premières ventes : tout ce qu\'il faut savoir pour réussir sur la Galerie Virtuelle.' : 'From signing up to your first sales: everything you need to succeed on the Virtual Gallery.' }}</p>
+        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'De l\'inscription à vos premières ventes : tout ce qu\'il faut savoir pour réussir sur Artisan Hub 237.' : 'From signing up to your first sales: everything you need to succeed on Artisan Hub 237.' }}</p>
     </div>
 </section>
 

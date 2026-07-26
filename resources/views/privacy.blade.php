@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-$title = ($lang === 'fr' ? 'Politique de confidentialité' : 'Privacy Policy') . ' — Galerie Artisanat SIARC';
+$title = ($lang === 'fr' ? 'Politique de confidentialité' : 'Privacy Policy') . ' — Artisan Hub 237';
 @endphp
 
 @section('content')

@@ -28,7 +28,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'FAQ — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'FAQ — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'FAQ — Artisan Hub 237' : 'FAQ — Artisan Hub 237' }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf: '#164C28', gold: '#D9A439', goldbt: '#E9A830' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
@@ -47,7 +47,7 @@
 <section class="bg-[#0B2C1E]">
     <div class="max-w-[820px] mx-auto px-5 py-10 text-center">
         <h1 class="text-[26px] font-bold text-white">{{ $isFr ? 'Foire aux questions' : 'Frequently asked questions' }}</h1>
-        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Les réponses aux questions les plus fréquentes sur la Galerie Virtuelle.' : 'Answers to the most common questions about the Virtual Gallery.' }}</p>
+        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Les réponses aux questions les plus fréquentes sur Artisan Hub 237.' : 'Answers to the most common questions about Artisan Hub 237.' }}</p>
     </div>
 </section>
 

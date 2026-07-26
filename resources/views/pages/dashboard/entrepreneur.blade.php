@@ -14,85 +14,48 @@
 
     $ownStoreUrl = $business ? route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) : route('business.create');
 
-    // Sidebar navigation — design order; badges: real counts where the system exists,
-    // design numbers where it doesn't (orders/reviews have no web system yet).
-    $navItems = [
-        ['sd-nav-1.png',  $isFr ? 'Tableau de bord' : 'Dashboard',              route('dashboard.entrepreneur'), null, true],
-        ['sd-nav-2.png',  $isFr ? 'Commandes' : 'Orders',                       route('dashboard.quotes'), ['28', 'red'], false],
-        ['sd-nav-3.png',  $isFr ? 'Produits' : 'Products',                      $ownStoreUrl, [(string) $productCount, 'gray'], false],
-        ['sd-nav-4.png',  $isFr ? 'Événements' : 'Events',                      route('events.index'), [(string) $eventParticipations->count(), 'red'], false],
-        ['sd-nav-5.png',  $isFr ? 'Collections' : 'Collections',                route('saved.index'), null, false],
-        ['sd-nav-6.png',  'Messages',                                            route('messages.inbox'), [(string) $messageCount, 'red'], false],
-        ['sd-nav-7.png',  $isFr ? 'Avis & Clients' : 'Reviews & Clients',       $ownStoreUrl, ['24', 'red'], false],
-        ['sd-nav-8.png',  $isFr ? 'Statistiques' : 'Statistics',                '#performances', null, false],
-        ['sd-nav-9.png',  $isFr ? 'Revenus & Portefeuille' : 'Revenue & Wallet', '#portefeuille', null, false],
-        ['sd-nav-10.png', $isFr ? 'Promotions & Offres' : 'Promotions & Offers', route('contact'), null, false],
-        ['sd-nav-11.png', $isFr ? 'Expéditions' : 'Shipping',                   route('support.index'), null, false],
-        ['sd-nav-12.png', $isFr ? 'Paramètres boutique' : 'Shop settings',      $business ? route('business.edit') : route('business.create'), null, false],
-        ['sd-nav-13.png', $isFr ? 'Mon compte' : 'My account',                  route('profile.show'), null, false],
-        ['sd-nav-14.png', $isFr ? 'Aide & Support' : 'Help & Support',          route('support.index'), null, false],
-    ];
+    // Navigation lives in pages.partials.dashboard-sidebar — the single canonical
+    // sidebar shared by every dashboard page.
 
+    // [icon, spark, label, value, unit, delta, bgGradient, border] — delta omitted where not computable
     $kpis = [
-        ['sd-kpi-icon-1.png', 'sd-kpi-spark-1.png', $isFr ? "Chiffre d'affaires" : 'Revenue', '356 000', 'FCFA', '↑ 24%', 'to-[#F1F8EF]', 'border-[#E3EFE2]'],
-        ['sd-kpi-icon-2.png', 'sd-kpi-spark-2.png', $isFr ? 'Commandes' : 'Orders', '28', null, '↑ 18%', 'to-[#FEF7EC]', 'border-[#F4E8D3]'],
-        ['sd-kpi-icon-3.png', 'sd-kpi-spark-3.png', $isFr ? 'Visites de la boutique' : 'Shop visits', number_format(max((int) ($business->views_count ?? 0), 0) ?: 1245, 0, ',', ' '), null, '↑ 12%', 'to-[#F2F6FE]', 'border-[#E1E9F8]'],
-        ['sd-kpi-icon-4.png', 'sd-kpi-spark-4.png', $isFr ? 'Taux de conversion' : 'Conversion rate', '3.6%', null, '↑ 0.6%', 'to-[#FEF3F3]', 'border-[#F6DFDF]'],
-        ['sd-kpi-icon-5.png', 'sd-kpi-spark-5.png', $isFr ? 'Avis positifs' : 'Positive reviews', '96%', null, null, 'to-[#F1F8EF]', 'border-[#E3EFE2]'],
+        ['sd-kpi-icon-1.png', 'sd-kpi-spark-1.png', $isFr ? "Chiffre d'affaires" : 'Revenue', number_format($revenueTotal, 0, ',', ' '), 'FCFA', null, 'to-[#F1F8EF]', 'border-[#E3EFE2]'],
+        ['sd-kpi-icon-2.png', 'sd-kpi-spark-2.png', $isFr ? 'Commandes' : 'Orders', (string) $ordersCount, null, null, 'to-[#FEF7EC]', 'border-[#F4E8D3]'],
+        ['sd-kpi-icon-3.png', 'sd-kpi-spark-3.png', $isFr ? 'Visites de la boutique' : 'Shop visits', number_format((int) ($business->views_count ?? 0), 0, ',', ' '), null, null, 'to-[#F2F6FE]', 'border-[#E1E9F8]'],
+        ['sd-kpi-icon-5.png', 'sd-kpi-spark-5.png', $isFr ? 'Avis positifs' : 'Positive reviews', $positiveReviewsPct !== null ? $positiveReviewsPct . '%' : '—', null, null, 'to-[#F1F8EF]', 'border-[#E3EFE2]'],
     ];
 
-    $designOrders = [
-        ['sd-order-1.png', $isFr ? 'Masque Bamileké Royal' : 'Royal Bamileke Mask',           '#GVN-2025-0012', 'delivered', '05 Mai 2025', '75 000 FCFA'],
-        ['sd-order-2.png', $isFr ? 'Panier Tressé Traditionnel' : 'Traditional Woven Basket', '#GVN-2025-0011', 'pending',   '04 Mai 2025', '28 000 FCFA'],
-        ['sd-order-3.png', $isFr ? 'Collier Perles Recyclées' : 'Recycled Bead Necklace',     '#GVN-2025-0010', 'shipped',   '02 Mai 2025', '15 500 FCFA'],
-        ['sd-order-4.png', $isFr ? 'Statue Traditionnelle Sawa' : 'Traditional Sawa Statue',  '#GVN-2025-0009', 'delivered', '01 Mai 2025', '38 000 FCFA'],
-    ];
+    // Real purchase orders for this business
     $orderStatus = [
-        'delivered' => ['✓ ' . ($isFr ? 'Livrée' : 'Delivered'), 'bg-[#E9F6EE] text-[#157A43]'],
         'pending'   => ['✓ ' . ($isFr ? 'En cours' : 'In progress'), 'bg-[#FDF7E3] text-[#B07C10]'],
-        'shipped'   => ['✓ ' . ($isFr ? 'Expédiée' : 'Shipped'), 'bg-[#EBF1FD] text-[#2E5FD0]'],
+        'confirmed' => ['✓ ' . ($isFr ? 'Confirmée' : 'Confirmed'), 'bg-[#EBF1FD] text-[#2E5FD0]'],
+        'delivered' => ['✓ ' . ($isFr ? 'Livrée' : 'Delivered'), 'bg-[#E9F6EE] text-[#157A43]'],
+        'cancelled' => ['✓ ' . ($isFr ? 'Annulée' : 'Cancelled'), 'bg-[#FDE8E8] text-[#DC2626]'],
     ];
+    $realOrders = ($bizPurchaseOrders ?? collect())->take(4);
 
-    $activity = $isFr ? [
-        ['shopping-cart', '#157A43', 'Il y a 5 min',  "Nouvelle commande #GVN-2025-0016\nMontant : 12 000 FCFA"],
-        ['mail',          '#157A43', 'Il y a 23 min', "Nouveau message de Jean M.\nIntéressé par votre produit"],
-        ['heart',         '#DC2626', 'Il y a 1 h',    "Votre produit \u{201C}Masque Sawa\u{201D} a été ajouté\naux favoris"],
-        ['star',          '#F5A623', 'Il y a 2 h',    "Avis 5 étoiles reçu pour \u{201C}Collier Perles\nRecyclées\u{201D}"],
-        ['check-circle-2','#157A43', 'Il y a 3 h',    "Produit \u{201C}Vase Décoratif Béti\u{201D} approuvé"],
-    ] : [
-        ['shopping-cart', '#157A43', '5 min ago',  "New order #GVN-2025-0016\nAmount: 12 000 FCFA"],
-        ['mail',          '#157A43', '23 min ago', "New message from Jean M.\nInterested in your product"],
-        ['heart',         '#DC2626', '1 h ago',    "Your product \u{201C}Masque Sawa\u{201D} was added\nto favorites"],
-        ['star',          '#F5A623', '2 h ago',    "5-star review received for \u{201C}Collier Perles\nRecyclées\u{201D}"],
-        ['check-circle-2','#157A43', '3 h ago',    "Product \u{201C}Vase Décoratif Béti\u{201D} approved"],
-    ];
+    // Real activity feed, merged from messages, RFQ status changes, and reviews
+    $activity = collect();
+    foreach (($recentMessages ?? collect()) as $m) {
+        $activity->push(['mail', '#157A43', $m->created_at, ($isFr ? 'Nouveau message' : 'New message') . "\n" . \Illuminate\Support\Str::limit($m->body, 50)]);
+    }
+    foreach (($bizPurchaseOrders ?? collect())->take(5) as $po) {
+        $activity->push(['shopping-cart', '#157A43', $po->created_at, ($isFr ? 'Nouvelle commande ' : 'New order ') . $po->reference . "\n" . $po->title]);
+    }
+    $activity = $activity->sortByDesc(fn ($a) => $a[2])->take(5)->map(function ($a) {
+        $a[2] = \Illuminate\Support\Carbon::parse($a[2])->diffForHumans(null, true, false, 1);
+        return $a;
+    })->values()->all();
 
-    // Popular products: real products (preserves the edit flow) or the design's five.
+    // Popular products: real products only
     $rankColors = ['#F5A623', '#0E3D22', '#2E7D4F', '#9AA39D', '#9AA39D'];
-    $popPcts = ['↑ 24%', '↑ 18%', '↑ 12%', '↑ 8%', '↑ 6%'];
-    $designPopular = [
-        ['sd-pop-1.png', $isFr ? 'Masque Bamileké Royal' : 'Royal Bamileke Mask', '125'],
-        ['sd-pop-2.png', $isFr ? 'Panier Tressé Traditionnel' : 'Traditional Woven Basket', '98'],
-        ['sd-pop-3.png', $isFr ? 'Collier Perles Recyclées' : 'Recycled Bead Necklace', '76'],
-        ['sd-pop-4.png', $isFr ? 'Statue Traditionnelle Sawa' : 'Traditional Sawa Statue', '65'],
-        ['sd-pop-5.png', $isFr ? 'Vase Décoratif Béti' : 'Beti Decorative Vase', '54'],
-    ];
     $realPopular = collect($products)->sortByDesc(fn ($p) => $p->views_count ?? 0)->take(5)->values();
-
-    $regions = [
-        ['Centre', '45%', '#157A43'],
-        ['Littoral', '25%', '#F5A623'],
-        ['Ouest', '15%', '#E8880E'],
-        ['Nord-Ouest', '8%', '#9AA39D'],
-        ['Sud-Ouest', '5%', '#9AA39D'],
-        [$isFr ? 'Autres' : 'Others', '2%', '#C4C9C5'],
-    ];
 
     $quickActions = [
         ['plus-square',    $isFr ? 'Ajouter un produit' : 'Add a product',        route('products.web-create'), null],
         ['package',        $isFr ? 'Gérer produits' : 'Manage products',          $ownStoreUrl, null],
         ['calendar-plus',  $isFr ? 'Ajouter un événement' : 'Add an event',       route('events.index'), null],
-        ['clipboard-list', $isFr ? 'Voir commandes' : 'View orders',              route('messages.inbox'), '28'],
+        ['clipboard-list', $isFr ? 'Voir commandes' : 'View orders',              route('dashboard.quotes'), (string) $ordersCount],
         ['message-circle', 'Messages',                                             route('messages.inbox'), (string) $messageCount],
         ['tags',           $isFr ? 'Créer une promotion' : 'Create a promotion',  route('contact'), null],
         ['truck',          $isFr ? 'Gérer expéditions' : 'Manage shipping',       route('support.index'), null],
@@ -105,7 +68,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Tableau de bord — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Dashboard — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Tableau de bord — Artisan Hub 237' : 'Dashboard — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -113,10 +76,12 @@
             theme: {
                 extend: {
                     colors: {
-                        sidegreen: '#002714',
-                        sideband:  '#031E12',
-                        siderow:   '#14391E',
-                        dashgold:  '#FCB806',
+                        // Canonical heritage palette (shared with the public site,
+                        // quotes.blade.php and layouts/dashboard.blade.php)
+                        sidegreen: '#02301B',
+                        sideband:  '#0B3D28',
+                        siderow:   '#14532D',
+                        dashgold:  '#E5A82E',
                         leaf:      '#164C28',
                     },
                     fontFamily: {
@@ -133,84 +98,16 @@
     <style>
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
-        /* Sidebar slide-over (explicit CSS — Tailwind Play translate variants are unreliable here) */
-        @media (max-width: 1023.5px) {
-            #dash-sidebar { transform: translateX(-100%); }
-            #dash-sidebar.open { transform: translateX(0); }
-        }
+        {{-- Sidebar slide-over CSS now lives in pages.partials.dashboard-sidebar --}}
     </style>
 </head>
-<body class="bg-[#FCFCFC] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 
 <div class="flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside id="dash-sidebar" class="fixed inset-y-0 left-0 z-40 w-[300px] xl:w-[337px] bg-sidegreen overflow-y-auto">
-        <!-- Brand -->
-        <div class="bg-sideband px-5 py-4 flex items-center gap-3.5">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[52px] h-[56px] object-contain shrink-0">
-            <span>
-                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-white uppercase leading-[1.4]">
-                    {{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}<br>
-                    {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
-                </span>
-                <span class="block mt-0.5 text-[10.5px] text-[#A8B8AC]">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
-            </span>
-        </div>
-
-        <!-- Profile -->
-        <div class="px-5 pt-6 pb-5 flex items-start gap-4">
-            <span class="relative shrink-0">
-                <img src="{{ $shopLogo }}" alt="" class="w-[88px] h-[88px] rounded-full object-cover bg-white">
-                <a href="{{ $business ? route('business.edit') : route('business.create') }}" aria-label="{{ $isFr ? 'Modifier le logo' : 'Edit logo' }}"
-                    class="absolute -bottom-0.5 right-0 w-7 h-7 rounded-full bg-[#0B3018] border-2 border-sidegreen flex items-center justify-center text-white">
-                    <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-                </a>
-            </span>
-            <div class="pt-1 min-w-0">
-                <a href="{{ route('verification.show') }}" class="flex items-center gap-1.5 text-[13.5px] font-semibold text-white">
-                    {{ $isVerified ? ($isFr ? 'Boutique Verifiée' : 'Verified Shop') : ($isFr ? 'Boutique' : 'Shop') }}
-                    @if($isVerified)<i data-lucide="badge-check" class="w-4 h-4 text-[#2FBF71]" style="fill:#2FBF71;color:#002714"></i>@endif
-                </a>
-                <p class="mt-0.5 text-[21px] font-bold text-white leading-tight truncate">{{ $shopName }}</p>
-                <span class="mt-1.5 inline-block bg-gradient-to-b from-[#FFD84D] to-[#F5B301] text-[#3A2A03] text-[12px] font-bold px-3 py-1 rounded-md">
-                    {{ $isFr ? 'Vendeur Gold' : 'Gold Seller' }}
-                </span>
-                @if($memberSince)
-                <p class="mt-2 text-[12px] text-[#C6D4C9]">{{ $isFr ? 'Membre depuis' : 'Member since' }} {{ $memberSince }}</p>
-                @endif
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="mt-1">
-            @foreach($navItems as [$navIcon, $navLabel, $navHref, $navBadge, $navActive])
-            <a href="{{ $navHref }}" class="relative flex items-center gap-4 pl-6 pr-5 py-[10.5px] {{ $navActive ? 'bg-siderow' : 'hover:bg-white/5' }} transition-colors">
-                @if($navActive)<span class="absolute left-0 inset-y-0 w-[5px] bg-dashgold"></span>@endif
-                <img src="{{ asset('images/landing/' . $navIcon) }}" alt="" class="w-[26px] h-[26px] shrink-0" aria-hidden="true">
-                <span class="text-[14.5px] {{ $navActive ? 'text-dashgold font-semibold' : 'text-white' }}">{{ $navLabel }}</span>
-                @if($navBadge)
-                <span class="ml-auto min-w-[30px] text-center text-[11.5px] font-bold px-2 py-[3px] rounded-full {{ $navBadge[1] === 'red' ? 'bg-[#DC0508] text-white' : 'bg-white/15 text-white' }}">{{ $navBadge[0] }}</span>
-                @endif
-            </a>
-            @endforeach
-        </nav>
-
-        <!-- Promo card -->
-        <div class="relative m-4 mt-5 rounded-2xl overflow-hidden bg-[#0D3A20]">
-            <div class="absolute inset-0 opacity-30 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
-            <img src="{{ asset('images/landing/sd-promo-art.png') }}" alt="" class="absolute right-0 bottom-0 h-[92%] pointer-events-none select-none" aria-hidden="true">
-            <div class="relative p-5 pr-[112px]">
-                <h3 class="text-[17px] font-bold text-white leading-snug">{{ $isFr ? 'Développez votre activité' : 'Grow your business' }}</h3>
-                <p class="mt-2 text-[12.5px] text-[#D4E0D6] leading-relaxed">
-                    {{ $isFr ? 'Boostez votre visibilité et attirez plus de clients grâce à nos outils marketing.' : 'Boost your visibility and attract more clients with our marketing tools.' }}
-                </p>
-                <a href="{{ route('contact') }}" class="mt-4 inline-block bg-[#FEBF00] hover:bg-[#EDB100] text-[#3A2A03] text-[12.5px] font-bold px-4 py-2.5 rounded-lg transition-colors">
-                    {{ $isFr ? 'Découvrir nos offres' : 'Discover our offers' }}
-                </a>
-            </div>
-        </div>
-    </aside>
+    {{-- Canonical dashboard sidebar — identical on every dashboard page --}}
+    @include("pages.partials.dashboard-sidebar", ["sidebarId" => "dash-sidebar", "sideBadges" => $sideBadges ?? []])
 
     <div id="dash-backdrop" class="fixed inset-0 z-[35] bg-black/50 hidden lg:hidden"></div>
 
@@ -231,10 +128,6 @@
         <!-- Header (desktop) -->
         <header class="hidden lg:block bg-white border-b border-[#F0F0EE]">
             <div class="flex items-center gap-3 xl:gap-5 px-4 xl:px-8 py-3.5">
-                <button id="dash-menu-btn" class="lg:hidden p-2 -ml-1 rounded-md hover:bg-gray-100" aria-label="Menu">
-                    <i data-lucide="menu" class="w-5 h-5 text-[#1B1B18]"></i>
-                </button>
-
                 <form action="{{ route('gallery.search') }}" method="GET" class="hidden md:flex items-stretch flex-1 max-w-[640px]">
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, un artisan, un événement...' : 'Search a product, an artisan, an event...' }}"
@@ -254,11 +147,15 @@
                 <div class="ml-auto flex items-center gap-3 xl:gap-6">
                     <a href="{{ route('notifications.index') }}" class="relative p-1" aria-label="Notifications">
                         <i data-lucide="bell" class="w-[22px] h-[22px] text-[#1B1B18]"></i>
-                        <span class="absolute -top-1 -right-1.5 bg-[#DC0508] text-white text-[10px] font-bold min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center">5</span>
+                        @if(($notificationCount ?? 0) > 0)
+                        <span class="absolute -top-1 -right-1.5 bg-[#DC0508] text-white text-[10px] font-bold min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('messages.inbox') }}" class="relative p-1" aria-label="Messages">
                         <i data-lucide="mail" class="w-[22px] h-[22px] text-[#1B1B18]"></i>
-                        <span class="absolute -top-1 -right-1.5 bg-[#DC0508] text-white text-[10px] font-bold min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center">{{ $messageCount }}</span>
+                        @if(($messageCount ?? 0) > 0)
+                        <span class="absolute -top-1 -right-1.5 bg-[#DC0508] text-white text-[10px] font-bold min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center">{{ min(99, $messageCount) }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('support.index') }}" class="hidden sm:flex items-center gap-1.5 text-[13.5px] font-medium text-[#1B1B18]">
                         <i data-lucide="circle-help" class="w-[18px] h-[18px]"></i>
@@ -284,12 +181,12 @@
                             <i data-lucide="chevron-down" class="w-4 h-4 text-[#8A857A]"></i>
                         </button>
                         <div class="absolute right-0 top-full w-52 bg-white rounded-lg shadow-lg border border-[#E7E7E5] py-1 hidden group-hover:block z-50">
-                            <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-gray-50">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
-                            <a href="{{ route('membership.certificate') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-gray-50">{{ $isFr ? 'Mon certificat d\'adhésion' : 'My membership certificate' }}</a>
-                            <a href="{{ route('security.show') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-gray-50">{{ $isFr ? 'Sécurité' : 'Security' }}</a>
+                            <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-[#F8F6F2]">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
+                            <a href="{{ route('membership.certificate') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-[#F8F6F2]">{{ $isFr ? 'Mon certificat d\'adhésion' : 'My membership certificate' }}</a>
+                            <a href="{{ route('security.show') }}" class="block px-4 py-2 text-[13px] text-[#262521] hover:bg-[#F8F6F2]">{{ $isFr ? 'Sécurité' : 'Security' }}</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 text-[13px] text-red-600 hover:bg-red-50">{{ $isFr ? 'Se déconnecter' : 'Log out' }}</button>
+                                <button type="submit" class="w-full text-left px-4 py-2 text-[13px] text-[#B42025] hover:bg-[#FDE8E8]">{{ $isFr ? 'Se déconnecter' : 'Log out' }}</button>
                             </form>
                         </div>
                     </div>
@@ -348,13 +245,15 @@
             <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
                 <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
                 <span class="leading-tight min-w-0">
-                    <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
+                    <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                     <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
                     <span class="block text-[9.5px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
                 <a href="{{ route('notifications.index') }}" class="relative ml-auto p-1 shrink-0" aria-label="Notifications">
                     <i data-lucide="bell" class="w-[24px] h-[24px] text-[#1B1B18]" style="stroke-width:1.8"></i>
-                    <span class="absolute -top-1.5 -right-2 bg-[#D40C0F] text-white text-[10px] font-bold min-w-[19px] h-[19px] px-1 rounded-full flex items-center justify-center">12</span>
+                    @if(($notificationCount ?? 0) > 0)
+                    <span class="absolute -top-1.5 -right-2 bg-[#D40C0F] text-white text-[10px] font-bold min-w-[19px] h-[19px] px-1 rounded-full flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
+                    @endif
                 </a>
                 <button type="button" class="sm-menu-btn p-1 shrink-0" aria-label="Menu">
                     <i data-lucide="menu" class="w-[26px] h-[26px] text-[#1B1B18]" style="stroke-width:2.2"></i>
@@ -366,20 +265,20 @@
                 @if($business)
 
                 <!-- Profile hero card -->
-                <section class="relative bg-[#012716] rounded-2xl overflow-hidden">
+                <section class="relative bg-[#02301B] rounded-2xl overflow-hidden">
                     <img src="{{ asset('images/landing/sm-hero-flag.png') }}" alt="" class="absolute right-0 inset-y-0 h-full pointer-events-none select-none" aria-hidden="true">
                     <div class="relative flex items-center gap-3.5 p-3.5">
                         <span class="relative shrink-0">
                             <img src="{{ ($business->logo ?? null) ? asset('storage/' . $business->logo) : asset('images/landing/sm-avatar.png') }}" alt="" class="w-[66px] h-[66px] rounded-full object-cover bg-white">
                             <a href="{{ route('business.edit') }}" aria-label="{{ $isFr ? 'Modifier le logo' : 'Edit logo' }}"
-                                class="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#0B5B31] border-2 border-[#012716] flex items-center justify-center text-white">
+                                class="absolute -bottom-0.5 -right-0.5 w-[22px] h-[22px] rounded-full bg-[#157A43] border-2 border-[#02301B] flex items-center justify-center text-white">
                                 <i data-lucide="camera" class="w-3 h-3"></i>
                             </a>
                         </span>
                         <div class="min-w-0 py-1">
                             <a href="{{ route('verification.show') }}" class="flex items-center gap-1.5 text-[11.5px] font-semibold text-white">
                                 {{ $isVerified ? ($isFr ? 'Boutique Vérifiée' : 'Verified Shop') : ($isFr ? 'Boutique' : 'Shop') }}
-                                @if($isVerified)<i data-lucide="badge-check" class="w-3.5 h-3.5" style="fill:#2FBF71;color:#012716"></i>@endif
+                                @if($isVerified)<i data-lucide="badge-check" class="w-3.5 h-3.5" style="fill:#17A34A;color:#02301B"></i>@endif
                             </a>
                             <p class="text-[17px] font-bold text-white leading-tight truncate">{{ $shopName }}</p>
                             <span class="mt-1 inline-flex items-center gap-1.5">
@@ -484,7 +383,7 @@
                 </section>
 
                 <!-- Wallet bar -->
-                <section id="sm-wallet" class="bg-[#012716] rounded-2xl p-3 flex items-center gap-2.5">
+                <section id="sm-wallet" class="bg-[#02301B] rounded-2xl p-3 flex items-center gap-2.5">
                     <img src="{{ asset('images/landing/sm-wallet-icon.png') }}" alt="" class="w-[29px] h-[29px] shrink-0" aria-hidden="true">
                     <div class="min-w-0">
                         <p class="text-[10.5px] text-[#B9CBBE] leading-tight">{{ $isFr ? 'Solde disponible' : 'Available balance' }}</p>
@@ -501,8 +400,8 @@
                 @else
                 <!-- No business yet (mobile) -->
                 <div class="bg-white rounded-2xl border-2 border-dashed border-[#E3E3E0] p-8 text-center">
-                    <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                        <i data-lucide="store" class="w-6 h-6 text-amber-500"></i>
+                    <div class="w-12 h-12 bg-[#F6E4BE] rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i data-lucide="store" class="w-6 h-6 text-[#E5A82E]"></i>
                     </div>
                     <h2 class="text-[16px] font-bold text-[#1B1B18] mb-2">{{ $isFr ? 'Créez votre vitrine' : 'Create your storefront' }}</h2>
                     <p class="text-[12.5px] text-[#6F6B60] mb-5">
@@ -519,10 +418,10 @@
 
             <!-- Mobile bottom nav -->
             <nav class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#EDEDEB] flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
-                <a href="{{ route('dashboard.entrepreneur') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#0B5B31]">
+                <a href="{{ route('dashboard.entrepreneur') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#157A43]">
                     <i data-lucide="house" class="w-[22px] h-[22px]"></i>
                     <span class="text-[10px] font-semibold">{{ $isFr ? 'Accueil' : 'Home' }}</span>
-                    <span class="w-6 h-[3px] rounded-full bg-[#0B5B31]"></span>
+                    <span class="w-6 h-[3px] rounded-full bg-[#157A43]"></span>
                 </a>
                 <a href="{{ $ownStoreUrl }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
                     <i data-lucide="package" class="w-[22px] h-[22px]"></i>
@@ -602,23 +501,29 @@
                         </a>
                     </div>
                     <div class="divide-y divide-[#F4F4F2]">
-                        @foreach($designOrders as [$ordImg, $ordName, $ordRef, $ordStatus, $ordDate, $ordAmount])
+                        @forelse($realOrders as $ord)
                         <div class="flex items-center gap-3.5 px-5 py-3.5">
-                            <img src="{{ asset('images/landing/' . $ordImg) }}" alt="" class="w-[51px] h-[51px] rounded-lg object-cover shrink-0">
+                            <span class="w-[51px] h-[51px] rounded-lg bg-[#F2F5F2] flex items-center justify-center shrink-0">
+                                <i data-lucide="package" class="w-5 h-5 text-[#8A857A]"></i>
+                            </span>
                             <div class="min-w-0">
-                                <p class="text-[13.5px] font-semibold text-[#1B1B18] truncate">{{ $ordName }}</p>
-                                <p class="mt-0.5 text-[12px] text-[#8A857A]">{{ $ordRef }}</p>
+                                <p class="text-[13.5px] font-semibold text-[#1B1B18] truncate">{{ $ord->title }}</p>
+                                <p class="mt-0.5 text-[12px] text-[#8A857A]">{{ $ord->reference }}</p>
                             </div>
                             <div class="ml-auto text-right shrink-0 hidden sm:block">
-                                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full {{ $orderStatus[$ordStatus][1] }}">{{ $orderStatus[$ordStatus][0] }}</span>
-                                <p class="mt-1 text-[11.5px] text-[#8A857A]">{{ $ordDate }}</p>
+                                @if(isset($orderStatus[$ord->status]))
+                                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full {{ $orderStatus[$ord->status][1] }}">{{ $orderStatus[$ord->status][0] }}</span>
+                                @endif
+                                <p class="mt-1 text-[11.5px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($ord->created_at)->format('d M Y') }}</p>
                             </div>
-                            <p class="text-[13.5px] font-bold text-[#1B1B18] shrink-0 w-[92px] text-right">{{ $ordAmount }}</p>
-                            <a href="{{ route('messages.inbox') }}" class="text-[#8A857A] hover:text-[#1B1B18] shrink-0" aria-label="{{ $isFr ? 'Options' : 'Options' }}">
-                                <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                            <p class="text-[13.5px] font-bold text-[#1B1B18] shrink-0 w-[92px] text-right">{{ $ord->total ? number_format($ord->total, 0, ',', ' ') . ' FCFA' : '—' }}</p>
+                            <a href="{{ route('quotes.po', ['lang' => $lang, 'po' => $ord->id]) }}" class="text-[#8A857A] hover:text-[#1B1B18] shrink-0" aria-label="{{ $isFr ? 'Voir' : 'View' }}">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </a>
                         </div>
-                        @endforeach
+                        @empty
+                        <p class="px-5 py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune commande pour le moment.' : 'No orders yet.' }}</p>
+                        @endforelse
                     </div>
                 </section>
 
@@ -626,7 +531,7 @@
                 <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité en temps réel' : 'Real-time activity' }}</h2>
                     <div class="mt-4 space-y-0">
-                        @foreach($activity as $actIdx => [$actIcon, $actColor, $actTime, $actText])
+                        @forelse($activity as $actIdx => [$actIcon, $actColor, $actTime, $actText])
                         <div class="relative flex gap-3.5 pb-5">
                             @if($actIdx < count($activity) - 1)<span class="absolute left-[13px] top-7 bottom-0 w-px bg-[#EDEDEB]"></span>@endif
                             <span class="w-[27px] h-[27px] shrink-0 rounded-full border flex items-center justify-center bg-white" style="border-color:{{ $actColor }}40">
@@ -637,7 +542,9 @@
                                 <p class="mt-0.5 text-[12.5px] text-[#1B1B18] leading-snug whitespace-pre-line">{{ $actText }}</p>
                             </div>
                         </div>
-                        @endforeach
+                        @empty
+                        <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</p>
+                        @endforelse
                     </div>
                     <a href="{{ route('notifications.index') }}" class="flex items-center justify-center gap-2 py-2.5 border-t border-[#F4F4F2] text-[12.5px] font-semibold text-[#1B1B18] hover:text-leaf">
                         {{ $isFr ? 'Voir toute l\'activité' : 'View all activity' }}
@@ -646,30 +553,24 @@
                 </section>
 
                 <!-- Mon portefeuille -->
-                <section id="portefeuille" class="relative rounded-2xl overflow-hidden bg-[#07271A] p-6">
+                <section class="relative rounded-2xl overflow-hidden bg-[#07271A] p-6">
                     <div class="absolute inset-0 opacity-20 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
                     <div class="relative">
                         <div class="flex items-start justify-between">
                             <div>
                                 <h2 class="text-[15.5px] font-bold text-white">{{ $isFr ? 'Mon portefeuille' : 'My wallet' }}</h2>
-                                <p class="mt-4 text-[12.5px] text-[#B9CBBE]">{{ $isFr ? 'Solde disponible' : 'Available balance' }}</p>
-                                <p class="mt-1 text-[26px] font-bold text-white leading-none">156 500 <span class="text-[13px]">FCFA</span></p>
+                                <p class="mt-4 text-[12.5px] text-[#B9CBBE]">{{ $isFr ? 'Reçu (factures payées)' : 'Received (paid invoices)' }}</p>
+                                <p class="mt-1 text-[26px] font-bold text-white leading-none">{{ number_format($revenueTotal, 0, ',', ' ') }} <span class="text-[13px]">FCFA</span></p>
                             </div>
                             <img src="{{ asset('images/landing/sd-wallet-icon.png') }}" alt="" class="w-[64px] shrink-0" aria-hidden="true">
                         </div>
                         <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-[12.5px]">
                             <span class="text-[#B9CBBE]">{{ $isFr ? 'En attente de paiement' : 'Pending payment' }}</span>
-                            <span class="font-bold text-white">45 200 FCFA</span>
+                            <span class="font-bold text-white">{{ number_format($pendingInvoiceTotal, 0, ',', ' ') }} FCFA</span>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-[12.5px]">
-                            <span class="text-[#B9CBBE]">{{ $isFr ? 'Total retiré' : 'Total withdrawn' }}</span>
-                            <span class="font-bold text-white">890 750 FCFA</span>
-                        </div>
-                        <a href="{{ route('support.index') }}" class="mt-6 block w-full bg-[#FEBF00] hover:bg-[#EDB100] text-[#3A2A03] text-[13.5px] font-bold text-center py-3 rounded-lg transition-colors">
-                            {{ $isFr ? 'Retirer mes gains' : 'Withdraw my earnings' }}
-                        </a>
-                        <a href="{{ route('notifications.index') }}" class="mt-3 block w-full border border-white/40 hover:bg-white/10 text-white text-[13.5px] font-semibold text-center py-3 rounded-lg transition-colors">
-                            {{ $isFr ? 'Historique des transactions' : 'Transaction history' }}
+                        <p class="mt-5 text-[11.5px] text-[#B9CBBE] leading-relaxed">{{ $isFr ? 'Les retraits en ligne arrivent bientôt.' : 'Online withdrawals are coming soon.' }}</p>
+                        <a href="{{ route('support.index') }}" class="mt-4 block w-full border border-white/40 hover:bg-white/10 text-white text-[13.5px] font-semibold text-center py-3 rounded-lg transition-colors">
+                            {{ $isFr ? 'Nous contacter' : 'Contact us' }}
                         </a>
                     </div>
                 </section>
@@ -690,15 +591,15 @@
                         <div class="shrink-0 space-y-5 pt-3">
                             <div>
                                 <p class="flex items-center gap-2 text-[12px] text-[#55524A]"><span class="w-2 h-2 rounded-full bg-[#157A43]"></span>{{ $isFr ? 'Ventes (FCFA)' : 'Sales (FCFA)' }}</p>
-                                <p class="mt-1 pl-4 text-[16px] font-bold text-[#1B1B18]">356 000</p>
+                                <p class="mt-1 pl-4 text-[16px] font-bold text-[#1B1B18]">{{ number_format($revenueTotal, 0, ',', ' ') }}</p>
                             </div>
                             <div>
                                 <p class="flex items-center gap-2 text-[12px] text-[#55524A]"><span class="w-2 h-2 rounded-full bg-[#F5A623]"></span>{{ $isFr ? 'Commandes' : 'Orders' }}</p>
-                                <p class="mt-1 pl-4 text-[16px] font-bold text-[#1B1B18]">28</p>
+                                <p class="mt-1 pl-4 text-[16px] font-bold text-[#1B1B18]">{{ $ordersCount }}</p>
                             </div>
                             <div>
                                 <p class="flex items-center gap-2 text-[12px] text-[#55524A]"><span class="w-2 h-2 rounded-full bg-[#3B72E8]"></span>{{ $isFr ? 'Visites' : 'Visits' }}</p>
-                                <p class="mt-1 pl-4 text-[16px] font-bold text-[#1B1B18]">1 245</p>
+                                <p class="mt-1 pl-4 text-[16px] font-bold text-[#1B1B18]">{{ number_format((int) ($business->views_count ?? 0), 0, ',', ' ') }}</p>
                             </div>
                         </div>
                         <img src="{{ asset('images/landing/sd-chart.png') }}" alt="" class="flex-1 min-w-0 self-end" aria-hidden="true">
@@ -715,48 +616,26 @@
                         </a>
                     </div>
                     <div class="mt-3">
-                        @if($realPopular->count())
-                            @foreach($realPopular as $popIdx => $popProd)
-                            <a href="{{ route('products.web-edit', ['slug' => $popProd->slug]) }}" class="flex items-center gap-3 py-2.5 {{ $popIdx > 0 ? 'border-t border-[#F4F4F2]' : '' }} hover:bg-[#FAFAF8] transition-colors">
-                                <span class="w-[22px] h-[22px] shrink-0 rounded-full text-white text-[11px] font-bold flex items-center justify-center" style="background:{{ $rankColors[$popIdx] }}">{{ $popIdx + 1 }}</span>
-                                <img src="{{ asset('images/landing/' . $designPopular[$popIdx % 5][0]) }}" alt="" class="w-[31px] h-[31px] rounded-md object-cover shrink-0">
-                                <div class="min-w-0">
-                                    <p class="text-[12.5px] font-semibold text-[#1B1B18] truncate">{{ $isFr ? $popProd->name_fr : ($popProd->name_en ?? $popProd->name_fr) }}</p>
-                                    <p class="text-[11px] text-[#8A857A]">{{ $popProd->views_count ?? 0 }} {{ $isFr ? 'vues' : 'views' }}</p>
-                                </div>
-                                <span class="ml-auto text-[11px] font-bold text-[#157A43] shrink-0">{{ $popPcts[$popIdx % 5] }}</span>
-                            </a>
-                            @endforeach
-                        @else
-                            @foreach($designPopular as $popIdx => [$popImg, $popName, $popViews])
-                            <a href="{{ route('products.index', ['lang' => $lang]) }}" class="flex items-center gap-3 py-2.5 {{ $popIdx > 0 ? 'border-t border-[#F4F4F2]' : '' }} hover:bg-[#FAFAF8] transition-colors">
-                                <span class="w-[22px] h-[22px] shrink-0 rounded-full text-white text-[11px] font-bold flex items-center justify-center" style="background:{{ $rankColors[$popIdx] }}">{{ $popIdx + 1 }}</span>
-                                <img src="{{ asset('images/landing/' . $popImg) }}" alt="" class="w-[31px] h-[31px] rounded-md object-cover shrink-0">
-                                <div class="min-w-0">
-                                    <p class="text-[12.5px] font-semibold text-[#1B1B18] truncate">{{ $popName }}</p>
-                                    <p class="text-[11px] text-[#8A857A]">{{ $popViews }} {{ $isFr ? 'vues' : 'views' }}</p>
-                                </div>
-                                <span class="ml-auto text-[11px] font-bold text-[#157A43] shrink-0">{{ $popPcts[$popIdx] }}</span>
-                            </a>
-                            @endforeach
-                        @endif
+                        @forelse($realPopular as $popIdx => $popProd)
+                        <a href="{{ route('products.web-edit', ['slug' => $popProd->slug]) }}" class="flex items-center gap-3 py-2.5 {{ $popIdx > 0 ? 'border-t border-[#F4F4F2]' : '' }} hover:bg-[#FAFAF8] transition-colors">
+                            <span class="w-[22px] h-[22px] shrink-0 rounded-full text-white text-[11px] font-bold flex items-center justify-center" style="background:{{ $rankColors[$popIdx] }}">{{ $popIdx + 1 }}</span>
+                            <div class="min-w-0">
+                                <p class="text-[12.5px] font-semibold text-[#1B1B18] truncate">{{ $isFr ? $popProd->name_fr : ($popProd->name_en ?? $popProd->name_fr) }}</p>
+                                <p class="text-[11px] text-[#8A857A]">{{ $popProd->views_count ?? 0 }} {{ $isFr ? 'vues' : 'views' }}</p>
+                            </div>
+                        </a>
+                        @empty
+                        <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucun produit publié pour le moment.' : 'No published products yet.' }}</p>
+                        @endforelse
                     </div>
                 </section>
 
                 <!-- Statistiques par région -->
                 <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-4">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Statistiques par région' : 'Statistics by region' }}</h2>
-                    <div class="mt-4 flex gap-3">
-                        <div class="flex-1 space-y-3.5 pt-1">
-                            @foreach($regions as [$regName, $regPct, $regColor])
-                            <div class="flex items-center gap-2.5 text-[12px]">
-                                <span class="w-2 h-2 rounded-full shrink-0" style="background:{{ $regColor }}"></span>
-                                <span class="text-[#55524A]">{{ $regName }}</span>
-                                <span class="ml-auto font-bold text-[#1B1B18]">{{ $regPct }}</span>
-                            </div>
-                            @endforeach
-                        </div>
-                        <img src="{{ asset('images/landing/sd-region-map.png') }}" alt="" class="w-[132px] shrink-0 self-start" aria-hidden="true">
+                    <div class="mt-6 flex flex-col items-center text-center py-4">
+                        <i data-lucide="map" class="w-7 h-7 text-[#B9B4A9] mb-2"></i>
+                        <p class="text-[12px] text-[#6F6B60] max-w-[200px]">{{ $isFr ? 'La répartition géographique arrive bientôt.' : 'Regional breakdown is coming soon.' }}</p>
                     </div>
                 </section>
             </div>
@@ -771,7 +650,7 @@
                         @foreach($quickActions as [$qaIcon, $qaLabel, $qaHref, $qaBadge])
                         <a href="{{ $qaHref }}" class="relative border border-[#EEEEEC] rounded-xl px-2 py-3.5 text-center hover:border-dashgold hover:shadow-sm transition-all">
                             <span class="relative inline-block">
-                                <i data-lucide="{{ $qaIcon }}" class="w-6 h-6 text-[#1B4332]" style="stroke-width:1.6"></i>
+                                <i data-lucide="{{ $qaIcon }}" class="w-6 h-6 text-[#14532D]" style="stroke-width:1.6"></i>
                                 @if($qaBadge)
                                 <span class="absolute -top-2 -right-3 bg-[#DC0508] text-white text-[9px] font-bold min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center">{{ $qaBadge }}</span>
                                 @endif
@@ -800,8 +679,8 @@
             @else
             <!-- No business yet -->
             <div class="max-w-xl mx-auto mt-10 bg-white rounded-2xl border-2 border-dashed border-[#E3E3E0] p-10 text-center">
-                <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="store" class="w-7 h-7 text-amber-500"></i>
+                <div class="w-14 h-14 bg-[#F6E4BE] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="store" class="w-7 h-7 text-[#E5A82E]"></i>
                 </div>
                 <h2 class="text-[18px] font-bold text-[#1B1B18] mb-2">{{ $isFr ? 'Créez votre vitrine' : 'Create your storefront' }}</h2>
                 <p class="text-[13.5px] text-[#6F6B60] mb-6 max-w-sm mx-auto">
@@ -828,7 +707,7 @@
         sb.classList.toggle('open');
         bd.classList.toggle('hidden');
     };
-    document.querySelectorAll('.sm-menu-btn, #dash-menu-btn').forEach(b => b.addEventListener('click', toggleSidebar));
+    document.querySelectorAll('.sm-menu-btn').forEach(b => b.addEventListener('click', toggleSidebar));
     bd.addEventListener('click', () => {
         sb.classList.remove('open');
         bd.classList.add('hidden');

@@ -19,14 +19,14 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
 <div class="max-w-2xl space-y-6">
 
     @if(session('success'))
-        <div class="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+        <div class="flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
             <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
             {{ session('success') }}
         </div>
     @endif
 
     @if($errors->any())
-        <div class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
+        <div class="flex items-start gap-2 bg-[#FDE8E8] border border-[#F5C9C9] rounded-lg px-4 py-3 text-sm text-[#B42025]">
             <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
             {{ $errors->first() }}
         </div>
@@ -47,14 +47,14 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
                     {{ $lang === 'fr' ? 'Nom complet' : 'Full name' }}
                 </label>
                 <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required maxlength="255"
-                    class="w-full px-3.5 py-2.5 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
+                    class="w-full px-3.5 py-2.5 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
             </div>
             <div>
                 <label class="block text-sm font-medium text-[#3B382F] mb-1.5" for="language_preference">
                     {{ $lang === 'fr' ? 'Langue préférée' : 'Preferred language' }}
                 </label>
                 <select id="language_preference" name="language_preference"
-                    class="w-full px-3.5 py-2.5 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition bg-white">
+                    class="w-full px-3.5 py-2.5 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition bg-white">
                     <option value="fr" {{ ($user->language_preference ?? 'fr') === 'fr' ? 'selected' : '' }}>Français</option>
                     <option value="en" {{ ($user->language_preference ?? 'fr') === 'en' ? 'selected' : '' }}>English</option>
                 </select>
@@ -94,7 +94,7 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
                     {{ $lang === 'fr' ? 'Mot de passe actuel' : 'Current password' }}
                 </label>
                 <input id="current_password" name="current_password" type="password" required autocomplete="current-password"
-                    class="w-full px-3.5 py-2.5 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
+                    class="w-full px-3.5 py-2.5 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -102,14 +102,14 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
                         {{ $lang === 'fr' ? 'Nouveau mot de passe' : 'New password' }}
                     </label>
                     <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password"
-                        class="w-full px-3.5 py-2.5 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
+                        class="w-full px-3.5 py-2.5 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-[#3B382F] mb-1.5" for="password_confirmation">
                         {{ $lang === 'fr' ? 'Confirmer' : 'Confirm' }}
                     </label>
                     <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" autocomplete="new-password"
-                        class="w-full px-3.5 py-2.5 border border-[#E4DECF] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
+                        class="w-full px-3.5 py-2.5 border border-[#EFEBE2] rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition">
                 </div>
             </div>
             <div class="pt-1">

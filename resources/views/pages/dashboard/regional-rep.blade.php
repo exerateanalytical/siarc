@@ -103,11 +103,11 @@ $pageTitle = ($lang === 'fr' ? 'Représentant régional' : 'Regional Representat
     <div class="mt-4">{{ $businesses->links() }}</div>
     @endif
 
-    <!-- Events / SIARC participation -->
+    <!-- Events participation -->
     <div class="bg-white rounded-xl border border-[#EFEBE2] overflow-hidden mt-4">
         <div class="px-4 py-3 border-b border-[#F1EDE4] flex items-center gap-2">
             <i data-lucide="calendar-days" class="w-4 h-4 text-indigo-500"></i>
-            <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Participation aux événements SIARC' : 'SIARC event participation' }}</h2>
+            <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Participation aux événements' : 'Event participation' }}</h2>
         </div>
         @forelse($events as $event)
         <div class="px-4 py-3 border-b border-[#FBF9F4] last:border-0">

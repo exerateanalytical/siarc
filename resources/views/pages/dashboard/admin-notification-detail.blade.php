@@ -57,8 +57,8 @@
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
                         <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr?'Aperçu de l\'email':'Email preview' }}</h2>
                         <div class="mt-4 border border-[#EFF0EF] rounded-xl overflow-hidden">
-                            <div class="bg-gradient-to-r from-[#0E3D22] to-[#12522C] px-6 py-4 flex items-center gap-3"><img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-9 h-10 object-contain"><div><p class="text-[11px] font-bold text-white uppercase leading-tight">Galerie Virtuelle Nationale<br>de l'Artisanat du Cameroun</p></div></div>
-                            <div class="px-6 py-5"><p class="text-[13px] text-[#1B1B18]">{{ $isFr?'Bonjour,':'Hello,' }}</p><p class="mt-2 text-[12.5px] text-[#3B382F]">{{ $notification->body }}</p><div class="mt-4 flex items-center justify-between bg-[#F7F8F7] rounded-lg px-4 py-3"><span class="text-[11.5px] text-[#6F6B60]">{{ $notification->title }}</span>@if($notification->link)<a href="{{ $notification->link }}" class="bg-[#0F4824] text-white rounded-lg px-3.5 py-1.5 text-[11.5px] font-semibold">{{ $isFr?'Voir':'View' }}</a>@endif</div><p class="mt-4 text-[12px] text-[#3B382F]">{{ $isFr?'Merci,':'Thank you,' }}<br>{{ $isFr?'Équipe Support – Galerie Virtuelle':'Support Team – Virtual Gallery' }}</p></div>
+                            <div class="bg-gradient-to-r from-[#0E3D22] to-[#12522C] px-6 py-4 flex items-center gap-3"><img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-9 h-10 object-contain"><div><p class="text-[11px] font-bold text-white uppercase leading-tight">Artisan Hub 237<br>de l'Artisanat du Cameroun</p></div></div>
+                            <div class="px-6 py-5"><p class="text-[13px] text-[#1B1B18]">{{ $isFr?'Bonjour,':'Hello,' }}</p><p class="mt-2 text-[12.5px] text-[#3B382F]">{{ $notification->body }}</p><div class="mt-4 flex items-center justify-between bg-[#F7F8F7] rounded-lg px-4 py-3"><span class="text-[11.5px] text-[#6F6B60]">{{ $notification->title }}</span>@if($notification->link)<a href="{{ $notification->link }}" class="bg-[#0F4824] text-white rounded-lg px-3.5 py-1.5 text-[11.5px] font-semibold">{{ $isFr?'Voir':'View' }}</a>@endif</div><p class="mt-4 text-[12px] text-[#3B382F]">{{ $isFr?'Merci,':'Thank you,' }}<br>{{ $isFr?'Équipe Support – Artisan Hub 237':'Support Team – Artisan Hub 237' }}</p></div>
                         </div>
                     </section>
                 </div>
@@ -82,5 +82,5 @@
                     </section>
                 </aside>
             </div>
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

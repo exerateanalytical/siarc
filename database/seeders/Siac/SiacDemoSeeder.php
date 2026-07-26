@@ -12,9 +12,9 @@ class SiacDemoSeeder extends Seeder
     public function run(): void
     {
         $entrepreneurId = $this->upsertUser(
-            email: 'entrepreneur@siarc2026.cm',
+            email: 'entrepreneur@artisanhub237.com',
             name: 'Demo Entrepreneur',
-            password: 'Demo@SIARC2026',
+            password: 'Demo@ArtisanHub237',
             lang: 'fr',
         );
         $this->assignRole($entrepreneurId, 'business_owner');
@@ -33,17 +33,17 @@ class SiacDemoSeeder extends Seeder
 
         // Demo Buyer
         $this->upsertUser(
-            email: 'acheteur@siarc2026.cm',
+            email: 'acheteur@artisanhub237.com',
             name: 'Demo Acheteur',
-            password: 'Demo@SIARC2026',
+            password: 'Demo@ArtisanHub237',
             lang: 'fr',
         );
 
         // Demo Regional Representative — assigned to the Centre region
         $regionalRepId = $this->upsertUser(
-            email: 'regional@siarc2026.cm',
+            email: 'regional@artisanhub237.com',
             name: 'Rep Centre',
-            password: 'Demo@SIARC2026',
+            password: 'Demo@ArtisanHub237',
             lang: 'fr',
         );
         $this->assignRole($regionalRepId, 'regional_rep');
@@ -54,29 +54,29 @@ class SiacDemoSeeder extends Seeder
 
         // Demo Ministry account
         $ministryId = $this->upsertUser(
-            email: 'ministry@siarc2026.cm',
+            email: 'ministry@artisanhub237.com',
             name: 'Ministry User',
-            password: 'Demo@SIARC2026',
+            password: 'Demo@ArtisanHub237',
             lang: 'fr',
         );
         $this->assignRole($ministryId, 'ministry');
 
         // Demo Technical Reviewer
         $technicalId = $this->upsertUser(
-            email: 'technique@siarc2026.cm',
+            email: 'technique@artisanhub237.com',
             name: 'Tech Reviewer',
-            password: 'Demo@SIARC2026',
+            password: 'Demo@ArtisanHub237',
             lang: 'fr',
         );
         $this->assignRole($technicalId, 'technical_reviewer');
 
         $this->command->info('Demo accounts created:');
-        $this->command->line('  entrepreneur@siarc2026.cm   / Demo@SIARC2026  (business_owner)');
-        $this->command->line('  acheteur@siarc2026.cm       / Demo@SIARC2026  (buyer)');
-        $this->command->line('  regional@siarc2026.cm       / Demo@SIARC2026  (regional_rep)');
-        $this->command->line('  ministry@siarc2026.cm       / Demo@SIARC2026  (ministry)');
-        $this->command->line('  technique@siarc2026.cm      / Demo@SIARC2026  (technical_reviewer)');
-        $this->command->line('  admin@artisanatcameroun.cm / Admin@SIARC2026  (super_admin)');
+        $this->command->line('  entrepreneur@artisanhub237.com   / Demo@ArtisanHub237  (business_owner)');
+        $this->command->line('  acheteur@artisanhub237.com       / Demo@ArtisanHub237  (buyer)');
+        $this->command->line('  regional@artisanhub237.com       / Demo@ArtisanHub237  (regional_rep)');
+        $this->command->line('  ministry@artisanhub237.com       / Demo@ArtisanHub237  (ministry)');
+        $this->command->line('  technique@artisanhub237.com      / Demo@ArtisanHub237  (technical_reviewer)');
+        $this->command->line('  admin@artisanatcameroun.cm / Admin@ArtisanHub237  (super_admin)');
     }
 
     private function upsertUser(string $email, string $name, string $password, string $lang): string

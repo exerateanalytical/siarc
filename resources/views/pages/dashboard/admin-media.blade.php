@@ -367,7 +367,7 @@
             {{-- Footer strip --}}
             <div class="mt-8 pt-4 border-t border-[#EBE6DA] flex flex-wrap items-center justify-between gap-3">
                 <span class="hidden md:block w-[120px]"></span>
-                <p class="text-[11.5px] text-[#6F6B60] text-center flex-1">© 2025 {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+                <p class="text-[11.5px] text-[#6F6B60] text-center flex-1">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
                 <span class="flex items-center gap-4 shrink-0">
                     <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>
                     <a href="{{ route('messages.inbox') }}" class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>

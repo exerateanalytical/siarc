@@ -8,7 +8,7 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
 <div class="max-w-3xl space-y-6">
 
     @if(session('success'))
-        <div class="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+        <div class="flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
             <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
             {{ session('success') }}
         </div>
@@ -40,7 +40,7 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
                         <img src="{{ asset('storage/' . $product->primaryImage->file_path) }}" alt="" class="w-full h-full object-cover hover:scale-105 transition-transform">
                     @else
                         <div class="w-full h-full flex items-center justify-center">
-                            <i data-lucide="image" class="w-6 h-6 text-gray-300"></i>
+                            <i data-lucide="image" class="w-6 h-6 text-[#CFC9BF]"></i>
                         </div>
                     @endif
                 </a>

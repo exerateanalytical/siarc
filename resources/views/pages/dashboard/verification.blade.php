@@ -29,13 +29,13 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
 <div class="max-w-2xl">
 
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
+    <div class="bg-[#E2F3E8] border border-[#BFDCC8] text-[#14532D] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
         <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
     </div>
     @endif
 
     @if($errors->any())
-    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3.5 mb-4">
+    <div class="bg-[#FDE8E8] border border-[#F5C9C9] text-[#B42025] text-sm rounded-xl p-3.5 mb-4">
         @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
     </div>
     @endif
@@ -62,9 +62,9 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
                 </div>
                 <span @class([
                     'text-xs font-medium px-2 py-1 rounded-full',
-                    'bg-amber-100 text-amber-700' => in_array($app->status, ['submitted', 'under_review']),
-                    'bg-green-100 text-green-700' => $app->status === 'approved',
-                    'bg-red-100 text-red-700' => $app->status === 'rejected',
+                    'bg-[#F6E4BE] text-[#8A6D1F]' => in_array($app->status, ['submitted', 'under_review']),
+                    'bg-[#CFE5D6] text-[#14532D]' => $app->status === 'approved',
+                    'bg-[#F5C9C9] text-[#B42025]' => $app->status === 'rejected',
                     'bg-[#F1EDE4] text-[#8A857A]' => $app->status === 'draft',
                 ])>{{ $statusLabels[$app->status] ?? $app->status }}</span>
             </div>
@@ -74,7 +74,7 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
     @endif
 
     @if($pendingApplication)
-    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700 flex items-start gap-2">
+    <div class="bg-[#FBF1DD] border border-[#EFD08A] rounded-xl p-4 text-sm text-[#8A6D1F] flex items-start gap-2">
         <i data-lucide="clock" class="w-4 h-4 shrink-0 mt-0.5"></i>
         {{ $lang === 'fr' ? 'Une demande est déjà en attente d\'examen.' : 'An application is already pending review.' }}
     </div>
@@ -87,7 +87,7 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
 
         <div>
             <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Niveau demandé' : 'Requested tier' }}</label>
-            <select name="tier_requested" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+            <select name="tier_requested" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 <option value="basic">{{ $tierLabels['basic'] }}</option>
                 <option value="verified">{{ $tierLabels['verified'] }}</option>
                 <option value="certified">{{ $tierLabels['certified'] }}</option>
@@ -100,7 +100,7 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[#FBF9F4] rounded-lg">
             <div>
                 <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Type de document' : 'Document type' }}</label>
-                <select name="documents[{{ $i }}][type]" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                <select name="documents[{{ $i }}][type]" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                     <option value="">{{ $lang === 'fr' ? 'Aucun' : 'None' }}</option>
                     @foreach($docTypeLabels as $val => $label)
                     <option value="{{ $val }}">{{ $label }}</option>

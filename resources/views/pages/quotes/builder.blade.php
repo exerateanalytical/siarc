@@ -58,7 +58,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Créer une proposition de devis — Articles — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Create a quote proposal — Items — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Créer une proposition de devis — Articles — Artisan Hub 237' : 'Create a quote proposal — Items — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
@@ -88,10 +88,6 @@
                 <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Construisez et personnalisez votre proposition pour l\'envoyer à l\'artisan.' : 'Build and customise your proposal to send it to the artisan.' }}</p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
-                <button type="button" id="bld-draft" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
-                    <i data-lucide="file-text" class="w-4 h-4" style="stroke-width:1.7"></i>
-                    <span id="bld-draft-label">{{ $isFr ? 'Enregistrer brouillon' : 'Save draft' }}</span>
-                </button>
                 @if($isReal)
                 <button type="submit" form="bld-form" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
                     {{ $isFr ? 'Envoyer la proposition' : 'Send the proposal' }}
@@ -203,7 +199,6 @@
                                         </div>
                                         <p class="bld-total text-[13px] font-bold text-[#14652F] text-right whitespace-nowrap">{{ $rTotal }}</p>
                                         <div class="flex items-center justify-center gap-2">
-                                            <button type="button" class="w-[34px] h-[34px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F]"><i data-lucide="square-pen" class="w-4 h-4" style="stroke-width:1.7"></i></button>
                                             <button type="button" class="bld-del w-[34px] h-[34px] rounded-lg border border-[#F5DADA] hover:border-[#DC2626] flex items-center justify-center text-[#DC2626]"><i data-lucide="trash-2" class="w-4 h-4" style="stroke-width:1.7"></i></button>
                                         </div>
                                     </div>
@@ -441,10 +436,6 @@
         });
     });
 
-    document.getElementById('bld-draft').addEventListener('click', () => {
-        localStorage.setItem('bldDraft', '1');
-        document.getElementById('bld-draft-label').textContent = @json($isFr ? 'Brouillon enregistré ✓' : 'Draft saved ✓');
-    });
 </script>
 </body>
 </html>

@@ -291,6 +291,6 @@
     </div>
 </section>
 
-<p class="mt-8 text-center text-[11.5px] text-[#8A857A]">© {{ date('Y') }} Galerie Virtuelle Nationale de l'Artisanat du Cameroun. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
+<p class="mt-8 text-center text-[11.5px] text-[#8A857A]">© {{ date('Y') }} Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
 
 @endsection

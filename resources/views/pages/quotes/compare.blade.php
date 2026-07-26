@@ -65,7 +65,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Comparaison des versions — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Version comparison — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Comparaison des versions — Artisan Hub 237' : 'Version comparison — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
@@ -337,7 +337,6 @@
                                 <span class="block text-[12px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ $djName }}</span>
                                 <span class="block text-[11px] text-[#6F6B60]">{{ $djSize }}</span>
                             </span>
-                            <button type="button" onclick="window.print()" class="shrink-0 text-[#3B382F] hover:text-[#14652F]"><i data-lucide="download" class="w-4 h-4" style="stroke-width:1.7"></i></button>
                         </div>
                         @endforeach
                     </div>

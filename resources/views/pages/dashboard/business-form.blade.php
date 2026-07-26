@@ -11,13 +11,13 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
 <div class="max-w-2xl">
 
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
+    <div class="bg-[#E2F3E8] border border-[#BFDCC8] text-[#14532D] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
         <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
     </div>
     @endif
 
     @if($errors->any())
-    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3.5 mb-4">
+    <div class="bg-[#FDE8E8] border border-[#F5C9C9] text-[#B42025] text-sm rounded-xl p-3.5 mb-4">
         <p class="font-medium mb-1">{{ $lang === 'fr' ? 'Merci de corriger les erreurs suivantes :' : 'Please fix the following errors:' }}</p>
         <ul class="list-disc list-inside space-y-0.5">
             @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
@@ -46,22 +46,22 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Slogan (français)' : 'Tagline (French)' }}</label>
-                    <input name="tagline_fr" value="{{ $v('tagline_fr') }}" maxlength="255" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="tagline_fr" value="{{ $v('tagline_fr') }}" maxlength="255" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Slogan (anglais)' : 'Tagline (English)' }}</label>
-                    <input name="tagline_en" value="{{ $v('tagline_en') }}" maxlength="255" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="tagline_en" value="{{ $v('tagline_en') }}" maxlength="255" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Description (français)' : 'Description (French)' }}</label>
-                    <textarea name="description_fr" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 resize-none">{{ $v('description_fr') }}</textarea>
+                    <textarea name="description_fr" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none">{{ $v('description_fr') }}</textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Description (anglais)' : 'Description (English)' }}</label>
-                    <textarea name="description_en" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 resize-none">{{ $v('description_en') }}</textarea>
+                    <textarea name="description_en" rows="4" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none">{{ $v('description_en') }}</textarea>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Secteur' : 'Industry' }} *</label>
-                    <select name="industry_id" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <select name="industry_id" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                         <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
                         @foreach($industries as $ind)
                         <option value="{{ $ind->id }}" {{ $v('industry_id') == $ind->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $ind->name_fr : $ind->name_en }}</option>
@@ -82,7 +82,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Région' : 'Region' }}</label>
-                    <select name="region_id" id="region-select" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <select name="region_id" id="region-select" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                         <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
                         @foreach($regions as $region)
                         <option value="{{ $region->id }}" {{ $v('region_id') == $region->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $region->name_fr : $region->name_en }}</option>
@@ -91,7 +91,7 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Ville' : 'City' }}</label>
-                    <select name="city_id" id="city-select" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <select name="city_id" id="city-select" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                         <option value="">{{ $lang === 'fr' ? 'Choisir une région d\'abord' : 'Choose a region first' }}</option>
                         @foreach($cities as $city)
                         <option value="{{ $city->id }}" {{ $v('city_id') == $city->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $city->name_fr : $city->name_en }}</option>
@@ -107,23 +107,23 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Téléphone' : 'Phone' }}</label>
-                    <input name="phone" value="{{ $v('phone') }}" placeholder="+237 6XX XX XX XX" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="phone" value="{{ $v('phone') }}" placeholder="+237 6XX XX XX XX" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">WhatsApp</label>
-                    <input name="whatsapp" value="{{ $v('whatsapp') }}" placeholder="+237 6XX XX XX XX" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="whatsapp" value="{{ $v('whatsapp') }}" placeholder="+237 6XX XX XX XX" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">Email</label>
-                    <input type="email" name="email" value="{{ $v('email') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="email" name="email" value="{{ $v('email') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Site web' : 'Website' }}</label>
-                    <input type="url" name="website" value="{{ $v('website') }}" placeholder="https://" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="url" name="website" value="{{ $v('website') }}" placeholder="https://" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div class="sm:col-span-2">
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Adresse' : 'Address' }}</label>
-                    <input name="address_fr" value="{{ $v('address_fr') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input name="address_fr" value="{{ $v('address_fr') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
             </div>
         </div>
@@ -134,11 +134,11 @@ $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my bu
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Année de création' : 'Year established' }}</label>
-                    <input type="number" name="year_established" value="{{ $v('year_established') }}" min="1900" max="{{ date('Y') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="number" name="year_established" value="{{ $v('year_established') }}" min="1900" max="{{ date('Y') }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Nombre d\'employés' : 'Employee count' }}</label>
-                    <input type="number" name="employee_count" value="{{ $v('employee_count') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
+                    <input type="number" name="employee_count" value="{{ $v('employee_count') }}" min="0" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
                 </div>
             </div>
         </div>

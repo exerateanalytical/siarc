@@ -6,6 +6,15 @@
 @php
     $adminActive = $adminActive ?? 'dashboard';
 
+    // Real live counts for sidebar badges (cached briefly — sidebar renders on every admin page)
+    $sideBadges = \Illuminate\Support\Facades\Cache::remember('admin_sidebar_badges', 60, function () {
+        return [
+            'businesses'    => \Illuminate\Support\Facades\DB::table('businesses')->whereNull('deleted_at')->count(),
+            'kyc'           => \Illuminate\Support\Facades\DB::table('verification_applications')->where('status', 'pending')->count(),
+            'notifications' => \Illuminate\Support\Facades\DB::table('user_notifications')->whereNull('read_at')->count(),
+        ];
+    });
+
     // [key, icon crop, label, url, badge] — every item maps onto a real route.
     $adGroups = [
         [null, [
@@ -20,22 +29,14 @@
             ['news',        'side-ic-news',        $isFr ? 'Actualités & Annonces' : 'News & Announcements', route('admin.news'), null],
             ['media',       'side-ic-media',       $isFr ? 'Médias & Ressources' : 'Media & Resources',     route('admin.media'), null],
             ['events',      'side-ic-events',      $isFr ? 'Événements' : 'Events',                         route('admin.events'), null],
-            ['documents',   'side-ic-documents',   'Documents',                                             route('admin.media') . '#documents', null],
-        ]],
-        [$isFr ? 'Salon SIARC 2026' : 'SIARC 2026 Fair', [
-            ['siarc',         'side-ic-events',        $isFr ? 'Tableau SIARC' : 'SIARC Dashboard',         route('siarc.admin.dashboard'), null],
-            ['siarc-exh',     'side-ic-boutiques',     $isFr ? 'Exposants' : 'Exhibitors',                  route('siarc.admin.exhibitors'), null],
-            ['siarc-plan',    'map-pin',               $isFr ? 'Pavillons & Plan' : 'Pavilions & Plan',     route('siarc.admin.floorplan'), null],
-            ['siarc-vis',     'side-ic-users',         $isFr ? 'Visiteurs & Badges' : 'Visitors & Badges',  route('siarc.admin.visitors'), null],
-            ['siarc-prog',    'side-ic-events',        $isFr ? 'Programme' : 'Programme',                   route('siarc.admin.programme'), null],
-            ['siarc-b2b',     'side-ic-subscriptions', $isFr ? 'B2B & Matchmaking' : 'B2B & Matchmaking',   route('siarc.admin.b2b'), null],
+            ['documents',   'side-ic-documents',   'Documents',                                             route('admin.media', ['type' => 'document']), null],
         ]],
         [$isFr ? 'Gestion des utilisateurs' : 'User management', [
             ['users',       'side-ic-users',       $isFr ? 'Utilisateurs' : 'Users',                        route('admin.users'), null],
             ['roles',       'side-ic-roles',       $isFr ? 'Rôles & Permissions' : 'Roles & Permissions',   route('admin.roles'), null],
             ['pending-art', 'side-ic-inscription', $isFr ? 'Demandes d\'Inscription' : 'Registration Requests', route('admin.artisans') . '?statut=en-attente', null],
-            ['businesses',  'side-ic-boutiques',   $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), '248'],
-            ['kyc',         'side-ic-kyc',         $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), '36'],
+            ['businesses',  'side-ic-boutiques',   $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), (string) $sideBadges['businesses']],
+            ['kyc',         'side-ic-kyc',         $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), (string) $sideBadges['kyc']],
             ['certificates','side-ic-kyc',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
         ]],
         [$isFr ? 'Commercial & Finance' : 'Commercial & Finance', [
@@ -48,7 +49,7 @@
         [$isFr ? 'Système' : 'System', [
             ['settings',      'side-ic-settings',      $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
             ['logs',          'side-ic-journal',       $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
-            ['notifications', 'bell', 'Notifications',                                     route('admin.notifications'), '12'],
+            ['notifications', 'bell', 'Notifications',                                     route('admin.notifications'), (string) $sideBadges['notifications']],
             ['backups',       'database',   $isFr ? 'Sauvegardes & Logs' : 'Backups & Logs',                   route('admin.backups'), null],
             ['exports',       'side-ic-exports',       'Data Export Centre',                                route('admin.exports'), null],
             ['pages',         'side-ic-outils',        $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
@@ -60,7 +61,7 @@
     <div class="px-4 pt-4 pb-3 flex items-center gap-3">
         <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain shrink-0">
         <div class="leading-tight min-w-0">
-            <p class="text-[11px] font-bold tracking-[0.02em] text-white uppercase leading-snug">{{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</p>
+            <p class="text-[11px] font-bold tracking-[0.02em] text-white uppercase leading-snug">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</p>
             <p class="mt-1 text-[9.5px] italic text-[#E9C25A] leading-snug">{{ $isFr ? 'Notre Héritage, Notre Fierté, Notre Avenir' : 'Our Heritage, Our Pride, Our Future' }}</p>
         </div>
     </div>

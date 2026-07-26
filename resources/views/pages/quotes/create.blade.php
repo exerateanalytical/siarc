@@ -38,7 +38,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Créer une demande de devis — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Create a quote request — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Créer une demande de devis — Artisan Hub 237' : 'Create a quote request — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -100,7 +100,7 @@
             <!-- Form column -->
             <form id="rfq-form" method="POST" action="{{ route('quotes.store') }}" class="flex-1 min-w-0">
                 @csrf
-                <input type="hidden" name="business_slug" value="{{ $quoteVendor->slug ?? 'art-bois-nature' }}">
+                <input type="hidden" name="business_slug" value="{{ $quoteVendor->slug }}">
                 @if($errors->any())
                 <div class="mb-4 bg-[#FDE8E8] border border-[#F5C9C9] rounded-xl px-4 py-3 text-[12.5px] text-[#B42025]">{{ $errors->first() }}</div>
                 @endif
@@ -153,13 +153,13 @@
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Titre de la demande' : 'Request title' }} <span class="text-[#DC2626]">*</span></label>
-                            <input type="text" id="rfq-title" name="title" required value="{{ $isFr ? 'Mobilier en bois massif pour hôtel' : 'Solid wood furniture for a hotel' }}" class="{{ $fieldCls }}">
+                            <input type="text" id="rfq-title" name="title" required maxlength="255" placeholder="{{ $isFr ? 'Ex. Mobilier en bois massif pour hôtel' : 'E.g. Solid wood furniture for a hotel' }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Date souhaitée de réponse' : 'Desired response date' }} <span class="text-[#DC2626]">*</span></label>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Date souhaitée de réponse' : 'Desired response date' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></label>
                             <div class="flex items-center gap-3 h-[48px] border border-[#E5E7E5] rounded-lg px-4 focus-within:border-[#14532D]">
                                 <i data-lucide="calendar" class="w-[17px] h-[17px] shrink-0 text-[#55524A]" style="stroke-width:1.7"></i>
-                                <input type="text" value="{{ $isFr ? '25 Mai 2024' : '25 May 2024' }}" class="flex-1 min-w-0 text-[13.5px] focus:outline-none">
+                                <input type="date" name="desired_response_date" min="{{ now()->toDateString() }}" class="flex-1 min-w-0 text-[13.5px] focus:outline-none">
                             </div>
                         </div>
                     </div>
@@ -168,8 +168,8 @@
                         <label class="{{ $labelCls }}">{{ $isFr ? 'Description détaillée de votre besoin' : 'Detailed description of your need' }} <span class="text-[#DC2626]">*</span></label>
                         <p class="-mt-1 mb-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Décrivez précisément votre projet, les spécifications, les matériaux souhaités, les finitions, etc.' : 'Describe your project precisely: specifications, desired materials, finishes, etc.' }}</p>
                         <div class="relative">
-                            <textarea id="rfq-desc" name="description" required rows="4" maxlength="2000" class="w-full border border-[#E5E7E5] rounded-lg px-4 py-3 text-[13.5px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition resize-y">{{ $isFr ? "Nous recherchons des meubles en bois massif de haute qualité pour l'aménagement de 20 chambres d'hôtel. Style moderne avec une touche traditionnelle camerounaise. Finition vernie naturelle." : 'We are looking for high-quality solid wood furniture to fit out 20 hotel rooms. Modern style with a traditional Cameroonian touch. Natural varnished finish.' }}</textarea>
-                            <span id="rfq-desc-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">168 / 2000</span>
+                            <textarea id="rfq-desc" name="description" required rows="4" maxlength="2000" placeholder="{{ $isFr ? 'Ex. Nous recherchons des meubles en bois massif de haute qualité...' : 'E.g. We are looking for high-quality solid wood furniture...' }}" class="w-full border border-[#E5E7E5] rounded-lg px-4 py-3 text-[13.5px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition resize-y"></textarea>
+                            <span id="rfq-desc-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">0 / 2000</span>
                         </div>
                     </div>
 
@@ -242,14 +242,16 @@
                 <p class="mt-6 text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}</p>
                 <div class="mt-2.5 border border-[#EDEEED] rounded-xl px-4 py-3.5">
                     <div class="flex items-center gap-3.5">
-                        <img src="{{ asset('images/landing/qb-artbois.png') }}" alt="" class="w-[46px] h-[46px] shrink-0 rounded-lg object-cover">
+                        <img src="{{ $quoteVendor->logo ? asset('storage/'.$quoteVendor->logo) : asset('images/landing/qb-artbois.png') }}" alt="" class="w-[46px] h-[46px] shrink-0 rounded-lg object-cover">
                         <div class="min-w-0">
-                            <p class="text-[13.5px] font-bold text-[#1B1B18]">Art Bois Nature</p>
-                            <p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Yaoundé, Centre' : 'Yaounde, Centre' }}</p>
+                            <p class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? $quoteVendor->name_fr : ($quoteVendor->name_en ?? $quoteVendor->name_fr) }}</p>
+                            @if($quoteVendor->city_name ?? null)<p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $quoteVendor->city_name }}</p>@endif
+                            @if(in_array($quoteVendor->verification_tier, ['verified', 'certified']))
                             <p class="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#157A43]">
                                 <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
                                 {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                             </p>
+                            @endif
                         </div>
                     </div>
                     <div class="mt-2 flex justify-end">
@@ -264,8 +266,8 @@
                     <p class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Message pour l\'artisan' : 'Message for the artisan' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></p>
                     <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Ajouter un message personnalisé à votre demande.' : 'Add a personalised message to your request.' }}</p>
                     <div class="relative mt-2.5">
-                        <textarea id="rfq-msg" name="message" rows="5" maxlength="500" class="w-full border border-[#E5E7E5] rounded-lg px-4 py-3 text-[13px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] resize-y">{{ $isFr ? "Nous serions ravis de collaborer avec vous sur ce projet. N'hésitez pas à nous contacter pour toute question." : 'We would be delighted to work with you on this project. Feel free to contact us with any questions.' }}</textarea>
-                        <span id="rfq-msg-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">92 / 500</span>
+                        <textarea id="rfq-msg" name="message" rows="5" maxlength="500" placeholder="{{ $isFr ? 'Ex. Nous serions ravis de collaborer avec vous sur ce projet...' : 'E.g. We would be delighted to work with you on this project...' }}" class="w-full border border-[#E5E7E5] rounded-lg px-4 py-3 text-[13px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] resize-y"></textarea>
+                        <span id="rfq-msg-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">0 / 500</span>
                     </div>
                 </div>
 

@@ -28,7 +28,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Certificat d\'adhésion — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Membership certificate — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Certificat d\'adhésion — Artisan Hub 237' : 'Membership certificate — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>

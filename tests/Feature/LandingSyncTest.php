@@ -26,19 +26,33 @@ class LandingSyncTest extends TestCase
 
     public function test_landing_sector_cards_come_from_the_industries_table(): void
     {
+        // The site root shows the artisan directory by default (admin-configurable
+        // via platform_settings.landing_page); switch to the marketing home to
+        // exercise its sector-card sync with the industries table.
+        \Illuminate\Support\Facades\DB::table('platform_settings')->updateOrInsert(
+            ['key' => 'landing_page'], ['value' => 'home', 'updated_at' => now(), 'created_at' => now()]
+        );
+
         $ind = $this->makeIndustry([
             'name_fr'    => 'Vannerie & Rotin',
             'name_en'    => 'Basketry & Rattan',
             'image_icon' => 'cat-icon-3.png',
         ]);
-        // An industry without a tile icon must not appear as a landing card
+        // An industry without a tile icon must not appear as a landing CARD
+        // (the header's category megamenu is a separate feature that lists
+        // every sector regardless of icon, so this check is scoped to the
+        // sector-card carousel block, not the whole page).
         $hidden = $this->makeIndustry(['name_fr' => 'Secteur Sans Icone', 'image_icon' => null]);
 
-        $this->get('/')
-            ->assertOk()
-            ->assertSee('Vannerie', false)
-            ->assertSee('cat-icon-3.png')
-            ->assertDontSee('Secteur Sans Icone');
+        $html = $this->get('/')->assertOk()->getContent();
+        $this->assertStringContainsString('Vannerie', $html);
+        $this->assertStringContainsString('cat-icon-3.png', $html);
+
+        $carouselStart = strpos($html, 'id="sector-track"');
+        $carouselEnd = strpos($html, 'id="sector-prev"', $carouselStart);
+        $this->assertNotFalse($carouselStart, 'Sector card carousel not found on the landing page.');
+        $carousel = substr($html, $carouselStart, ($carouselEnd ?: $carouselStart + 5000) - $carouselStart);
+        $this->assertStringNotContainsString('Secteur Sans Icone', $carousel);
     }
 
     public function test_categories_page_shows_real_product_counts_from_the_backend(): void
@@ -124,6 +138,10 @@ class LandingSyncTest extends TestCase
 
     public function test_featured_businesses_on_landing_come_from_the_database(): void
     {
+        \Illuminate\Support\Facades\DB::table('platform_settings')->updateOrInsert(
+            ['key' => 'landing_page'], ['value' => 'home', 'updated_at' => now(), 'created_at' => now()]
+        );
+
         $ind = $this->makeIndustry();
         $this->makeBusiness(null, [
             'name_fr'     => 'Atelier Vitrine Reel',

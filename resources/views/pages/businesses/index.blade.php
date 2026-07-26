@@ -67,7 +67,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $isFr ? 'Annuaire des Artisans & Entreprises — Trouvez des partenaires de confiance et soutenez l\'économie locale.' : 'Artisans & Businesses directory — Find trusted partners and support the local economy.' }}">
-    <title>{{ $isFr ? 'Annuaire des Artisans & Entreprises — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Artisans & Businesses directory — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Annuaire des Artisans & Entreprises — Artisan Hub 237' : 'Artisans & Businesses directory — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -200,7 +200,7 @@
                 <img src="{{ asset('images/landing/vendor-cta-mask.png') }}" alt="" class="absolute right-0 top-0 h-full w-auto object-cover" aria-hidden="true">
                 <p class="text-[13px] font-bold text-white leading-snug">{{ $isFr ? 'Vous êtes artisan ou entreprise ?' : 'Are you an artisan or a business?' }}</p>
                 <p class="mt-2 text-[11px] text-[#B9C4BC] leading-relaxed">{{ $isFr ? 'Rejoignez notre plateforme pour promouvoir vos créations et développer votre activité.' : 'Join our platform to promote your creations and grow your activity.' }}</p>
-                <a href="/inscription?lang={{ $lang }}" class="relative z-10 mt-4 inline-flex items-center gap-2 bg-[#EBA51D] hover:bg-goldbt text-[#3A2E08] text-[12px] font-semibold px-3.5 py-2.5 rounded-lg transition-colors">
+                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="relative z-10 mt-4 inline-flex items-center gap-2 bg-[#EBA51D] hover:bg-goldbt text-[#3A2E08] text-[12px] font-semibold px-3.5 py-2.5 rounded-lg transition-colors">
                     {{ $isFr ? 'S\'inscrire maintenant' : 'Sign up now' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>

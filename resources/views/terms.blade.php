@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-$title = ($lang === 'fr' ? 'Conditions d\'utilisation' : 'Terms of Service') . ' — Galerie Artisanat SIARC';
+$title = ($lang === 'fr' ? 'Conditions d\'utilisation' : 'Terms of Service') . ' — Artisan Hub 237';
 @endphp
 
 @section('content')
@@ -13,8 +13,8 @@ $title = ($lang === 'fr' ? 'Conditions d\'utilisation' : 'Terms of Service') . '
         <section>
             <h2 class="text-sm font-semibold text-[#1B1B18] mb-1.5">1. {{ $lang === 'fr' ? 'Acceptation' : 'Acceptance' }}</h2>
             <p>{{ $lang === 'fr'
-                ? 'En accédant à la Galerie Virtuelle Nationale de l\'Artisanat (« la Plateforme »), vous acceptez ces conditions d\'utilisation et les lois applicables au Cameroun.'
-                : 'By accessing the National Virtual Gallery of Crafts ("the Platform"), you agree to these Terms of Service and applicable Cameroonian law.' }}</p>
+                ? 'En accédant à Artisan Hub 237 (« la Plateforme »), vous acceptez ces conditions d\'utilisation et les lois applicables au Cameroun.'
+                : 'By accessing Artisan Hub 237 ("the Platform"), you agree to these Terms of Service and applicable Cameroonian law.' }}</p>
         </section>
         <section>
             <h2 class="text-sm font-semibold text-[#1B1B18] mb-1.5">2. {{ $lang === 'fr' ? 'Description de la plateforme' : 'Platform description' }}</h2>

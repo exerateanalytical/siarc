@@ -1,7 +1,6 @@
 @php
     $isFr = $lang === 'fr';
     $siacUser = session('siac_user');
-    $dirNavActive = 'centres';
     $cName = $isFr ? $centre->name_fr : ($centre->name_en ?? $centre->name_fr);
     $regionName = $isFr ? $centre->region_fr : ($centre->region_en ?? $centre->region_fr);
     $fmt = fn ($n) => number_format($n, 0, ',', ' ');
@@ -42,7 +41,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $cName }} — {{ $regionName }}, Cameroun.">
-    <title>{{ $cName }} — {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $cName }} — {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf:'#164C28', gold:'#C9942E', cream:'#F8F3ED', sand:'#E7E1D4' }, fontFamily: { sans:['Poppins','system-ui','sans-serif'], serif:['"Playfair Display"','Georgia','serif'] } } } }</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>

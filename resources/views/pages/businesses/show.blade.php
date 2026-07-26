@@ -11,37 +11,35 @@
     $isVerified = in_array($business->verification_tier, ['verified', 'certified']);
 
     $reviews = $business->reviews ?? collect();
-    $ratingAvg = $reviews->count() ? number_format($reviews->avg('rating'), 1) : '4.8';
-    $ratingCount = $reviews->count() ?: 156;
+    $hasReviews = $reviews->count() > 0;
+    $ratingAvg = $hasReviews ? number_format($reviews->avg('rating'), 1) : null;
+    $ratingCount = $reviews->count();
 
     $memberYear = $business->created_at?->format('Y') ?? '2021';
-    $vendorIds = ['ceramiques-du-noun' => 'ENT-CN-2021-0456'];
-    $vendorId = $vendorIds[$business->slug]
-        ?? ('ENT-' . strtoupper(mb_substr($business->slug, 0, 2)) . '-' . $memberYear . '-' . str_pad((string) $business->id, 4, '0', STR_PAD_LEFT));
-    $regNumbers = ['ceramiques-du-noun' => 'RC/DLA/2018/B/1234'];
-    $regNumber = $regNumbers[$business->slug]
-        ?? ('RC/' . ($business->region->code ?? 'CM') . '/' . ($business->year_established ?? $memberYear) . '/B/' . str_pad((string) $business->id, 4, '0', STR_PAD_LEFT));
-    $activityZones = ['ceramiques-du-noun' => ($isFr ? 'Poterie, Céramique, Décoration' : 'Pottery, Ceramics, Decoration')];
-    $activityZone = $activityZones[$business->slug] ?? ($industryName ?? '—');
+    // Internal platform member ID (deterministic, not a legal registration number)
+    $vendorId = 'ENT-' . strtoupper(mb_substr($business->slug, 0, 2)) . '-' . $memberYear . '-' . str_pad((string) $business->id, 4, '0', STR_PAD_LEFT);
+    // Registration number: only show a real one on file — never fabricate a legal ID
+    $regDoc = $business->documents()->where('type', 'registration')->first();
+    $regNumber = $regDoc ? ($regDoc->issued_by ?? ($isFr ? 'Sur dossier' : 'On file')) : null;
+    $activityZone = $industryName ?? '—';
 
     $contactPhone = $business->phone ?: '+237670416238';
     $waNumber = preg_replace('/\D/', '', $business->whatsapp ?: $contactPhone);
     $contactEmail = $business->email ?: 'contact@gvnac.cm';
     $languages = collect($business->languages_spoken ?? ['Français', 'English'])->implode(', ');
 
-    $heroStats = [
-        ['users',        ($business->employee_count ?? 8),  $isFr ? 'Artisans' : 'Artisans'],
-        ['layout-grid',  '312',   $isFr ? 'Produits' : 'Products'],
-        ['package',      '1,842', $isFr ? 'Commandes' : 'Orders'],
-        ['thumbs-up',    '98%',   $isFr ? 'Clients satisfaits' : 'Satisfied clients'],
-        ['briefcase',    '2 ' . ($isFr ? 'ans' : 'yrs'), $isFr ? 'Sur la plateforme' : 'On the platform'],
+    $heroStats = array_values(array_filter([
+        $business->employee_count ? ['users', $business->employee_count, $isFr ? 'Artisans' : 'Artisans'] : null,
+        ['layout-grid',  number_format($publishedProductsCount), $isFr ? 'Produits' : 'Products'],
+        $ordersCount > 0 ? ['package', number_format($ordersCount), $isFr ? 'Commandes' : 'Orders'] : null,
+        $satisfiedPct !== null ? ['thumbs-up', $satisfiedPct . '%', $isFr ? 'Clients satisfaits' : 'Satisfied clients'] : null,
+        $tenureYears !== null ? ['briefcase', $tenureYears . ' ' . ($isFr ? 'ans' : 'yrs'), $isFr ? 'Sur la plateforme' : 'On the platform'] : null,
         ['shield-check', '100%',  $isFr ? 'Paiement sécurisé' : 'Secure payment'],
-    ];
+    ]));
 
     $tabs = [
         ['apropos',        ($isFr ? 'À propos' : 'About'),           'info'],
-        ['produits',       ($isFr ? 'Produits (312)' : 'Products (312)'), 'package'],
-        ['collections',    'Collections (12)',                        'layout-grid'],
+        ['produits',       ($isFr ? 'Produits' : 'Products') . ' (' . $publishedProductsCount . ')', 'package'],
         ['avis',           ($isFr ? 'Avis' : 'Reviews') . ' (' . $ratingCount . ')', 'star'],
         ['certifications', 'Certifications',                          'badge-check'],
         ['galerie',        ($isFr ? 'Galerie' : 'Gallery'),           'image'],
@@ -81,7 +79,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) $descriptionText), 150) }}">
-    <title>{{ $businessName }} — {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $businessName }} — {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -177,6 +175,7 @@
                 </div>
 
                 <p class="mt-4 flex items-center gap-2">
+                    @if($hasReviews)
                     <span class="flex items-center gap-0.5">
                         @for($i = 0; $i < 5; $i++)
                         <svg viewBox="0 0 20 20" class="w-4 h-4 fill-[#EFA912]"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
@@ -184,6 +183,9 @@
                     </span>
                     <span class="text-[14px] font-bold text-[#1D1B16]">{{ $ratingAvg }}</span>
                     <span class="text-[12.5px] text-[#6F6B60]">({{ $ratingCount }} {{ $isFr ? 'avis' : 'reviews' }})</span>
+                    @else
+                    <span class="text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Pas encore d\'avis' : 'No reviews yet' }}</span>
+                    @endif
                 </p>
                 <p class="mt-2 text-[12px] text-[#6F6B60]">
                     {{ $isFr ? 'Membre depuis' : 'Member since' }} {{ $memberYear }}
@@ -191,12 +193,12 @@
                     ID&nbsp;: {{ $vendorId }}
                 </p>
 
-                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('quotes.create', ['business' => $business->slug, 'lang' => $lang]) : route('login', ['lang' => $lang, 'next' => route('quotes.create', ['business' => $business->slug]) ]) }}"
                     class="mt-4 w-full h-[42px] bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center gap-2.5 text-[12.5px] font-semibold transition-colors">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                    {{ $isFr ? 'Envoyer une demande (Enquiry)' : 'Send an enquiry' }}
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    {{ $isFr ? 'Demander un devis' : 'Request a quote' }}
                 </a>
-                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : route('login', ['lang' => $lang]) }}"
                     class="mt-2.5 w-full h-[42px] bg-white border border-[#E0B453] hover:bg-[#FBF6E8] rounded-lg flex items-center justify-center gap-2.5 text-[12.5px] font-semibold text-[#8A6D1F] transition-colors">
                     <i data-lucide="message-square" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer un message' : 'Send a message' }}
@@ -306,11 +308,7 @@
                             <div>
                                 <h3 class="text-[16px] font-bold text-[#1D1B16]">{{ $isFr ? 'À propos de' : 'About' }} {{ $businessName }}</h3>
                                 <p class="mt-3 text-[12.5px] text-[#3A3A35] leading-relaxed">
-                                    {{ $business->slug === 'ceramiques-du-noun'
-                                        ? ($isFr
-                                            ? 'Céramiques du Noun est un atelier artisanal spécialisé dans la création de poteries et d\'objets décoratifs faits à la main selon les techniques traditionnelles transmises de génération en génération dans la région de l\'Ouest Cameroun.'
-                                            : 'Céramiques du Noun is an artisanal workshop specialising in the creation of pottery and decorative objects handmade using traditional techniques passed down from generation to generation in Cameroon\'s West region.')
-                                        : $descriptionText }}
+                                    {{ $descriptionText ?: ($isFr ? 'Cet artisan n\'a pas encore ajouté de description.' : 'This artisan has not added a description yet.') }}
                                 </p>
                                 <p class="mt-3 text-[12.5px] text-[#3A3A35] leading-relaxed">
                                     {{ $isFr
@@ -334,7 +332,7 @@
                             <div>
                                 <img src="{{ asset('images/landing/vdetail-about.png') }}" alt="" class="w-full h-[200px] object-cover rounded-xl">
                                 <a href="{{ route('products.index', ['lang' => $lang]) }}" class="mt-3 flex items-center justify-end gap-2 text-[12px] font-semibold text-[#14532D] hover:underline">
-                                    {{ $isFr ? 'Voir tous les produits (312)' : 'See all products (312)' }}
+                                    {{ $isFr ? 'Voir tous les produits' : 'See all products' }} ({{ $publishedProductsCount }})
                                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                 </a>
                             </div>
@@ -343,9 +341,6 @@
                     <div class="tab-panel hidden" data-panel="produits">
                         <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Retrouvez les produits phares ci-dessous, ou parcourez l\'annuaire complet des produits.' : 'Find the featured products below, or browse the full product directory.' }}
                             <a href="{{ route('products.index', ['lang' => $lang]) }}" class="font-semibold text-[#14532D] hover:underline">{{ $isFr ? 'Voir l\'annuaire' : 'View the directory' }}</a></p>
-                    </div>
-                    <div class="tab-panel hidden" data-panel="collections">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Les collections thématiques de cet artisan seront bientôt disponibles.' : 'This artisan\'s themed collections will be available soon.' }}</p>
                     </div>
                     <div class="tab-panel hidden" data-panel="avis">
                         @if($reviews->count())
@@ -427,7 +422,7 @@
                                     </button>
                                 </form>
                                 @else
-                                <a href="/login?lang={{ $lang }}" aria-label="{{ $isFr ? 'Favoris' : 'Favorites' }}"
+                                <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Favoris' : 'Favorites' }}"
                                     class="absolute top-1.5 right-1.5 w-6 h-6 bg-white/95 rounded-full flex items-center justify-center text-[#1D1B16]">
                                     <i data-lucide="heart" class="w-3 h-3"></i>
                                 </a>
@@ -458,11 +453,11 @@
                 <ul class="mt-4 space-y-3 text-[11.5px]">
                     @foreach([
                         ['scale',      $isFr ? 'Statut juridique' : 'Legal status',            $isFr ? 'Entreprise artisanale' : 'Artisanal business'],
-                        ['calendar',   $isFr ? 'Date de création' : 'Founded',                 (string) ($business->year_established ?? '2018')],
-                        ['file-text',  $isFr ? 'Numéro d\'enregistrement' : 'Registration no.', $regNumber],
+                        ['calendar',   $isFr ? 'Date de création' : 'Founded',                 (string) ($business->year_established ?? $memberYear)],
+                        ['file-text',  $isFr ? 'Numéro d\'enregistrement' : 'Registration no.', $regNumber ?? ($isFr ? 'Non communiqué' : 'Not provided')],
                         ['map-pin',    $isFr ? 'Région' : 'Region',                            ($regionName ?? '—') . ($cityName ? ' – ' . $cityName : '')],
                         ['layout-grid',$isFr ? 'Zone d\'activité' : 'Activity area',           $activityZone],
-                        ['users',      $isFr ? 'Effectif' : 'Workforce',                       ($business->employee_count ?? 8) . ' ' . ($isFr ? 'Artisans qualifiés' : 'Qualified artisans')],
+                        ['users',      $isFr ? 'Effectif' : 'Workforce',                       $business->employee_count ? ($business->employee_count . ' ' . ($isFr ? 'Artisans qualifiés' : 'Qualified artisans')) : ($isFr ? 'Non communiqué' : 'Not provided')],
                     ] as [$kiIcon, $kiLabel, $kiValue])
                     <li class="flex items-start gap-2.5">
                         <i data-lucide="{{ $kiIcon }}" class="w-[13px] h-[13px] text-[#55524A] mt-0.5 shrink-0"></i>
@@ -471,10 +466,12 @@
                     </li>
                     @endforeach
                 </ul>
+                @if($regDoc)
                 <a href="{{ route('certificate.verify', ['lang' => $lang]) }}" class="mt-4 flex items-center gap-2 text-[12px] font-semibold text-[#14532D] hover:underline">
                     {{ $isFr ? 'Voir le document d\'enregistrement' : 'View the registration document' }}
                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 </a>
+                @endif
             </div>
 
             <!-- Why work with us -->

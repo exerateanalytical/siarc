@@ -230,7 +230,7 @@
 
             <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">
                 {{ $isFr
-                    ? '© 2025 Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.'
-                    : '© 2025 National Virtual Gallery of Cameroonian Handicrafts. All rights reserved.' }}
+                    ? '© 2025 Artisan Hub 237. Tous droits réservés.'
+                    : '© 2025 Artisan Hub 237. All rights reserved.' }}
             </p>
 @endsection

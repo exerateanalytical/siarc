@@ -9,7 +9,7 @@ class SiacSeeder extends Seeder
     public function run(): void
     {
         $this->command->info('');
-        $this->command->info('=== SIARC Platform Seeder ===');
+        $this->command->info('=== Artisan Hub 237 Seeder ===');
 
         $this->command->info('[1/5] Roles...');
         $this->call(SiacRolesSeeder::class);

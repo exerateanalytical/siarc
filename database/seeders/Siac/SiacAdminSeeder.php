@@ -14,9 +14,9 @@ class SiacAdminSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@artisanatcameroun.cm'],
             [
-                'name'                => 'Administrateur SIARC',
+                'name'                => 'Administrateur Artisan Hub 237',
                 'phone'               => '+237 699 00 00 01',
-                'password'            => Hash::make('Admin@SIARC2026'),
+                'password'            => Hash::make('Admin@ArtisanHub237'),
                 'status'              => 'active',
                 'is_email_verified'   => true,
                 'language_preference' => 'fr',
@@ -27,9 +27,9 @@ class SiacAdminSeeder extends Seeder
         $moderator = User::firstOrCreate(
             ['email' => 'moderateur@artisanatcameroun.cm'],
             [
-                'name'                => 'Modérateur SIARC',
+                'name'                => 'Modérateur Artisan Hub 237',
                 'phone'               => '+237 699 00 00 02',
-                'password'            => Hash::make('Modo@SIARC2026'),
+                'password'            => Hash::make('Modo@ArtisanHub237'),
                 'status'              => 'active',
                 'is_email_verified'   => true,
                 'language_preference' => 'fr',
@@ -39,8 +39,8 @@ class SiacAdminSeeder extends Seeder
 
         // Demo system settings
         $settings = [
-            ['key' => 'platform_name_fr', 'value' => "Galerie Virtuelle Nationale de l'Artisanat", 'type' => 'string'],
-            ['key' => 'platform_name_en', 'value' => 'National Virtual Gallery of Crafts', 'type' => 'string'],
+            ['key' => 'platform_name_fr', 'value' => "Artisan Hub 237", 'type' => 'string'],
+            ['key' => 'platform_name_en', 'value' => 'Artisan Hub 237', 'type' => 'string'],
             ['key' => 'contact_email', 'value' => 'contact@artisanatcameroun.cm', 'type' => 'string'],
             ['key' => 'max_products_per_business', 'value' => '50', 'type' => 'integer'],
             ['key' => 'max_gallery_images', 'value' => '20', 'type' => 'integer'],
@@ -84,7 +84,7 @@ class SiacAdminSeeder extends Seeder
             ]));
         }
 
-        $this->command->info("  Admin: admin@artisanatcameroun.cm / Admin@SIARC2026");
-        $this->command->info("  Moderator: moderateur@artisanatcameroun.cm / Modo@SIARC2026");
+        $this->command->info("  Admin: admin@artisanatcameroun.cm / Admin@ArtisanHub237");
+        $this->command->info("  Moderator: moderateur@artisanatcameroun.cm / Modo@ArtisanHub237");
     }
 }

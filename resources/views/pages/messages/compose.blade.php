@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Contacter' : 'Contact' }} {{ $bizName }} — SIARC</title>
+    <title>{{ $isFr ? 'Contacter' : 'Contact' }} {{ $bizName }} — Artisan Hub 237</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config={theme:{extend:{colors:{leaf:'#164C28',gold:'#C9942E'},fontFamily:{sans:['Poppins','system-ui','sans-serif'],serif:['"Playfair Display"','Georgia','serif']}}}}</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>

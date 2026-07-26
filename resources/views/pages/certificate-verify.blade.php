@@ -65,8 +65,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Vérifiez l\'authenticité d\'un certificat d\'adhésion de la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun.' : 'Verify the authenticity of a membership certificate of the National Virtual Gallery of Cameroonian Crafts.' }}">
-    <title>{{ $isFr ? 'Vérification de certificat — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Certificate verification — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <meta name="description" content="{{ $isFr ? 'Vérifiez l\'authenticité d\'un certificat d\'adhésion d\'Artisan Hub 237.' : 'Verify the authenticity of a membership certificate of Artisan Hub 237.' }}">
+    <title>{{ $isFr ? 'Vérification de certificat — Artisan Hub 237' : 'Certificate verification — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -144,8 +144,8 @@
             <p class="mt-5 flex items-center justify-center gap-2.5 text-[12.5px] text-[#55524A]">
                 <i data-lucide="shield-check" class="w-[18px] h-[18px] text-[#14532D]" style="fill:#14532D;color:white"></i>
                 {{ $isFr
-                    ? "Ce service est sécurisé et certifié par la Galerie Virtuelle Nationale de l'Artisanat du Cameroun."
-                    : 'This service is secured and certified by the National Virtual Gallery of Cameroonian Crafts.'
+                    ? "Ce service est sécurisé et certifié par la Artisan Hub 237."
+                    : 'This service is secured and certified by Artisan Hub 237.'
                 }}
             </p>
         </div>
@@ -228,8 +228,8 @@
             </div>
             <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">
                 {{ $isFr
-                    ? "Ce certificat est émis et certifié par la Galerie Virtuelle Nationale de l'Artisanat du Cameroun. Il est infalsifiable et entièrement vérifiable en ligne."
-                    : 'This certificate is issued and certified by the National Virtual Gallery of Cameroonian Crafts. It is tamper-proof and fully verifiable online.'
+                    ? "Ce certificat est émis et certifié par la Artisan Hub 237. Il est infalsifiable et entièrement vérifiable en ligne."
+                    : 'This certificate is issued and certified by Artisan Hub 237. It is tamper-proof and fully verifiable online.'
                 }}
             </p>
         </div>

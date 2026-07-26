@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Page introuvable — Galerie Virtuelle Nationale de l'Artisanat du Cameroun</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Page introuvable — Artisan Hub 237</title>
 <link href="/vendor/fonts.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -22,7 +22,7 @@ nav{background:#0A2C1D;padding:.85rem 1.5rem;display:flex;align-items:center;gap
 </style>
 </head>
 <body>
-<nav><a class="logo" href="/"><span class="flag"><span style="background:#094F2B"></span><span style="background:#B61012"></span><span style="background:#E9A411"></span></span>Galerie Virtuelle Nationale de l'Artisanat du Cameroun</a></nav>
+<nav><a class="logo" href="/"><span class="flag"><span style="background:#094F2B"></span><span style="background:#B61012"></span><span style="background:#E9A411"></span></span>Artisan Hub 237</a></nav>
 <div class="tricolor"><span></span><span></span><span></span></div>
 <div class="wrap">
     <div>

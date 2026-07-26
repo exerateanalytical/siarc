@@ -35,7 +35,7 @@ if (! array_key_exists($section, $tabs)) $section = 'general';
 $groupMeta = [
     'general'  => ['icon' => 'sliders-horizontal', 'fr' => 'Paramètres système (hérités)', 'en' => 'System settings (legacy)'],
     'limits'   => ['icon' => 'gauge',              'fr' => 'Limites plateforme',            'en' => 'Platform limits'],
-    'siac'     => ['icon' => 'calendar-days',      'fr' => 'Événement SIARC',               'en' => 'SIARC event'],
+    'siac'     => ['icon' => 'calendar-days',      'fr' => 'Événement',                     'en' => 'Event'],
     'auth'     => ['icon' => 'shield-check',       'fr' => 'Authentification',              'en' => 'Authentication'],
     'payments' => ['icon' => 'credit-card',        'fr' => 'Frais & taxes',                 'en' => 'Fees & taxes'],
     'trading'  => ['icon' => 'arrow-left-right',   'fr' => 'Transactions',                  'en' => 'Trading'],
@@ -158,7 +158,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Nom de la plateforme' : 'Platform name' }}</label>
             <input type="text" name="settings[platform_name]" required class="{{ $inputCls }}"
-                   value="{{ $p('platform_name', 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun') }}">
+                   value="{{ $p('platform_name', 'Artisan Hub 237') }}">
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Slogan' : 'Tagline' }}</label>
@@ -221,6 +221,14 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
                     <option value="en" @selected($p('default_language', 'fr') === 'en')>{{ $isFr ? 'Anglais' : 'English' }}</option>
                 </select>
             </div>
+        </div>
+        <div>
+            <label class="{{ $labelCls }}">{{ $isFr ? 'Page d\'accueil' : 'Landing page' }}</label>
+            <select name="settings[landing_page]" class="{{ $inputCls }} bg-white">
+                <option value="home" @selected($p('landing_page', 'directory') === 'home')>{{ $isFr ? 'Accueil (hero, mise en avant)' : 'Home (hero, spotlight)' }}</option>
+                <option value="directory" @selected($p('landing_page', 'directory') === 'directory')>{{ $isFr ? 'Annuaire des artisans' : 'Artisan directory' }}</option>
+            </select>
+            <p class="mt-1 text-[11.5px] text-gray-500">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
         </div>
         <button type="submit" class="{{ $greenBtn }}">
             <i data-lucide="check" class="w-4 h-4"></i>
@@ -396,13 +404,13 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Titre' : 'Title' }}</label>
             <input type="text" name="settings[about_title]" class="{{ $inputCls }}"
-                   value="{{ $p('about_title', $isFr ? 'À propos de la Galerie Virtuelle' : 'About the Virtual Gallery') }}">
+                   value="{{ $p('about_title', $isFr ? 'À propos d\'Artisan Hub 237' : 'About Artisan Hub 237') }}">
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Description' : 'Description' }}</label>
             <textarea name="settings[about_description]" rows="6" class="{{ $inputCls }}">{{ $p('about_description', $isFr
-                ? 'La Galerie Virtuelle Nationale de l\'Artisanat du Cameroun est une plateforme digitale officielle qui valorise, promeut et connecte les artisans, leurs œuvres et le patrimoine culturel camerounais au monde entier.'
-                : 'The National Virtual Gallery of Cameroonian Crafts is an official digital platform that showcases, promotes and connects artisans, their works and Cameroonian cultural heritage to the whole world.') }}</textarea>
+                ? 'La Artisan Hub 237 est une plateforme digitale officielle qui valorise, promeut et connecte les artisans, leurs œuvres et le patrimoine culturel camerounais au monde entier.'
+                : 'The Artisan Hub 237 is an official digital platform that showcases, promotes and connects artisans, their works and Cameroonian cultural heritage to the whole world.') }}</textarea>
         </div>
         <button type="submit" class="{{ $greenBtn }}">
             {{ $isFr ? 'Enregistrer' : 'Save' }}
@@ -526,7 +534,7 @@ function removeChip(btn) {
     <div>
         <label class="{{ $labelCls }}">{{ $isFr ? 'Titre méta (balise <title>)' : 'Meta title (<title> tag)' }}</label>
         <input type="text" name="settings[seo_meta_title]" class="{{ $inputCls }}"
-               value="{{ $p('seo_meta_title', 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun') }}">
+               value="{{ $p('seo_meta_title', 'Artisan Hub 237') }}">
     </div>
     <div>
         <label class="{{ $labelCls }}">{{ $isFr ? 'Description méta' : 'Meta description' }}</label>
@@ -801,7 +809,7 @@ function removeChip(btn) {
 
 {{-- ── Footer (design) ─────────────────────────────────────────────────── --}}
 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-200 mt-8 pt-5 text-xs text-gray-500">
-    <p>© 2025 Galerie Virtuelle Nationale de l'Artisanat du Cameroun. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
+    <p>© 2025 Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
     <div class="flex items-center gap-6">
         <a href="{{ route('admin.support', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-gray-700">
             <i data-lucide="circle-help" class="w-4 h-4"></i>

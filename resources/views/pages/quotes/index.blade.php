@@ -106,7 +106,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Mes Demandes & Propositions — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'My Requests & Proposals — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Mes Demandes & Propositions — Artisan Hub 237' : 'My Requests & Proposals — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>

@@ -5,6 +5,14 @@
     // Where the wizard exits into the real flow ("Soumettre mon dossier" on step 10)
     $nextUrl = $siacUser ? route('business.create') : route('onboarding', ['lang' => $lang]);
 
+    // Real, per-account file number + submission timestamp for the success page
+    // (submission happens right before this page renders, so "now" is accurate).
+    $fileNumber = $siacUser ? 'AH237-' . now()->year . '-' . str_pad((string) (hexdec(substr(md5($siacUser['id']), 0, 6)) % 1000000), 6, '0', STR_PAD_LEFT) : null;
+    $submittedAt = now();
+    $submittedAtLabel = $isFr ? $submittedAt->translatedFormat('d M Y \à H:i') : $submittedAt->format('d M Y \a\t H:i');
+    $submittedDateLabel = $isFr ? $submittedAt->translatedFormat('d M Y') : $submittedAt->format('d M Y');
+    $submittedTimeLabel = $submittedAt->format('H:i');
+
     $accountTypes = [
         [
             'ob-type-1.png', '#157A43',
@@ -230,12 +238,12 @@
         ['ob10-step-1.png', '1. Réception du dossier',      'Votre dossier sera enregistré et vous recevrez un accusé de réception.'],
         ['ob10-step-2.png', '2. Vérification & Validation', 'Notre équipe vérifiera vos informations et documents (2 à 5 jours ouvrés).'],
         ['ob10-step-3.png', '3. Approbation',               'Vous serez notifié par email et SMS dès que votre compte sera approuvé.'],
-        ['ob10-step-4.png', '4. Publication',               'Votre profil sera publié dans la Galerie Virtuelle et visible par les acheteurs.'],
+        ['ob10-step-4.png', '4. Publication',               'Votre profil sera publié dans Artisan Hub 237 et visible par les acheteurs.'],
     ] : [
         ['ob10-step-1.png', '1. File reception',            'Your file will be recorded and you will receive an acknowledgement of receipt.'],
         ['ob10-step-2.png', '2. Verification & Validation', 'Our team will verify your information and documents (2 to 5 working days).'],
         ['ob10-step-3.png', '3. Approval',                  'You will be notified by email and SMS as soon as your account is approved.'],
-        ['ob10-step-4.png', '4. Publication',               'Your profile will be published in the Virtual Gallery and visible to buyers.'],
+        ['ob10-step-4.png', '4. Publication',               'Your profile will be published in Artisan Hub 237 and visible to buyers.'],
     ];
 
     $step10Quality = $isFr
@@ -299,7 +307,7 @@
             $isFr ? 'Découvrez les artisans et produits déjà disponibles sur la plateforme.' : 'Discover the artisans and products already available on the platform.',
             $isFr ? 'Explorer' : 'Explore', route('products.index', ['lang' => $lang])],
         ['file-text', $isFr ? "Retour à l'accueil" : 'Back to home',
-            $isFr ? "Retournez à la page d'accueil de la Galerie Virtuelle." : 'Return to the Virtual Gallery home page.',
+            $isFr ? "Retournez à la page d'accueil de Artisan Hub 237." : 'Return to Artisan Hub 237 home page.',
             $isFr ? 'Accueil' : 'Home', route('home', ['lang' => $lang])],
     ];
 
@@ -322,8 +330,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Créez votre compte artisan ou entreprise sur la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun.' : 'Create your artisan or business account on the National Virtual Gallery of Cameroonian Crafts.' }}">
-    <title>{{ $isFr ? 'Créer mon compte artisan / entreprise — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Create my artisan / business account — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <meta name="description" content="{{ $isFr ? 'Créez votre compte artisan ou entreprise sur Artisan Hub 237.' : 'Create your artisan or business account on Artisan Hub 237.' }}">
+    <title>{{ $isFr ? 'Créer mon compte artisan / entreprise — Artisan Hub 237' : 'Create my artisan / business account — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -360,8 +368,7 @@
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
             <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
             <span class="leading-tight">
-                <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
-                <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">Artisan Hub 237</span>
                 <span class="block text-[10px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
@@ -1896,8 +1903,8 @@
                     <h1 class="mt-1.5 text-[26px] font-bold text-[#1B1B18] leading-snug">{{ $isFr ? 'Votre dossier a été soumis avec succès.' : 'Your file has been submitted successfully.' }}</h1>
                     <p class="mt-3 text-[13px] text-[#55524A] leading-relaxed max-w-[480px]">
                         {{ $isFr
-                            ? "Merci de rejoindre la Galerie Virtuelle Nationale de l'Artisanat du Cameroun. Nous avons bien reçu votre dossier et il est en cours de vérification."
-                            : 'Thank you for joining the National Virtual Gallery of Cameroonian Crafts. We have received your file and it is being verified.'
+                            ? "Merci de rejoindre la Artisan Hub 237. Nous avons bien reçu votre dossier et il est en cours de vérification."
+                            : 'Thank you for joining Artisan Hub 237. We have received your file and it is being verified.'
                         }}
                     </p>
                 </div>
@@ -1909,15 +1916,15 @@
                 <div>
                     <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Numéro de dossier' : 'File number' }}</p>
                     <p class="mt-1 flex items-center gap-2.5 text-[17px] font-bold text-[#14652F]">
-                        GVNA-2024-000158
-                        <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('GVNA-2024-000158')" title="{{ $isFr ? 'Copier' : 'Copy' }}" class="text-[#157A43] hover:text-[#14532D]">
+                        {{ $fileNumber }}
+                        <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $fileNumber }}')" title="{{ $isFr ? 'Copier' : 'Copy' }}" class="text-[#157A43] hover:text-[#14532D]">
                             <i data-lucide="copy" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                         </button>
                     </p>
                 </div>
                 <div class="sm:pl-8">
                     <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Date de soumission' : 'Submission date' }}</p>
-                    <p class="mt-1 text-[16px] font-bold text-[#1B1B18]">{{ $isFr ? '12 Mai 2024 à 14:32' : '12 May 2024 at 14:32' }}</p>
+                    <p class="mt-1 text-[16px] font-bold text-[#1B1B18]">{{ $submittedAtLabel }}</p>
                 </div>
                 <div class="sm:pl-8 flex items-center gap-3.5">
                     <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] flex items-center justify-center">
@@ -1947,7 +1954,7 @@
                             </div>
                             @if($tlStatus === 'done')
                             <div class="shrink-0 flex items-start gap-2.5 pt-0.5">
-                                <p class="text-[12px] text-[#55524A] text-right leading-relaxed">{{ $isFr ? '12 Mai 2024' : '12 May 2024' }}<br>14:32</p>
+                                <p class="text-[12px] text-[#55524A] text-right leading-relaxed">{{ $submittedDateLabel }}<br>{{ $submittedTimeLabel }}</p>
                                 <span class="w-[21px] h-[21px] rounded-full bg-[#14652F] flex items-center justify-center">
                                     <i data-lucide="check" class="w-3 h-3 text-white" style="stroke-width:3.2"></i>
                                 </span>
@@ -2215,7 +2222,7 @@
     <!-- Step 10 strip — platform benefits -->
     <section id="strip-10" class="ob-strip hidden mt-4 bg-[#F9FAF9] rounded-2xl px-6 py-4 flex flex-wrap items-center gap-x-5 gap-y-4">
         <div class="w-full lg:w-[225px]">
-            <p class="text-[13.5px] font-bold text-[#14532D]">{{ $isFr ? 'En rejoignant la Galerie Virtuelle,' : 'By joining the Virtual Gallery,' }}</p>
+            <p class="text-[13.5px] font-bold text-[#14532D]">{{ $isFr ? 'En rejoignant Artisan Hub 237,' : 'By joining Artisan Hub 237,' }}</p>
             <p class="mt-0.5 text-[13px] text-[#1B1B18]">{{ $isFr ? 'vous bénéficiez de nombreux avantages' : 'you benefit from many advantages' }}</p>
         </div>
         <div class="hidden lg:block w-px self-stretch bg-[#E8EAE8]"></div>

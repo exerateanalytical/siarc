@@ -121,7 +121,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $isFr ? 'Événements — Participez aux événements qui valorisent l\'artisanat camerounais.' : 'Events — Take part in the events that celebrate Cameroonian craftsmanship.' }}">
-    <title>{{ $isFr ? 'Événements — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Events — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Événements — Artisan Hub 237' : 'Events — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>

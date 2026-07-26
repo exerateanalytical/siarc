@@ -23,7 +23,7 @@
     <img src="{{ asset('images/landing/auth-band-motif-right.png') }}" alt="" class="absolute right-0 bottom-0 w-[140px] pointer-events-none select-none" aria-hidden="true">
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8 pt-8 pb-10">
         <h2 class="text-center font-serif text-[24px] sm:text-[27px] text-[#1D1B16]">
-            {{ $isFr ? 'Pourquoi rejoindre la Galerie Virtuelle ?' : 'Why join the Virtual Gallery?' }}
+            {{ $isFr ? 'Pourquoi rejoindre Artisan Hub 237 ?' : 'Why join Artisan Hub 237?' }}
         </h2>
         <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-8 lg:divide-x divide-[#DDD6CB]">
             @foreach($whyItems as [$whyIcon, $whyTitle, $whyDesc])
@@ -51,7 +51,7 @@
             ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
             ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
             ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? '/tableau-de-bord' : '/login', 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
         ];
     @endphp
     @foreach($bottomTabs as $tab)

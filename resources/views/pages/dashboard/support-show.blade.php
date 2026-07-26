@@ -21,15 +21,15 @@ $isAdmin = ! empty($siacUser['is_admin']);
         </a>
         <span @class([
             'text-xs font-medium px-2 py-1 rounded-full',
-            'bg-amber-100 text-amber-700' => in_array($ticket->status, ['open', 'in_progress']),
-            'bg-green-100 text-green-700' => $ticket->status === 'resolved',
+            'bg-[#F6E4BE] text-[#8A6D1F]' => in_array($ticket->status, ['open', 'in_progress']),
+            'bg-[#CFE5D6] text-[#14532D]' => $ticket->status === 'resolved',
             'bg-[#F1EDE4] text-[#8A857A]' => $ticket->status === 'closed',
         ])>{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
 
         @if($isAdmin && $ticket->status !== 'closed')
         <form method="POST" action="{{ route('admin.support.close', ['id' => $ticket->id]) }}" class="ml-auto">
             @csrf
-            <button type="submit" class="text-xs text-red-600 hover:underline font-medium">{{ $lang === 'fr' ? 'Fermer le ticket' : 'Close ticket' }}</button>
+            <button type="submit" class="text-xs text-[#B42025] hover:underline font-medium">{{ $lang === 'fr' ? 'Fermer le ticket' : 'Close ticket' }}</button>
         </form>
         @endif
     </div>
@@ -58,7 +58,7 @@ $isAdmin = ! empty($siacUser['is_admin']);
             <i data-lucide="send" class="w-4 h-4"></i>
         </button>
     </form>
-    @error('body')<p class="text-xs text-red-600 mt-1.5">{{ $message }}</p>@enderror
+    @error('body')<p class="text-xs text-[#B42025] mt-1.5">{{ $message }}</p>@enderror
     @else
     <p class="text-center text-sm text-[#A8A296]">{{ $lang === 'fr' ? 'Ce ticket est fermé.' : 'This ticket is closed.' }}</p>
     @endif

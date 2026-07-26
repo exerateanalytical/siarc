@@ -33,7 +33,7 @@ return new class extends Migration
                 ]);
                 DB::table('support_ticket_replies')->insert([
                     ['ticket_id' => $tid, 'user_id' => $uid, 'body_fr' => 'Bonjour, j\'ai besoin d\'aide concernant : ' . $subj . '. Pouvez-vous vérifier et me donner une mise à jour ? Merci.', 'body_en' => 'Hello, I need help regarding: ' . $subj . '.', 'is_staff' => false, 'created_at' => $now->copy()->subDays($i + 1), 'updated_at' => $now->copy()->subDays($i + 1)],
-                    ['ticket_id' => $tid, 'user_id' => $uid, 'body_fr' => 'Bonjour, merci pour votre message. Nous avons bien reçu votre demande et notre équipe la traite actuellement. Nous reviendrons vers vous dès que possible. Cordialement, Équipe Support — Galerie Virtuelle.', 'body_en' => 'Hello, thank you for your message. Our team is handling your request.', 'is_staff' => true, 'created_at' => $now->copy()->subDays($i)->addHours(1), 'updated_at' => $now->copy()->subDays($i)->addHours(1)],
+                    ['ticket_id' => $tid, 'user_id' => $uid, 'body_fr' => 'Bonjour, merci pour votre message. Nous avons bien reçu votre demande et notre équipe la traite actuellement. Nous reviendrons vers vous dès que possible. Cordialement, Équipe Support — Artisan Hub 237.', 'body_en' => 'Hello, thank you for your message. Our team is handling your request.', 'is_staff' => true, 'created_at' => $now->copy()->subDays($i)->addHours(1), 'updated_at' => $now->copy()->subDays($i)->addHours(1)],
                 ]);
             }
         }

@@ -69,8 +69,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Contactez la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun — une question, une suggestion ou un partenariat ? Notre équipe est à votre écoute.' : 'Contact the National Virtual Gallery of Cameroonian Crafts — a question, a suggestion or a partnership? Our team is here to listen.' }}">
-    <title>{{ $isFr ? 'Nous contacter — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Contact us — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <meta name="description" content="{{ $isFr ? 'Contactez la Artisan Hub 237 — une question, une suggestion ou un partenariat ? Notre équipe est à votre écoute.' : 'Contact Artisan Hub 237 — a question, a suggestion or a partnership? Our team is here to listen.' }}">
+    <title>{{ $isFr ? 'Nous contacter — Artisan Hub 237' : 'Contact us — Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -290,7 +290,7 @@
             ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
             ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
             ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? '/tableau-de-bord' : '/login', 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
         ];
     @endphp
     @foreach($bottomTabs as $tab)

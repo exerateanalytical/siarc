@@ -28,7 +28,7 @@
             @endif
 
             @if($tokenValid)
-            <form method="POST" action="/reset-password">
+            <form method="POST" action="{{ route('password.update') }}">
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
                 <input type="hidden" name="email" value="{{ $email }}">
@@ -84,7 +84,7 @@
                         ? 'Ce lien de réinitialisation est invalide ou a expiré (les liens expirent après 60 minutes).'
                         : 'This password reset link is invalid or has expired (links expire after 60 minutes).' }}
                 </p>
-                <a href="/forgot-password?lang={{ $lang }}"
+                <a href="{{ route('password.request', ['lang' => $lang]) }}"
                     class="inline-flex items-center gap-2 bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-colors">
                     <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Demander un nouveau lien' : 'Request a new link' }}
@@ -93,7 +93,7 @@
             @endif
 
             <div class="mt-6 pt-5 border-t border-gray-100 text-center">
-                <a href="/login?lang={{ $lang }}" class="inline-flex items-center gap-1 text-sm text-forest-500 font-semibold hover:text-forest-600 transition-colors">
+                <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center gap-1 text-sm text-forest-500 font-semibold hover:text-forest-600 transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     {{ $lang === 'fr' ? 'Retour à la connexion' : 'Back to login' }}
                 </a>

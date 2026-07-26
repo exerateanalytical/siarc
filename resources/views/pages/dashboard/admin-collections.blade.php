@@ -281,15 +281,16 @@
                                 <a href="{{ route('admin.audit-log') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir toutes' : 'See all' }} →</a>
                             </div>
                             @php
-                                $hcActivities = [
-                                    ['plus',        '#157A43', '#E8F2EC', $isFr ? 'Nouvelle collection ajoutée' : 'New collection added',            'Tissus Traditionnels Bamileke', $isFr ? 'Il y a 15 min' : '15 min ago'],
-                                    ['badge-check', '#157A43', '#E8F2EC', $isFr ? 'Collection publiée' : 'Collection published',                     'Bronzes Royaux Bamoun',         $isFr ? 'Il y a 1 h' : '1 h ago'],
-                                    ['pencil',      '#B42025', '#FDE9E9', $isFr ? 'Collection mise à jour' : 'Collection updated',                   'Poteries de l\'Adamaoua',       $isFr ? 'Il y a 3 h' : '3 h ago'],
-                                    ['send',        '#C97A16', '#FDF0DC', $isFr ? 'Collection envoyée en révision' : 'Collection sent for review',   'Masques Traditionnels Bassa',   $isFr ? 'Il y a 5 h' : '5 h ago'],
-                                ];
+                                // Real recently-updated collections (no dedicated activity log exists)
+                                $hcStatusIcons = ['published' => ['badge-check', '#157A43', '#E8F2EC'], 'in_review' => ['send', '#C97A16', '#FDF0DC'], 'draft' => ['pencil', '#6F6B60', '#EEECE6']];
+                                $hcActivities = collect($collections)->sortByDesc('updated_at')->take(4)->map(function ($c) use ($isFr, $hcStatusIcons) {
+                                    [$icon, $color, $tile] = $hcStatusIcons[$c->status] ?? ['pencil', '#B42025', '#FDE9E9'];
+                                    $name = $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr);
+                                    return [$icon, $color, $tile, $isFr ? 'Collection mise à jour' : 'Collection updated', $name, \Illuminate\Support\Carbon::parse($c->updated_at)->diffForHumans(null, true, false, 1)];
+                                });
                             @endphp
                             <ul class="mt-3 divide-y divide-[#F5F1E8]">
-                                @foreach($hcActivities as [$hcAIcon, $hcAColor, $hcATile, $hcATitle, $hcASub, $hcAWhen])
+                                @forelse($hcActivities as [$hcAIcon, $hcAColor, $hcATile, $hcATitle, $hcASub, $hcAWhen])
                                 <li class="py-2.5 flex items-start gap-3">
                                     <span class="shrink-0 w-[30px] h-[30px] rounded-lg flex items-center justify-center" style="background: {{ $hcATile }}"><i data-lucide="{{ $hcAIcon }}" class="w-[14px] h-[14px]" style="color: {{ $hcAColor }}"></i></span>
                                     <div class="flex-1 min-w-0">
@@ -298,7 +299,9 @@
                                     </div>
                                     <span class="shrink-0 text-[10.5px] text-[#8A857A] whitespace-nowrap">{{ $hcAWhen }}</span>
                                 </li>
-                                @endforeach
+                                @empty
+                                <li class="py-2.5 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</li>
+                                @endforelse
                             </ul>
                         </section>
                     </div>

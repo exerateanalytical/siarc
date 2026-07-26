@@ -2,7 +2,7 @@
 
 @php
 $isFr = $lang === 'fr';
-$title = ($isFr ? 'Partenaires & Sponsors' : 'Partners & Sponsors') . ' — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun';
+$title = ($isFr ? 'Partenaires & Sponsors' : 'Partners & Sponsors') . ' — Artisan Hub 237';
 
 $typeCls = [
     'Institutionnel' => 'bg-[#E2F3E8] text-[#157A43]', 'International' => 'bg-[#E8EFFB] text-[#3565DE]',
@@ -75,7 +75,7 @@ $partnerTiles = [
 
 <div class="max-w-6xl mx-auto px-4 py-8">
     {{-- Filters toolbar --}}
-    <form method="GET" class="flex flex-wrap items-center gap-2.5 mb-6">
+    <form method="GET" action="{{ route('partners.index') }}" class="flex flex-wrap items-center gap-2.5 mb-6">
         <input type="hidden" name="lang" value="{{ $lang }}">
         <div class="flex items-center gap-2 bg-white border border-[#E7E7E5] rounded-lg px-3.5 h-[42px] flex-1 min-w-[200px]">
             <input type="text" name="q" value="{{ $pubQ }}" placeholder="{{ $isFr ? 'Rechercher un partenaire...' : 'Search a partner...' }}" class="flex-1 min-w-0 bg-transparent text-[13px] focus:outline-none">

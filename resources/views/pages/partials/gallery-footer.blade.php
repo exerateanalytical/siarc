@@ -30,7 +30,7 @@
                 <div class="flex items-center gap-3">
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-10 h-11 object-contain">
                     <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
-                        {{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}<br>
+                        {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
                         {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
                     </span>
                 </div>
@@ -77,7 +77,7 @@
                     <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Équipe' : 'Team' }}</a></li>
                     <li><a href="{{ route('partners.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Partenaires' : 'Partners' }}</a></li>
                     <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Carrières' : 'Careers' }}</a></li>
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Presse' : 'Press' }}</a></li>
+                    <li><a href="{{ route('press', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Presse' : 'Press' }}</a></li>
                     <li><a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a></li>
                 </ul>
             </div>
@@ -88,7 +88,8 @@
                 <p class="text-[12px] text-sage leading-relaxed">
                     {{ $isFr ? 'Restez informé de nos actualités et nouveautés.' : 'Stay informed of our news and updates.' }}
                 </p>
-                <form action="/inscription" method="GET" class="mt-4 flex gap-2">
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-4 flex gap-2">
+                    @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre email' : 'Your email' }}"
                         class="flex-1 min-w-0 w-[140px] bg-transparent border border-white/25 rounded-md px-3 py-2.5 text-[12px] text-white placeholder-sage/70 focus:outline-none focus:border-gold">
@@ -106,7 +107,7 @@
 
         <!-- Legal bar -->
         <div class="mt-8 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] text-sage/80">
-            <span>&copy; {{ date('Y') }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</span>
+            <span>&copy; {{ date('Y') }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
             <span class="flex items-center gap-3 whitespace-nowrap">
                 <a href="{{ route('terms') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Mentions légales' : 'Legal notice' }}</a>
                 <span class="text-white/20">|</span>
@@ -126,7 +127,7 @@
             ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
             ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
             ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? '/tableau-de-bord' : '/login', 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
         ];
     @endphp
     @foreach($gfBottomTabs as $tab)

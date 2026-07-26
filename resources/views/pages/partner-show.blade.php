@@ -33,7 +33,7 @@
         ['eye', '#C97A16', '1.2M', $isFr?'Visibilité Générée':'Visibility Generated', '+15.5% '.($isFr?'ce mois':'this month')],
     ];
     $activites = [
-        [$isFr?'Participation au SIARC 2024':'SIARC 2024 participation', '08 '.($isFr?'Mai':'May').' 2025'],
+        [$isFr?'Participation à un salon 2024':'2024 trade fair participation', '08 '.($isFr?'Mai':'May').' 2025'],
         [$isFr?'Atelier de formation des artisans':'Artisan training workshop', '22 '.($isFr?'Avr.':'Apr.').' 2025'],
         [$isFr?'Campagne de valorisation':'Promotion campaign', '15 '.($isFr?'Avr.':'Apr.').' 2025'],
         [$isFr?'Visite officielle au MINAC':'Official visit to MINAC', '03 '.($isFr?'Mar.':'Mar.').' 2025'],
@@ -55,7 +55,7 @@
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $pName }} — {{ $isFr ? 'Partenaire de la Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Partner of the National Virtual Gallery of Cameroonian Crafts' }}">
+    <meta name="description" content="{{ $pName }} — {{ $isFr ? 'Partenaire d\'Artisan Hub 237' : 'Partner of Artisan Hub 237' }}">
     <title>{{ $pName }} — {{ $isFr ? 'Partenaires' : 'Partners' }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf:'#164C28', gold:'#C9942E', cream:'#F8F3ED', sand:'#E7E1D4' }, fontFamily: { sans:['Poppins','system-ui','sans-serif'], serif:['"Playfair Display"','Georgia','serif'] } } } }</script>

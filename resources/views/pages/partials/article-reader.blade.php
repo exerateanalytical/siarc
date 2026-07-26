@@ -10,7 +10,7 @@
     $cover = $article->cover_image ? (str_contains($article->cover_image, '/') ? asset('storage/'.$article->cover_image) : asset('images/landing/'.$article->cover_image)) : asset('images/landing/event-1.png');
     $paragraphs = array_filter(array_map('trim', preg_split('/\n+/', $aBody ?: $aExcerpt)));
     $catColors = ['Événements'=>'#3565DE','Artisanat'=>'#157A43','Annonces'=>'#C97A16','Culture'=>'#7C4FE0','Programmes'=>'#0E9F9F','Portraits'=>'#9B1C31'];
-    $tags = array_filter([$article->category, $article->type, 'SIARC 2026', 'Cameroun']);
+    $tags = array_filter([$article->category, $article->type, 'Cameroun']);
     $linkFor = fn ($rel) => $publicMode ? route('news.show', ['slug' => $rel->slug, 'lang' => $lang]) : route('admin.news.detail', ['id' => $rel->id, 'lang' => $lang]);
 @endphp
 
@@ -83,13 +83,6 @@
 
     {{-- Rail --}}
     <aside class="space-y-5">
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-5 py-5">
-            <h2 class="text-[12px] font-bold tracking-[0.06em] text-[#1D1B16] uppercase">{{ $isFr?'À propos du SIARC 2026':'About SIARC 2026' }}</h2>
-            <div class="mt-3 flex items-center gap-3"><span class="w-11 h-11 rounded-lg bg-[#F6F1E4] flex items-center justify-center"><i data-lucide="sparkles" class="w-5 h-5 text-[#C9942E]"></i></span><div><p class="text-[13px] font-bold text-[#1D1B16]">SIARC 2026</p><p class="text-[10px] text-[#6F6B60] leading-tight">{{ $isFr?'Salon International de l\'Artisanat du Cameroun':'International Craft Fair of Cameroon' }}</p></div></div>
-            <p class="mt-3 text-[11.5px] text-[#55524A] leading-relaxed">{{ $isFr ? 'Un carrefour international dédié à la promotion, à la valorisation et à la commercialisation de l\'artisanat camerounais et africain.' : 'An international hub dedicated to promoting and commercialising Cameroonian and African craftsmanship.' }}</p>
-            <a href="{{ route('events.show', ['slug'=>'siarc-2026', 'lang'=>$lang]) }}" class="mt-3 inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#157A43]">{{ $isFr?'Visiter le site officiel':'Visit official site' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
-        </section>
-
         <section class="bg-white border border-[#EDE6D6] rounded-2xl px-5 py-5">
             <h2 class="text-[12px] font-bold tracking-[0.06em] text-[#1D1B16] uppercase">{{ $isFr?'Articles similaires':'Related articles' }}</h2>
             <div class="mt-3 space-y-3">

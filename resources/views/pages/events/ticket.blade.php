@@ -185,7 +185,7 @@
                         <div class="flex items-center gap-3.5">
                             <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
                             <span class="leading-tight">
-                                <span class="block text-[12.5px] font-bold tracking-[0.04em] text-[#1D1B16] uppercase">{{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}</span>
+                                <span class="block text-[12.5px] font-bold tracking-[0.04em] text-[#1D1B16] uppercase">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                                 <span class="block text-[12.5px] font-bold tracking-[0.04em] text-[#1D1B16] uppercase">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
                                 <span class="block text-[10px] text-[#6F6B60] mt-0.5">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                             </span>

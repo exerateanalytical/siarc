@@ -494,7 +494,7 @@
             {{-- Footer --}}
             <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
                 <p class="flex-1 text-center text-[11.5px] text-[#8A857A]">
-                    {{ $isFr ? '© 2025 Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : '© 2025 National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}
+                    {{ $isFr ? '© 2025 Artisan Hub 237. Tous droits réservés.' : '© 2025 Artisan Hub 237. All rights reserved.' }}
                 </p>
                 <div class="flex items-center gap-4 shrink-0">
                     <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>

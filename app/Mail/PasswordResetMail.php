@@ -29,7 +29,7 @@ class PasswordResetMail extends Mailable
     {
         return new Envelope(
             subject: $this->lang === 'fr'
-                ? 'Réinitialisez votre mot de passe — Galerie virtuelle de l\'artisanat du Cameroun'
+                ? 'Réinitialisez votre mot de passe — Artisan Hub 237'
                 : 'Reset your password — Virtual gallery of Cameroonian crafts',
         );
     }

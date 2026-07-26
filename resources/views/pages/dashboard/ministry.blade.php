@@ -104,11 +104,11 @@ $monthLabels = [
         </div>
     </div>
 
-    <!-- Events / SIARC participation -->
+    <!-- Events participation -->
     <div class="bg-white rounded-xl border border-[#EFEBE2] overflow-hidden">
         <div class="px-4 py-3 border-b border-[#F1EDE4] flex items-center gap-2">
             <i data-lucide="calendar-days" class="w-4 h-4 text-violet-500"></i>
-            <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Événements & participation SIARC' : 'Events & SIARC participation' }}</h2>
+            <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Événements & participation' : 'Events & participation' }}</h2>
         </div>
         @forelse($events as $event)
         <div class="flex items-center gap-3 px-4 py-3 border-b border-[#FBF9F4] last:border-0">

@@ -1,14 +1,13 @@
 @php
     $isFr = $lang === 'fr';
     $siacUser = session('siac_user');
-    $dirNavActive = 'collections';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $isFr ? 'Collections Héritage — le patrimoine artisanal du Cameroun par thème.' : 'Heritage Collections — Cameroon\'s craft heritage by theme.' }}">
-    <title>{{ $isFr ? 'Collections Héritage — Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'Heritage Collections — National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $isFr ? 'Collections Héritage — Artisan Hub 237' : 'Heritage Collections — Artisan Hub 237' }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf:'#164C28', gold:'#C9942E' }, fontFamily: { sans:['Poppins','system-ui','sans-serif'], serif:['"Playfair Display"','Georgia','serif'] } } } }</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
@@ -51,7 +50,7 @@
                     @if($c->region_fr)<span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $c->region_fr }}</span>@endif
                     <span class="flex items-center gap-1.5"><i data-lucide="package" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $c->products_count }} {{ $isFr?'objets':'items' }}</span>
                 </div>
-                <a href="{{ route('products.index', ['lang'=>$lang]) }}" class="mt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr?'Explorer la collection':'Explore collection' }}<i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                <a href="{{ route('collections.show', ['slug'=>$c->slug, 'lang'=>$lang]) }}" class="mt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr?'Explorer la collection':'Explore collection' }}<i data-lucide="arrow-right" class="w-4 h-4"></i></a>
             </div>
         </article>
         @empty

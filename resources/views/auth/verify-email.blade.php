@@ -86,7 +86,7 @@
             </form>
 
             <div class="mt-6 pt-5 border-t border-gray-100 text-center">
-                <a href="/tableau-de-bord" class="inline-flex items-center gap-1 text-sm text-forest-500 font-semibold hover:text-forest-600 transition-colors">
+                <a href="{{ route('dashboard.siac') }}" class="inline-flex items-center gap-1 text-sm text-forest-500 font-semibold hover:text-forest-600 transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     {{ $lang === 'fr' ? 'Retour au tableau de bord' : 'Back to dashboard' }}
                 </a>

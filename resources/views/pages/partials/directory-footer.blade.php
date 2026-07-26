@@ -60,7 +60,7 @@
                 <div class="flex items-center gap-3">
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-10 h-11 object-contain">
                     <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
-                        {{ $isFr ? 'Galerie Virtuelle Nationale' : 'National Virtual Gallery' }}<br>
+                        {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
                         {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
                     </span>
                 </div>
@@ -170,7 +170,7 @@
 
         <!-- Legal bar -->
         <div class="mt-7 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] text-[#93A79B]">
-            <span>&copy; 2025 {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</span>
+            <span>&copy; 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
             @if($dfShowPayments)
             <img src="{{ asset('images/landing/event-payments.png') }}" alt="MTN Mobile Money, Orange Money, VISA, Mastercard, PayPal" class="h-[16px] w-auto">
             @elseif($dfShowLegalLinks)
@@ -192,7 +192,7 @@
             ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
             ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
             ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? '/tableau-de-bord' : '/login', 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
         ];
     @endphp
     @foreach($dfBottomTabs as $tab)

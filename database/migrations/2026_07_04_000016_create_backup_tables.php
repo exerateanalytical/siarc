@@ -65,7 +65,7 @@ return new class extends Migration
         foreach ([
             'storage_used_gb'  => '256.8',
             'storage_total_gb' => '500',
-            'backup_server'    => 'GVNA-Server-01',
+            'backup_server'    => 'AH237-Server-01',
             'backup_os'        => 'Ubuntu 22.04 LTS',
             'backup_db'        => 'MySQL 8.0',
             'backup_path'      => '/backups/gvna',

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Developer Portal — Galerie virtuelle de l'artisanat du Cameroun API</title>
+<title>Developer Portal — Artisan Hub 237 API</title>
 <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
 <script>
     tailwind.config = {
@@ -29,7 +29,7 @@
     <div class="max-w-6xl mx-auto px-4 h-[60px] flex items-center justify-between">
         <a href="/" class="flex items-center gap-3">
             <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[32px] h-[35px] object-contain">
-            <span class="font-bold text-[#1B1B18] text-[12px] uppercase tracking-[0.02em]">Galerie Virtuelle Nationale <span class="font-semibold text-[#157A43] normal-case tracking-normal">— Developer Portal</span></span>
+            <span class="font-bold text-[#1B1B18] text-[12px] uppercase tracking-[0.02em]">Artisan Hub 237 <span class="font-semibold text-[#157A43] normal-case tracking-normal">— Developer Portal</span></span>
         </a>
         <a href="/tableau-de-bord" class="text-[13px] font-semibold text-[#14652F] hover:text-[#14532D] flex items-center gap-1.5">
             <i data-lucide="layout-dashboard" class="w-4 h-4" style="stroke-width:1.7"></i>
@@ -41,7 +41,7 @@
 
 <div class="max-w-4xl mx-auto px-4 py-10">
     <h1 class="text-xl font-bold text-gray-900 mb-1">Developer Portal</h1>
-    <p class="text-sm text-gray-500 mb-6">Manage your API keys, explore endpoints, and integrate Galerie virtuelle de l'artisanat du Cameroun data into your applications.</p>
+    <p class="text-sm text-gray-500 mb-6">Manage your API keys, explore endpoints, and integrate Artisan Hub 237 data into your applications.</p>
 
     @if(session('success'))
     <div class="mb-4 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">{{ session('success') }}</div>

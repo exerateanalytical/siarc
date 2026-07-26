@@ -30,7 +30,7 @@
     $tabs = [[$isFr?'Sauvegardes':'Backups', true], [$isFr?'Planification':'Scheduling', false], ['Restauration', false], [$isFr?'Logs système':'System logs', false], [$isFr?'Logs d\'activité':'Activity logs', false]];
 
     $sysInfo = [
-        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'GVNA-Server-01'],
+        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'AH237-Server-01'],
         [$isFr?'Système d\'exploitation':'OS', $settings['backup_os'] ?? 'Ubuntu 22.04 LTS'],
         ['PHP Version', PHP_VERSION],
         [$isFr?'Base de données':'Database', $settings['backup_db'] ?? 'MySQL 8.0'],
@@ -198,5 +198,5 @@
                 </aside>
             </div>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun. Tous droits réservés.' : 'National Virtual Gallery of Cameroonian Crafts. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

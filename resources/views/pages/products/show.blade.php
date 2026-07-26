@@ -17,11 +17,12 @@
     $industry = $sector?->industry;
     $industryName = $industry ? ($isFr ? $industry->name_fr : ($industry->name_en ?? $industry->name_fr)) : null;
 
-    // Business rating (design fallbacks when no reviews yet: 4.8 (23) / 4.8 (56))
+    // Business rating (shared across the product and vendor rating sections)
     $reviews = $business->reviews ?? collect();
-    $ratingAvg = $reviews->count() ? number_format($reviews->avg('rating'), 1) : '4.8';
-    $ratingCountProduct = $reviews->count() ?: 23;
-    $ratingCountVendor = $reviews->count() ?: 56;
+    $hasReviews = $reviews->count() > 0;
+    $ratingAvg = $hasReviews ? number_format($reviews->avg('rating'), 1) : null;
+    $ratingCountProduct = $reviews->count();
+    $ratingCountVendor = $reviews->count();
 
     // Gallery
     $gallery = $product->images->sortBy('sort_order')->values();
@@ -84,7 +85,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) $description), 150) }}">
-    <title>{{ $name }} — {{ $isFr ? 'Galerie Virtuelle Nationale de l\'Artisanat du Cameroun' : 'National Virtual Gallery of Cameroonian Crafts' }}</title>
+    <title>{{ $name }} — {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -156,7 +157,7 @@
                     </button>
                 </form>
                 @else
-                <a href="/login?lang={{ $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                     class="absolute top-3.5 right-3.5 w-9 h-9 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
                     <i data-lucide="heart" class="w-4 h-4"></i>
                 </a>
@@ -204,6 +205,7 @@
                 @endif
             </p>
             <p class="mt-2.5 flex items-center gap-2">
+                @if($hasReviews)
                 <span class="flex items-center gap-0.5">
                     @for($i = 0; $i < 5; $i++)
                     <svg viewBox="0 0 20 20" class="w-[17px] h-[17px] fill-[#EFA912]"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
@@ -211,6 +213,9 @@
                 </span>
                 <span class="text-[14px] font-bold text-[#1D1B16]">{{ $ratingAvg }}</span>
                 <span class="text-[13px] text-[#6F6B60]">({{ $ratingCountProduct }} {{ $isFr ? 'avis' : 'reviews' }})</span>
+                @else
+                <span class="text-[13px] text-[#6F6B60]">{{ $isFr ? 'Pas encore d\'avis' : 'No reviews yet' }}</span>
+                @endif
             </p>
 
             @if($description)
@@ -240,12 +245,12 @@
 
             <!-- CTA buttons -->
             <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('quotes.create', ['business' => $business->slug, 'lang' => $lang]) : route('login', ['lang' => $lang, 'next' => route('quotes.create', ['business' => $business->slug]) ]) }}"
                     class="h-[46px] bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center gap-2.5 text-[11.5px] font-bold tracking-[0.08em] uppercase transition-colors">
-                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                    {{ $isFr ? 'Envoyer une demande (Enquiry)' : 'Send an enquiry' }}
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    {{ $isFr ? 'Demander un devis' : 'Request a quote' }}
                 </a>
-                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
+                <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : route('login', ['lang' => $lang]) }}"
                     class="h-[46px] bg-white border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center gap-2.5 text-[11.5px] font-bold tracking-[0.08em] uppercase text-[#1D1B16] transition-colors">
                     <i data-lucide="message-square" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer un message' : 'Send a message' }}
@@ -290,7 +295,7 @@
                     </button>
                 </form>
                 @else
-                <a href="/login?lang={{ $lang }}" class="flex flex-col items-center gap-1.5 group">
+                <a href="{{ route('login', ['lang' => $lang]) }}" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-white border border-[#F3C9C9] flex items-center justify-center text-[#D93838] group-hover:border-[#D93838] transition-colors">
                         <i data-lucide="heart" class="w-[18px] h-[18px]"></i>
                     </span>
@@ -329,6 +334,7 @@
                         </p>
                         @if($locationLabel)<p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $locationLabel }}</p>@endif
                         <p class="mt-1 flex items-center gap-1.5">
+                            @if($hasReviews)
                             <span class="flex items-center gap-0.5">
                                 @for($i = 0; $i < 4; $i++)
                                 <svg viewBox="0 0 20 20" class="w-3 h-3 fill-[#EFA912]"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
@@ -336,6 +342,9 @@
                                 <svg viewBox="0 0 20 20" class="w-3 h-3 fill-[#E3DED2]"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
                             </span>
                             <span class="text-[11.5px] text-[#6F6B60]">{{ $ratingAvg }} ({{ $ratingCountVendor }} {{ $isFr ? 'avis' : 'reviews' }})</span>
+                            @else
+                            <span class="text-[11.5px] text-[#6F6B60]">{{ $isFr ? 'Pas encore d\'avis' : 'No reviews yet' }}</span>
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -453,7 +462,7 @@
                             <p class="mt-2 text-[11.5px] text-[#55524A] leading-relaxed">
                                 {{ $isFr ? 'Vous souhaitez un motif ou une taille différente ? Cet artisan peut réaliser des pièces sur mesure selon vos préférences.' : 'Would you like a different pattern or size? This artisan can craft custom pieces to your preferences.' }}
                             </p>
-                            <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}"
+                            <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : route('login', ['lang' => $lang]) }}"
                                 class="mt-3.5 w-full h-[36px] bg-white border border-[#E0D9C6] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] transition-colors">
                                 <i data-lucide="message-circle" class="w-[14px] h-[14px]"></i>
                                 {{ $isFr ? 'Demander une personnalisation' : 'Request a customisation' }}
@@ -537,7 +546,7 @@
                         </button>
                     </form>
                     @else
-                    <a href="/login?lang={{ $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
+                    <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                         class="absolute top-2 right-2 w-8 h-8 bg-white/95 hover:bg-white rounded-full flex items-center justify-center text-[#1D1B16] transition-colors">
                         <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
                     </a>

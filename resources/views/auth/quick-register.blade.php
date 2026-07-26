@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'Inscription rapide' : 'Quick signup' }} — Galerie Virtuelle</title>
+    <title>{{ $isFr ? 'Inscription rapide' : 'Quick signup' }} — Artisan Hub 237</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
@@ -54,7 +54,7 @@
             </button>
         </form>
         <p class="mt-4 text-center text-[12.5px] text-[#6F6B60]">
-            {{ $isFr ? 'Déjà inscrit ?' : 'Already registered?' }} <a href="/login?lang={{ $lang }}" class="font-bold text-[#157A43]">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+            {{ $isFr ? 'Déjà inscrit ?' : 'Already registered?' }} <a href="{{ route('login', ['lang' => $lang]) }}" class="font-bold text-[#157A43]">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
             · <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="font-bold text-[#157A43]">{{ $isFr ? 'Inscription complète' : 'Full signup' }}</a>
         </p>
     </main>
