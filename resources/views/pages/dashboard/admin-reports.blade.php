@@ -159,7 +159,9 @@
                 <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'TOP PRODUITS PAR VUES' : 'TOP PRODUCTS BY VIEWS' }}</h3>
                 <a href="{{ route('admin.products') }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
             </div>
-            <table class="w-full text-left">
+            {{-- Scrolls inside its own box so a narrow screen never scrolls the page. --}}
+            <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[520px]">
                 <thead><tr class="text-[10px] font-bold text-[#8A857A]"><th class="px-5 py-2">#</th><th class="py-2">{{ $isFr ? 'PRODUIT' : 'PRODUCT' }}</th><th class="py-2">{{ $isFr ? 'RÉGION' : 'REGION' }}</th><th class="px-5 py-2 text-right">{{ $isFr ? 'VUES' : 'VIEWS' }}</th></tr></thead>
                 <tbody>
                     @forelse($topProducts as $i => $product)
@@ -174,6 +176,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         {{-- Map + region list (decorative Cameroon map — no per-region shading data exists) --}}
