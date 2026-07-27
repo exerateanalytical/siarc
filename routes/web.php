@@ -2764,14 +2764,19 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
             ->orderBy('id')->get()->groupBy('product_id')->map(fn ($imgs) => $imgs->first()->file_path)
         : collect();
 
-    // Real RFQs addressed to this business (shown in "Demandes récentes" when present)
-    $realRfqs = $business
+    // Every RFQ addressed to this business, paginated — a busy artisan used to
+    // see only the five most recent, with no way to reach the rest.
+    $rfqStatus = $request->query('rfq_status');
+    $rfqPage = $business
         ? \App\Modules\Quotes\Models\QuoteRequest::with(['buyer', 'proposals'])
             ->where('business_id', $business->id)
+            ->when(in_array($rfqStatus, ['pending', 'quoted', 'negotiation', 'accepted', 'refused'], true),
+                fn ($q) => $q->where('status', $rfqStatus))
             ->orderByDesc('created_at')
-            ->limit(5)
-            ->get()
-        : collect();
+            ->paginate(10, ['*'], 'rfq')
+            ->withQueryString()
+        : null;
+    $realRfqs = $rfqPage ? $rfqPage->getCollection() : collect();
 
     // Real KPI/pipeline/activity data for the dashboard (no design fixtures)
     $allRfqs = $business
@@ -2823,7 +2828,7 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
     $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
     return view('pages.dashboard.quotes', compact(
-        'lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs',
+        'lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs', 'rfqPage', 'rfqStatus',
         'rfqCountsByStatus', 'ordersCount', 'quotesSentCount', 'activeClientsCount', 'thisMonthRfqs',
         'businessDocuments', 'recentReviews', 'recentMessages', 'notificationCount', 'openProposalValue'
     ));

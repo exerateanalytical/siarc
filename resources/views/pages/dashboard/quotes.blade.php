@@ -367,9 +367,24 @@
 
             <section class="flex-1 min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Demandes récentes' : 'Recent requests' }}</h2>
-                    <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir toutes' : 'See all' }}</a>
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">
+                        {{ $isFr ? 'Demandes de devis' : 'Quote requests' }}
+                        @if($rfqPage && $rfqPage->total())<span class="text-[12px] font-normal text-[#6F6B60]">({{ $rfqPage->total() }})</span>@endif
+                    </h2>
                 </div>
+                {{-- Status filter + pagination: the list used to stop at the five
+                     most recent, leaving older requests unreachable. --}}
+                @if($rfqPage && $rfqPage->total() > 0)
+                <div class="mt-3 flex flex-wrap items-center gap-1.5">
+                    @foreach(['' => $isFr ? 'Toutes' : 'All', 'pending' => $isFr ? 'Nouvelles' : 'New', 'quoted' => $isFr ? 'Devis envoyés' : 'Quoted', 'negotiation' => $isFr ? 'Négociation' : 'Negotiating', 'accepted' => $isFr ? 'Acceptées' : 'Accepted', 'refused' => $isFr ? 'Refusées' : 'Refused'] as $rfVal => $rfLabel)
+                    <a href="{{ route('dashboard.quotes', array_filter(['lang' => $lang, 'rfq_status' => $rfVal ?: null])) }}"
+                       class="px-2.5 py-1 rounded-lg text-[11.5px] font-semibold border transition-colors
+                              {{ (string) ($rfqStatus ?? '') === $rfVal
+                                 ? 'bg-[#14532D] border-[#14532D] text-white'
+                                 : 'bg-white border-[#ECECEA] text-[#55524A] hover:border-[#14652F] hover:text-[#14652F]' }}">{{ $rfLabel }}</a>
+                    @endforeach
+                </div>
+                @endif
                 <div class="mt-2 divide-y divide-[#F1F2F1]">
                     @forelse($recentRequests as $rqRow)
                     @php
@@ -389,6 +404,9 @@
                     <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune demande de devis pour le moment.' : 'No quote requests yet.' }}</p>
                     @endforelse
                 </div>
+                @if($rfqPage && $rfqPage->hasPages())
+                <div class="mt-3">{{ $rfqPage->links() }}</div>
+                @endif
             </section>
         </div>
 
