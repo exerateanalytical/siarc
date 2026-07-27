@@ -28,7 +28,7 @@
             <!-- Brand -->
             <div>
                 <div class="flex items-center gap-3">
-                    <img src="{{ brand_asset('mark') }}" alt="" class="w-10 h-11 object-contain">
+                    <img src="{{ brand_asset('mark') }}" alt="" class="w-11 h-11 object-contain">
                     <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
                         {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
                         {{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}

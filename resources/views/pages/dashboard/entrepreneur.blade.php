@@ -246,7 +246,7 @@
         <div class="lg:hidden">
             <!-- Mobile header -->
             <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
-                <img src="{{ brand_asset('mark') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
+                <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] object-contain shrink-0">
                 <span class="leading-tight min-w-0">
                     <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                     <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>

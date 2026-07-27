@@ -59,7 +59,7 @@
 @endphp
 <aside id="ad-sidebar" class="shrink-0 lg:w-[290px] bg-gradient-to-b from-[#042B15] to-[#03200E] text-white flex flex-col relative">
     <div class="px-4 pt-4 pb-3 flex items-center gap-3">
-        <img src="{{ brand_asset('mark') }}" alt="" class="w-[46px] h-[50px] object-contain shrink-0">
+        <img src="{{ brand_asset('mark') }}" alt="" class="w-[50px] h-[50px] object-contain shrink-0">
         <div class="leading-tight min-w-0">
             <p class="text-[11px] font-bold tracking-[0.02em] text-white uppercase leading-snug">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</p>
             <p class="mt-1 text-[9.5px] italic text-[#E9C25A] leading-snug">{{ $isFr ? 'Notre Héritage, Notre Fierté, Notre Avenir' : 'Our Heritage, Our Pride, Our Future' }}</p>

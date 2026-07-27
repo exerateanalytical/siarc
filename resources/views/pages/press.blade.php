@@ -75,7 +75,7 @@
                 {{ $isFr ? 'Identité visuelle' : 'Brand assets' }}
             </h2>
             <div class="mt-3 flex items-center gap-4">
-                <img src="{{ brand_asset('mark') }}" alt="Logo" class="w-[56px] h-[61px] object-contain">
+                <img src="{{ brand_asset('mark') }}" alt="Logo" class="w-[61px] h-[61px] object-contain">
                 <p class="text-[12.5px] text-[#55524A] leading-relaxed">
                     {{ $isFr ? 'Le logo de la plateforme. Merci de ne pas le modifier ni le déformer.' : 'The platform logo. Please do not alter or distort it.' }}
                 </p>

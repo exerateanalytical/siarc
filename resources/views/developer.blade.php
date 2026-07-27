@@ -34,7 +34,7 @@ body{font-family:'Poppins',system-ui,sans-serif;}</style>
 <header class="bg-white border-b border-[#EEEDEA]">
     <div class="max-w-6xl mx-auto px-4 h-[60px] flex items-center justify-between">
         <a href="/" class="flex items-center gap-3">
-            <img src="{{ brand_asset('mark') }}" alt="" class="w-[32px] h-[35px] object-contain">
+            <img src="{{ brand_asset('mark') }}" alt="" class="w-[35px] h-[35px] object-contain">
             <span class="font-bold text-[#1B1B18] text-[12px] uppercase tracking-[0.02em]">Artisan Hub 237 <span class="font-semibold text-[#157A43] normal-case tracking-normal">— Developer Portal</span></span>
         </a>
         <a href="/tableau-de-bord" class="text-[13px] font-semibold text-[#14652F] hover:text-[#14532D] flex items-center gap-1.5">
