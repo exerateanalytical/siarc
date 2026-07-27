@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\CMS\Controllers;
+namespace App\Modules\Cms\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\CMS\Models\CmsAnnouncement;
-use App\Modules\CMS\Models\CmsFaqCategory;
-use App\Modules\CMS\Models\CmsPage;
-use App\Modules\CMS\Models\CmsPost;
+use App\Modules\Cms\Models\CmsAnnouncement;
+use App\Modules\Cms\Models\CmsFaqCategory;
+use App\Modules\Cms\Models\CmsPage;
+use App\Modules\Cms\Models\CmsPost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

@@ -9,7 +9,7 @@ return [
     App\Modules\Messaging\Providers\MessagingServiceProvider::class,
     App\Modules\Saved\Providers\SavedServiceProvider::class,
     App\Modules\Notifications\Providers\NotificationsServiceProvider::class,
-    App\Modules\CMS\Providers\CmsServiceProvider::class,
+    App\Modules\Cms\Providers\CmsServiceProvider::class,
     App\Modules\Events\Providers\EventsServiceProvider::class,
     App\Modules\Support\Providers\SupportServiceProvider::class,
     App\Modules\Analytics\Providers\AnalyticsServiceProvider::class,

@@ -21,22 +21,210 @@ there is nothing to compile.
 
 ---
 
-## 2. Upload
+## 2. What to upload
 
-Upload the whole project **except** these, which are environment-specific or
-regenerated on the server:
+"Upload the project" is the wrong instruction. This working copy contains a
+`.env` with real credentials, a dev `vendor/` with the test runner in it, ~90
+design PNGs, thousands of dev session files and a `bootstrap/cache` compiled
+against a Windows path. Sending all of it either leaks something or produces a
+site that ignores your configuration.
+
+### The one-command way
+
+On your machine, from the project root:
+
+```bash
+bash scripts/package-release.sh
+```
+
+That builds two things:
 
 ```
-.env
-node_modules/
-storage/logs/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
+build/artisanhub237-release-YYYYmmdd-HHMM.zip   <- upload this
+build/release/                                   <- the same tree, unzipped, for rsync or inspection
 ```
 
-If your host gives you SSH and Composer, you can also skip `vendor/` and run
+It runs `composer install --no-dev --optimize-autoloader --classmap-authoritative`
+**into the bundle**, so the server needs no Composer at all. It prints exactly
+what it left out and why, and it refuses to hand you an archive if:
+
+- a `.env` file made it in,
+- a real `APP_KEY` value appears anywhere,
+- `tests/`, `node_modules/`, `.git/` or a compiled `bootstrap/cache` slipped through,
+- or Composer reports a **PSR-4 namespace/directory mismatch**. That last one is
+  the check worth understanding: Windows filesystems are case-insensitive, so a
+  class declared `App\Modules\CMS\…` inside `app/Modules/Cms/` loads perfectly
+  here and is simply *not found* on a Linux server. If a service provider is
+  affected, every page of the site returns 500 and nothing about the local
+  install predicts it.
+
+Read the summary it prints. A non-zero exit means do not upload yet.
+
+The zip has no top-level folder — its entries sit at the root, so:
+
+```bash
+unzip artisanhub237-release-*.zip -d /var/www/artisanhub
+```
+
+drops the app straight into place.
+
+### The manual way (FTP / rsync)
+
+If you would rather drag files across, this is the list.
+
+**Upload**
+
+| Path | Why |
+|---|---|
+| `app/` | the application |
+| `bootstrap/` | framework bootstrap — but **empty `bootstrap/cache/`**, see below |
+| `config/` | configuration |
+| `database/` | migrations, seeders, factories |
+| `public/` | **this is the web root** — index.php, images, vendored CSS/JS |
+| `resources/` | Blade views and assets |
+| `routes/` | route definitions |
+| `storage/` | **directory tree only**, no files (see below) |
+| `vendor/` | dependencies — or install them on the server if you have Composer |
+| `artisan` | the CLI entry point |
+| `composer.json`, `composer.lock` | needed if you install dependencies server-side |
+| `.env.production.example` | the template you copy to `.env` |
+| `deploy.sh`, `scripts/preflight.sh` | the two scripts meant to run on the server |
+
+**Do not upload**
+
+| Path | Why not |
+|---|---|
+| `.env`, `.env.*` (except `.env.production.example`) | your live credentials. The server gets its own. |
+| `.git/` | full history, every secret ever committed, hundreds of MB |
+| `node_modules/` | build-time only; this app ships no JS build step |
+| `tests/`, `phpunit.xml` | dev-only, and a reachable test runner is attack surface |
+| `bootstrap/cache/*.php` | **the quiet killer.** A config cache built on your machine hard-codes your paths, your database name and your `APP_URL`. On the server it silently wins over `.env`, so the site behaves as though your configuration changes did nothing — and there is no error to point at. Ship the *directory*, never the files. |
+| `storage/logs/*.log` | dev logs. With `MAIL_MAILER=log` these contain real email verification codes. |
+| `storage/framework/cache/*`, `sessions/*`, `views/*` | dev sessions and compiled views. Keep the directories and their `.gitignore`; drop the contents. |
+| `storage/app/public/*` | images uploaded on your dev machine |
+| `public/storage` | a symlink. `php artisan storage:link` recreates it on the server. |
+| `*.md` except `DEPLOY.md` / `README.md`, design PNGs, `docker/`, `SIARC/`, `package.json`, `vite.config.js`, the rest of `scripts/` | development material with no runtime role |
+| `.DS_Store`, `Thumbs.db`, `.idea/`, `.vscode/` | editor and OS junk |
+
+If your host gives you SSH and Composer, you can skip `vendor/` and run
 `composer install --no-dev --optimize-autoloader` there instead.
+
+### The web root MUST be `public/`
+
+**This is the single most important line in this document.**
+
+Point the domain at `/path/to/artisanhub/public`, not at
+`/path/to/artisanhub`.
+
+If the document root is the project root, then `https://yourdomain.com/.env` is
+a plain text file that anyone — and every automated scanner within hours of DNS
+propagating — can download. It contains your database password, your mail
+credentials and your `APP_KEY`. With the `APP_KEY` an attacker can forge session
+cookies and any signed URL the app issues. This is not a theoretical risk; it is
+the most common way a Laravel site gets breached, and it fails *silently*: the
+site works perfectly while it is leaking.
+
+Apache:
+
+```apache
+<VirtualHost *:443>
+    ServerName artisanhub237.com
+    DocumentRoot /var/www/artisanhub/public
+
+    <Directory /var/www/artisanhub/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+nginx:
+
+```nginx
+server {
+    server_name artisanhub237.com;
+    root /var/www/artisanhub/public;
+    index index.php;
+
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* { deny all; }   # belt and braces
+}
+```
+
+Then prove it, from anywhere:
+
+```bash
+curl -I https://yourdomain.com/.env        # must be 403 or 404, never 200
+```
+
+`scripts/preflight.sh` runs exactly this check for you.
+
+#### Fallback for shared hosts that will not let you move the web root
+
+Some cPanel-style hosts serve `public_html/` and give you no way to change it.
+The workaround is to put the application **outside** `public_html` and move only
+`public/` into it:
+
+```
+/home/you/artisanhub/          <- app/, config/, vendor/, .env … everything else
+/home/you/public_html/         <- the contents of the project's public/ folder
+```
+
+Then edit `public_html/index.php` — two lines near the top:
+
+```php
+require __DIR__.'/../artisanhub/vendor/autoload.php';
+$app = require_once __DIR__.'/../artisanhub/bootstrap/app.php';
+```
+
+**The honest tradeoff:** this works, and the `.env` is genuinely out of reach,
+but you now have the application split across two directories that must be kept
+in step. Every future upload has to remember to send `public/`'s contents to one
+place and everything else to another, and `index.php` is a hand-edited file that
+a careless re-upload will overwrite and take the site down. It is strictly worse
+than a correct web root. Ask your host — most will change it — and only fall
+back to this if they refuse.
+
+If you cannot even do that, you must at minimum block the sensitive paths in
+`.htaccess` at the project root:
+
+```apache
+<FilesMatch "^\.env|composer\.(json|lock)|artisan$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/(app|bootstrap|config|database|resources|routes|storage|vendor)/
+```
+
+Treat that as damage control, not a solution: it is a deny-list, and deny-lists
+leak.
+
+### Directory permissions
+
+Only two paths need to be writable by the web server. Everything else should be
+read-only — the application never writes to its own code, and a writable code
+directory is how a single upload bug becomes a persistent backdoor.
+
+```bash
+# from the app root, as the owning user
+chown -R youruser:www-data .          # 'www-data' is 'apache' or 'nginx' on some hosts
+find . -type d -exec chmod 755 {} \;
+find . -type f -exec chmod 644 {} \;
+
+# the two exceptions
+chmod -R 775 storage bootstrap/cache
+chown -R youruser:www-data storage bootstrap/cache
+```
+
+`775` (not `777`): the web-server *group* needs to write, the rest of the world
+does not. If you ever find yourself typing `chmod 777`, the ownership is wrong —
+fix that instead.
 
 ---
 
@@ -68,14 +256,20 @@ Leave `MAIL_MAILER=log` for the first deploy — see [Mail](#5-mail) below.
 
 ## 4. Install
 
+Run these **in this order** — each one depends on the one before it.
+
 ```bash
-composer install --no-dev --optimize-autoloader
-php artisan key:generate
-php artisan migrate --force
-php artisan db:seed --force
-php artisan storage:link
-php artisan config:cache && php artisan route:cache && php artisan view:cache
+composer install --no-dev --optimize-autoloader   # SKIP if you uploaded the bundle: vendor/ is already in it
+php artisan key:generate                          # writes APP_KEY into .env; without it every encrypted value fails
+php artisan migrate --force                       # creates the schema; --force because production prompts otherwise
+php artisan db:seed --force                       # reference data: craft taxonomy, regions, CMS pages
+php artisan storage:link                          # public/storage -> storage/app/public, or every upload 404s
+php artisan config:cache && php artisan route:cache && php artisan view:cache   # last, once .env is final
 ```
+
+Cache **last**. `config:cache` freezes `.env` into a compiled file, so anything
+you change in `.env` afterwards is ignored until you re-run it. If you edit
+`.env` later, always follow with `php artisan config:cache`.
 
 `migrate` and `db:seed` are safe to re-run — seeding is idempotent, so a repeat
 run updates nothing and duplicates nothing.
@@ -161,11 +355,27 @@ host gives you neither, use a cron entry every minute instead:
 
 ## 6. Verify the install
 
+Run this **on the server**, before you give anyone the address:
+
+```bash
+bash scripts/preflight.sh
+```
+
+It checks the things that fail quietly: PHP version and extensions, `APP_KEY` /
+`APP_DEBUG` / `APP_ENV` / `APP_URL`, whether `storage/` and `bootstrap/cache/`
+are writable, whether the database connects and every migration has run, whether
+mail is really configured — and, most importantly, it fetches
+`APP_URL/.env` over HTTP and fails if the server hands it over. That last check
+is the one that catches a wrong web root. Exit code is non-zero if any hard
+check fails.
+
+From a full development checkout (not the release bundle, which ships no tests):
+
 ```bash
 php artisan test
 ```
 
-84 tests should pass. That covers every route as a guest, every seller / buyer /
+115 tests should pass. That covers every route as a guest, every seller / buyer /
 admin page while signed in, and the full quote → order → invoice chain.
 
 For a live check against the running site, with real signups and real writes:
@@ -187,6 +397,8 @@ port 8025.
 
 ## 7. Before you announce it
 
+- [ ] `bash scripts/preflight.sh` exits 0
+- [ ] `curl -I https://yourdomain.com/.env` returns 403 or 404 — **never 200**
 - [ ] `APP_DEBUG=false` and `APP_ENV=production`
 - [ ] HTTPS working, HTTP redirecting to it
 - [ ] `APP_URL` matches the real domain (asset URLs and the sitemap use it)
@@ -198,16 +410,42 @@ port 8025.
 
 ---
 
-## 8. Updating later
+## 8. Updating an existing install
+
+Shorter than a first install, and with two things you must **not** do: do not
+run `key:generate` (a new `APP_KEY` invalidates every session and makes every
+already-encrypted value unreadable), and do not run `db:seed` (the seeders are
+idempotent, but there is no reason to touch reference data the admin may have
+edited since).
+
+On your machine:
 
 ```bash
-php artisan down
-git pull                     # or re-upload
-composer install --no-dev --optimize-autoloader
-php artisan migrate --force
+bash scripts/package-release.sh
+```
+
+On the server:
+
+```bash
+php artisan down --retry=15          # short maintenance page instead of half-deployed pages
+
+# upload / extract over the existing install, keeping .env and storage/ intact:
+#   rsync -av --delete \
+#     --exclude .env --exclude storage/ --exclude bootstrap/cache \
+#     build/release/ you@server:/var/www/artisanhub/
+
+php artisan migrate --force          # NOT db:seed, NOT key:generate
+php artisan config:clear && php artisan view:clear
 php artisan config:cache && php artisan route:cache && php artisan view:cache
+php artisan queue:restart            # only matters if a worker is running
 php artisan up
 ```
+
+`--exclude storage/` matters: without it you overwrite live uploads and logs
+with the bundle's empty skeleton.
+
+`deploy.sh` in the project root does all of the above (bar the upload itself)
+with maintenance mode and a failure trap, if you would rather run one command.
 
 If a page renders stale after a deploy, clear the compiled views:
 `php artisan view:clear && php artisan view:cache`.

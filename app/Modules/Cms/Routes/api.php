@@ -1,6 +1,6 @@
 <?php
 
-use App\Modules\CMS\Controllers\CmsController;
+use App\Modules\Cms\Controllers\CmsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/v1')->middleware(['api', 'json', 'api.key'])->group(function () {
