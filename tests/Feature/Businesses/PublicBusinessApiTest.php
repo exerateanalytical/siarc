@@ -4,11 +4,25 @@ namespace Tests\Feature\Businesses;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\BuildsGalleryData;
+use Tests\Concerns\UsesApiKey;
 use Tests\TestCase;
 
 class PublicBusinessApiTest extends TestCase
 {
-    use BuildsGalleryData, RefreshDatabase;
+    use BuildsGalleryData, RefreshDatabase, UsesApiKey;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withApiKey();
+    }
+
+    public function test_index_refuses_keyless_callers(): void
+    {
+        $this->makeBusiness();
+
+        $this->withoutApiKey()->getJson('/api/v1/businesses')->assertStatus(401);
+    }
 
     public function test_index_lists_only_published_businesses(): void
     {

@@ -40,9 +40,7 @@
             ['certificates','side-ic-kyc',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
         ]],
         [$isFr ? 'Commercial & Finance' : 'Commercial & Finance', [
-            ['subscriptions', 'side-ic-subscriptions', $isFr ? 'Abonnements' : 'Subscriptions',             route('admin.subscriptions'), null],
             ['commissions',   'side-ic-commissions',   'Commissions',                                       route('admin.reports'), null],
-            ['payments',      'side-ic-transactions',  'Transactions',                                      route('admin.payments'), null],
             ['orders',        'side-ic-factures',      'Factures',                                          route('admin.orders'), null],
             ['reports',       'side-ic-rapports',      $isFr ? 'Rapports' : 'Reports',                      route('admin.reports'), null],
         ]],
@@ -50,7 +48,6 @@
             ['settings',      'side-ic-settings',      $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
             ['logs',          'side-ic-journal',       $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
             ['notifications', 'bell', 'Notifications',                                     route('admin.notifications'), (string) $sideBadges['notifications']],
-            ['backups',       'database',   $isFr ? 'Sauvegardes & Logs' : 'Backups & Logs',                   route('admin.backups'), null],
             ['exports',       'side-ic-exports',       'Data Export Centre',                                route('admin.exports'), null],
             ['pages',         'side-ic-outils',        $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
         ]],

@@ -11,12 +11,16 @@ use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Optional API-key layer for the public API.
+ * API-key gate for the /api/v1 surface.
  *
- * Requests without an X-API-Key header pass through untouched (the public
- * API stays public). When a key is presented it must be valid: the request
- * is then rate-limited per key and recorded in api_usage_logs, which feeds
- * the developer usage dashboard.
+ * The developer programme is not being advertised at launch, so there is no
+ * reason to leave the directory readable in bulk by anonymous callers: an
+ * unauthenticated request without a key is refused. Session/token holders
+ * (the first-party web and mobile clients) still pass, because these route
+ * groups also carry owner-scoped endpoints behind auth:sanctum.
+ *
+ * When a key is presented it must be valid: the request is then rate-limited
+ * per key and recorded in api_usage_logs.
  */
 class AuthenticateApiKey
 {
@@ -26,16 +30,13 @@ class AuthenticateApiKey
     {
         $rawKey = $request->header('X-API-Key');
         if (! $rawKey) {
-            // Keyless callers stay anonymous but get a per-IP ceiling so the
-            // public API can't be hammered without limit
-            $ipLimiter = 'api-anon:' . sha1($request->ip());
-            if (RateLimiter::tooManyAttempts($ipLimiter, 60)) {
-                return response()->json(['message' => 'Rate limit exceeded.'], 429)
-                    ->header('Retry-After', RateLimiter::availableIn($ipLimiter));
+            // First-party clients authenticate with a Sanctum token, not a key;
+            // let them reach the auth:sanctum routes inside these groups.
+            if ($request->user() || $request->user('sanctum')) {
+                return $next($request);
             }
-            RateLimiter::hit($ipLimiter, 60);
 
-            return $next($request);
+            return response()->json(['message' => 'API key required.'], 401);
         }
 
         $key = $this->keyService->resolveFromRequest($rawKey);

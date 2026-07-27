@@ -22,23 +22,12 @@ class AdminPagesRenderTest extends TestCase
             'is_admin' => true,
         ]];
 
-        // The platform no longer ships a seeded backup history, so create the
-        // record this page is meant to describe rather than assuming id 1.
-        $backupId = \Illuminate\Support\Facades\DB::table('backup_records')->insertGetId([
-            'filename' => 'backup_test.zip', 'type' => 'full', 'mode' => 'manual',
-            'contents' => 'Base de données + Fichiers', 'size_mb' => 1024, 'status' => 'success',
-            'created_at' => now(), 'updated_at' => now(),
-        ]);
-
         foreach ([
             '/tableau-de-bord/admin/artisans',
             '/tableau-de-bord/admin/commandes',
             '/tableau-de-bord/admin/kyc',
             '/tableau-de-bord/admin/roles',
-            '/tableau-de-bord/admin/abonnements',
             '/tableau-de-bord/admin/regions-centres',
-            '/tableau-de-bord/admin/sauvegardes',
-            '/tableau-de-bord/admin/sauvegardes/' . $backupId,
             '/tableau-de-bord/admin/exports',
             '/tableau-de-bord/admin/collections',
             '/tableau-de-bord/admin/actualites',
@@ -46,7 +35,6 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/produits',
             '/tableau-de-bord/admin/utilisateurs',
             '/tableau-de-bord/admin/parametres',
-            '/tableau-de-bord/admin/paiements',
             '/tableau-de-bord/admin/analytique',
             '/tableau-de-bord/admin/rapports',
             '/tableau-de-bord/admin/evenements',
@@ -54,6 +42,35 @@ class AdminPagesRenderTest extends TestCase
         ] as $path) {
             $this->withSession($session)->get($path)->assertOk();
         }
+    }
+
+    public function test_the_surfaces_disabled_for_launch_are_unreachable(): void
+    {
+        $admin = $this->makeUser();
+
+        $session = ['siac_user' => [
+            'id'       => $admin->id,
+            'name'     => 'Admin Test',
+            'email'    => $admin->email,
+            'role'     => 'super_admin',
+            'is_admin' => true,
+        ]];
+
+        // Subscriptions/payments have no write path, the backup screen reported
+        // backups it never took, and the developer programme is not being run.
+        foreach ([
+            '/tableau-de-bord/admin/abonnements',
+            '/tableau-de-bord/admin/paiements',
+            '/tableau-de-bord/admin/sauvegardes',
+            '/tableau-de-bord/admin/sauvegardes/1',
+            '/tableau-de-bord/admin/api-consommateurs',
+            '/developer',
+        ] as $path) {
+            $this->withSession($session)->get($path)->assertNotFound();
+        }
+
+        $this->withSession($session)->post('/tableau-de-bord/admin/sauvegardes/creer')->assertNotFound();
+        $this->withSession($session)->post('/tableau-de-bord/admin/sauvegardes/nettoyer')->assertNotFound();
     }
 
     public function test_admin_product_detail_page_renders(): void

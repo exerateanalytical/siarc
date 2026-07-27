@@ -439,10 +439,9 @@ class AdminWebController extends Controller
             ->groupBy(fn ($d) => \Illuminate\Support\Carbon::parse($d)->format('Y-m'))
             ->map->count();
 
-        // Real revenue backbone: active subscription payments + paid invoices.
+        // No revenue KPI: it leant on business_subscriptions, which has no write
+        // path, and the platform is not party to settlement anyway.
         $repKpis = [
-            'revenue'    => (float) \DB::table('business_subscriptions')->where('status', 'active')->sum('amount')
-                           + (float) \DB::table('invoices')->where('status', 'paid')->sum('total'),
             'orders'     => \DB::table('purchase_orders')->count(),
             'artisans'   => $stats['published'],
             'views'      => (int) Product::sum('views_count') + (int) Business::sum('views_count'),
@@ -450,18 +449,6 @@ class AdminWebController extends Controller
             'conversion' => \DB::table('quote_requests')->count() > 0
                 ? round(\DB::table('purchase_orders')->count() / \DB::table('quote_requests')->count() * 100, 1) : null,
         ];
-
-        // Monthly revenue trend (6 months) from real subscription start dates.
-        $revRows = \DB::table('business_subscriptions')
-            ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
-            ->select('created_at', 'amount')->get()
-            ->groupBy(fn ($r) => \Illuminate\Support\Carbon::parse($r->created_at)->format('Y-m'))
-            ->map(fn ($rows) => (float) $rows->sum('amount'));
-        $repRevenueSeries = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $m = now()->subMonths($i);
-            $repRevenueSeries[] = ['label' => $m->translatedFormat('M'), 'value' => (float) ($revRows[$m->format('Y-m')] ?? 0)];
-        }
 
         // Real business breakdown by craft category (count-based — no per-category
         // revenue is tracked, so this is honestly a distribution, not a revenue split).
@@ -473,7 +460,7 @@ class AdminWebController extends Controller
 
         return view('pages.dashboard.admin-reports', compact(
             'lang', 'stats', 'verificationFunnel', 'topRegions', 'topIndustries', 'topProducts',
-            'registrationsOverTime', 'repKpis', 'repRevenueSeries', 'repCategoryDist'
+            'registrationsOverTime', 'repKpis', 'repCategoryDist'
         ));
     }
 
@@ -658,8 +645,14 @@ class AdminWebController extends Controller
         return back()->with('success', $this->lang($request) === 'fr' ? 'Avis supprimé.' : 'Review deleted.');
     }
 
+    /**
+     * DISABLED FOR LAUNCH: the /developer portal that feeds this queue is off, and
+     * developerConsumer() self-approved every consumer, so approve/reject never had
+     * anything to act on. Re-enable alongside the developer programme.
+     */
     public function apiConsumers(Request $request)
     {
+        abort(404);
         $lang = $this->lang($request);
         $admin = $this->requireAdmin($request);
         if ($admin instanceof RedirectResponse) return $admin;
@@ -685,6 +678,7 @@ class AdminWebController extends Controller
 
     public function updateApiConsumerStatus(Request $request, int $id): RedirectResponse
     {
+        abort(404); // disabled for launch — see apiConsumers() above
         $admin = $this->requireAdmin($request);
         if ($admin instanceof RedirectResponse) return $admin;
 

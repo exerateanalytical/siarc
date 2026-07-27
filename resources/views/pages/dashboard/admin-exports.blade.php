@@ -15,9 +15,7 @@
         'artisans'     => 'Artisans',
         'produits'     => $isFr ? 'Produits & Services' : 'Products & Services',
         'utilisateurs' => $isFr ? 'Utilisateurs & Activité' : 'Users & Activity',
-        'transactions' => 'Transactions',
         'kyc'          => $isFr ? 'KYC & Vérifications' : 'KYC & Verifications',
-        'rapports'     => $isFr ? 'Rapports de Vente' : 'Sales Reports',
         'medias'       => $isFr ? 'Médias & Ressources' : 'Media & Resources',
         'evenements'   => $isFr ? 'Événements & Actualités' : 'Events & News',
     ];
@@ -99,7 +97,6 @@
         ['dex-qa-2.png', $isFr ? 'Export planifié' : 'Scheduled export',           route('admin.exports', ['lang' => $lang, 'statut' => 'planifie'])],
         ['dex-qa-3.png', $isFr ? 'Modèles d\'export' : 'Export templates',         route('admin.settings', ['lang' => $lang])],
         ['dex-qa-4.png', $isFr ? 'Paramètres d\'export' : 'Export settings',       route('admin.settings', ['lang' => $lang])],
-        ['dex-qa-5.png', 'Documentation',                                          route('developer')],
     ];
 
     $lastPage = $exports->lastPage();

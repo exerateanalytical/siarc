@@ -288,8 +288,14 @@ Route::post('/tableau-de-bord/admin/roles/{id}/permissions', function (Request $
         : 'Role permissions updated.');
 })->name('admin.roles.update')->middleware('throttle:30,1');
 
-// Subscriptions / Abonnements (design: "Subscriptions.png") — real subscription backend
+// Subscriptions / Abonnements (design: "Subscriptions.png")
+// DISABLED FOR LAUNCH: business_subscriptions has no application write path — no
+// plan-selection UI exists and the platform takes no payments — so this screen can
+// only ever render zeroes. Re-enable once artisans can actually subscribe.
+// The registration is kept (not deleted) so route('admin.subscriptions') in other
+// views keeps resolving; the guard makes it unreachable.
 Route::get('/tableau-de-bord/admin/abonnements', function (Request $request) {
+    abort(404);
     $siacUser = session('siac_user');
     if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
@@ -483,7 +489,13 @@ Route::get('/centres-artisanat/{slug}', function (Request $request, $slug) {
 })->name('centres.show');
 
 // Backups & Logs (design: "Backups & Logs.png")
+// DISABLED FOR LAUNCH: the create handler only inserts a backup_records row — no
+// mysqldump, no archive, no job — so the screen reports multi-GB "success" backups
+// that do not exist. An operator trusting it would have no restore path. Re-enable
+// once a real dump/upload pipeline writes those rows. Registrations kept so
+// route('admin.backups*') still resolves in the (now unreachable) views.
 Route::get('/tableau-de-bord/admin/sauvegardes', function (Request $request) {
+    abort(404);
     $siacUser = session('siac_user');
     if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
@@ -507,6 +519,7 @@ Route::get('/tableau-de-bord/admin/sauvegardes', function (Request $request) {
 
 // Create a real backup record now
 Route::post('/tableau-de-bord/admin/sauvegardes/creer', function (Request $request) {
+    abort(404); // disabled for launch — see admin.backups above
     $siacUser = session('siac_user');
     if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
     $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
@@ -528,6 +541,7 @@ Route::post('/tableau-de-bord/admin/sauvegardes/creer', function (Request $reque
 
 // Clean backups older than retention
 Route::post('/tableau-de-bord/admin/sauvegardes/nettoyer', function (Request $request) {
+    abort(404); // disabled for launch — see admin.backups above
     $siacUser = session('siac_user');
     if (!$siacUser || empty($siacUser['is_admin'])) abort(403);
     $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
@@ -540,6 +554,7 @@ Route::post('/tableau-de-bord/admin/sauvegardes/nettoyer', function (Request $re
 
 // Backup detail (design: "Backups & Logs detail page.png")
 Route::get('/tableau-de-bord/admin/sauvegardes/{id}', function (Request $request, $id) {
+    abort(404); // disabled for launch — see admin.backups above
     $siacUser = session('siac_user');
     if (!$siacUser || empty($siacUser['is_admin'])) return redirect('/login');
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
@@ -2557,7 +2572,11 @@ Route::get('/tableau-de-bord/admin/medias', function (Request $request) {
     ));
 })->name('admin.media');
 
+// DISABLED FOR LAUNCH: the transaction feed is built entirely on business_subscriptions,
+// which nothing writes to, and settlement happens offline — the platform processes no
+// payments. Re-enable when there is a real payment record to show.
 Route::get('/tableau-de-bord/admin/paiements', function (Request $request) {
+    abort(404);
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
@@ -3689,7 +3708,13 @@ Route::get('/mentions-legales', fn (Request $r) => redirect()->route('legal.show
 // A web user's API consumer record is matched by email (api_consumers has no user_id column).
 // developerConsumer() → app/Support/route_helpers.php
 
+// DISABLED FOR LAUNCH: we are not running a developer programme, and the published
+// docs were wrong on every material point (wrong collection path, wrong auth header,
+// wrong key prefix) while developerConsumer(createIfMissing:) self-approved every
+// signup. Re-enable once the docs match the routes and consumer approval is a real
+// human decision.
 Route::get('/developer', function (Request $request) {
+    abort(404);
     if ($r = requireAuth($request)) return $r;
     $consumer = developerConsumer(webUser());
     $keys     = $consumer
@@ -3700,6 +3725,7 @@ Route::get('/developer', function (Request $request) {
 })->name('developer');
 
 Route::post('/developer/keys', function (Request $request) {
+    abort(404); // disabled for launch — see /developer above
     if ($r = requireAuth($request)) return $r;
     $data     = $request->validate(['name' => 'required|string|max:60']);
     $consumer = developerConsumer(webUser(), createIfMissing: true);
@@ -3718,6 +3744,7 @@ Route::post('/developer/keys', function (Request $request) {
 })->name('developer.keys.create');
 
 Route::post('/developer/keys/{id}/revoke', function (Request $request, $id) {
+    abort(404); // disabled for launch — see /developer above
     if ($r = requireAuth($request)) return $r;
     $consumer = developerConsumer(webUser());
     if ($consumer) {

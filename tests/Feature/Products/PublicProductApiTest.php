@@ -4,11 +4,18 @@ namespace Tests\Feature\Products;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\BuildsGalleryData;
+use Tests\Concerns\UsesApiKey;
 use Tests\TestCase;
 
 class PublicProductApiTest extends TestCase
 {
-    use BuildsGalleryData, RefreshDatabase;
+    use BuildsGalleryData, RefreshDatabase, UsesApiKey;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withApiKey();
+    }
 
     public function test_index_lists_only_published_products(): void
     {

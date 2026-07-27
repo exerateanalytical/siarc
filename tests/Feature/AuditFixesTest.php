@@ -15,12 +15,14 @@ class AuditFixesTest extends TestCase
 {
     use BuildsGalleryData, RefreshDatabase;
 
-    public function test_admin_api_consumers_renders_on_sqlite(): void
+    public function test_admin_api_consumers_is_disabled_for_launch(): void
     {
-        // Guards AdminWebController FIELD() -> CASE ordering.
+        // Was a render smoke test (guarding AdminWebController FIELD() -> CASE
+        // ordering). The screen is off with the developer programme, so the only
+        // thing left to assert is that it stays unreachable.
         $u = $this->makeUser();
         $session = ['siac_user' => ['id' => $u->id, 'name' => 'A', 'email' => $u->email, 'role' => 'super_admin', 'is_admin' => true]];
-        $this->withSession($session)->get('/tableau-de-bord/admin/api-consommateurs')->assertOk();
+        $this->withSession($session)->get('/tableau-de-bord/admin/api-consommateurs')->assertNotFound();
     }
 
     public function test_web_login_establishes_a_session_on_sqlite(): void

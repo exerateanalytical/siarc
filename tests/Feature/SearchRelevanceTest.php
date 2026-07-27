@@ -7,6 +7,7 @@ use App\Modules\Products\Models\Product;
 use App\Support\SearchQuery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\BuildsGalleryData;
+use Tests\Concerns\UsesApiKey;
 use Tests\TestCase;
 
 /**
@@ -17,7 +18,13 @@ use Tests\TestCase;
  */
 class SearchRelevanceTest extends TestCase
 {
-    use BuildsGalleryData, RefreshDatabase;
+    use BuildsGalleryData, RefreshDatabase, UsesApiKey;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withApiKey();
+    }
 
     private function ranked(string $q): array
     {

@@ -226,11 +226,11 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-5 text-white" style="background: linear-gradient(135deg, #0F4824, #14652F)">
-                        <div class="flex items-center gap-2 mb-2"><i data-lucide="crown" class="w-4 h-4 text-[#E9C25A]"></i><h3 class="text-[13px] font-bold tracking-wide">{{ $isFr ? 'PARTENARIATS PREMIUM' : 'PREMIUM PARTNERSHIPS' }}</h3></div>
-                        <p class="text-[12px] text-[#E8F2EC] leading-relaxed mb-3">{{ $isFr ? 'Mettez en avant vos partenaires stratégiques avec le statut Premium et plus d\'avantages.' : 'Highlight your strategic partners with Premium status and more benefits.' }}</p>
-                        <a href="{{ route('admin.subscriptions', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white text-[12px] font-semibold px-3.5 py-2 rounded-lg">{{ $isFr ? 'Découvrir les avantages' : 'Discover the benefits' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
-                    </div>
+                    {{-- A "PARTENARIATS PREMIUM — status and more benefits" card sat
+                         here. It advertised a paid tier that has no billing behind
+                         it and no way to buy: subscriptions have no write path, and
+                         the platform takes no payments. Removed with the rest of
+                         the subscription surfaces. --}}
 
                     <div class="relative rounded-2xl p-5 text-white overflow-hidden" style="background: linear-gradient(135deg, #0A2E18, #0F4824)">
                         <img src="{{ asset('images/landing/hh-statue.png') }}" alt="" class="absolute right-2 bottom-0 h-[90%] w-auto opacity-90" aria-hidden="true">

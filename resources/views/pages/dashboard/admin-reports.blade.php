@@ -16,24 +16,15 @@
 
     $fmtFcfa = fn ($v) => $v === null ? '—' : number_format($v, 0, ',', ' ') . ' FCFA';
 
-    // 6 KPI cards [icon, color, tile, value, label, sub, spark]
+    // 5 KPI cards [icon, color, tile, value, label, sub, spark]
+    // No revenue tile: it summed business_subscriptions, a table with no write path.
     $repCards = [
-        ['banknote',       '#157A43', '#E2F3E8', $fmtFcfa($repKpis['revenue']), $isFr ? 'Revenus Totaux' : 'Total Revenue', $isFr ? 'abonnements + factures payées' : 'subscriptions + paid invoices', '#3FA96A'],
         ['shopping-cart',  '#3565DE', '#E8EFFB', number_format($repKpis['orders']), $isFr ? 'Commandes Totales' : 'Total Orders', $isFr ? 'bons de commande' : 'purchase orders', '#3565DE'],
         ['users-round',    '#7C4FE0', '#F0EAFB', number_format($repKpis['artisans']), $isFr ? 'Artisans Actifs' : 'Active Artisans', $isFr ? 'entreprises publiées' : 'published businesses', '#7C4FE0'],
         ['eye',            '#C97A16', '#FDF3E0', number_format($repKpis['views']), $isFr ? 'Vues Totales' : 'Total Views', $isFr ? 'produits + entreprises' : 'products + businesses', '#E9A83A'],
         ['filter',         '#0E7C86', '#E3F4F6', $repKpis['conversion'] !== null ? $repKpis['conversion'] . '%' : '—', $isFr ? 'Taux de Conversion' : 'Conversion Rate', $isFr ? 'commandes / demandes' : 'orders / requests', '#0E7C86'],
         ['shopping-bag',   '#8A5A1F', '#F5EEDD', $repKpis['avg_order'] !== null ? $fmtFcfa($repKpis['avg_order']) : '—', $isFr ? 'Panier Moyen' : 'Average Order', $isFr ? 'par commande' : 'per order', '#B98A3D'],
     ];
-
-    // Revenue line chart points (real $repRevenueSeries)
-    $maxRev = max(1, ...array_column($repRevenueSeries, 'value'));
-    $revPts = [];
-    foreach ($repRevenueSeries as $i => $pt) {
-        $x = count($repRevenueSeries) > 1 ? $i / (count($repRevenueSeries) - 1) * 560 : 0;
-        $y = 140 - ($pt['value'] / $maxRev * 130);
-        $revPts[] = round($x, 1) . ',' . round($y, 1);
-    }
 
     // Category donut (real $repCategoryDist)
     $catTotal = max(1, $repCategoryDist->sum('total'));
@@ -72,8 +63,8 @@
         @endforeach
     </div>
 
-    {{-- 6 KPI cards --}}
-    <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+    {{-- 5 KPI cards --}}
+    <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
         @foreach($repCards as [$rcIcon, $rcColor, $rcTile, $rcValue, $rcLabel, $rcSub, $rcSpark])
         <div class="ui-card flex flex-col">
             <span class="w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="background-color: {{ $rcTile }}">
@@ -89,26 +80,9 @@
         @endforeach
     </section>
 
-    <div class="mt-5 grid grid-cols-1 xl:grid-cols-3 gap-5 items-start">
-        {{-- Revenue evolution --}}
-        <div class="ui-card xl:col-span-1">
-            <h3 class="ui-card-title mb-3">{{ $isFr ? 'ÉVOLUTION DES REVENUS (FCFA)' : 'REVENUE EVOLUTION (FCFA)' }}</h3>
-            @if($maxRev > 1)
-            <svg viewBox="0 0 560 150" class="w-full h-[140px]" preserveAspectRatio="none">
-                <polyline points="{{ implode(' ', $revPts) }}" fill="none" stroke="#157A43" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                @foreach($repRevenueSeries as $i => $pt)
-                    @php $px = count($repRevenueSeries) > 1 ? $i / (count($repRevenueSeries) - 1) * 560 : 0; $py = 140 - ($pt['value'] / $maxRev * 130); @endphp
-                <circle cx="{{ $px }}" cy="{{ $py }}" r="3" fill="#157A43"/>
-                @endforeach
-            </svg>
-            <div class="flex justify-between mt-1 text-[10.5px] text-[#8A857A]">
-                @foreach($repRevenueSeries as $pt)<span>{{ $pt['label'] }}</span>@endforeach
-            </div>
-            @else
-            <div class="h-[140px] flex items-center justify-center text-[12.5px] text-[#B9B4A9]">{{ $isFr ? 'Pas encore de revenus sur cette période.' : 'No revenue yet for this period.' }}</div>
-            @endif
-        </div>
-
+    {{-- The revenue-evolution chart lived here; it plotted business_subscriptions
+         only, so it was a permanently flat line. --}}
+    <div class="mt-5 grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
         {{-- Category breakdown (real business count by industry) --}}
         <div class="ui-card">
             <h3 class="ui-card-title mb-3">{{ $isFr ? 'RÉPARTITION DES ENTREPRISES PAR CATÉGORIE' : 'BUSINESSES BY CATEGORY' }}</h3>

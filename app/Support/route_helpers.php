@@ -94,21 +94,12 @@ if (! function_exists('dataExportDatasets')) {
             'utilisateurs' => [['ID', 'Nom', 'Email', 'Statut', 'Créé le'],
                 DB::table('users')->orderBy('created_at')->limit(5000)
                     ->get(['id', 'name', 'email', 'status', 'created_at'])->map(fn ($r) => (array) $r)->all()],
-            'transactions' => [['ID', 'Entreprise', 'Plan', 'Statut', 'Montant (FCFA)', 'Début', 'Prochain paiement'],
-                DB::table('business_subscriptions as bs')->join('businesses as b', 'b.id', '=', 'bs.business_id')
-                    ->join('subscription_plans as p', 'p.id', '=', 'bs.subscription_plan_id')->orderBy('bs.id')
-                    ->get(['bs.id', 'b.name_fr', 'p.name_fr as plan', 'bs.status', 'bs.amount', 'bs.started_at', 'bs.next_payment_at'])
-                    ->map(fn ($r) => (array) $r)->all()],
+            // 'transactions' and 'rapports' are gone with the subscriptions screens:
+            // both were built on business_subscriptions, which nothing writes to, so
+            // the export centre was offering downloads that are always empty.
             'kyc'          => [['ID', 'Entreprise', 'Niveau de vérification', 'Statut'],
                 DB::table('businesses')->whereNull('deleted_at')->orderBy('id')->limit(5000)
                     ->get(['id', 'name_fr', 'verification_tier', 'status'])->map(fn ($r) => (array) $r)->all()],
-            'rapports'     => [['Indicateur', 'Valeur'], [
-                ['Entreprises publiées', DB::table('businesses')->where('status', 'published')->whereNull('deleted_at')->count()],
-                ['Produits publiés', DB::table('products')->where('status', 'published')->whereNull('deleted_at')->count()],
-                ['Utilisateurs', DB::table('users')->count()],
-                ['Abonnements actifs', DB::table('business_subscriptions')->where('status', 'active')->count()],
-                ['Événements', DB::table('events')->count()],
-            ]],
             'medias'       => [['ID', 'Produit', 'Fichier'],
                 DB::table('product_images as pi')->join('products as p', 'p.id', '=', 'pi.product_id')->orderBy('pi.id')->limit(5000)
                     ->get(['pi.id', 'p.name_fr', 'pi.file_path'])->map(fn ($r) => (array) $r)->all()],

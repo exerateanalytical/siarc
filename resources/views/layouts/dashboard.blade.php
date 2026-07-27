@@ -74,7 +74,6 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
                     ['admin.industries', 'tags', 'Catégories & Régions', 'Categories & Regions'],
                     ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
                     ['admin.moderation', 'flag', 'Modération', 'Moderation'],
-                    ['admin.api-consumers', 'key-round', 'API & Développeurs', 'API & Developers'],
                     ['admin.users', 'users', 'Utilisateurs', 'Users'],
                 ],
             ],
