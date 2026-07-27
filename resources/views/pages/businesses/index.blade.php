@@ -258,7 +258,10 @@
             </div>
 
             <!-- Vendor grid -->
-            <div id="vendor-grid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            {{-- Two up on phones, matching the product directory. One card per row
+                 wasted most of the screen and pushed the second shop below the
+                 fold on every device. --}}
+            <div id="vendor-grid" class="mt-4 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5">
                 @forelse($designVendors as $vendor)
                 <article class="vend-card bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                     <div class="vend-media relative">
@@ -369,8 +372,11 @@
     const btnList = document.getElementById('view-list');
     function setView(view) {
         const isList = view === 'list';
-        grid.classList.toggle('sm:grid-cols-2', !isList);
+        // The grid is 2-up on phones in both views (list styling only starts at
+        // sm), so switching views means collapsing to one full-width row from sm
+        // upward and dropping the 4-column desktop step.
         grid.classList.toggle('xl:grid-cols-4', !isList);
+        grid.classList.toggle('sm:grid-cols-1', isList);
         grid.querySelectorAll('.vend-card').forEach(c => {
             c.classList.toggle('sm:flex', isList);
             c.classList.toggle('items-stretch', isList);
