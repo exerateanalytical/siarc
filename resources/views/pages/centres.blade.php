@@ -45,7 +45,7 @@ $typeCls = ['principal' => 'bg-[#E2F3E8] text-[#157A43]', 'secondaire' => 'bg-[#
             <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un centre...' : 'Search a centre...' }}" class="flex-1 min-w-0 bg-transparent text-[13px] focus:outline-none">
             <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i></button>
         </div>
-        <select name="type" onchange="this.form.submit()" class="h-[42px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+        <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
             <option value="principal" @selected($type==='principal')>{{ $typeLabels['principal'] }}</option>
             <option value="secondaire" @selected($type==='secondaire')>{{ $typeLabels['secondaire'] }}</option>

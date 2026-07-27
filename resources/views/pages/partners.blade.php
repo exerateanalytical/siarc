@@ -81,15 +81,15 @@ $partnerTiles = [
             <input type="text" name="q" value="{{ $pubQ }}" placeholder="{{ $isFr ? 'Rechercher un partenaire...' : 'Search a partner...' }}" class="flex-1 min-w-0 bg-transparent text-[13px] focus:outline-none">
             <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i></button>
         </div>
-        <select name="type" onchange="this.form.submit()" class="h-[42px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+        <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
             @foreach($pubTypes as $t)<option value="{{ $t }}" @selected($pubType===$t)>{{ $t }}</option>@endforeach
         </select>
-        <select name="sector" onchange="this.form.submit()" class="h-[42px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+        <select name="sector" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les secteurs' : 'All sectors' }}</option>
             @foreach($pubSectors as $s)<option value="{{ $s }}" @selected($pubSector===$s)>{{ $s }}</option>@endforeach
         </select>
-        <select name="country" onchange="this.form.submit()" class="h-[42px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+        <select name="country" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les pays' : 'All countries' }}</option>
             @foreach($pubCountries as $c)<option value="{{ $c }}" @selected($pubCountry===$c)>{{ $c }}</option>@endforeach
         </select>

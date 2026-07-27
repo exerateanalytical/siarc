@@ -140,7 +140,7 @@
                     @if($activeCat !== '')<input type="hidden" name="categorie" value="{{ $activeCat }}">@endif
 
                     <p class="text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Région' : 'Region' }}</p>
-                    <select name="region" class="mt-2 w-full h-[36px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12.5px] text-[#3A3A35] focus:outline-none focus:border-gold cursor-pointer">
+                    <select name="region" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les régions' : 'All regions' }}</option>
                         @foreach($regions as $regionRow)
                         <option value="{{ $regionRow->code }}" {{ ($region ?? '') === $regionRow->code ? 'selected' : '' }}>{{ $regionRow->name_fr }}</option>

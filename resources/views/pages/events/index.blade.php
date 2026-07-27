@@ -195,7 +195,7 @@
                     </div>
 
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Catégorie' : 'Category' }}</p>
-                    <select name="categorie" class="mt-2 w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12px] text-[#3A3A35] focus:outline-none focus:border-gold cursor-pointer">
+                    <select name="categorie" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</option>
                         @foreach(array_slice($eventTypes, 1) as [$etKey, $etLabel])
                         <option value="{{ $etKey }}">{{ $etLabel }}</option>
@@ -203,7 +203,7 @@
                     </select>
 
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Type d\'événement' : 'Event type' }}</p>
-                    <select name="type" class="mt-2 w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12px] text-[#3A3A35] focus:outline-none focus:border-gold cursor-pointer">
+                    <select name="type" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
                         @foreach(array_slice($eventTypes, 1) as [$etKey, $etLabel])
                         <option value="{{ $etKey }}" {{ $activeType === $etKey ? 'selected' : '' }}>{{ $etLabel }}</option>
@@ -211,7 +211,7 @@
                     </select>
 
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Région' : 'Region' }}</p>
-                    <select name="region" class="mt-2 w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12px] text-[#3A3A35] focus:outline-none focus:border-gold cursor-pointer">
+                    <select name="region" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les régions' : 'All regions' }}</option>
                         @foreach($regions as $regionName)
                         @php $regionSlug = \Illuminate\Support\Str::slug($regionName); @endphp
@@ -220,7 +220,7 @@
                     </select>
 
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Département / Ville' : 'Department / City' }}</p>
-                    <select name="ville" class="mt-2 w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12px] text-[#3A3A35] focus:outline-none focus:border-gold cursor-pointer">
+                    <select name="ville" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les villes' : 'All cities' }}</option>
                     </select>
 
