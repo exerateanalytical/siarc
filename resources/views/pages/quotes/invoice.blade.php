@@ -102,6 +102,7 @@
         #qb-sidebar.open { display: block; position: fixed; inset: 0 auto 0 0; width: 290px; z-index: 60; overflow-y: auto; background: #fff; }
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 
@@ -113,8 +114,8 @@
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
         @if(session('success'))
-        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
-            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+        <div class="mb-4 ui-alert ui-alert-ok">
+            <i data-lucide="circle-check" class="w-4 h-4"></i>
             {{ session('success') }}
         </div>
         @endif
@@ -138,17 +139,17 @@
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Télécharger PDF' : 'Download PDF' }}
                 </button>
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="printer" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Imprimer' : 'Print' }}
                 </button>
                 <form method="POST" action="{{ route('quotes.toggle-invoice', ['invoice' => $rin->id, 'lang' => $lang]) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-colors">
+                    <button type="submit" class="ui-btn ui-btn-primary">
                         <i data-lucide="rotate-ccw" class="w-4 h-4" style="stroke-width:1.8"></i>
                         <span>{{ $realPaid ? ($isFr ? 'Marquer comme impayée' : 'Mark as unpaid') : ($isFr ? 'Marquer comme payée' : 'Mark as paid') }}</span>
                     </button>
@@ -160,7 +161,7 @@
             <div class="flex-1 min-w-0 w-full">
 
                 <!-- Parties / dates card -->
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <section class="ui-card grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="flex items-start gap-4">
                         <img src="{{ $realBizLogo }}" alt="{{ $realBizName }}" class="w-[86px] shrink-0 object-contain">
                         <div class="min-w-0">
@@ -182,8 +183,8 @@
                         </div>
                     </div>
                     <div>
-                        <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Facturé à' : 'Billed to' }}</p>
-                        <p class="mt-1.5 text-[14px] font-bold text-[#1B1B18]">{{ $realBuyerName }}</p>
+                        <p class="ui-dt">{{ $isFr ? 'Facturé à' : 'Billed to' }}</p>
+                        <p class="ui-dd text-[14px]">{{ $realBuyerName }}</p>
                         @if($buyer?->email)
                         <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $buyer->email }}</p>
                         @endif
@@ -194,47 +195,47 @@
                     <div class="flex items-start gap-3.5">
                         <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
                         <div>
-                            <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de facture' : 'Invoice date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realInvDate }}</p>
-                            <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date d\'échéance' : 'Due date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#E5484D]">{{ $realDueDate ?? '—' }} @if($realDueIn !== null)<span class="font-semibold">({{ $realDueIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
-                            <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Statut' : 'Status' }}</p>
+                            <p class="ui-dt">{{ $isFr ? 'Date de facture' : 'Invoice date' }}</p>
+                            <p class="ui-dd">{{ $realInvDate }}</p>
+                            <p class="mt-2.5 ui-dt">{{ $isFr ? 'Date d\'échéance' : 'Due date' }}</p>
+                            <p class="ui-dd text-[#E5484D]">{{ $realDueDate ?? '—' }} @if($realDueIn !== null)<span class="font-semibold">({{ $realDueIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
+                            <p class="mt-2.5 ui-dt">{{ $isFr ? 'Statut' : 'Status' }}</p>
                             <p id="inv-statut" class="text-[12.5px] font-bold tracking-[0.03em] uppercase" style="color:{{ $realPaid ? '#157A43' : '#E5484D' }}">{{ $realPaid ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- Invoice details -->
-                <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                    <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Détails de la facture' : 'Invoice details' }}</h2>
-                    <div class="mt-3 overflow-x-auto">
-                        <table class="w-full min-w-[820px]">
+                <section class="mt-4 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Détails de la facture' : 'Invoice details' }}</h2>
+                    <div class="mt-3 ui-table-wrap">
+                        <table class="ui-table min-w-[820px]">
                             <thead>
-                                <tr class="bg-[#F7F8F7] text-left">
-                                    <th class="pl-4 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">#</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Produit' : 'Product' }}</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Description</th>
-                                    <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Qté' : 'Qty' }}</th>
-                                    <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Unité' : 'Unit' }}</th>
-                                    <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Prix unitaire' : 'Unit price' }} (FCFA)</th>
-                                    <th class="px-2 pr-4 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Total (FCFA)</th>
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ $isFr ? 'Produit' : 'Product' }}</th>
+                                    <th>Description</th>
+                                    <th class="text-center">{{ $isFr ? 'Qté' : 'Qty' }}</th>
+                                    <th class="text-center">{{ $isFr ? 'Unité' : 'Unit' }}</th>
+                                    <th class="text-right">{{ $isFr ? 'Prix unitaire' : 'Unit price' }} (FCFA)</th>
+                                    <th class="text-right">Total (FCFA)</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#F1F2F1]">
+                            <tbody>
                                 @foreach($invRows as $ri => [$vImg, $vName, $vDesc, $vQty, $vUnit, $vTotal])
                                 <tr>
-                                    <td class="pl-4 pr-2 py-4 align-top text-[13px] text-[#1B1B18]">{{ $ri + 1 }}</td>
-                                    <td class="px-2 py-4 align-top">
+                                    <td class="align-top text-[#1B1B18]">{{ $ri + 1 }}</td>
+                                    <td class="align-top">
                                         <div class="flex items-start gap-3">
                                             <img src="{{ asset('images/landing/' . $vImg) }}" alt="" class="w-[40px] h-[40px] shrink-0 rounded-lg object-cover">
                                             <p class="text-[13px] font-bold text-[#1B1B18] max-w-[170px]">{{ $vName }}</p>
                                         </div>
                                     </td>
-                                    <td class="px-2 py-4 align-top text-[12.5px] text-[#3B382F] leading-relaxed max-w-[230px]">{{ $vDesc }}</td>
-                                    <td class="px-2 py-4 align-top text-center text-[13px] font-semibold text-[#1B1B18]">{{ $vQty }}</td>
-                                    <td class="px-2 py-4 align-top text-center text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Pièces' : 'Pieces' }}</td>
-                                    <td class="px-2 py-4 align-top text-right text-[13px] font-semibold text-[#1B1B18] whitespace-nowrap">{{ $vUnit }}</td>
-                                    <td class="px-2 pr-4 py-4 align-top text-right text-[13px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $vTotal }}</td>
+                                    <td class="align-top text-[#3B382F] leading-relaxed max-w-[230px]">{{ $vDesc }}</td>
+                                    <td class="align-top text-center font-semibold text-[#1B1B18]">{{ $vQty }}</td>
+                                    <td class="align-top text-center text-[#3B382F]">{{ $isFr ? 'Pièces' : 'Pieces' }}</td>
+                                    <td class="align-top text-right font-semibold text-[#1B1B18] whitespace-nowrap">{{ $vUnit }}</td>
+                                    <td class="align-top text-right font-bold text-[#1B1B18] whitespace-nowrap">{{ $vTotal }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -243,11 +244,11 @@
 
                     <div class="mt-5 border-t border-[#F0F1F0] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div>
-                            <h3 class="text-[13.5px] font-bold text-[#1B1B18]">Notes</h3>
+                            <h3 class="ui-card-title">Notes</h3>
                             <p class="mt-2.5 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'Merci pour votre confiance.' : 'Thank you for your trust.' }}<br>{{ $isFr ? 'Paiement par virement bancaire ou mobile money.' : 'Payment by bank transfer or mobile money.' }}</p>
                         </div>
                         <div>
-                            <h3 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Informations bancaires' : 'Bank information' }}</h3>
+                            <h3 class="ui-card-title">{{ $isFr ? 'Informations bancaires' : 'Bank information' }}</h3>
                             <dl class="mt-2.5 space-y-1.5">
                                 @foreach($bankRows as [$bkLabel, $bkValue])
                                 <div class="text-[12px] text-[#3B382F]"><span class="font-semibold">{{ $bkLabel }}:</span> {{ $bkValue }}</div>
@@ -272,8 +273,8 @@
                 </section>
 
                 <!-- Invoice history -->
-                <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                    <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Historique de la facture' : 'Invoice history' }}</h2>
+                <section class="mt-4 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Historique de la facture' : 'Invoice history' }}</h2>
                     <div class="mt-6 grid" style="grid-template-columns: repeat({{ count($invHistory) }}, minmax(0, 1fr));">
                         @foreach($invHistory as $ihIdx => [$ihTitle, $ihWhen])
                         <div class="text-center">
@@ -294,9 +295,9 @@
 
             <!-- Right rail -->
             <aside class="w-full 2xl:w-[300px] shrink-0 space-y-4">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé du paiement' : 'Payment summary' }}</h2>
-                    <p class="mt-3.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Montant total' : 'Total amount' }}</p>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Résumé du paiement' : 'Payment summary' }}</h2>
+                    <p class="mt-3.5 ui-dt">{{ $isFr ? 'Montant total' : 'Total amount' }}</p>
                     <p class="mt-0.5 text-[22px] font-bold text-[#157A43]">{{ $realTotal }}</p>
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
@@ -331,8 +332,8 @@
                     @endif
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Documents associés' : 'Associated documents' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Documents associés' : 'Associated documents' }}</h2>
                     <div class="mt-3.5 space-y-3.5">
                         @foreach([[$isFr ? 'Devis' : 'Quote', $realQuoRef . '.pdf'], [$isFr ? 'Bon de commande' : 'Purchase order', $realPoRef . '.pdf']] as [$adTitle, $adFile])
                         <div class="flex items-center gap-3.5">
@@ -347,8 +348,8 @@
                     <p class="mt-3.5 text-right"><a href="{{ route('orders.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#3565DE]">{{ $isFr ? 'Voir tous les documents' : 'View all documents' }}</a></p>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-2 divide-y divide-[#F1F2F1]">
                         @foreach($invActions as [$iaIcon, $iaLabel, $iaUrl])
                         @if($iaUrl)

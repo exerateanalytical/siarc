@@ -73,6 +73,7 @@
         #qb-sidebar.open { display: block; position: fixed; inset: 0 auto 0 0; width: 290px; z-index: 60; overflow-y: auto; background: #fff; }
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 
@@ -84,8 +85,8 @@
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
         @if(session('success'))
-        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
-            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+        <div class="mb-4 ui-alert ui-alert-ok">
+            <i data-lucide="circle-check" class="w-4 h-4"></i>
             {{ session('success') }}
         </div>
         @endif
@@ -100,7 +101,7 @@
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">
                     {{ $isFr ? 'Proposition de devis' : 'Quote proposal' }}
-                    <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $realStatusFr }}</span>
+                    <span class="ui-pill ui-pill-warn">{{ $realStatusFr }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
                     {{ $isFr ? 'Proposée par' : 'Proposed by' }} <span class="font-semibold text-[#1B1B18]">{{ $realBizName }}</span>
@@ -109,15 +110,15 @@
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Télécharger PDF' : 'Download PDF' }}
                 </button>
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="share-2" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Partager' : 'Share' }}
                 </button>
-                <a href="{{ route('quotes.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <a href="{{ route('quotes.index', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary">
                     <i data-lucide="ellipsis" class="w-4 h-4"></i>
                     {{ $isFr ? 'Plus d\'options' : 'More options' }}
                 </a>
@@ -128,11 +129,11 @@
             <div class="flex-1 min-w-0 w-full">
 
                 <!-- Artisan / reference / validity card -->
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5 flex flex-col lg:flex-row gap-6 lg:divide-x divide-[#F0F1F0]">
+                <section class="ui-card flex flex-col lg:flex-row gap-6 lg:divide-x divide-[#F0F1F0]">
                     <div class="flex items-start gap-4 flex-1 min-w-0">
                         <img src="{{ $realBizLogo }}" alt="{{ $realBizName }}" class="w-[88px] shrink-0 object-contain">
                         <div class="min-w-0">
-                            <p class="text-[11.5px] text-[#6F6B60]">{{ $isFr ? 'Proposée par' : 'Proposed by' }}</p>
+                            <p class="ui-dt">{{ $isFr ? 'Proposée par' : 'Proposed by' }}</p>
                             <p class="mt-0.5 flex flex-wrap items-center gap-2">
                                 <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $realBizName }}</span>
                                 @if(in_array($biz?->verification_tier, ['verified', 'certified'], true))
@@ -152,16 +153,16 @@
                         </div>
                     </div>
                     <div class="lg:px-6">
-                        <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Référence de la demande' : 'Request reference' }}</p>
-                        <p class="mt-1 text-[14px] font-bold text-[#1B1B18]">{{ $rq?->reference ?? '—' }}</p>
-                        <p class="mt-4 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de réponse souhaitée' : 'Desired response date' }}</p>
-                        <p class="mt-1 text-[13.5px] font-bold text-[#1B1B18]">{{ $realWanted ?? '—' }}</p>
+                        <p class="ui-dt">{{ $isFr ? 'Référence de la demande' : 'Request reference' }}</p>
+                        <p class="ui-dd">{{ $rq?->reference ?? '—' }}</p>
+                        <p class="mt-4 ui-dt">{{ $isFr ? 'Date de réponse souhaitée' : 'Desired response date' }}</p>
+                        <p class="ui-dd">{{ $realWanted ?? '—' }}</p>
                     </div>
                     <div class="lg:pl-6 flex items-start gap-3.5">
                         <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
                         <div>
-                            <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Valide jusqu\'au' : 'Valid until' }}</p>
-                            <p class="mt-0.5 text-[14px] font-bold text-[#1B1B18]">{{ $realValid ?? '—' }}</p>
+                            <p class="ui-dt">{{ $isFr ? 'Valide jusqu\'au' : 'Valid until' }}</p>
+                            <p class="ui-dd">{{ $realValid ?? '—' }}</p>
                             @if($realDaysLeft !== null)
                             <p class="mt-0.5 text-[11.5px] text-[#6F6B60]">({{ max($realDaysLeft, 0) }} {{ $isFr ? 'jours restants' : 'days left' }})</p>
                             @endif
@@ -170,7 +171,7 @@
                 </section>
 
                 <!-- Tabs + details -->
-                <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl">
+                <section class="mt-4 ui-card ui-card--flush">
                     <div class="px-5 pt-1 border-b border-[#F0F1F0] overflow-x-auto">
                         <div class="flex items-center gap-7 min-w-max">
                             @foreach($tabs as [$tKey, $tLabel, $tBadge, $tUrl])
@@ -190,39 +191,39 @@
                     </div>
 
                     <div class="px-5 py-5">
-                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Articles proposés' : 'Proposed items' }} <span class="font-normal text-[#55524A]">({{ count($rows) }} {{ $isFr ? 'articles' : 'items' }})</span></h2>
-                        <div class="mt-3 overflow-x-auto">
-                            <table class="w-full min-w-[880px]">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Articles proposés' : 'Proposed items' }} <span class="font-normal text-[#55524A]">({{ count($rows) }} {{ $isFr ? 'articles' : 'items' }})</span></h2>
+                        <div class="mt-3 ui-table-wrap">
+                            <table class="ui-table min-w-[880px]">
                                 <thead>
-                                    <tr class="bg-[#F7F8F7] text-left">
-                                        <th class="pl-4 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">#</th>
-                                        <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Produit' : 'Product' }}</th>
-                                        <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Description</th>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Qté' : 'Qty' }}</th>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Unité' : 'Unit' }}</th>
-                                        <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Prix unitaire' : 'Unit price' }} (FCFA)</th>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Remise' : 'Discount' }}</th>
-                                        <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Taxes (19.25%)</th>
-                                        <th class="px-2 pr-4 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Total (FCFA)</th>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>{{ $isFr ? 'Produit' : 'Product' }}</th>
+                                        <th>Description</th>
+                                        <th class="text-center">{{ $isFr ? 'Qté' : 'Qty' }}</th>
+                                        <th class="text-center">{{ $isFr ? 'Unité' : 'Unit' }}</th>
+                                        <th class="text-right">{{ $isFr ? 'Prix unitaire' : 'Unit price' }} (FCFA)</th>
+                                        <th class="text-center">{{ $isFr ? 'Remise' : 'Discount' }}</th>
+                                        <th class="text-right">Taxes (19.25%)</th>
+                                        <th class="text-right">Total (FCFA)</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[#F1F2F1]">
+                                <tbody>
                                     @foreach($rows as $ri => [$rImg, $rName, $rDesc, $rQty, $rPrice, $rDisc, $rTax, $rTotal])
                                     <tr>
-                                        <td class="pl-4 pr-2 py-4 align-top text-[13px] text-[#1B1B18]">{{ $ri + 1 }}</td>
-                                        <td class="px-2 py-4 align-top">
+                                        <td class="align-top text-[#1B1B18]">{{ $ri + 1 }}</td>
+                                        <td class="align-top">
                                             <div class="flex items-start gap-3">
                                                 <img src="{{ asset('images/landing/' . $rImg) }}" alt="" class="w-[40px] h-[40px] shrink-0 rounded-lg object-cover">
                                                 <p class="text-[12.5px] font-bold text-[#1B1B18] max-w-[150px] leading-snug">{{ $rName }}</p>
                                             </div>
                                         </td>
-                                        <td class="px-2 py-4 align-top text-[12px] text-[#3B382F] leading-relaxed max-w-[190px]">{{ $rDesc }}</td>
-                                        <td class="px-2 py-4 align-top text-center text-[13px] font-semibold text-[#1B1B18]">{{ $rQty }}</td>
-                                        <td class="px-2 py-4 align-top text-center text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Pièces' : 'Pieces' }}</td>
-                                        <td class="px-2 py-4 align-top text-right text-[13px] font-semibold text-[#1B1B18] whitespace-nowrap">{{ $rPrice }}</td>
-                                        <td class="px-2 py-4 align-top text-center text-[12.5px] text-[#3B382F]">{{ $rDisc }}</td>
-                                        <td class="px-2 py-4 align-top text-right text-[12.5px] text-[#3B382F] whitespace-nowrap">{{ $rTax }}</td>
-                                        <td class="px-2 pr-4 py-4 align-top text-right text-[13px] font-bold text-[#14652F] whitespace-nowrap">{{ $rTotal }}</td>
+                                        <td class="align-top text-[#3B382F] leading-relaxed max-w-[190px]">{{ $rDesc }}</td>
+                                        <td class="align-top text-center font-semibold text-[#1B1B18]">{{ $rQty }}</td>
+                                        <td class="align-top text-center text-[#3B382F]">{{ $isFr ? 'Pièces' : 'Pieces' }}</td>
+                                        <td class="align-top text-right font-semibold text-[#1B1B18] whitespace-nowrap">{{ $rPrice }}</td>
+                                        <td class="align-top text-center text-[#3B382F]">{{ $rDisc }}</td>
+                                        <td class="align-top text-right text-[#3B382F] whitespace-nowrap">{{ $rTax }}</td>
+                                        <td class="align-top text-right font-bold text-[#14652F] whitespace-nowrap">{{ $rTotal }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -268,47 +269,47 @@
 
             <!-- Right rail -->
             <aside class="w-full 2xl:w-[300px] shrink-0 space-y-4">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Statut de la proposition' : 'Proposal status' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Statut de la proposition' : 'Proposal status' }}</h2>
                     <p class="mt-3.5 flex items-center gap-2.5">
                         <span class="w-[22px] h-[22px] shrink-0 rounded-full bg-[#F5B301] flex items-center justify-center"><i data-lucide="clock" class="w-3 h-3 text-white" style="stroke-width:2.6"></i></span>
-                        <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $realStatusFr }}</span>
+                        <span class="ui-pill ui-pill-warn">{{ $realStatusFr }}</span>
                     </p>
                     <p class="mt-3 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'L\'artisan attend votre réponse.' : 'The artisan awaits your reply.' }}<br>{{ $isFr ? 'Délai estimé : 1 à 3 jours ouvrables' : 'Estimated time: 1 to 3 working days' }}</p>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-3.5 space-y-3">
                         @if(in_array($rp->status, ['sent', 'draft']))
                         <form method="POST" action="{{ route('quotes.accept-proposal', ['proposal' => $rp->id, 'lang' => $lang]) }}">
                             @csrf
-                            <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
+                            <button type="submit" class="ui-btn ui-btn-primary ui-btn-block">
                                 <i data-lucide="circle-check" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                                 {{ $isFr ? 'Accepter la proposition' : 'Accept the proposal' }}
                             </button>
                         </form>
                         @elseif($rp->purchaseOrder)
-                        <a href="{{ route('quotes.po', ['lang' => $lang, 'po' => $rp->purchaseOrder->id]) }}" class="flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
+                        <a href="{{ route('quotes.po', ['lang' => $lang, 'po' => $rp->purchaseOrder->id]) }}" class="ui-btn ui-btn-primary ui-btn-block">
                             <i data-lucide="file-text" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                             {{ $isFr ? 'Voir le bon de commande' : 'View the purchase order' }}
                         </a>
                         @endif
                         {{-- Negotiation happens in the conversation thread opened with the RFQ. --}}
-                        <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#EFCF9E] hover:border-[#C97A16] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#C97A16] transition-colors">
+                        <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-block">
                             <i data-lucide="square-pen" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                             {{ $isFr ? 'Demander des modifications' : 'Request modifications' }}
                         </a>
                         @if(in_array($rp->status, ['sent', 'draft']))
                         <form method="POST" action="{{ route('quotes.refuse-proposal', ['proposal' => $rp->id, 'lang' => $lang]) }}">
                             @csrf
-                            <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-white border border-[#F5C9C9] hover:border-[#E5484D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#E5484D] transition-colors">
+                            <button type="submit" class="ui-btn ui-btn-danger ui-btn-block">
                                 <i data-lucide="x" class="w-[17px] h-[17px]" style="stroke-width:2"></i>
                                 {{ $isFr ? 'Refuser la proposition' : 'Refuse the proposal' }}
                             </button>
                         </form>
                         @endif
-                        <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="flex items-center justify-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                        <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-block">
                             <i data-lucide="message-circle" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                             {{ $isFr ? 'Poser une question' : 'Ask a question' }}
                         </a>
@@ -325,8 +326,8 @@
                 </section>
                 @endif
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[13.5px] font-bold text-[#3565DE]">{{ $isFr ? 'Informations importantes' : 'Important information' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title text-[#3565DE]">{{ $isFr ? 'Informations importantes' : 'Important information' }}</h2>
                     <ul class="mt-3.5 space-y-3">
                         @foreach($importantInfo as [$iiIcon, $iiLabel])
                         <li class="flex items-center gap-3 text-[12px] text-[#3B382F]">

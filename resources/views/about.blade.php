@@ -135,6 +135,7 @@
         html, body { overflow-x: clip; }
         .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-cream text-[#1D1B16] antialiased">
 

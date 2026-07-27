@@ -18,11 +18,11 @@
         </div>
 
         {{-- Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div class="ui-card">
 
             @if($errors->any())
-                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -35,44 +35,35 @@
                 <input type="hidden" name="lang" value="{{ $lang }}">
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label class="ui-label">
                         {{ $lang === 'fr' ? 'Adresse email' : 'Email address' }}
                     </label>
-                    <div class="relative">
-                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                        <input type="email" value="{{ $email }}" disabled
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 bg-gray-50 rounded-lg text-sm text-gray-500">
-                    </div>
+                    {{-- Leading lock/mail icons dropped across this card: they were decoration,
+                         and a plain kit field also greys itself out when disabled. --}}
+                    <input type="email" value="{{ $email }}" disabled class="ui-field ui-field--lg">
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="password">
+                    <label class="ui-label" for="password">
                         {{ $lang === 'fr' ? 'Nouveau mot de passe' : 'New Password' }}
                     </label>
-                    <div class="relative">
-                        <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                        <input id="password" name="password" type="password" autocomplete="new-password"
-                            placeholder="{{ $lang === 'fr' ? 'Min. 8 caractères' : 'Min. 8 characters' }}"
-                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
-                            required autofocus>
-                    </div>
+                    <input id="password" name="password" type="password" autocomplete="new-password"
+                        placeholder="{{ $lang === 'fr' ? 'Min. 8 caractères' : 'Min. 8 characters' }}"
+                        class="ui-field ui-field--lg {{ $errors->has('password') ? 'ui-field--invalid' : '' }}"
+                        required autofocus>
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="password_confirmation">
+                    <label class="ui-label" for="password_confirmation">
                         {{ $lang === 'fr' ? 'Confirmer le mot de passe' : 'Confirm New Password' }}
                     </label>
-                    <div class="relative">
-                        <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password"
-                            placeholder="{{ $lang === 'fr' ? 'Répétez le mot de passe' : 'Repeat password' }}"
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
-                            required>
-                    </div>
+                    <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password"
+                        placeholder="{{ $lang === 'fr' ? 'Répétez le mot de passe' : 'Repeat password' }}"
+                        class="ui-field ui-field--lg"
+                        required>
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg ui-btn-block">
                     <i data-lucide="check" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Définir le mot de passe' : 'Set New Password' }}
                 </button>
@@ -84,8 +75,7 @@
                         ? 'Ce lien de réinitialisation est invalide ou a expiré (les liens expirent après 60 minutes).'
                         : 'This password reset link is invalid or has expired (links expire after 60 minutes).' }}
                 </p>
-                <a href="{{ route('password.request', ['lang' => $lang]) }}"
-                    class="inline-flex items-center gap-2 bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 px-5 rounded-lg text-sm transition-colors">
+                <a href="{{ route('password.request', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary">
                     <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Demander un nouveau lien' : 'Request a new link' }}
                 </a>

@@ -122,6 +122,7 @@
             #ticket-card { box-shadow: none !important; border: 1px solid #DDD; }
         }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FDFDFC] text-[#1D1B16] antialiased">
 

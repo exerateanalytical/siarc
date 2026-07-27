@@ -108,9 +108,11 @@
         ? [3 => "Seules les informations affichées ici sont enregistrées à la création du compte. Le reste de votre profil se complète ensuite, à votre rythme."]
         : [3 => 'Only the information shown here is saved when the account is created. The rest of your profile is completed afterwards, at your own pace.'];
 
-    $fieldCls = 'w-full h-[46px] border border-[#E5E3E0] rounded-lg pl-10 pr-4 text-[13px] text-[#1B1B18] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition';
-    $plainCls = 'w-full h-[46px] border border-[#E5E3E0] rounded-lg px-4 text-[13px] text-[#1B1B18] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition';
-    $labelCls = 'block text-[12.5px] text-[#3B382F] mb-1.5';
+    // Kit fields. $fieldCls keeps a left inset because those inputs sit under an
+    // overlaid leading icon; $plainCls is the bare kit field.
+    $fieldCls = 'ui-field ui-field--lg pl-10';
+    $plainCls = 'ui-field ui-field--lg';
+    $labelCls = 'ui-label';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -146,6 +148,7 @@
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F2F3F4] text-[#1B1B18] antialiased">
 
@@ -306,7 +309,7 @@
                 </div>
 
                 <div class="mt-6 flex justify-end">
-                    <button type="button" onclick="goToStep(2)" class="inline-flex items-center gap-3 bg-obdeep hover:bg-leaf text-white text-[14px] font-semibold px-9 py-3.5 rounded-lg transition-colors">
+                    <button type="button" onclick="goToStep(2)" class="ui-btn ui-btn-primary ui-btn-lg">
                         {{ $isFr ? 'Continuer' : 'Continue' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
@@ -340,71 +343,69 @@
                     </div>
                 </div>
 
-                <section class="mt-6 border border-[#EDEDEB] rounded-xl p-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Informations d\'identité' : 'Identity information' }}</h2>
+                <section class="mt-6 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Informations d\'identité' : 'Identity information' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         <div>
-                            <label for="ob-first-name" class="{{ $labelCls }}">{{ $isFr ? 'Prénom(s)' : 'First name(s)' }} *</label>
+                            <label for="ob-first-name" class="{{ $labelCls }}">{{ $isFr ? 'Prénom(s)' : 'First name(s)' }} <span class="ui-req">*</span></label>
                             <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
                                 <input type="text" id="ob-first-name" name="first_name" value="{{ old('first_name') }}" placeholder="Aristide" class="{{ $fieldCls }}"></div>
                         </div>
                         <div>
-                            <label for="ob-last-name" class="{{ $labelCls }}">{{ $isFr ? 'Nom' : 'Last name' }} *</label>
+                            <label for="ob-last-name" class="{{ $labelCls }}">{{ $isFr ? 'Nom' : 'Last name' }} <span class="ui-req">*</span></label>
                             <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
                                 <input type="text" id="ob-last-name" name="last_name" value="{{ old('last_name') }}" placeholder="Ndop" class="{{ $fieldCls }}"></div>
                         </div>
                     </div>
                 </section>
 
-                <section class="mt-5 border border-[#EDEDEB] rounded-xl p-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Téléphone & Email' : 'Phone & Email' }}</h2>
+                <section class="mt-5 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Téléphone & Email' : 'Phone & Email' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         <div>
                             <label for="ob-phone" class="{{ $labelCls }}">{{ $isFr ? 'Téléphone principal' : 'Main phone' }}</label>
-                            <div class="flex gap-2">
-                                <span class="flex items-center gap-1.5 h-[46px] border border-[#E5E3E0] rounded-lg px-3 text-[13px] text-[#1B1B18] shrink-0">
-                                    <img src="{{ asset('images/landing/ob-flag.png') }}" alt="" class="w-[20px] h-[14px] rounded-[2px]">
-                                    +237
-                                </span>
-                                <div class="relative flex-1 min-w-0">
-                                    <input type="tel" id="ob-phone" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="{{ $plainCls }}">
-                                </div>
+                            {{-- Flag + dialling code are a prefix inside one field, which is what
+                                 the kit's field-group is for — no second bordered box. --}}
+                            <div class="ui-field-group ui-field--lg">
+                                <img src="{{ asset('images/landing/ob-flag.png') }}" alt="" class="w-[20px] h-[14px] shrink-0 rounded-[2px]">
+                                <span class="shrink-0 text-[13.5px] text-[#1B1B18]">+237</span>
+                                <input type="tel" id="ob-phone" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="ui-field-bare">
                             </div>
                         </div>
                         <div>
-                            <label for="ob-email" class="{{ $labelCls }}">Email *</label>
+                            <label for="ob-email" class="{{ $labelCls }}">Email <span class="ui-req">*</span></label>
                             <div class="relative"><i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
                                 <input type="email" id="ob-email" name="email" value="{{ old('email') }}" placeholder="aristide.ndop@gmail.com" class="{{ $fieldCls }}"></div>
-                            <p class="mt-1.5 text-[11px] text-[#8A857A]">{{ $isFr ? 'Un code de vérification y sera envoyé.' : 'A verification code will be sent there.' }}</p>
+                            <p class="ui-hint">{{ $isFr ? 'Un code de vérification y sera envoyé.' : 'A verification code will be sent there.' }}</p>
                         </div>
                     </div>
                 </section>
 
-                <section class="mt-5 border border-[#EDEDEB] rounded-xl p-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Sécurité du compte' : 'Account security' }}</h2>
-                    <p class="mt-1 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Choisissez le mot de passe qui protégera votre compte.' : 'Choose the password that will protect your account.' }}</p>
+                <section class="mt-5 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Sécurité du compte' : 'Account security' }}</h2>
+                    <p class="ui-card-sub">{{ $isFr ? 'Choisissez le mot de passe qui protégera votre compte.' : 'Choose the password that will protect your account.' }}</p>
                     @if($errors->any())
-                    <div class="mt-3 bg-[#FDE8E8] border border-[#F5C9C9] rounded-lg px-4 py-3 text-[12.5px] text-[#B42025]">{{ $errors->first() }}</div>
+                    <div class="mt-3 ui-alert ui-alert-danger">{{ $errors->first() }}</div>
                     @endif
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="ob-password" class="{{ $labelCls }}">{{ $isFr ? 'Mot de passe' : 'Password' }} *</label>
+                            <label for="ob-password" class="{{ $labelCls }}">{{ $isFr ? 'Mot de passe' : 'Password' }} <span class="ui-req">*</span></label>
                             <input type="password" id="ob-password" name="password" autocomplete="new-password" placeholder="********" class="{{ $plainCls }}">
-                            <p class="mt-1.5 text-[11px] text-[#8A857A]">{{ $isFr ? '8 caractères minimum.' : 'At least 8 characters.' }}</p>
+                            <p class="ui-hint">{{ $isFr ? '8 caractères minimum.' : 'At least 8 characters.' }}</p>
                         </div>
                         <div>
-                            <label for="ob-password-confirm" class="{{ $labelCls }}">{{ $isFr ? 'Confirmer le mot de passe' : 'Confirm password' }} *</label>
+                            <label for="ob-password-confirm" class="{{ $labelCls }}">{{ $isFr ? 'Confirmer le mot de passe' : 'Confirm password' }} <span class="ui-req">*</span></label>
                             <input type="password" id="ob-password-confirm" name="password_confirmation" autocomplete="new-password" placeholder="********" class="{{ $plainCls }}">
                         </div>
                     </div>
                 </section>
 
                 <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
-                    <button type="button" onclick="goToStep(1)" class="inline-flex items-center gap-2.5 border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18] text-[13.5px] font-semibold px-6 py-3 rounded-lg transition-colors">
+                    <button type="button" onclick="goToStep(1)" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
                         {{ $isFr ? 'Précédent' : 'Previous' }}
                     </button>
-                    <button type="button" onclick="goToStep(3)" class="inline-flex items-center gap-3 bg-obdeep hover:bg-leaf text-white text-[14px] font-semibold px-9 py-3.5 rounded-lg transition-colors">
+                    <button type="button" onclick="goToStep(3)" class="ui-btn ui-btn-primary ui-btn-lg">
                         {{ $isFr ? 'Suivant' : 'Next' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
@@ -434,46 +435,46 @@
                     </div>
                 </div>
 
-                <section class="mt-6 border border-[#EDEDEB] rounded-xl p-5">
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Ce qui sera enregistré' : 'What will be saved' }}</h2>
-                        <button type="button" onclick="goToStep(2)" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Modifier' : 'Edit' }}</button>
+                <section class="mt-6 ui-card">
+                    <div class="ui-card-head">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Ce qui sera enregistré' : 'What will be saved' }}</h2>
+                        <button type="button" onclick="goToStep(2)" class="ui-btn ui-btn-ghost ui-btn-sm">{{ $isFr ? 'Modifier' : 'Edit' }}</button>
                     </div>
-                    <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                        <div class="border border-[#EFEFED] rounded-xl p-4">
-                            <dt class="flex items-center gap-2.5 text-[12px] font-bold text-[#1B1B18]">
+                    <dl class="ui-dl ui-dl--2">
+                        <div>
+                            <dt class="ui-dt flex items-center gap-2.5">
                                 <i data-lucide="user-round" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
                                 {{ $isFr ? 'Type de compte' : 'Account type' }}
                             </dt>
-                            <dd id="sum-type" class="mt-2 text-[12.5px] text-[#3B382F] break-words">—</dd>
+                            <dd id="sum-type" class="ui-dd">—</dd>
                         </div>
-                        <div class="border border-[#EFEFED] rounded-xl p-4">
-                            <dt class="flex items-center gap-2.5 text-[12px] font-bold text-[#1B1B18]">
+                        <div>
+                            <dt class="ui-dt flex items-center gap-2.5">
                                 <i data-lucide="id-card" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
                                 {{ $isFr ? 'Identité' : 'Identity' }}
                             </dt>
-                            <dd id="sum-name" class="mt-2 text-[12.5px] text-[#3B382F] break-words">—</dd>
+                            <dd id="sum-name" class="ui-dd">—</dd>
                         </div>
-                        <div class="border border-[#EFEFED] rounded-xl p-4">
-                            <dt class="flex items-center gap-2.5 text-[12px] font-bold text-[#1B1B18]">
+                        <div>
+                            <dt class="ui-dt flex items-center gap-2.5">
                                 <i data-lucide="mail" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
                                 Email
                             </dt>
-                            <dd id="sum-email" class="mt-2 text-[12.5px] text-[#3B382F] break-all">—</dd>
+                            <dd id="sum-email" class="ui-dd break-all">—</dd>
                         </div>
-                        <div class="border border-[#EFEFED] rounded-xl p-4">
-                            <dt class="flex items-center gap-2.5 text-[12px] font-bold text-[#1B1B18]">
+                        <div>
+                            <dt class="ui-dt flex items-center gap-2.5">
                                 <i data-lucide="phone" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
                                 {{ $isFr ? 'Téléphone' : 'Phone' }}
                             </dt>
-                            <dd id="sum-phone" class="mt-2 text-[12.5px] text-[#3B382F] break-words">—</dd>
+                            <dd id="sum-phone" class="ui-dd">—</dd>
                         </div>
                     </dl>
                 </section>
 
-                <section class="mt-4 border border-[#EDEDEB] rounded-xl p-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Et juste après ?' : 'And right after?' }}</h2>
-                    <p class="mt-1 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Votre compte est créé immédiatement. Vous complétez ensuite votre profil depuis votre tableau de bord, dans l\'ordre que vous voulez.' : 'Your account is created immediately. You then complete your profile from your dashboard, in whatever order you like.' }}</p>
+                <section class="mt-4 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Et juste après ?' : 'And right after?' }}</h2>
+                    <p class="ui-card-sub">{{ $isFr ? 'Votre compte est créé immédiatement. Vous complétez ensuite votre profil depuis votre tableau de bord, dans l\'ordre que vous voulez.' : 'Your account is created immediately. You then complete your profile from your dashboard, in whatever order you like.' }}</p>
                     <ol class="mt-4 space-y-3">
                         @foreach($nextSteps as $nsIdx => [$nsIcon, $nsHref, $nsTitle, $nsDesc, $nsBtn])
                         <li class="flex items-start gap-3.5">
@@ -489,25 +490,24 @@
 
                 <div class="relative mt-4">
                     <div class="rounded-xl bg-[#F3F7F3] px-4 py-4 lg:pr-[250px] flex items-start gap-3">
-                        <label class="flex items-start gap-3 cursor-pointer select-none">
-                            <input type="checkbox" checked class="sr-only ob-terms-check">
-                            <span class="ob-terms-box mt-0.5 w-[17px] h-[17px] shrink-0 rounded border-[1.5px] border-[#157A43] flex items-center justify-center">
-                                <i data-lucide="check" class="w-3 h-3 text-[#157A43]" style="stroke-width:3.2"></i>
-                            </span>
-                            <span class="text-[12.5px] text-[#3B382F] leading-relaxed">
+                        {{-- Real checkbox now, so the browser owns the checked state; the kit
+                             styles it and the old hand-drawn box is gone. --}}
+                        <label class="ui-check-row cursor-pointer select-none">
+                            <input type="checkbox" checked class="ui-check ob-terms-check mt-0.5">
+                            <span>
                                 {{ $isFr ? "Je certifie que toutes les informations fournies sont exactes et que j'accepte" : 'I certify that all the information provided is accurate and that I accept' }}
                                 {{ $isFr ? 'les' : 'the' }} <a href="{{ route('terms') }}" target="_blank" class="text-[#157A43] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a> {{ $isFr ? 'de la plateforme.' : 'of the platform.' }}
                             </span>
                         </label>
                     </div>
-                    <button type="button" id="ob-submit" class="lg:absolute lg:right-0 lg:top-[26px] mt-3 lg:mt-0 w-full lg:w-auto inline-flex items-center justify-center gap-3 bg-[#025127] hover:bg-leaf text-white text-[14px] font-semibold px-7 py-3.5 rounded-lg shadow-md transition-colors">
+                    <button type="button" id="ob-submit" class="lg:absolute lg:right-0 lg:top-[26px] mt-3 lg:mt-0 w-full lg:w-auto ui-btn ui-btn-primary ui-btn-lg">
                         {{ $isFr ? 'Créer mon compte' : 'Create my account' }}
                         <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
                 </div>
 
                 <div class="mt-5">
-                    <button type="button" onclick="goToStep(2)" class="inline-flex items-center gap-2.5 border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18] text-[13.5px] font-semibold px-6 py-3 rounded-lg transition-colors">
+                    <button type="button" onclick="goToStep(2)" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
                         {{ $isFr ? 'Précédent' : 'Previous' }}
                     </button>
@@ -560,7 +560,7 @@
         <div class="flex-1 min-w-0">
 
             <!-- Congratulations card -->
-            <section class="bg-white border border-[#ECECEA] rounded-2xl px-6 py-7 flex flex-col sm:flex-row items-center gap-6">
+            <section class="ui-card flex flex-col sm:flex-row items-center gap-6">
                 <img src="{{ asset('images/landing/ob12-check.png') }}" alt="" class="w-[120px] sm:w-[140px] shrink-0" aria-hidden="true">
                 <div class="flex-1 min-w-0 text-center sm:text-left">
                     <p class="text-[16px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Félicitations !' : 'Congratulations!' }} 🎉</p>
@@ -576,40 +576,40 @@
             </section>
 
             <!-- Account info row -->
-            <section class="mt-4 bg-white border border-[#ECECEA] rounded-2xl px-6 py-5 grid grid-cols-1 sm:grid-cols-3 gap-y-4 sm:divide-x divide-[#EDEDEB]">
+            <section class="mt-4 ui-card grid grid-cols-1 sm:grid-cols-3 gap-y-4 sm:divide-x divide-[#EDEDEB]">
                 <div class="min-w-0">
-                    <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Compte' : 'Account' }}</p>
-                    <p class="mt-1 text-[15px] font-bold text-[#14652F] break-all">{{ $siacUser['email'] ?? '—' }}</p>
+                    <p class="ui-dt">{{ $isFr ? 'Compte' : 'Account' }}</p>
+                    <p class="ui-dd text-[#14652F] break-all">{{ $siacUser['email'] ?? '—' }}</p>
                 </div>
                 <div class="sm:pl-8 min-w-0">
-                    <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Date de création' : 'Creation date' }}</p>
-                    <p class="mt-1 text-[15px] font-bold text-[#1B1B18]">{{ $submittedAtLabel }}</p>
+                    <p class="ui-dt">{{ $isFr ? 'Date de création' : 'Creation date' }}</p>
+                    <p class="ui-dd">{{ $submittedAtLabel }}</p>
                 </div>
                 <div class="sm:pl-8 flex items-center gap-3.5 min-w-0">
                     <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] flex items-center justify-center">
                         <i data-lucide="user" class="w-5 h-5 text-[#14532D]"></i>
                     </span>
                     <span class="min-w-0">
-                        <span class="block text-[12.5px] text-[#55524A]">{{ $isFr ? 'Type de compte' : 'Account type' }}</span>
-                        <span class="success-type-name block mt-0.5 text-[15px] font-bold text-[#1B1B18]">{{ $typeNames[0] }}</span>
+                        <span class="ui-dt block">{{ $isFr ? 'Type de compte' : 'Account type' }}</span>
+                        <span class="success-type-name ui-dd block">{{ $typeNames[0] }}</span>
                     </span>
                 </div>
             </section>
 
             <!-- Next steps: the real pages that do the rest -->
-            <section class="mt-4 bg-white border border-[#ECECEA] rounded-2xl px-6 py-6">
-                <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Les prochaines étapes' : 'The next steps' }}</h2>
-                <p class="mt-1 text-[12.5px] text-[#55524A]">{{ $isFr ? 'Chaque étape se fait sur sa propre page et peut être reprise plus tard.' : 'Each step has its own page and can be resumed later.' }}</p>
+            <section class="mt-4 ui-card">
+                <h2 class="ui-card-title">{{ $isFr ? 'Les prochaines étapes' : 'The next steps' }}</h2>
+                <p class="ui-card-sub">{{ $isFr ? 'Chaque étape se fait sur sa propre page et peut être reprise plus tard.' : 'Each step has its own page and can be resumed later.' }}</p>
                 <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($nextSteps as $nsIdx => [$nsIcon, $nsHref, $nsTitle, $nsDesc, $nsBtn])
-                    <div class="border border-[#EFEFED] rounded-2xl p-5 flex flex-col">
+                    <div class="ui-card flex flex-col">
                         <span class="w-[54px] h-[54px] rounded-2xl bg-[#E8F2EC] flex items-center justify-center">
                             <i data-lucide="{{ $nsIcon }}" class="w-[24px] h-[24px] text-[#14652F]" style="stroke-width:1.8"></i>
                         </span>
                         <p class="mt-4 text-[11.5px] font-semibold text-[#8A857A]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
                         <h3 class="mt-0.5 text-[14.5px] font-bold text-[#1B1B18]">{{ $nsTitle }}</h3>
                         <p class="mt-2.5 text-[12.5px] text-[#55524A] leading-relaxed flex-1">{{ $nsDesc }}</p>
-                        <a href="{{ $nsHref }}" class="mt-5 inline-flex items-center justify-center gap-2 border border-[#BFD4C6] hover:border-[#14652F] hover:bg-[#F3F8F3] rounded-lg px-5 py-2.5 text-[13.5px] font-semibold text-[#14652F] transition-colors">
+                        <a href="{{ $nsHref }}" class="mt-5 ui-btn ui-btn-secondary">
                             {{ $nsBtn }}
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </a>
@@ -617,11 +617,11 @@
                     @endforeach
                 </div>
                 <div class="mt-5 flex flex-wrap items-center gap-3">
-                    <a href="/tableau-de-bord" class="inline-flex items-center gap-2.5 bg-obdeep hover:bg-leaf text-white text-[13.5px] font-semibold px-6 py-3 rounded-lg transition-colors">
+                    <a href="/tableau-de-bord" class="ui-btn ui-btn-primary">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                         {{ $isFr ? 'Aller à mon tableau de bord' : 'Go to my dashboard' }}
                     </a>
-                    <a href="{{ route('products.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 border border-[#E5E3E0] hover:border-[#14532D] text-[#1B1B18] text-[13.5px] font-semibold px-6 py-3 rounded-lg transition-colors">
+                    <a href="{{ route('products.index', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary">
                         <i data-lucide="compass" class="w-4 h-4"></i>
                         {{ $isFr ? 'Explorer la plateforme' : 'Explore the platform' }}
                     </a>
@@ -629,12 +629,12 @@
             </section>
 
             <!-- Email verification notice -->
-            <section class="mt-4 bg-white border border-[#ECECEA] rounded-2xl px-6 py-6 flex flex-col sm:flex-row items-start gap-5">
+            <section class="mt-4 ui-card flex flex-col sm:flex-row items-start gap-5">
                 <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] flex items-center justify-center">
                     <i data-lucide="mail" class="w-5 h-5 text-[#14652F]" style="stroke-width:1.8"></i>
                 </span>
                 <div class="min-w-0">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Vérifiez votre adresse email' : 'Verify your email address' }}</h2>
+                    <h2 class="ui-card-title">{{ $isFr ? 'Vérifiez votre adresse email' : 'Verify your email address' }}</h2>
                     <p class="mt-1.5 text-[12.5px] text-[#55524A] leading-relaxed">
                         {{ $isFr ? 'Un code de vérification vient d\'être envoyé à' : 'A verification code has just been sent to' }}
                         <span class="font-semibold text-[#14652F] break-all">{{ $siacUser['email'] ?? '—' }}</span>.
@@ -701,7 +701,7 @@
             <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Besoin d\'aide pour vous inscrire ?' : 'Need help signing up?' }}</h2>
             <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Notre équipe est disponible pour vous accompagner à chaque étape.' : 'Our team is available to support you at every step.' }}</p>
         </div>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="sm:ml-auto shrink-0 inline-flex items-center gap-2.5 border border-[#14532D] text-[#14532D] hover:bg-[#14532D]/5 text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="sm:ml-auto shrink-0 ui-btn ui-btn-secondary">
             <i data-lucide="message-circle" class="w-4 h-4"></i>
             {{ $isFr ? 'Contactez-nous' : 'Contact us' }}
         </a>

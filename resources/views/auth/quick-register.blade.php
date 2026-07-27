@@ -13,6 +13,7 @@
            (tables, diagrams) scrolls inside its own container instead. */
         html, body { overflow-x: clip; }
 body{font-family:'Poppins',system-ui,sans-serif}</style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="min-h-screen bg-[#F3EFE7] flex items-center justify-center p-5">
     <main class="w-full max-w-[440px] bg-white rounded-3xl shadow-[0_24px_60px_-24px_rgba(2,48,27,.35)] p-8">
@@ -21,8 +22,8 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
         <p class="text-[13px] text-[#6F6B60] mt-1.5">{{ $isFr ? 'Email et mot de passe suffisent — vous complèterez votre profil plus tard, à votre rythme.' : 'Email and password are enough — complete your profile later, at your own pace.' }}</p>
 
         @if($errors->any())
-        <div class="mt-4 rounded-xl border border-[#F1C3C6] bg-[#FDECED] px-4 py-3">
-            @foreach($errors->all() as $error)<p class="text-[12.5px] text-[#8A1015]">{{ $error }}</p>@endforeach
+        <div class="mt-4 ui-alert ui-alert-danger flex-col">
+            @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
         </div>
         @endif
 
@@ -30,7 +31,7 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
             @csrf
             <input type="hidden" name="lang" value="{{ $lang }}">
             <div>
-                <label class="block text-[12px] font-semibold text-[#3B382F] mb-1.5">{{ $isFr ? 'Je suis…' : 'I am…' }}</label>
+                <label class="ui-label">{{ $isFr ? 'Je suis…' : 'I am…' }}</label>
                 <div class="grid grid-cols-2 gap-3">
                     @foreach([['buyer','shopping-bag',$isFr ? 'Acheteur / Visiteur' : 'Buyer / Visitor'],['artisan','store',$isFr ? 'Artisan / Vendeur' : 'Artisan / Vendor']] as [$val,$ic,$lbl])
                     <label class="cursor-pointer">
@@ -43,16 +44,15 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
                 </div>
             </div>
             <div>
-                <label class="block text-[12px] font-semibold text-[#3B382F] mb-1.5">Email</label>
+                <label class="ui-label">Email</label>
                 <input type="email" name="email" required value="{{ old('email') }}" placeholder="vous@exemple.cm"
-                       class="w-full h-[50px] text-[14px] rounded-xl border border-[#E4E0D8] px-4 focus:outline-none focus:border-[#157A43] text-[#26251F]">
+                       class="ui-field ui-field--lg">
             </div>
             <div>
-                <label class="block text-[12px] font-semibold text-[#3B382F] mb-1.5">{{ $isFr ? 'Mot de passe (8 caractères min.)' : 'Password (min. 8 characters)' }}</label>
-                <input type="password" name="password" required minlength="8"
-                       class="w-full h-[50px] text-[14px] rounded-xl border border-[#E4E0D8] px-4 focus:outline-none focus:border-[#157A43] text-[#26251F]">
+                <label class="ui-label">{{ $isFr ? 'Mot de passe (8 caractères min.)' : 'Password (min. 8 characters)' }}</label>
+                <input type="password" name="password" required minlength="8" class="ui-field ui-field--lg">
             </div>
-            <button type="submit" class="relative w-full h-[52px] bg-[#02301B] hover:bg-[#157A43] text-white text-[15.5px] font-semibold rounded-xl transition-colors">
+            <button type="submit" class="relative ui-btn ui-btn-primary ui-btn-lg ui-btn-block">
                 {{ $isFr ? 'Créer mon compte' : 'Create my account' }}
                 <i data-lucide="arrow-right" class="absolute right-5 top-1/2 -translate-y-1/2 w-4.5 h-4.5"></i>
             </button>

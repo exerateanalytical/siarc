@@ -124,9 +124,6 @@
     }
     .ui-field[readonly] { cursor: default; }
 
-    .ui-field--sm { height: 32px; padding: 0 10px; font-size: 12px; }
-    .ui-field--lg { height: 44px; padding: 0 14px; font-size: 13.5px; }
-
     .ui-field--invalid,
     .ui-field[aria-invalid="true"] { border-color: var(--ui-danger); }
     .ui-field--invalid:focus,
@@ -182,6 +179,36 @@
         color: var(--ui-ink);
     }
     .ui-field-bare::placeholder { color: var(--ui-faint); }
+
+    /* Size modifiers live AFTER .ui-field-group so they win on both — a group
+       carrying ui-field--lg must actually be 44px, not silently stay at 38 and
+       sit 6px shorter than the plain fields beside it. */
+    .ui-field--sm { height: 32px; padding: 0 10px; font-size: 12px; }
+    .ui-field--lg { height: 44px; padding: 0 14px; font-size: 13.5px; }
+    .ui-field-group.ui-field--sm,
+    .ui-field-group.ui-field--lg { padding-left: 12px; padding-right: 12px; }
+    .ui-field--sm .ui-field-bare { font-size: 12px; }
+    .ui-field--lg .ui-field-bare { font-size: 13.5px; }
+    /* A textarea sizes to its content, so a height modifier must not cap it. */
+    .ui-textarea.ui-field--sm,
+    .ui-textarea.ui-field--lg { height: auto; }
+
+    /* iOS Safari zooms the page whenever a focused control's text is under 16px.
+       The platform's density is deliberately compact on desktop, so raise the
+       type only on touch-primary screens — the field grows a little, nothing
+       jumps, and the page stops zooming on every tap. */
+    @media (max-width: 767.98px), (pointer: coarse) {
+        .ui-field,
+        .ui-field-bare,
+        .ui-field--sm,
+        .ui-field--lg,
+        .ui-field--sm .ui-field-bare,
+        .ui-field--lg .ui-field-bare { font-size: 16px; }
+        .ui-field:not(.ui-textarea) { height: 44px; }
+        .ui-field-group { height: 44px; }
+        .ui-field--sm:not(.ui-textarea),
+        .ui-field-group.ui-field--sm { height: 40px; }
+    }
 
     /* File input. Can't be a .ui-field — the control is the browser's own
        button plus a filename, so the box is styled and the button inside it. */

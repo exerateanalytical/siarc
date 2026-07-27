@@ -16,23 +16,23 @@
             </p>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div class="ui-card">
 
             @if(session('success'))
-                <div class="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
-                    <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-ok">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
                     {{ session('success') }}
                 </div>
             @endif
             @if(session('error'))
-                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ session('error') }}
                 </div>
             @endif
             @if($errors->any())
-                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -42,13 +42,13 @@
             <form method="POST" action="{{ route('login.challenge.verify') }}" class="mb-5">
                 @csrf
                 <input type="hidden" name="method" value="totp">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                <label class="ui-label">
                     {{ $lang === 'fr' ? 'Code de votre application d\'authentification' : 'Code from your authenticator app' }}
                 </label>
                 <div class="flex items-center gap-2">
                     <input name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required placeholder="000000" autofocus
-                        class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
-                    <button type="submit" class="px-4 py-2.5 rounded-lg bg-forest-500 text-white text-sm font-semibold hover:bg-forest-600 transition-colors">
+                        class="ui-field ui-field--lg flex-1 font-mono tracking-widest text-center">
+                    <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg">
                         {{ $lang === 'fr' ? 'Vérifier' : 'Verify' }}
                     </button>
                 </div>
@@ -65,7 +65,7 @@
                 </p>
                 <form method="POST" action="{{ route('login.challenge.send') }}" class="mb-3">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200 transition-colors">
+                    <button type="submit" class="ui-btn ui-btn-secondary ui-btn-sm">
                         <i data-lucide="send" class="w-3.5 h-3.5"></i>
                         {{ $lang === 'fr' ? 'Envoyer le code' : 'Send code' }}
                     </button>
@@ -75,8 +75,8 @@
                     <input type="hidden" name="method" value="channel">
                     <div class="flex items-center gap-2">
                         <input name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required placeholder="000000"
-                            class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
-                        <button type="submit" class="px-4 py-2.5 rounded-lg bg-forest-500 text-white text-sm font-semibold hover:bg-forest-600 transition-colors">
+                            class="ui-field ui-field--lg flex-1 font-mono tracking-widest text-center">
+                        <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg">
                             {{ $lang === 'fr' ? 'Vérifier' : 'Verify' }}
                         </button>
                     </div>
@@ -94,8 +94,8 @@
                         @csrf
                         <input type="hidden" name="method" value="recovery">
                         <input name="code" maxlength="20" required placeholder="XXXXX-XXXXX"
-                            class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm font-mono text-center focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
-                        <button type="submit" class="px-4 py-2.5 rounded-lg bg-gray-800 text-white text-sm font-semibold hover:bg-gray-900 transition-colors">
+                            class="ui-field ui-field--lg flex-1 font-mono text-center">
+                        <button type="submit" class="ui-btn ui-btn-secondary ui-btn-lg">
                             {{ $lang === 'fr' ? 'Utiliser' : 'Use' }}
                         </button>
                     </form>

@@ -112,6 +112,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
 

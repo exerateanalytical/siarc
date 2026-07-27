@@ -155,6 +155,7 @@
         .hero-fade { transition: opacity .45s ease; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-cream text-[#1D1B16] antialiased">
 

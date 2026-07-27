@@ -129,6 +129,7 @@
         #qb-sidebar.open { display: block; position: fixed; inset: 0 auto 0 0; width: 290px; z-index: 60; overflow-y: auto; background: #fff; }
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 
@@ -140,8 +141,8 @@
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
         @if(session('success'))
-        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
-            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+        <div class="mb-4 ui-alert ui-alert-ok">
+            <i data-lucide="circle-check" class="w-4 h-4"></i>
             {{ session('success') }}
             @if($rpo->invoice)
             — <a href="{{ route('quotes.invoice', ['lang' => $lang, 'invoice' => $rpo->invoice->id]) }}" class="font-bold underline underline-offset-2">{{ $isFr ? 'Voir la facture' : 'View the invoice' }} {{ $rpo->invoice->reference }}</a>
@@ -161,7 +162,7 @@
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">
                     {{ $isFr ? 'Bon de commande' : 'Purchase order' }}
-                    <span class="bg-[#E2F3E8] rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $poStatusLabel }}</span>
+                    <span class="ui-pill ui-pill-ok">{{ $poStatusLabel }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
                     PO N°: <span class="font-semibold text-[#1B1B18]">{{ $realPoRef }}</span>
@@ -170,15 +171,15 @@
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Télécharger PDF' : 'Download PDF' }}
                 </button>
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="printer" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Imprimer' : 'Print' }}
                 </button>
-                <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-colors">
+                <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary">
                     <i data-lucide="badge-check" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Partager le bon de commande' : 'Share the purchase order' }}
                 </a>
@@ -189,11 +190,11 @@
             <div class="flex-1 min-w-0 w-full">
 
                 <!-- Supplier / buyer / dates -->
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <section class="ui-card grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="flex items-start gap-4">
                         <img src="{{ $realBizLogo }}" alt="{{ $realBizName }}" class="w-[84px] shrink-0 object-contain">
                         <div class="min-w-0">
-                            <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Fournisseur' : 'Supplier' }}</p>
+                            <p class="ui-dt">{{ $isFr ? 'Fournisseur' : 'Supplier' }}</p>
                             <p class="mt-1 flex flex-wrap items-center gap-2">
                                 <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $realBizName }}</span>
                                 @if(in_array($biz?->verification_tier, ['verified', 'certified'], true))
@@ -213,8 +214,8 @@
                         </div>
                     </div>
                     <div>
-                        <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Acheteur' : 'Buyer' }}</p>
-                        <p class="mt-1 text-[14.5px] font-bold text-[#1B1B18]">{{ $realBuyerName }}</p>
+                        <p class="ui-dt">{{ $isFr ? 'Acheteur' : 'Buyer' }}</p>
+                        <p class="ui-dd text-[14.5px]">{{ $realBuyerName }}</p>
                         @if($buyer?->email)
                         <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $buyer->email }}</p>
                         @endif
@@ -225,46 +226,46 @@
                     <div class="flex items-start gap-3.5">
                         <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
                         <div>
-                            <p class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Dates importantes' : 'Important dates' }}</p>
-                            <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de commande' : 'Order date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realOrderDate }}</p>
-                            <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de livraison prévue' : 'Expected delivery date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#E5484D]">{{ $realDelivery ?? '—' }} @if($realDeliveryIn !== null)<span class="font-semibold">({{ $realDeliveryIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
-                            <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Statut' : 'Status' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#157A43]">{{ $poStatusLabel }}</p>
+                            <p class="ui-card-title">{{ $isFr ? 'Dates importantes' : 'Important dates' }}</p>
+                            <p class="mt-2.5 ui-dt">{{ $isFr ? 'Date de commande' : 'Order date' }}</p>
+                            <p class="ui-dd">{{ $realOrderDate }}</p>
+                            <p class="mt-2 ui-dt">{{ $isFr ? 'Date de livraison prévue' : 'Expected delivery date' }}</p>
+                            <p class="ui-dd text-[#E5484D]">{{ $realDelivery ?? '—' }} @if($realDeliveryIn !== null)<span class="font-semibold">({{ $realDeliveryIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
+                            <p class="mt-2 ui-dt">{{ $isFr ? 'Statut' : 'Status' }}</p>
+                            <p class="ui-dd text-[#157A43]">{{ $poStatusLabel }}</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- Articles table -->
-                <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                    <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Articles commandés' : 'Ordered items' }}</h2>
-                    <div class="mt-3 overflow-x-auto">
-                        <table class="w-full min-w-[820px]">
+                <section class="mt-4 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Articles commandés' : 'Ordered items' }}</h2>
+                    <div class="mt-3 ui-table-wrap">
+                        <table class="ui-table min-w-[820px]">
                             <thead>
-                                <tr class="bg-[#F7F8F7] text-left">
-                                    <th class="pl-4 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">#</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Produit' : 'Product' }}</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Description</th>
-                                    <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Qté commandée' : 'Ordered qty' }}</th>
-                                    <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Prix unitaire' : 'Unit price' }} (FCFA)</th>
-                                    <th class="px-2 pr-4 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Total (FCFA)</th>
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ $isFr ? 'Produit' : 'Product' }}</th>
+                                    <th>Description</th>
+                                    <th class="text-center">{{ $isFr ? 'Qté commandée' : 'Ordered qty' }}</th>
+                                    <th class="text-right">{{ $isFr ? 'Prix unitaire' : 'Unit price' }} (FCFA)</th>
+                                    <th class="text-right">Total (FCFA)</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#F1F2F1]">
+                            <tbody>
                                 @foreach($poRows as $ri => [$pImg, $pName, $pDesc, $pQty, $pUnit, $pTotal])
                                 <tr>
-                                    <td class="pl-4 pr-2 py-4 align-top text-[13px] text-[#1B1B18]">{{ $ri + 1 }}</td>
-                                    <td class="px-2 py-4 align-top">
+                                    <td class="align-top text-[#1B1B18]">{{ $ri + 1 }}</td>
+                                    <td class="align-top">
                                         <div class="flex items-start gap-3">
                                             <img src="{{ asset('images/landing/' . $pImg) }}" alt="" class="w-[42px] h-[42px] shrink-0 rounded-lg object-cover">
                                             <p class="text-[13px] font-bold text-[#1B1B18] max-w-[180px]">{{ $pName }}</p>
                                         </div>
                                     </td>
-                                    <td class="px-2 py-4 align-top text-[12.5px] text-[#3565DE] leading-relaxed max-w-[240px]">{{ $pDesc }}</td>
-                                    <td class="px-2 py-4 align-top text-center text-[13px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $pQty }}<br><span class="font-normal text-[11.5px] text-[#3565DE]">{{ $isFr ? 'Pièces' : 'Pieces' }}</span></td>
-                                    <td class="px-2 py-4 align-top text-right text-[13px] font-semibold text-[#1B1B18] whitespace-nowrap">{{ $pUnit }}</td>
-                                    <td class="px-2 pr-4 py-4 align-top text-right text-[13px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $pTotal }}</td>
+                                    <td class="align-top text-[#3565DE] leading-relaxed max-w-[240px]">{{ $pDesc }}</td>
+                                    <td class="align-top text-center font-bold text-[#1B1B18] whitespace-nowrap">{{ $pQty }}<br><span class="font-normal text-[11.5px] text-[#3565DE]">{{ $isFr ? 'Pièces' : 'Pieces' }}</span></td>
+                                    <td class="align-top text-right font-semibold text-[#1B1B18] whitespace-nowrap">{{ $pUnit }}</td>
+                                    <td class="align-top text-right font-bold text-[#1B1B18] whitespace-nowrap">{{ $pTotal }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -274,7 +275,7 @@
                     <!-- Conditions / instructions / totals -->
                     <div class="mt-5 border-t border-[#F0F1F0] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div>
-                            <h3 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Conditions de commande' : 'Order conditions' }}</h3>
+                            <h3 class="ui-card-title">{{ $isFr ? 'Conditions de commande' : 'Order conditions' }}</h3>
                             <ul class="mt-3 space-y-2.5">
                                 @foreach($poConditions as [$pcLabel, $pcRest])
                                 <li class="flex items-start gap-2.5 text-[12px] text-[#3B382F] leading-relaxed">
@@ -285,7 +286,7 @@
                             </ul>
                         </div>
                         <div>
-                            <h3 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Instructions spéciales' : 'Special instructions' }}</h3>
+                            <h3 class="ui-card-title">{{ $isFr ? 'Instructions spéciales' : 'Special instructions' }}</h3>
                             <p class="mt-3 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $rpp->notes ?: '—' }}</p>
                             <p class="mt-4 text-[12.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Personne de contact:' : 'Contact person:' }}</p>
                             <p class="mt-1 text-[12.5px] text-[#3B382F]">{{ $realBuyerName }}</p>
@@ -314,8 +315,8 @@
                 </section>
 
                 <!-- Order status timeline -->
-                <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                    <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Statut de la commande' : 'Order status' }}</h2>
+                <section class="mt-4 ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Statut de la commande' : 'Order status' }}</h2>
                     <div class="mt-6 grid grid-cols-5">
                         @foreach($poTimeline as $tlIdx => [$tlIcon, $tlTitle, $tlSub, $tlDone])
                         <div class="text-center">
@@ -336,8 +337,8 @@
 
             <!-- Right rail -->
             <aside class="w-full 2xl:w-[300px] shrink-0 space-y-4">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé de la commande' : 'Order summary' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Résumé de la commande' : 'Order summary' }}</h2>
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Nombre d\'articles' : 'Number of items' }}</dt>
@@ -364,8 +365,8 @@
                     </div>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Documents liés' : 'Related documents' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Documents liés' : 'Related documents' }}</h2>
                     <div class="mt-3 space-y-3.5">
                         @foreach($poDocs as [$pdType, $pdTitle, $pdFile])
                         <div class="flex items-center gap-3.5">
@@ -384,8 +385,8 @@
                     <p class="mt-3.5 text-right"><a href="{{ route('membership.certificate', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#3565DE]">{{ $isFr ? 'Voir tous les documents' : 'View all documents' }}</a></p>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14px] font-bold text-[#1B1B18]">Actions</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">Actions</h2>
                     <div class="mt-2 divide-y divide-[#F1F2F1]">
                         @foreach($poActions as [$paIcon, $paLabel, $paUrl, $paDanger])
                         <a href="{{ $paUrl }}" class="flex items-center gap-3.5 py-3 group">

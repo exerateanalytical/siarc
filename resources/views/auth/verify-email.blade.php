@@ -20,32 +20,33 @@
         </div>
 
         {{-- Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div class="ui-card">
 
+            {{-- The kit has no "info" tone; the amber notice is the closest neutral one. --}}
             @if(session('info'))
-                <div class="mb-4 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-800">
-                    <i data-lucide="info" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-warn">
+                    <i data-lucide="info" class="w-4 h-4"></i>
                     {{ session('info') }}
                 </div>
             @endif
 
             @if(session('status'))
-                <div class="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
-                    <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-ok">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
                     {{ session('status') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ session('error') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -53,8 +54,7 @@
             {{-- Send code --}}
             <form method="POST" action="{{ route('email.verify.send') }}" class="mb-6">
                 @csrf
-                <button type="submit"
-                    class="w-full bg-white border border-forest-500 text-forest-600 hover:bg-forest-50 font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                <button type="submit" class="ui-btn ui-btn-secondary ui-btn-lg ui-btn-block">
                     <i data-lucide="send" class="w-4 h-4"></i>
                     {{ session('status')
                         ? ($lang === 'fr' ? 'Renvoyer le code' : 'Resend code')
@@ -66,20 +66,17 @@
             <form method="POST" action="{{ route('email.verify.confirm') }}">
                 @csrf
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="code">
+                    <label class="ui-label" for="code">
                         {{ $lang === 'fr' ? 'Code de vérification' : 'Verification code' }}
                     </label>
-                    <div class="relative">
-                        <i data-lucide="shield-check" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                        <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
-                            placeholder="123456" maxlength="10"
-                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('code') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm tracking-widest focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
-                            required>
-                    </div>
+                    {{-- Leading shield icon was decoration only. --}}
+                    <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+                        placeholder="123456" maxlength="10"
+                        class="ui-field ui-field--lg tracking-widest {{ $errors->has('code') ? 'ui-field--invalid' : '' }}"
+                        required>
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg ui-btn-block">
                     <i data-lucide="check" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Vérifier' : 'Verify' }}
                 </button>

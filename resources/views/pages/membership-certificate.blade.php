@@ -46,6 +46,7 @@
             @page { size: landscape; margin: 0; }
         }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="antialiased">
 

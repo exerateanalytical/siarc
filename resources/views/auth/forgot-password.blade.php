@@ -18,28 +18,28 @@
         </div>
 
         {{-- Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div class="ui-card">
 
             @if(session('status'))
-                <div class="mb-4 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
-                    <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-ok">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
                     {{ session('status') }}
                 </div>
             @endif
 
             @if(session('dev_reset_url'))
-                <div class="mb-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800 break-all">
-                    <i data-lucide="flask-conical" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-warn break-all">
+                    <i data-lucide="flask-conical" class="w-4 h-4"></i>
                     <div>
                         <strong class="block mb-1">{{ $lang === 'fr' ? 'Mode développement — lien de réinitialisation :' : 'Dev mode — reset link:' }}</strong>
-                        <a href="{{ session('dev_reset_url') }}" class="text-amber-900 underline break-all">{{ session('dev_reset_url') }}</a>
+                        <a href="{{ session('dev_reset_url') }}" class="underline break-all">{{ session('dev_reset_url') }}</a>
                     </div>
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mb-4 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -50,21 +50,19 @@
                 <input type="hidden" name="lang" value="{{ $lang }}">
 
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5" for="email">
+                    <label class="ui-label" for="email">
                         {{ $lang === 'fr' ? 'Adresse email' : 'Email address' }}
                     </label>
-                    <div class="relative">
-                        <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                        <input id="email" name="email" type="email" autocomplete="email"
-                            value="{{ old('email') }}"
-                            placeholder="{{ $lang === 'fr' ? 'votre@email.cm' : 'your@email.com' }}"
-                            class="w-full pl-10 pr-4 py-2.5 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-300' }} rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 transition"
-                            required autofocus>
-                    </div>
+                    {{-- The old leading mail icon was decoration only; the kit field carries
+                         the meaning on its own, as on the admin dashboard. --}}
+                    <input id="email" name="email" type="email" autocomplete="email"
+                        value="{{ old('email') }}"
+                        placeholder="{{ $lang === 'fr' ? 'votre@email.cm' : 'your@email.com' }}"
+                        class="ui-field ui-field--lg {{ $errors->has('email') ? 'ui-field--invalid' : '' }}"
+                        required autofocus>
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-forest-500 hover:bg-forest-600 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg ui-btn-block">
                     <i data-lucide="send" class="w-4 h-4"></i>
                     {{ $lang === 'fr' ? 'Envoyer le lien' : 'Send Reset Link' }}
                 </button>

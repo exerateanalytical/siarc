@@ -115,6 +115,7 @@
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
 

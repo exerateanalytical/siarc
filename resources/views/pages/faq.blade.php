@@ -39,6 +39,7 @@
         details > summary::-webkit-details-marker { display: none; }
         details[open] .faq-chev { transform: rotate(180deg); }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 

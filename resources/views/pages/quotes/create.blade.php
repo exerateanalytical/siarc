@@ -30,8 +30,8 @@
         ['qb-file-3.png', 'cahier-des-charges.pdf', '3.1 MB'],
     ];
 
-    $fieldCls = 'w-full h-[48px] border border-[#E5E7E5] rounded-lg px-4 text-[13.5px] text-[#1B1B18] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition';
-    $labelCls = 'block text-[12.5px] font-semibold text-[#3B382F] mb-2';
+    $fieldCls = 'ui-field';
+    $labelCls = 'ui-label';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -55,6 +55,7 @@
         #qb-sidebar.open { display: block; position: fixed; inset: 0 auto 0 0; width: 290px; z-index: 60; overflow-y: auto; background: #fff; }
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 
@@ -71,14 +72,14 @@
                 <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr ? 'Créer une demande de devis' : 'Create a quote request' }}</h1>
                 <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Remplissez les informations ci-dessous pour demander un devis personnalisé à un artisan ou une entreprise.' : 'Fill in the information below to request a personalised quote from an artisan or business.' }}</p>
             </div>
-            <a href="{{ route('dashboard.buyer', ['lang' => $lang]) }}" class="shrink-0 inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+            <a href="{{ route('dashboard.buyer', ['lang' => $lang]) }}" class="shrink-0 ui-btn ui-btn-secondary">
                 <i data-lucide="x" class="w-4 h-4"></i>
                 {{ $isFr ? 'Quitter sans enregistrer' : 'Leave without saving' }}
             </a>
         </div>
 
         <!-- Stepper -->
-        <div class="mt-5 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-4 overflow-x-auto">
+        <div class="mt-5 ui-card overflow-x-auto">
             <div class="flex items-center gap-3 min-w-[860px]">
                 @foreach($steps as $stIdx => [$stNum, $stTitle, $stSub])
                 <div class="flex items-center gap-3.5 shrink-0">
@@ -102,25 +103,25 @@
                 @csrf
                 <input type="hidden" name="business_slug" value="{{ $quoteVendor->slug }}">
                 @if($errors->any())
-                <div class="mb-4 bg-[#FDE8E8] border border-[#F5C9C9] rounded-xl px-4 py-3 text-[12.5px] text-[#B42025]">{{ $errors->first() }}</div>
+                <div class="mb-4 ui-alert ui-alert-danger">{{ $errors->first() }}</div>
                 @endif
 
-                <div class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-6">
-                    <h2 class="text-[15.5px] font-bold text-[#14652F]">{{ $isFr ? 'Informations de l\'acheteur' : 'Buyer information' }}</h2>
+                <div class="ui-card">
+                    <h2 class="ui-card-title text-[#14652F]">{{ $isFr ? 'Informations de l\'acheteur' : 'Buyer information' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Nom complet' : 'Full name' }} <span class="text-[#DC2626]">*</span></label>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Nom complet' : 'Full name' }} <span class="ui-req">*</span></label>
                             <input type="text" id="rfq-name" value="{{ $buyerName }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
-                            <label class="{{ $labelCls }}">Email <span class="text-[#DC2626]">*</span></label>
+                            <label class="{{ $labelCls }}">Email <span class="ui-req">*</span></label>
                             <input type="email" id="rfq-email" value="{{ $buyerEmail }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Téléphone' : 'Phone' }} <span class="text-[#DC2626]">*</span></label>
-                            <div class="flex items-center gap-3 h-[48px] border border-[#E5E7E5] rounded-lg px-4 focus-within:border-[#14532D]">
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Téléphone' : 'Phone' }} <span class="ui-req">*</span></label>
+                            <div class="ui-field-group">
                                 <img src="{{ asset('images/landing/qb-flag.png') }}" alt="" class="w-[24px] h-[16px] shrink-0 rounded-sm object-cover">
-                                <input type="text" id="rfq-phone" value="{{ $buyerPhone }}" class="flex-1 min-w-0 text-[13.5px] focus:outline-none">
+                                <input type="text" id="rfq-phone" value="{{ $buyerPhone }}" class="ui-field-bare">
                             </div>
                         </div>
                         <div>
@@ -132,43 +133,45 @@
                             <input type="text" value="" placeholder="{{ $isFr ? 'Votre fonction (facultatif)' : 'Your role (optional)' }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Pays' : 'Country' }} <span class="text-[#DC2626]">*</span></label>
-                            <div class="relative flex items-center gap-3 h-[48px] border border-[#E5E7E5] rounded-lg px-4">
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Pays' : 'Country' }} <span class="ui-req">*</span></label>
+                            {{-- Grouped with the flag, so the chevron stays markup here rather than
+                                 the ui-select background image. --}}
+                            <div class="ui-field-group">
                                 <img src="{{ asset('images/landing/qb-flag.png') }}" alt="" class="w-[24px] h-[16px] shrink-0 rounded-sm object-cover">
-                                <select class="flex-1 min-w-0 bg-transparent text-[13.5px] appearance-none cursor-pointer focus:outline-none">
+                                <select class="ui-field-bare appearance-none cursor-pointer">
                                     <option>{{ $isFr ? 'Cameroun' : 'Cameroon' }}</option>
                                     <option>France</option>
                                     <option>{{ $isFr ? 'Autre' : 'Other' }}</option>
                                 </select>
-                                <i data-lucide="chevron-down" class="w-4 h-4 shrink-0 text-[#8A857A] pointer-events-none"></i>
+                                <i data-lucide="chevron-down" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                             </div>
                         </div>
                     </div>
 
-                    <h2 class="mt-8 text-[15.5px] font-bold text-[#14652F]">{{ $isFr ? 'Informations générales' : 'General information' }}</h2>
+                    <h2 class="mt-8 ui-card-title text-[#14652F]">{{ $isFr ? 'Informations générales' : 'General information' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Référence de la demande' : 'Request reference' }} <span class="text-[#DC2626]">*</span> <span class="font-normal text-[#8A857A]">({{ $isFr ? 'Auto-générée' : 'Auto-generated' }})</span></label>
-                            <input type="text" value="RFQ-2024-000189" readonly class="w-full h-[48px] bg-[#F7F8F7] border border-[#EDEEED] rounded-lg px-4 text-[13.5px] text-[#3B382F] focus:outline-none">
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Référence de la demande' : 'Request reference' }} <span class="ui-req">*</span> <span class="font-normal text-[#8A857A]">({{ $isFr ? 'Auto-générée' : 'Auto-generated' }})</span></label>
+                            <input type="text" value="RFQ-2024-000189" readonly class="{{ $fieldCls }}">
                         </div>
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Titre de la demande' : 'Request title' }} <span class="text-[#DC2626]">*</span></label>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Titre de la demande' : 'Request title' }} <span class="ui-req">*</span></label>
                             <input type="text" id="rfq-title" name="title" required maxlength="255" placeholder="{{ $isFr ? 'Ex. Mobilier en bois massif pour hôtel' : 'E.g. Solid wood furniture for a hotel' }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Date souhaitée de réponse' : 'Desired response date' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></label>
-                            <div class="flex items-center gap-3 h-[48px] border border-[#E5E7E5] rounded-lg px-4 focus-within:border-[#14532D]">
-                                <i data-lucide="calendar" class="w-[17px] h-[17px] shrink-0 text-[#55524A]" style="stroke-width:1.7"></i>
-                                <input type="date" name="desired_response_date" min="{{ now()->toDateString() }}" class="flex-1 min-w-0 text-[13.5px] focus:outline-none">
+                            <div class="ui-field-group">
+                                <i data-lucide="calendar" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
+                                <input type="date" name="desired_response_date" min="{{ now()->toDateString() }}" class="ui-field-bare">
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <label class="{{ $labelCls }}">{{ $isFr ? 'Description détaillée de votre besoin' : 'Detailed description of your need' }} <span class="text-[#DC2626]">*</span></label>
+                        <label class="{{ $labelCls }}">{{ $isFr ? 'Description détaillée de votre besoin' : 'Detailed description of your need' }} <span class="ui-req">*</span></label>
                         <p class="-mt-1 mb-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Décrivez précisément votre projet, les spécifications, les matériaux souhaités, les finitions, etc.' : 'Describe your project precisely: specifications, desired materials, finishes, etc.' }}</p>
                         <div class="relative">
-                            <textarea id="rfq-desc" name="description" required rows="4" maxlength="2000" placeholder="{{ $isFr ? 'Ex. Nous recherchons des meubles en bois massif de haute qualité...' : 'E.g. We are looking for high-quality solid wood furniture...' }}" class="w-full border border-[#E5E7E5] rounded-lg px-4 py-3 text-[13.5px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition resize-y"></textarea>
+                            <textarea id="rfq-desc" name="description" required rows="4" maxlength="2000" placeholder="{{ $isFr ? 'Ex. Nous recherchons des meubles en bois massif de haute qualité...' : 'E.g. We are looking for high-quality solid wood furniture...' }}" class="ui-field ui-textarea"></textarea>
                             <span id="rfq-desc-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">0 / 2000</span>
                         </div>
                     </div>
@@ -182,7 +185,7 @@
                                     <i data-lucide="cloud-upload" class="w-6 h-6 text-[#55524A]" style="stroke-width:1.5"></i>
                                     {{ $isFr ? 'Glissez-déposez vos fichiers ici ou' : 'Drag and drop your files here or' }}
                                 </span>
-                                <label class="cursor-pointer border border-[#9DBFA9] hover:border-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-[#14652F] transition-colors">
+                                <label class="ui-btn ui-btn-secondary cursor-pointer">
                                     {{ $isFr ? 'Choisir des fichiers' : 'Choose files' }}
                                     <input type="file" id="rfq-files" multiple class="hidden">
                                 </label>
@@ -209,12 +212,12 @@
                 </div>
 
                 <!-- Bottom actions -->
-                <div class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-4 flex flex-wrap items-center justify-between gap-3">
-                    <button type="button" id="rfq-draft" class="inline-flex items-center gap-2.5 border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-5 py-3 text-[13.5px] font-semibold text-[#1B1B18] transition-colors">
+                <div class="mt-4 ui-card flex flex-wrap items-center justify-between gap-3">
+                    <button type="button" id="rfq-draft" class="ui-btn ui-btn-secondary">
                         <i data-lucide="file-text" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                         <span id="rfq-draft-label">{{ $isFr ? 'Enregistrer comme brouillon' : 'Save as draft' }}</span>
                     </button>
-                    <button type="submit" class="inline-flex items-center gap-3 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-6 py-3 text-[13.5px] font-semibold text-white transition-colors">
+                    <button type="submit" class="ui-btn ui-btn-primary">
                         {{ $isFr ? 'Étape suivante' : 'Next step' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
@@ -222,8 +225,8 @@
             </form>
 
             <!-- Summary rail -->
-            <aside class="w-full xl:w-[330px] shrink-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé de la demande' : 'Request summary' }}</h2>
+            <aside class="w-full xl:w-[330px] shrink-0 ui-card">
+                <h2 class="ui-card-title">{{ $isFr ? 'Résumé de la demande' : 'Request summary' }}</h2>
                 <dl class="mt-4 space-y-3">
                     <div class="flex items-center justify-between gap-3">
                         <dt class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Articles demandés' : 'Requested items' }}</dt>
@@ -266,7 +269,7 @@
                     <p class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Message pour l\'artisan' : 'Message for the artisan' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></p>
                     <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Ajouter un message personnalisé à votre demande.' : 'Add a personalised message to your request.' }}</p>
                     <div class="relative mt-2.5">
-                        <textarea id="rfq-msg" name="message" rows="5" maxlength="500" placeholder="{{ $isFr ? 'Ex. Nous serions ravis de collaborer avec vous sur ce projet...' : 'E.g. We would be delighted to work with you on this project...' }}" class="w-full border border-[#E5E7E5] rounded-lg px-4 py-3 text-[13px] text-[#1B1B18] leading-relaxed focus:outline-none focus:border-[#14532D] resize-y"></textarea>
+                        <textarea id="rfq-msg" name="message" rows="5" maxlength="500" placeholder="{{ $isFr ? 'Ex. Nous serions ravis de collaborer avec vous sur ce projet...' : 'E.g. We would be delighted to work with you on this project...' }}" class="ui-field ui-textarea"></textarea>
                         <span id="rfq-msg-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">0 / 500</span>
                     </div>
                 </div>

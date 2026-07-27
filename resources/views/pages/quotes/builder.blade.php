@@ -53,8 +53,8 @@
         ? ['Produits de haute qualité', 'Emballage sécurisé', 'Assistance après-vente', "Documentation d'exportation"]
         : ['High-quality products', 'Secure packaging', 'After-sales support', 'Export documentation'];
 
-    $inputCls = 'h-[44px] border border-[#E5E7E5] rounded-lg px-3.5 text-[13px] text-[#1B1B18] focus:outline-none focus:border-[#14532D] focus:ring-1 focus:ring-[#14532D]/30 transition';
-    $panelLabel = 'block text-[12px] text-[#55524A] mb-1.5';
+    $inputCls = 'ui-field';
+    $panelLabel = 'ui-label';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -74,6 +74,7 @@
         #qb-sidebar.open { display: block; position: fixed; inset: 0 auto 0 0; width: 290px; z-index: 60; overflow-y: auto; background: #fff; }
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 
@@ -91,7 +92,7 @@
                 <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Construisez et personnalisez votre proposition pour l\'envoyer à l\'artisan.' : 'Build and customise your proposal to send it to the artisan.' }}</p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
-                <button type="submit" form="bld-form" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
+                <button type="submit" form="bld-form" class="ui-btn ui-btn-primary">
                     {{ $isFr ? 'Envoyer la proposition' : 'Send the proposal' }}
                     <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
@@ -99,7 +100,7 @@
         </div>
 
         <!-- Stepper (step 2 active) -->
-        <div class="mt-5 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-4 overflow-x-auto">
+        <div class="mt-5 ui-card overflow-x-auto">
             <div class="flex items-center gap-3 min-w-[860px]">
                 @foreach($steps as $stIdx => [$stNum, $stTitle, $stSub])
                 <div class="relative flex items-center gap-3.5 shrink-0 {{ $stIdx === 1 ? 'pb-1' : '' }}">
@@ -118,15 +119,15 @@
         </div>
 
         @if($isReal)
-        <div class="mt-4 bg-[#E9F3EC] border border-[#CFE0D4] rounded-xl px-4 py-3 flex items-center gap-3 text-[12.5px] text-[#14532D]">
-            <i data-lucide="badge-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+        <div class="mt-4 ui-alert ui-alert-ok">
+            <i data-lucide="badge-check" class="w-4 h-4"></i>
             <span>{{ $isFr ? 'Vous répondez à la demande' : 'You are answering request' }}
             <span class="font-bold">{{ $builderRfq->reference }}</span> — {{ $builderRfq->title }}
             ({{ $isFr ? 'acheteur' : 'buyer' }} : {{ $builderRfq->buyer->name ?? '—' }})</span>
         </div>
         @endif
         @if($errors->any())
-        <div class="mt-4 bg-[#FDE8E8] border border-[#F5C9C9] rounded-xl px-4 py-3 text-[12.5px] text-[#B42025]">{{ $errors->first() }}</div>
+        <div class="mt-4 ui-alert ui-alert-danger">{{ $errors->first() }}</div>
         @endif
 
         <div class="mt-5 flex flex-col xl:flex-row gap-5 items-start">
@@ -138,13 +139,13 @@
                 @endif
 
                 <!-- Products table -->
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <div class="flex flex-wrap items-start justify-between gap-3">
+                <section class="ui-card">
+                    <div class="ui-card-head">
                         <div>
-                            <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Produits demandés' : 'Requested products' }}</h2>
-                            <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Sélectionnez les articles et définissez vos prix et conditions.' : 'Select the items and define your prices and conditions.' }}</p>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Produits demandés' : 'Requested products' }}</h2>
+                            <p class="ui-card-sub">{{ $isFr ? 'Sélectionnez les articles et définissez vos prix et conditions.' : 'Select the items and define your prices and conditions.' }}</p>
                         </div>
-                        <button type="button" id="bld-add" class="shrink-0 inline-flex items-center gap-2.5 border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                        <button type="button" id="bld-add" class="shrink-0 ui-btn ui-btn-secondary">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             {{ $isFr ? 'Ajouter un autre produit' : 'Add another product' }}
                         </button>
@@ -166,17 +167,17 @@
                                                  Prefilled from the request so the common single-line case is one click. --}}
                                             <input type="text" @if($isReal) name="items[{{ $rIdx }}][name]" required @endif value="{{ $rName }}"
                                                    placeholder="{{ $isFr ? 'Nom de l\'article' : 'Item name' }}"
-                                                   class="w-full h-[38px] border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] font-semibold text-[#1B1B18] focus:outline-none focus:border-[#14532D]">
-                                            <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $rRef }}</p>
+                                                   class="{{ $inputCls }}">
+                                            <p class="ui-hint">{{ $rRef }}</p>
                                         </div>
                                         <input type="text" @if($isReal) name="items[{{ $rIdx }}][quantity]" @endif value="{{ $rQty }}" class="bld-qty {{ $inputCls }} text-center">
-                                        <div class="relative">
-                                            <select @if($isReal) name="items[{{ $rIdx }}][unit]" @endif class="w-full h-[44px] border border-[#E5E7E5] rounded-lg pl-3 pr-7 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#14532D]">
+                                        {{-- Wrapper stays so the select keeps its own grid cell. --}}
+                                        <div>
+                                            <select @if($isReal) name="items[{{ $rIdx }}][unit]" @endif class="{{ $inputCls }} ui-select">
                                                 <option value="{{ $isFr ? 'Pièces' : 'Pieces' }}">{{ $isFr ? 'Pièces' : 'Pieces' }}</option>
                                                 <option value="Lot">Lot</option>
                                                 <option value="Kg">Kg</option>
                                             </select>
-                                            <i data-lucide="chevron-down" class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
                                         </div>
                                         <input type="text" @if($isReal) name="items[{{ $rIdx }}][unit_price]" @endif value="{{ $rPrice }}" class="bld-price {{ $inputCls }} text-right">
                                         <div class="flex items-center gap-1.5">
@@ -188,12 +189,12 @@
                                         <p class="text-[12.5px] text-[#55524A] text-center">TVA 19.25%</p>
                                         <p class="bld-total text-[13px] font-bold text-[#14652F] text-right whitespace-nowrap">{{ $rTotal }}</p>
                                         <div class="flex items-center justify-center gap-2">
-                                            <button type="button" class="bld-del w-[34px] h-[34px] rounded-lg border border-[#F5DADA] hover:border-[#DC2626] flex items-center justify-center text-[#DC2626]"><i data-lucide="trash-2" class="w-4 h-4" style="stroke-width:1.7"></i></button>
+                                            <button type="button" class="bld-del ui-btn ui-btn-danger w-[34px] h-[34px] px-0"><i data-lucide="trash-2" class="w-4 h-4" style="stroke-width:1.7"></i></button>
                                         </div>
                                     </div>
                                     <input type="text" @if($isReal) name="items[{{ $rIdx }}][description]" @endif value="{{ $rSpec }}"
                                            placeholder="{{ $isFr ? 'Spécifications (matière, finition, dimensions…)' : 'Specifications (material, finish, dimensions…)' }}"
-                                           class="mt-2 w-full h-[36px] border border-[#F1F2F1] rounded-lg px-3 text-[11.5px] text-[#3B382F] placeholder-[#A5A099] focus:outline-none focus:border-[#14532D]">
+                                           class="mt-2 {{ $inputCls }} ui-field--sm">
                                 </div>
                                 @endforeach
                             </div>
@@ -208,29 +209,27 @@
 
                 <!-- Option panels -->
                 <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Options de remise globale' : 'Global discount options' }}</h2>
+                    {{-- Selects lost their chevron markup: the kit draws it in the field itself. --}}
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Options de remise globale' : 'Global discount options' }}</h2>
                         <label class="{{ $panelLabel }} mt-3.5">{{ $isFr ? 'Remise globale sur tous les articles' : 'Global discount on all items' }}</label>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-end gap-2">
                             <input type="text" @if($isReal) name="global_discount_pct" @endif value="{{ $isReal ? 0 : 2 }}" class="w-[90px] {{ $inputCls }} text-center">
-                            <span class="text-[13px] text-[#55524A]">%</span>
+                            <span class="pb-2.5 text-[13px] text-[#55524A]">%</span>
                             <div class="flex-1 min-w-0 ml-2">
-                                <label class="block text-[11px] text-[#6F6B60] mb-1">{{ $isFr ? 'Montant de remise' : 'Discount amount' }}</label>
-                                <input type="text" id="bld-discount-amount" value="0 FCFA" readonly class="w-full h-[38px] bg-[#F7F8F7] border border-[#EDEEED] rounded-lg px-3 text-[12.5px] text-[#3B382F] focus:outline-none">
+                                <label class="{{ $panelLabel }}">{{ $isFr ? 'Montant de remise' : 'Discount amount' }}</label>
+                                <input type="text" id="bld-discount-amount" value="0 FCFA" readonly class="w-full {{ $inputCls }}">
                             </div>
                         </div>
-                        <h2 class="mt-6 text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Devise de la proposition' : 'Proposal currency' }}</h2>
+                        <h2 class="mt-6 ui-card-title">{{ $isFr ? 'Devise de la proposition' : 'Proposal currency' }}</h2>
                         <div class="mt-3.5 grid grid-cols-2 gap-3">
                             <div>
                                 <label class="{{ $panelLabel }}">{{ $isFr ? 'Devise' : 'Currency' }}</label>
-                                <div class="relative">
-                                    <select class="w-full {{ $inputCls }} pr-7 bg-white appearance-none cursor-pointer">
-                                        <option>FCFA - Franc CFA</option>
-                                        <option>EUR - Euro</option>
-                                        <option>USD - Dollar</option>
-                                    </select>
-                                    <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
-                                </div>
+                                <select class="w-full {{ $inputCls }} ui-select">
+                                    <option>FCFA - Franc CFA</option>
+                                    <option>EUR - Euro</option>
+                                    <option>USD - Dollar</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="{{ $panelLabel }}">{{ $isFr ? 'Taux de change (si applicable)' : 'Exchange rate (if applicable)' }}</label>
@@ -239,8 +238,8 @@
                         </div>
                     </section>
 
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Validité de la proposition' : 'Proposal validity' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Validité de la proposition' : 'Proposal validity' }}</h2>
                         <label class="{{ $panelLabel }} mt-3.5">{{ $isFr ? 'Cette proposition sera valable jusqu\'au' : 'This proposal will be valid until' }}</label>
                         <div class="flex items-end gap-3">
                             <div class="relative flex-1 min-w-0">
@@ -248,51 +247,42 @@
                                 <i data-lucide="calendar" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#55524A] pointer-events-none"></i>
                             </div>
                             <div class="w-[110px]">
-                                <label class="block text-[11px] text-[#6F6B60] mb-1">{{ $isFr ? 'Jours de validité' : 'Validity days' }}</label>
+                                <label class="{{ $panelLabel }}">{{ $isFr ? 'Jours de validité' : 'Validity days' }}</label>
                                 <div class="flex items-center gap-2">
                                     <input type="text" value="30" class="flex-1 min-w-0 {{ $inputCls }} text-center">
                                     <span class="text-[12px] text-[#55524A]">{{ $isFr ? 'jours' : 'days' }}</span>
                                 </div>
                             </div>
                         </div>
-                        <h2 class="mt-6 text-[13.5px] font-bold text-[#1B1B18]">Incoterms</h2>
+                        <h2 class="mt-6 ui-card-title">Incoterms</h2>
                         <label class="{{ $panelLabel }} mt-3.5">{{ $isFr ? 'Conditions de livraison' : 'Delivery terms' }}</label>
-                        <div class="relative">
-                            <select class="w-full {{ $inputCls }} pr-7 bg-white appearance-none cursor-pointer">
-                                <option>FOB - Free On Board</option>
-                                <option>DDP - {{ $isFr ? 'Livré droits acquittés' : 'Delivered Duty Paid' }}</option>
-                                <option>CIF - Cost Insurance Freight</option>
-                            </select>
-                            <i data-lucide="info" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
-                        </div>
+                        <select class="w-full {{ $inputCls }} ui-select">
+                            <option>FOB - Free On Board</option>
+                            <option>DDP - {{ $isFr ? 'Livré droits acquittés' : 'Delivered Duty Paid' }}</option>
+                            <option>CIF - Cost Insurance Freight</option>
+                        </select>
                     </section>
 
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Délais de production & livraison' : 'Production & delivery times' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Délais de production & livraison' : 'Production & delivery times' }}</h2>
                         <label class="{{ $panelLabel }} mt-3.5">{{ $isFr ? 'Délai de production' : 'Production time' }}</label>
                         <div class="grid grid-cols-2 gap-3">
                             @foreach([$isFr ? '7 - 10 jours ouvrables' : '7 - 10 working days', $isFr ? '15 - 20 jours ouvrables' : '15 - 20 working days'] as $delay)
-                            <div class="relative">
-                                <select class="w-full {{ $inputCls }} pr-7 bg-white appearance-none cursor-pointer">
-                                    <option>{{ $delay }}</option>
-                                    <option>{{ $isFr ? '30 jours ouvrables' : '30 working days' }}</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
-                            </div>
+                            <select class="w-full {{ $inputCls }} ui-select">
+                                <option>{{ $delay }}</option>
+                                <option>{{ $isFr ? '30 jours ouvrables' : '30 working days' }}</option>
+                            </select>
                             @endforeach
                         </div>
-                        <h2 class="mt-6 text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Lieu de livraison' : 'Delivery location' }}</h2>
+                        <h2 class="mt-6 ui-card-title">{{ $isFr ? 'Lieu de livraison' : 'Delivery location' }}</h2>
                         <div class="mt-3.5 grid grid-cols-2 gap-3">
                             <div>
                                 <label class="{{ $panelLabel }}">{{ $isFr ? 'Pays de livraison' : 'Delivery country' }}</label>
-                                <div class="relative">
-                                    <select class="w-full {{ $inputCls }} pr-7 bg-white appearance-none cursor-pointer">
-                                        <option>France</option>
-                                        <option>{{ $isFr ? 'Cameroun' : 'Cameroon' }}</option>
-                                        <option>{{ $isFr ? 'Autre' : 'Other' }}</option>
-                                    </select>
-                                    <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
-                                </div>
+                                <select class="w-full {{ $inputCls }} ui-select">
+                                    <option>France</option>
+                                    <option>{{ $isFr ? 'Cameroun' : 'Cameroon' }}</option>
+                                    <option>{{ $isFr ? 'Autre' : 'Other' }}</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="{{ $panelLabel }}">{{ $isFr ? 'Ville / Port de destination' : 'City / Port of destination' }}</label>
@@ -308,16 +298,16 @@
 
             <!-- Right rail -->
             <aside class="w-full xl:w-[290px] shrink-0 space-y-4">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé de la proposition' : 'Proposal summary' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Résumé de la proposition' : 'Proposal summary' }}</h2>
                     <div class="mt-3.5 border border-[#EDEEED] rounded-xl px-4 py-3 grid grid-cols-2 divide-x divide-[#EDEEED]">
                         <div class="pr-3">
-                            <p class="text-[11px] text-[#6F6B60]">{{ $isFr ? 'Référence de la demande' : 'Request reference' }}</p>
-                            <a href="{{ route('quotes.create', ['lang' => $lang]) }}" class="mt-0.5 inline-block text-[12px] font-bold text-[#14652F] underline underline-offset-2">RFQ-2024-000189</a>
+                            <p class="ui-dt">{{ $isFr ? 'Référence de la demande' : 'Request reference' }}</p>
+                            <a href="{{ route('quotes.create', ['lang' => $lang]) }}" class="ui-dd inline-block text-[#14652F] underline underline-offset-2">RFQ-2024-000189</a>
                         </div>
                         <div class="pl-3">
-                            <p class="text-[11px] text-[#6F6B60]">Date</p>
-                            <p class="mt-0.5 text-[12px] font-bold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024</p>
+                            <p class="ui-dt">Date</p>
+                            <p class="ui-dd">25 {{ $isFr ? 'Mai' : 'May' }} 2024</p>
                         </div>
                     </div>
                     <dl class="mt-4 space-y-3">
@@ -334,8 +324,8 @@
                     </div>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Inclus dans cette proposition' : 'Included in this proposal' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Inclus dans cette proposition' : 'Included in this proposal' }}</h2>
                     <ul class="mt-3 space-y-2.5">
                         @foreach($included as $inc)
                         <li class="flex items-center gap-2.5 text-[12px] text-[#3B382F]">
@@ -348,7 +338,7 @@
 
                 <section class="bg-[#FDF8EC] border border-[#F2E8CE] rounded-2xl px-5 py-4">
                     <h2 class="text-[12.5px] font-bold text-[#C97A16]">{{ $isFr ? 'Note interne' : 'Internal note' }} <span class="font-semibold">({{ $isFr ? 'non visible par l\'acheteur' : 'not visible to the buyer' }})</span></h2>
-                    <input type="text" placeholder="{{ $isFr ? 'Ajoutez une note interne pour votre équipe...' : 'Add an internal note for your team...' }}" class="mt-3 w-full h-[42px] bg-white border border-[#EDE3CB] rounded-lg px-3.5 text-[12px] text-[#1B1B18] placeholder-[#A89B7E] focus:outline-none focus:border-[#C97A16]">
+                    <input type="text" placeholder="{{ $isFr ? 'Ajoutez une note interne pour votre équipe...' : 'Add an internal note for your team...' }}" class="mt-3 w-full ui-field">
                 </section>
 
                 <section class="bg-[#EDF3FC] rounded-2xl px-5 py-4">

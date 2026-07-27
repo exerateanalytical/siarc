@@ -70,6 +70,7 @@
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F6F4F2] text-[#1D1B16] antialiased">
 
@@ -145,15 +146,15 @@
             </p>
 
             @if(session('success'))
-                <div class="mt-5 flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-[14px] text-green-800">
-                    <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mt-5 ui-alert ui-alert-ok">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
                     {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mt-5 flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-[14px] text-red-800">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                <div class="mt-5 ui-alert ui-alert-danger">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -165,24 +166,25 @@
                     <input type="hidden" name="next" value="{{ request('next') }}">
                 @endif
 
-                <label class="block text-[16.5px] font-medium text-[#26251F]" for="email">
+                <label class="ui-label" for="email">
                     {{ $isFr ? 'Email ou numéro de téléphone' : 'Email or phone number' }}
                 </label>
-                <div class="relative mt-2.5">
+                {{-- pr-* stays: the trailing icon is overlaid, so the field keeps its clearance. --}}
+                <div class="relative">
                     <input id="email" name="email" type="email" autocomplete="email" value="{{ old('email') }}"
                         placeholder="{{ $isFr ? 'Entrez votre email ou téléphone' : 'Enter your email or phone' }}"
-                        class="w-full h-[52px] rounded-[12px] border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-[#E4E0D8] bg-[#FBF9F6]' }} px-5 pr-12 text-[16px] placeholder-[#A09B8F] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition"
+                        class="ui-field ui-field--lg pr-11 {{ $errors->has('email') ? 'ui-field--invalid' : '' }}"
                         required autofocus>
                     <i data-lucide="user" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A857A] pointer-events-none"></i>
                 </div>
 
-                <label class="mt-6 block text-[16.5px] font-medium text-[#26251F]" for="password">
+                <label class="mt-5 ui-label" for="password">
                     {{ $isFr ? 'Mot de passe' : 'Password' }}
                 </label>
-                <div class="relative mt-2.5">
+                <div class="relative">
                     <input id="password" name="password" type="password" autocomplete="current-password"
                         placeholder="{{ $isFr ? 'Entrez votre mot de passe' : 'Enter your password' }}"
-                        class="w-full h-[52px] rounded-[12px] border {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-[#E4E0D8] bg-[#FBF9F6]' }} px-5 pr-12 text-[16px] placeholder-[#A09B8F] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition"
+                        class="ui-field ui-field--lg pr-11 {{ $errors->has('password') ? 'ui-field--invalid' : '' }}"
                         required>
                     <button type="button" id="password-toggle" aria-label="{{ $isFr ? 'Afficher le mot de passe' : 'Show password' }}"
                         class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A857A] hover:text-[#26251F] transition-colors">
@@ -191,17 +193,16 @@
                 </div>
 
                 <div class="mt-5 flex items-center justify-between">
-                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                        <input type="checkbox" name="remember" value="1" class="w-[18px] h-[18px] rounded border-[#C9C4BA] text-deep accent-[#0A331C]">
-                        <span class="text-[15.5px] font-medium text-[#26251F]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
+                    <label class="ui-check-row items-center cursor-pointer select-none">
+                        <input type="checkbox" name="remember" value="1" class="ui-check">
+                        <span class="text-[13px] font-medium text-[#26251F]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
                     </label>
-                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="text-[15.5px] font-semibold text-gold hover:text-goldlt transition-colors">
+                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="text-[13px] font-semibold text-gold hover:text-goldlt transition-colors">
                         {{ $isFr ? 'Mot de passe oublié ?' : 'Forgot password?' }}
                     </a>
                 </div>
 
-                <button type="submit"
-                    class="relative mt-8 w-full h-[54px] bg-deep hover:bg-leaf text-white text-[17px] font-semibold rounded-[12px] transition-colors">
+                <button type="submit" class="relative mt-7 ui-btn ui-btn-primary ui-btn-lg ui-btn-block">
                     {{ $isFr ? 'Se connecter' : 'Sign in' }}
                     <i data-lucide="arrow-right" class="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5"></i>
                 </button>

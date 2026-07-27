@@ -3,17 +3,19 @@
 
     // Row shape: [ref, date, thumb, product, artisan, place, type, amount,
     // amountSub, status, statusSub, dateCol, expiry, detailUrl].
-    // type/status keys: sent|received / received|nego|accepted|refused|waiting
+    // type/status keys: sent|received / received|nego|accepted|refused|waiting.
+    // Second entry is the kit pill variant — the kit has no blue tone, so "sent"
+    // reads as neutral rather than carrying its own colour.
     $typePills = [
-        'sent'     => [$isFr ? 'Demande envoyée' : 'Request sent',       '#3565DE', '#E8EFFB'],
-        'received' => [$isFr ? 'Proposition reçue' : 'Proposal received', '#157A43', '#E2F3E8'],
+        'sent'     => [$isFr ? 'Demande envoyée' : 'Request sent',        'ui-pill-neutral'],
+        'received' => [$isFr ? 'Proposition reçue' : 'Proposal received', 'ui-pill-ok'],
     ];
     $statusPills = [
-        'received' => [$isFr ? 'Proposition reçue' : 'Proposal received', '#157A43', '#E2F3E8'],
-        'nego'     => [$isFr ? 'En négociation' : 'In negotiation',       '#E8890C', '#FDF0DC'],
-        'accepted' => [$isFr ? 'Acceptée' : 'Accepted',                   '#157A43', '#E2F3E8'],
-        'refused'  => [$isFr ? 'Refusée' : 'Refused',                     '#E5484D', '#FDE8E8'],
-        'waiting'  => [$isFr ? 'En attente' : 'Pending',                  '#55524A', '#F0F1F2'],
+        'received' => [$isFr ? 'Proposition reçue' : 'Proposal received', 'ui-pill-ok'],
+        'nego'     => [$isFr ? 'En négociation' : 'In negotiation',       'ui-pill-warn'],
+        'accepted' => [$isFr ? 'Acceptée' : 'Accepted',                   'ui-pill-ok'],
+        'refused'  => [$isFr ? 'Refusée' : 'Refused',                     'ui-pill-danger'],
+        'waiting'  => [$isFr ? 'En attente' : 'Pending',                  'ui-pill-neutral'],
     ];
 
     // Real RFQs of the logged-in buyer. The design also shipped eight fixture
@@ -136,6 +138,7 @@
         #qb-sidebar.open { display: block; position: fixed; inset: 0 auto 0 0; width: 290px; z-index: 60; overflow-y: auto; background: #fff; }
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 
@@ -148,8 +151,8 @@
     <main class="flex-1 min-w-0 px-4 lg:px-7 py-6">
 
         @if(session('success'))
-        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
-            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+        <div class="mb-4 ui-alert ui-alert-ok">
+            <i data-lucide="circle-check" class="w-4 h-4"></i>
             {{ session('success') }}
         </div>
         @endif
@@ -161,11 +164,11 @@
                 <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Gérez toutes vos demandes de devis et propositions reçues.' : 'Manage all your quote requests and received proposals.' }}</p>
             </div>
             <div class="shrink-0 flex items-center gap-3">
-                <button type="button" onclick="window.print()" class="inline-flex items-center gap-2.5 bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#14652F] transition-colors">
+                <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
                     <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Exporter' : 'Export' }}
                 </button>
-                <a href="{{ route('quotes.create', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-white transition-colors">
+                <a href="{{ route('quotes.create', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary">
                     {{ $isFr ? 'Créer une demande de devis' : 'Create a quote request' }}
                     <i data-lucide="plus" class="w-4 h-4"></i>
                 </a>
@@ -176,7 +179,7 @@
 
             <!-- Listing column -->
             <div class="flex-1 min-w-0 w-full">
-                <div class="bg-white border border-[#EFF0EF] rounded-2xl">
+                <div class="ui-card ui-card--flush">
                     <!-- Tabs -->
                     <div class="px-5 pt-1 border-b border-[#F0F1F0] overflow-x-auto">
                         <div class="flex items-center gap-7 min-w-max">
@@ -195,105 +198,99 @@
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <input type="hidden" name="tab" value="{{ $tab }}">
                         <div class="flex-1 min-w-[240px]">
-                            <div class="flex items-center gap-3 h-[46px] border border-[#E5E7E5] rounded-lg px-4 focus-within:border-[#14532D]">
-                                <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher par référence, produit, artisan, etc...' : 'Search by reference, product, artisan, etc...' }}" class="flex-1 min-w-0 text-[13px] focus:outline-none placeholder-[#8A857A]">
+                            <div class="ui-field-group">
+                                <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher par référence, produit, artisan, etc...' : 'Search by reference, product, artisan, etc...' }}" class="ui-field-bare">
                                 <button type="submit" class="shrink-0 text-[#3B382F]"><i data-lucide="search" class="w-[18px] h-[18px]"></i></button>
                             </div>
                         </div>
                         <div class="w-[170px]">
-                            <label class="block text-[11px] text-[#6F6B60] mb-1.5">{{ $isFr ? 'Statut' : 'Status' }}</label>
-                            <div class="relative">
-                                <select name="tab" onchange="this.form.submit()" class="w-full h-[46px] border border-[#E5E7E5] rounded-lg pl-4 pr-8 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none">
-                                    <option value="toutes">{{ $isFr ? 'Tous les statuts' : 'All statuses' }}</option>
-                                    @foreach(array_slice($tabs, 1) as [$tKey, $tLabel, $tCount])
-                                    <option value="{{ $tKey }}" {{ $tab === $tKey ? 'selected' : '' }}>{{ $tLabel }}</option>
-                                    @endforeach
-                                </select>
-                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A] pointer-events-none"></i>
-                            </div>
+                            <label class="ui-label">{{ $isFr ? 'Statut' : 'Status' }}</label>
+                            <select name="tab" onchange="this.form.submit()" class="ui-field ui-select">
+                                <option value="toutes">{{ $isFr ? 'Tous les statuts' : 'All statuses' }}</option>
+                                @foreach(array_slice($tabs, 1) as [$tKey, $tLabel, $tCount])
+                                <option value="{{ $tKey }}" {{ $tab === $tKey ? 'selected' : '' }}>{{ $tLabel }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="w-[170px]">
-                            <label class="block text-[11px] text-[#6F6B60] mb-1.5">{{ $isFr ? 'Période' : 'Period' }}</label>
-                            <div class="relative">
-                                <select name="periode" class="w-full h-[46px] border border-[#E5E7E5] rounded-lg pl-4 pr-8 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none">
-                                    <option>{{ $isFr ? '30 derniers jours' : 'Last 30 days' }}</option>
-                                    <option>{{ $isFr ? '90 derniers jours' : 'Last 90 days' }}</option>
-                                    <option>{{ $isFr ? 'Cette année' : 'This year' }}</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A] pointer-events-none"></i>
-                            </div>
+                            <label class="ui-label">{{ $isFr ? 'Période' : 'Period' }}</label>
+                            <select name="periode" class="ui-field ui-select">
+                                <option>{{ $isFr ? '30 derniers jours' : 'Last 30 days' }}</option>
+                                <option>{{ $isFr ? '90 derniers jours' : 'Last 90 days' }}</option>
+                                <option>{{ $isFr ? 'Cette année' : 'This year' }}</option>
+                            </select>
                         </div>
-                        <button type="submit" class="inline-flex items-center gap-2.5 h-[46px] border border-[#E5E7E5] hover:border-[#14532D] rounded-lg px-4 text-[13px] font-semibold text-[#1B1B18] transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-secondary">
                             <i data-lucide="filter" class="w-4 h-4" style="stroke-width:1.8"></i>
                             {{ $isFr ? 'Filtres avancés' : 'Advanced filters' }}
                         </button>
                     </form>
 
                     <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[980px]">
+                    <div class="ui-table-wrap">
+                        <table class="ui-table min-w-[980px]">
                             <thead>
-                                <tr class="bg-[#F7F8F7] text-left">
-                                    <th class="pl-5 pr-2 py-3"><input type="checkbox" class="w-4 h-4 rounded border-[#C9CFC9] accent-[#14652F]"></th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Référence' : 'Reference' }}</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Produits / Artisan' : 'Products / Artisan' }}</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Type</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Montant' : 'Amount' }}</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Date</th>
-                                    <th class="px-2 pr-5 py-3 text-[11px] font-bold tracking-[0.05em] text-[#6F6B60] uppercase">Actions</th>
+                                <tr>
+                                    <th><input type="checkbox" class="ui-check"></th>
+                                    <th>{{ $isFr ? 'Référence' : 'Reference' }}</th>
+                                    <th>{{ $isFr ? 'Produits / Artisan' : 'Products / Artisan' }}</th>
+                                    <th>Type</th>
+                                    <th>{{ $isFr ? 'Montant' : 'Amount' }}</th>
+                                    <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#F1F2F1]">
+                            <tbody>
                                 @forelse($visibleRows as $qRow)
                                 @php
                                     [$ref, $refDate, $thumb, $product, $artisan, $place, $type, $amount, $amountSub, $status, $statusSub, $dateCol, $expiry] = $qRow;
                                     $rowUrl = $qRow[13] ?? route('messages.inbox', ['lang' => $lang]);
                                 @endphp
                                 <tr>
-                                    <td class="pl-5 pr-2 py-4 align-top"><input type="checkbox" class="w-4 h-4 mt-1 rounded border-[#C9CFC9] accent-[#14652F]"></td>
-                                    <td class="px-2 py-4 align-top whitespace-nowrap">
-                                        <p class="text-[13px] font-bold text-[#1B1B18]">{{ $ref }}</p>
+                                    <td class="align-top"><input type="checkbox" class="ui-check mt-1"></td>
+                                    <td class="align-top whitespace-nowrap">
+                                        <p class="font-bold text-[#1B1B18]">{{ $ref }}</p>
                                         <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $refDate }}</p>
                                     </td>
-                                    <td class="px-2 py-4 align-top">
+                                    <td class="align-top">
                                         <div class="flex items-start gap-3">
                                             <img src="{{ asset('images/landing/' . $thumb) }}" alt="" class="w-[34px] h-[44px] shrink-0 rounded-md object-cover">
                                             <div class="min-w-0">
-                                                <p class="text-[13px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $product }}</p>
+                                                <p class="font-bold text-[#1B1B18] whitespace-nowrap">{{ $product }}</p>
                                                 <p class="mt-0.5 text-[12px] text-[#6F6B60] whitespace-nowrap">{{ $artisan }}</p>
                                                 <p class="mt-0.5 text-[12px] text-[#6F6B60] whitespace-nowrap">{{ $place }}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-2 py-4 align-top">
-                                        <span class="inline-block rounded-md px-3 py-1.5 text-[11.5px] font-semibold whitespace-nowrap" style="color:{{ $typePills[$type][1] }};background:{{ $typePills[$type][2] }}">{{ $typePills[$type][0] }}</span>
+                                    <td class="align-top">
+                                        <span class="ui-pill {{ $typePills[$type][1] }}">{{ $typePills[$type][0] }}</span>
                                     </td>
-                                    <td class="px-2 py-4 align-top whitespace-nowrap">
-                                        <p class="text-[13.5px] font-bold text-[#1B1B18]">{{ $amount }}</p>
+                                    <td class="align-top whitespace-nowrap">
+                                        <p class="font-bold text-[#1B1B18]">{{ $amount }}</p>
                                         <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $amountSub }}</p>
                                     </td>
-                                    <td class="px-2 py-4 align-top">
-                                        <span class="inline-block rounded-md px-3 py-1.5 text-[11.5px] font-bold whitespace-nowrap" style="color:{{ $statusPills[$status][1] }};background:{{ $statusPills[$status][2] }}">{{ $statusPills[$status][0] }}</span>
+                                    <td class="align-top">
+                                        <span class="ui-pill {{ $statusPills[$status][1] }}">{{ $statusPills[$status][0] }}</span>
                                         @if($statusSub)<p class="mt-1.5 text-[12px] text-[#55524A] whitespace-nowrap">{{ $statusSub }}</p>@endif
                                     </td>
-                                    <td class="px-2 py-4 align-top whitespace-nowrap">
-                                        <p class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $dateCol }}</p>
+                                    <td class="align-top whitespace-nowrap">
+                                        <p class="font-semibold text-[#1B1B18]">{{ $dateCol }}</p>
                                         <p class="mt-1 text-[12px] {{ $expiry === '-' ? 'text-[#6F6B60]' : 'font-semibold text-[#E8890C]' }}">{{ $expiry }}</p>
                                     </td>
-                                    <td class="px-2 pr-5 py-4 align-top">
+                                    <td class="align-top">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ $rowUrl }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="w-[38px] h-[38px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F] transition-colors">
+                                            <a href="{{ $rowUrl }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="ui-btn ui-btn-secondary w-[38px] px-0">
                                                 <i data-lucide="eye" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                                             </a>
-                                            <a href="{{ $rowUrl }}" title="Actions" class="w-[38px] h-[38px] rounded-lg border border-[#EAEBEA] hover:border-[#14532D] flex items-center justify-center text-[#3B382F] transition-colors">
+                                            <a href="{{ $rowUrl }}" title="Actions" class="ui-btn ui-btn-secondary w-[38px] px-0">
                                                 <i data-lucide="ellipsis-vertical" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                                             </a>
                                         </div>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="8" class="px-5 py-10 text-center text-[13px] text-[#6F6B60]">{{ $isFr ? 'Aucune demande dans cette catégorie.' : 'No request in this category.' }}</td></tr>
+                                <tr><td colspan="8" class="ui-empty">{{ $isFr ? 'Aucune demande dans cette catégorie.' : 'No request in this category.' }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -304,25 +301,25 @@
                 <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
                     <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Affichage de 1 à 8 sur 18 résultats' : 'Showing 1 to 8 of 18 results' }}</p>
                     <div class="flex items-center gap-2">
-                        <a href="{{ $selfUrl() }}" class="h-[40px] px-4 inline-flex items-center bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg text-[12.5px] font-semibold text-[#1B1B18] transition-colors">{{ $isFr ? 'Précédent' : 'Previous' }}</a>
-                        <a href="{{ $selfUrl(['page' => 1]) }}" class="w-[40px] h-[40px] inline-flex items-center justify-center bg-[#0E5A2D] rounded-lg text-[13px] font-bold text-white">1</a>
-                        <a href="{{ $selfUrl(['page' => 2]) }}" class="w-[40px] h-[40px] inline-flex items-center justify-center bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg text-[13px] font-semibold text-[#1B1B18] transition-colors">2</a>
-                        <a href="{{ $selfUrl(['page' => 3]) }}" class="w-[40px] h-[40px] inline-flex items-center justify-center bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg text-[13px] font-semibold text-[#1B1B18] transition-colors">3</a>
-                        <a href="{{ $selfUrl(['page' => 2]) }}" class="h-[40px] px-4 inline-flex items-center bg-white border border-[#E5E7E5] hover:border-[#14532D] rounded-lg text-[12.5px] font-semibold text-[#1B1B18] transition-colors">{{ $isFr ? 'Suivant' : 'Next' }}</a>
+                        <a href="{{ $selfUrl() }}" class="ui-btn ui-btn-secondary">{{ $isFr ? 'Précédent' : 'Previous' }}</a>
+                        <a href="{{ $selfUrl(['page' => 1]) }}" class="ui-btn ui-btn-primary w-[38px] px-0">1</a>
+                        <a href="{{ $selfUrl(['page' => 2]) }}" class="ui-btn ui-btn-secondary w-[38px] px-0">2</a>
+                        <a href="{{ $selfUrl(['page' => 3]) }}" class="ui-btn ui-btn-secondary w-[38px] px-0">3</a>
+                        <a href="{{ $selfUrl(['page' => 2]) }}" class="ui-btn ui-btn-secondary">{{ $isFr ? 'Suivant' : 'Next' }}</a>
                     </div>
                 </div>
             </div>
 
             <!-- Right rail -->
             <aside class="w-full 2xl:w-[330px] shrink-0 space-y-4">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <div class="flex items-center justify-between gap-3">
-                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Résumé de mes activités' : 'Summary of my activities' }}</h2>
+                <section class="ui-card">
+                    <div class="ui-card-head">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Résumé de mes activités' : 'Summary of my activities' }}</h2>
                         <span class="shrink-0 inline-flex items-center gap-1.5 border border-[#E5E7E5] rounded-lg px-2.5 py-1.5 text-[11.5px] text-[#3B382F]">
                             {{ $isFr ? '30 derniers jours' : 'Last 30 days' }}
                         </span>
                     </div>
-                    <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-3">
                         @foreach($resumeCards as [$rcLabel, $rcLabelColor, $rcValue, $rcIcon, $rcIconColor, $rcBg])
                         <div class="rounded-xl p-3.5" style="background:{{ $rcBg }}">
                             <p class="text-[11.5px] font-semibold leading-snug" style="color:{{ $rcLabelColor }}">{{ $rcLabel }}</p>
@@ -335,8 +332,8 @@
                     </div>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Répartition des statuts' : 'Status breakdown' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Répartition des statuts' : 'Status breakdown' }}</h2>
                     <div class="mt-5 flex items-center gap-5">
                         <div class="relative w-[118px] h-[118px] shrink-0 rounded-full" style="background:{{ $donutCss }}">
                             <div class="absolute inset-[17px] rounded-full bg-white"></div>
@@ -357,8 +354,8 @@
                     </div>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-2 divide-y divide-[#F1F2F1]">
                         @foreach($quickActions as [$qaIcon, $qaLabel, $qaUrl, $qaArrow])
                         <a href="{{ $qaUrl }}" class="flex items-center gap-3.5 py-3.5 group">
