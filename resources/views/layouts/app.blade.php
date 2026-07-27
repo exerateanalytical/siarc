@@ -47,6 +47,7 @@
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 

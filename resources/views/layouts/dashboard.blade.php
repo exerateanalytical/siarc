@@ -30,6 +30,7 @@
            (tables, diagrams) scrolls inside its own container instead. */
         html, body { overflow-x: clip; }
 body { font-family: 'Poppins', system-ui, sans-serif; }</style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 

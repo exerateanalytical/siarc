@@ -105,6 +105,7 @@
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-cream text-[#1D1B16] antialiased">
 
@@ -187,39 +188,33 @@
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="contact-name" class="sr-only">{{ $isFr ? 'Votre nom' : 'Your name' }}</label>
-                            <input id="contact-name" name="name" type="text" required value="{{ old('name') }}" placeholder="{{ $isFr ? 'Votre nom *' : 'Your name *' }}"
-                                class="w-full h-[54px] bg-[#FCF9F5] border border-[#E0DCD5] rounded-lg px-4 text-[13.5px] text-[#262521] placeholder-[#8A857A] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/40 transition">
-                            @error('name')<p class="mt-1.5 text-[12px] text-[#B42025]">{{ $message }}</p>@enderror
+                            <label for="contact-name" class="ui-label">{{ $isFr ? 'Votre nom' : 'Your name' }}<span class="ui-req">*</span></label>
+                            <input id="contact-name" name="name" type="text" required value="{{ old('name') }}" class="ui-field ui-field--lg @error('name') ui-field--invalid @enderror">
+                            @error('name')<p class="ui-error">{{ $message }}</p>@enderror
                         </div>
                         <div>
-                            <label for="contact-email" class="sr-only">{{ $isFr ? 'Votre email' : 'Your email' }}</label>
-                            <input id="contact-email" name="email" type="email" required value="{{ old('email') }}" placeholder="{{ $isFr ? 'Votre email *' : 'Your email *' }}"
-                                class="w-full h-[54px] bg-[#FCF9F5] border border-[#E0DCD5] rounded-lg px-4 text-[13.5px] text-[#262521] placeholder-[#8A857A] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/40 transition">
-                            @error('email')<p class="mt-1.5 text-[12px] text-[#B42025]">{{ $message }}</p>@enderror
+                            <label for="contact-email" class="ui-label">{{ $isFr ? 'Votre email' : 'Your email' }}<span class="ui-req">*</span></label>
+                            <input id="contact-email" name="email" type="email" required value="{{ old('email') }}" class="ui-field ui-field--lg @error('email') ui-field--invalid @enderror">
+                            @error('email')<p class="ui-error">{{ $message }}</p>@enderror
                         </div>
                     </div>
                     <div class="mt-4">
-                        <label for="contact-subject" class="sr-only">{{ $isFr ? 'Sujet' : 'Subject' }}</label>
-                        <input id="contact-subject" name="subject" type="text" required value="{{ old('subject') }}" placeholder="{{ $isFr ? 'Sujet *' : 'Subject *' }}"
-                            class="w-full h-[54px] bg-[#FCF9F5] border border-[#E0DCD5] rounded-lg px-4 text-[13.5px] text-[#262521] placeholder-[#8A857A] focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/40 transition">
-                        @error('subject')<p class="mt-1.5 text-[12px] text-[#B42025]">{{ $message }}</p>@enderror
+                        <label for="contact-subject" class="ui-label">{{ $isFr ? 'Sujet' : 'Subject' }}<span class="ui-req">*</span></label>
+                        <input id="contact-subject" name="subject" type="text" required value="{{ old('subject') }}" class="ui-field ui-field--lg @error('subject') ui-field--invalid @enderror">
+                        @error('subject')<p class="ui-error">{{ $message }}</p>@enderror
                     </div>
                     <div class="mt-4">
-                        <label for="contact-message" class="sr-only">{{ $isFr ? 'Votre message' : 'Your message' }}</label>
-                        <textarea id="contact-message" name="message" required rows="7" placeholder="{{ $isFr ? 'Votre message *' : 'Your message *' }}"
-                            class="w-full bg-[#FCF9F5] border border-[#E0DCD5] rounded-lg px-4 py-3.5 text-[13.5px] text-[#262521] placeholder-[#8A857A] leading-relaxed resize-y focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/40 transition">{{ old('message') }}</textarea>
-                        @error('message')<p class="mt-1.5 text-[12px] text-[#B42025]">{{ $message }}</p>@enderror
+                        <label for="contact-message" class="ui-label">{{ $isFr ? 'Votre message' : 'Your message' }}<span class="ui-req">*</span></label>
+                        <textarea id="contact-message" name="message" required rows="7" class="ui-field ui-textarea @error('message') ui-field--invalid @enderror">{{ old('message') }}</textarea>
+                        @error('message')<p class="ui-error">{{ $message }}</p>@enderror
                     </div>
-                    <label class="mt-4 flex items-start gap-3 cursor-pointer select-none">
-                        <input type="checkbox" name="consent" value="1" required {{ old('consent') ? 'checked' : '' }}
-                            class="mt-0.5 w-[18px] h-[18px] rounded border-[#CFC9BF] text-leaf focus:ring-gold/50">
-                        <span class="text-[13px] text-[#33322D]">{{ $isFr ? 'J\'accepte d\'être contacté(e) par l\'équipe d\'Artisan Hub 237.' : 'I agree to be contacted by the Artisan Hub 237 team.' }}</span>
+                    <label class="ui-check-row mt-4 cursor-pointer select-none">
+                        <input type="checkbox" name="consent" value="1" required {{ old('consent') ? 'checked' : '' }} class="ui-check mt-0.5">
+                        <span>{{ $isFr ? 'J\'accepte d\'être contacté(e) par l\'équipe d\'Artisan Hub 237.' : 'I agree to be contacted by the Artisan Hub 237 team.' }}</span>
                     </label>
-                    @error('consent')<p class="mt-1.5 text-[12px] text-[#B42025]">{{ $message }}</p>@enderror
-                    <button type="submit"
-                        class="mt-6 inline-flex items-center gap-3 bg-[#123D27] hover:bg-leaf text-white text-[14px] font-semibold px-7 h-[54px] rounded-lg transition-colors">
-                        <i data-lucide="send" class="w-[18px] h-[18px] text-[#E0A52F]"></i>
+                    @error('consent')<p class="ui-error">{{ $message }}</p>@enderror
+                    <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg mt-6">
+                        <i data-lucide="send" class="w-[17px] h-[17px]"></i>
                         {{ $isFr ? 'Envoyer le message' : 'Send the message' }}
                     </button>
                 </form>

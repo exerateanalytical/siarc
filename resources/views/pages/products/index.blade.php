@@ -90,6 +90,7 @@
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
 
@@ -149,22 +150,22 @@
                     <p class="mt-5 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Type de vendeur' : 'Vendor type' }}</p>
                     <div class="mt-2.5 space-y-2.5">
                         <label class="flex items-center gap-2.5 cursor-pointer">
-                            <input type="checkbox" name="vendeur[]" value="artisan" {{ in_array('artisan', $vendorTypes ?? []) ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                            <input type="checkbox" name="vendeur[]" value="artisan" {{ in_array('artisan', $vendorTypes ?? []) ? 'checked' : '' }} class="ui-check">
                             <span class="text-[12.5px] text-[#3A3A35]">Artisan&nbsp;&nbsp;({{ $vendorTypeCounts['artisan'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center gap-2.5 cursor-pointer">
-                            <input type="checkbox" name="vendeur[]" value="entreprise" {{ in_array('entreprise', $vendorTypes ?? []) ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                            <input type="checkbox" name="vendeur[]" value="entreprise" {{ in_array('entreprise', $vendorTypes ?? []) ? 'checked' : '' }} class="ui-check">
                             <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Entreprise' : 'Business' }}&nbsp;&nbsp;({{ $vendorTypeCounts['entreprise'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center gap-2.5 cursor-pointer">
-                            <input type="checkbox" name="vendeur[]" value="cooperative" {{ in_array('cooperative', $vendorTypes ?? []) ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                            <input type="checkbox" name="vendeur[]" value="cooperative" {{ in_array('cooperative', $vendorTypes ?? []) ? 'checked' : '' }} class="ui-check">
                             <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Coopérative' : 'Cooperative' }}&nbsp;&nbsp;({{ $vendorTypeCounts['cooperative'] ?? 0 }})</span>
                         </label>
                     </div>
 
                     <p class="mt-5 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Disponibilité' : 'Availability' }}</p>
                     <label class="mt-2.5 flex items-center gap-2.5 cursor-pointer">
-                        <input type="checkbox" name="dispo" value="1" {{ request()->boolean('dispo') ? 'checked' : '' }} class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                        <input type="checkbox" name="dispo" value="1" {{ request()->boolean('dispo') ? 'checked' : '' }} class="ui-check">
                         <span class="text-[12.5px] text-[#3A3A35]">{{ $isFr ? 'Disponible maintenant' : 'Available now' }}</span>
                     </label>
 

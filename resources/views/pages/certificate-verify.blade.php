@@ -97,6 +97,7 @@
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFEFE] text-[#1B1B18] antialiased">
 
@@ -138,8 +139,8 @@
             <form method="GET" action="{{ route('certificate.verify') }}" class="flex flex-col sm:flex-row gap-3">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <input name="numero" type="text" value="{{ $numero ?? '' }}" placeholder="Ex: AH237-2026-0000001"
-                    class="flex-1 h-[52px] border border-[#E4E2DD] rounded-lg px-5 text-[14px] placeholder-[#A09B8F] focus:outline-none focus:border-goldlt focus:ring-1 focus:ring-goldlt/40 transition">
-                <button type="submit" class="h-[52px] bg-deep hover:bg-leaf text-white text-[14px] font-semibold px-8 rounded-lg transition-colors whitespace-nowrap">
+                    class="ui-field ui-field--lg flex-1">
+                <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg">
                     {{ $isFr ? 'Vérifier le certificat' : 'Verify the certificate' }}
                 </button>
             </form>

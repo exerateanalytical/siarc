@@ -159,6 +159,7 @@
                 rgba(255,255,255,0.95) 9px 12px, transparent 12px 14px);
         }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
 
@@ -237,7 +238,7 @@
 
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Événements en ligne' : 'Online events' }}</p>
                     <label class="mt-2 flex items-center gap-2.5 cursor-pointer">
-                        <input type="checkbox" name="en_ligne" value="1" class="w-4 h-4 rounded border-[#CFC9BF] text-leaf focus:ring-gold/40">
+                        <input type="checkbox" name="en_ligne" value="1" class="ui-check">
                         <span class="text-[12px] text-[#3A3A35]">{{ $isFr ? 'Inclure les événements en ligne' : 'Include online events' }}</span>
                     </label>
 

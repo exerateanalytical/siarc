@@ -14,6 +14,7 @@
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     <style>body{font-family:'Poppins',system-ui,sans-serif}html,body{overflow-x:clip}</style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
 
@@ -31,13 +32,13 @@
     <div class="mt-2.5 h-[3.5px] w-[100px] bg-gradient-to-r from-[#D9991F] via-[#E9C989] to-transparent rounded-full mb-6"></div>
 
     @if($errors->any())
-    <div class="mb-5 flex items-start gap-2.5 bg-[#FDECEC] border border-[#F3C7C7] rounded-xl px-4 py-3 text-[13px] text-[#B4231E]">
+    <div class="ui-alert ui-alert-danger mb-5">
         <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
         <span>{{ $errors->first() }}</span>
     </div>
     @endif
 
-    <form method="POST" action="{{ route('messages.send') }}" class="bg-white border border-[#ECE9E2] rounded-2xl p-6 space-y-4">
+    <form method="POST" action="{{ route('messages.send') }}" class="ui-card space-y-4">
         @csrf
         <input type="hidden" name="lang" value="{{ $lang }}">
         <input type="hidden" name="business_slug" value="{{ $business->slug }}">
@@ -52,14 +53,14 @@
         @endif
 
         <div>
-            <label for="body" class="block text-[12.5px] font-semibold text-[#1D1B16] mb-1.5">{{ $isFr ? 'Votre message' : 'Your message' }} *</label>
+            <label for="body" class="ui-label">{{ $isFr ? 'Votre message' : 'Your message' }}<span class="ui-req">*</span></label>
             <textarea id="body" name="body" rows="6" required maxlength="2000"
                 placeholder="{{ $isFr ? 'Bonjour, je suis intéressé(e) par votre travail...' : 'Hello, I am interested in your work...' }}"
-                class="w-full bg-white border border-[#E3E3E1] rounded-lg px-3.5 py-3 text-[13.5px] leading-relaxed focus:outline-none focus:border-gold">{{ old('body') }}</textarea>
+                class="ui-field ui-textarea">{{ old('body') }}</textarea>
         </div>
 
         <div class="flex items-center gap-3">
-            <button type="submit" class="h-[46px] px-6 bg-[#02331C] hover:bg-leaf text-white text-[13.5px] font-semibold rounded-lg inline-flex items-center gap-2 transition-colors">
+            <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg">
                 <i data-lucide="send" class="w-4 h-4"></i>{{ $isFr ? 'Envoyer le message' : 'Send message' }}
             </button>
             <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}" class="text-[13px] font-medium text-[#6F6B60] hover:text-[#1D1B16]">{{ $isFr ? 'Annuler' : 'Cancel' }}</a>

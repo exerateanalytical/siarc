@@ -108,10 +108,9 @@
             <!-- Search + category select -->
             <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:flex items-center gap-2.5 flex-1 max-w-[575px]">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <div class="flex items-center flex-1 h-[38px] bg-white border border-[#E3E3E1] rounded-lg overflow-hidden">
-                    <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}"
-                        class="flex-1 min-w-0 h-full px-4 text-[12.5px] text-[#1D1B16] placeholder-[#8A857A] focus:outline-none">
-                    <span class="h-[22px] w-px bg-[#E3E3E1] shrink-0"></span>
+                <div class="ui-field-group flex-1 gap-0 overflow-hidden px-0">
+                    <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}" class="ui-field-bare px-4">
+                    <span class="h-[22px] w-px bg-[var(--ui-border-field)] shrink-0"></span>
                     <select name="categorie" class="h-full pl-3 pr-7 text-[12.5px] text-[#1D1B16] bg-transparent focus:outline-none cursor-pointer appearance-none bg-no-repeat bg-[right_0.6rem_center]"
                         style="background-image:url('data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;10&quot; height=&quot;6&quot; viewBox=&quot;0 0 10 6&quot;><path d=&quot;M1 1l4 4 4-4&quot; stroke=&quot;%236F6B60&quot; stroke-width=&quot;1.5&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/></svg>')">
                         <option value="">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</option>

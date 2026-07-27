@@ -25,6 +25,7 @@
            (tables, diagrams) scrolls inside its own container instead. */
         html, body { overflow-x: clip; }
 body{font-family:'Poppins',system-ui,sans-serif;}</style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 
@@ -88,7 +89,7 @@ body{font-family:'Poppins',system-ui,sans-serif;}</style>
                     @if($key->is_active??true)
                     <form method="POST" action="/developer/keys/{{ $key->id }}/revoke" class="inline">
                         @csrf
-                        <button type="submit" class="text-xs font-semibold border border-gray-300 rounded-md px-2.5 py-1 hover:border-red-400 hover:text-red-600" onclick="return confirm('Revoke this key? This cannot be undone.')">Revoke</button>
+                        <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm" onclick="return confirm('Revoke this key? This cannot be undone.')">Revoke</button>
                     </form>
                     @endif
                 </div>
@@ -100,11 +101,11 @@ body{font-family:'Poppins',system-ui,sans-serif;}</style>
                     <form method="POST" action="/developer/keys">
                         @csrf
                         <div class="mb-3">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Key Name / Label</label>
+                            <label class="ui-label">Key Name / Label</label>
                             <input type="text" name="name" required placeholder="e.g. My App, Production, Testing"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-forest-400">
+                                class="ui-field">
                         </div>
-                        <button type="submit" class="bg-forest-500 hover:bg-forest-600 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors">Generate API Key</button>
+                        <button type="submit" class="ui-btn ui-btn-primary">Generate API Key</button>
                     </form>
                 </div>
             </div>

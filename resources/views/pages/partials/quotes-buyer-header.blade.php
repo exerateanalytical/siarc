@@ -15,9 +15,9 @@
         </a>
         <form action="{{ route('gallery.search') }}" method="GET" class="flex-1 max-w-[560px] mx-auto hidden md:block">
             <input type="hidden" name="lang" value="{{ $lang }}">
-            <div class="flex items-center gap-3 border border-[#E7E7E5] rounded-xl px-4 h-[46px]">
+            <div class="ui-field-group">
                 <i data-lucide="search" class="w-[18px] h-[18px] shrink-0 text-[#8A857A]"></i>
-                <input type="text" name="q" placeholder="{{ $qbSearchPlaceholder ?? ($isFr ? 'Rechercher (produits, artisans, entreprises...)' : 'Search (products, artisans, businesses...)') }}" class="flex-1 min-w-0 bg-transparent text-[13px] focus:outline-none placeholder-[#8A857A]">
+                <input type="text" name="q" placeholder="{{ $qbSearchPlaceholder ?? ($isFr ? 'Rechercher (produits, artisans, entreprises...)' : 'Search (products, artisans, businesses...)') }}" class="ui-field-bare">
             </div>
         </form>
         <div class="flex items-center gap-5 shrink-0 ml-auto">

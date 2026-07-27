@@ -30,6 +30,7 @@
         #ad-sidebar.ad-open { display: flex; position: fixed; inset: 0 auto 0 0; width: 270px; z-index: 60; overflow-y: auto; }
         @media (min-width: 1024px) { #ad-sidebar, #ad-sidebar.ad-open { display: flex; position: sticky; top: 0; height: 100vh; width: 250px; } }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
 
