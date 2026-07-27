@@ -20,7 +20,11 @@
 </script>
 <script src="{{ asset('vendor/lucide.min.js') }}"></script>
 <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-<style>body{font-family:'Poppins',system-ui,sans-serif;}</style>
+<style>
+        /* Nothing may scroll the page sideways on a phone; wide content
+           (tables, diagrams) scrolls inside its own container instead. */
+        html, body { overflow-x: clip; }
+body{font-family:'Poppins',system-ui,sans-serif;}</style>
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 

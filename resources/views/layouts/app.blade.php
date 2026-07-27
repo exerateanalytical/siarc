@@ -39,6 +39,10 @@
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
+        /* Nothing may scroll the page sideways on a phone; wide content
+           (tables, diagrams) scrolls inside its own container instead. */
+        html, body { overflow-x: clip; }
+
         body { font-family: 'Poppins', system-ui, sans-serif; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

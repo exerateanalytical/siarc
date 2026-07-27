@@ -8,7 +8,11 @@
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
-    <style>body{font-family:'Poppins',system-ui,sans-serif}</style>
+    <style>
+        /* Nothing may scroll the page sideways on a phone; wide content
+           (tables, diagrams) scrolls inside its own container instead. */
+        html, body { overflow-x: clip; }
+body{font-family:'Poppins',system-ui,sans-serif}</style>
 </head>
 <body class="min-h-screen bg-[#F3EFE7] flex items-center justify-center p-5">
     <main class="w-full max-w-[440px] bg-white rounded-3xl shadow-[0_24px_60px_-24px_rgba(2,48,27,.35)] p-8">

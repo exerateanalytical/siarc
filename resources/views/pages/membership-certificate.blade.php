@@ -31,6 +31,10 @@
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
+        /* Nothing may scroll the page sideways on a phone; wide content
+           (tables, diagrams) scrolls inside its own container instead. */
+        html, body { overflow-x: clip; }
+
         body { font-family: 'Poppins', system-ui, sans-serif; background: #E9E7E1; }
         .cert-canvas { position: relative; width: min(1536px, 96vw); aspect-ratio: 1536 / 1024; margin: 0 auto; }
         .cert-canvas img.cert-bg { position: absolute; inset: 0; width: 100%; height: 100%; }

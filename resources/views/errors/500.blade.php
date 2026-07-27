@@ -3,6 +3,10 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Erreur serveur — Artisan Hub 237</title>
 <link href="/vendor/fonts.css" rel="stylesheet">
 <style>
+        /* Nothing may scroll the page sideways on a phone; wide content
+           (tables, diagrams) scrolls inside its own container instead. */
+        html, body { overflow-x: clip; }
+
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Poppins',-apple-system,'Segoe UI',sans-serif;background:#F8F6F2;color:#1B1B18;min-height:100vh;display:flex;flex-direction:column;}
 .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;}
