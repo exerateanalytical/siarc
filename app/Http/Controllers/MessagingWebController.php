@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNotificationEmail;
 use App\Modules\Auth\Models\User;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Messaging\Models\Conversation;
@@ -9,7 +10,6 @@ use App\Modules\Messaging\Services\ConversationService;
 use App\Modules\Products\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class MessagingWebController extends Controller
 {
@@ -155,12 +155,10 @@ class MessagingWebController extends Controller
         );
 
         if ($business->email) {
-            Mail::raw(
-                "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord Artisan Hub 237.",
-                function ($message) use ($business, $conversation) {
-                    $message->to($business->email)
-                        ->subject('[Artisan Hub 237] Nouveau message — ' . $conversation->subject);
-                }
+            SendNotificationEmail::dispatch(
+                $business->email,
+                '[Artisan Hub 237] Nouveau message — ' . $conversation->subject,
+                "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord Artisan Hub 237."
             );
         }
     }
@@ -181,12 +179,10 @@ class MessagingWebController extends Controller
         );
 
         if ($buyer->email) {
-            Mail::raw(
-                "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord Artisan Hub 237.",
-                function ($message) use ($buyer, $conversation) {
-                    $message->to($buyer->email)
-                        ->subject('[Artisan Hub 237] Nouvelle réponse — ' . $conversation->subject);
-                }
+            SendNotificationEmail::dispatch(
+                $buyer->email,
+                '[Artisan Hub 237] Nouvelle réponse — ' . $conversation->subject,
+                "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord Artisan Hub 237."
             );
         }
     }

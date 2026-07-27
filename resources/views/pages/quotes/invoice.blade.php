@@ -147,15 +147,157 @@
                     <i data-lucide="printer" class="w-4 h-4" style="stroke-width:1.8"></i>
                     {{ $isFr ? 'Imprimer' : 'Print' }}
                 </button>
-                <form method="POST" action="{{ route('quotes.toggle-invoice', ['invoice' => $rin->id, 'lang' => $lang]) }}">
-                    @csrf
-                    <button type="submit" class="ui-btn ui-btn-primary">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4" style="stroke-width:1.8"></i>
-                        <span>{{ $realPaid ? ($isFr ? 'Marquer comme impayée' : 'Mark as unpaid') : ($isFr ? 'Marquer comme payée' : 'Mark as paid') }}</span>
-                    </button>
-                </form>
+                <a href="#reglement" class="ui-btn ui-btn-primary">
+                    <i data-lucide="banknote" class="w-4 h-4" style="stroke-width:1.8"></i>
+                    {{ $isFr ? 'Règlement' : 'Settlement' }}
+                </a>
             </div>
         </div>
+
+        {{-- ── Offline settlement ──────────────────────────────────────────
+             The platform processes no payments, so it cannot know an invoice
+             is paid. The artisan records what they received; the buyer confirms
+             or disputes it. Every entry is attributed, so "paid" is never one
+             party's unaccountable word. --}}
+        @php
+            $vUser     = session('siac_user') ?? [];
+            $vIsSeller = ($biz->user_id ?? null) === ($vUser['id'] ?? null);
+            $vIsBuyer  = ($rq->buyer_id ?? null) === ($vUser['id'] ?? null);
+            $vMethods  = [
+                'mobile_money'  => $isFr ? 'Mobile Money (MTN / Orange)' : 'Mobile Money (MTN / Orange)',
+                'bank_transfer' => $isFr ? 'Virement bancaire' : 'Bank transfer',
+                'cash'          => $isFr ? 'Espèces' : 'Cash',
+                'cheque'        => $isFr ? 'Chèque' : 'Cheque',
+                'other'         => $isFr ? 'Autre' : 'Other',
+            ];
+            $vRecorder = $rin->recorded_by ? \App\Modules\Auth\Models\User::find($rin->recorded_by) : null;
+        @endphp
+        <section id="reglement" class="ui-card mt-5">
+            <div class="ui-card-head">
+                <div>
+                    <h2 class="ui-card-title">{{ $isFr ? 'Règlement' : 'Settlement' }}</h2>
+                    <p class="ui-card-sub">{{ $isFr
+                        ? 'Le paiement se fait directement entre vous — la plateforme n\'encaisse rien.'
+                        : 'Payment happens directly between you — the platform collects nothing.' }}</p>
+                </div>
+                @if($rin->disputed_at)
+                    <span class="ui-pill ui-pill-danger">{{ $isFr ? 'Contesté' : 'Disputed' }}</span>
+                @elseif($rin->confirmed_at)
+                    <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Confirmé par l\'acheteur' : 'Confirmed by buyer' }}</span>
+                @elseif($realPaid)
+                    <span class="ui-pill ui-pill-warn">{{ $isFr ? 'En attente de confirmation' : 'Awaiting confirmation' }}</span>
+                @else
+                    <span class="ui-pill ui-pill-neutral">{{ $isFr ? 'Non réglée' : 'Unsettled' }}</span>
+                @endif
+            </div>
+
+            @if($errors->has('payment'))
+            <div class="ui-alert ui-alert-danger mb-4"><i data-lucide="alert-circle" class="w-4 h-4"></i>{{ $errors->first('payment') }}</div>
+            @endif
+
+            {{-- What has been recorded so far --}}
+            @if($realPaid || $rin->disputed_at)
+            <dl class="ui-dl ui-dl--2">
+                <div>
+                    <dt class="ui-dt">{{ $isFr ? 'Moyen' : 'Method' }}</dt>
+                    <dd class="ui-dd">{{ $vMethods[$rin->payment_method] ?? ($rin->payment_method ?: '—') }}</dd>
+                </div>
+                <div>
+                    <dt class="ui-dt">{{ $isFr ? 'Reçu le' : 'Received on' }}</dt>
+                    <dd class="ui-dd">{{ $rin->paid_at ? \Illuminate\Support\Carbon::parse($rin->paid_at)->translatedFormat('d F Y') : '—' }}</dd>
+                </div>
+                @if($rin->payment_reference)
+                <div>
+                    <dt class="ui-dt">{{ $isFr ? 'Référence' : 'Reference' }}</dt>
+                    <dd class="ui-dd">{{ $rin->payment_reference }}</dd>
+                </div>
+                @endif
+                @if($vRecorder)
+                <div>
+                    <dt class="ui-dt">{{ $isFr ? 'Enregistré par' : 'Recorded by' }}</dt>
+                    <dd class="ui-dd">{{ $vRecorder->name }}</dd>
+                </div>
+                @endif
+            </dl>
+            @if($rin->payment_note)
+            <p class="ui-hint mt-3">{{ $rin->payment_note }}</p>
+            @endif
+            @if($rin->disputed_at)
+            <div class="ui-alert ui-alert-danger mt-4">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                <span><strong>{{ $isFr ? 'Contesté par l\'acheteur' : 'Disputed by the buyer' }}</strong> — {{ $rin->dispute_reason }}</span>
+            </div>
+            @endif
+            @endif
+
+            {{-- Seller records what they received --}}
+            @if($vIsSeller && ! $rin->confirmed_at)
+            <form method="POST" action="{{ route('quotes.record-payment', ['invoice' => $rin->id, 'lang' => $lang]) }}" class="mt-5">
+                @csrf
+                @if($realPaid)<hr class="ui-divider">@endif
+                <p class="ui-eyebrow mb-3">{{ $realPaid ? ($isFr ? 'Corriger l\'enregistrement' : 'Correct the record') : ($isFr ? 'Enregistrer le paiement reçu' : 'Record the payment you received') }}</p>
+                <div class="ui-form-grid ui-form-grid--2">
+                    <div>
+                        <label class="ui-label" for="pay-method">{{ $isFr ? 'Moyen de paiement' : 'Payment method' }}<span class="ui-req">*</span></label>
+                        <select id="pay-method" name="payment_method" required class="ui-field ui-select">
+                            @foreach($vMethods as $mVal => $mLabel)
+                            <option value="{{ $mVal }}" @selected($rin->payment_method === $mVal)>{{ $mLabel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="ui-label" for="pay-date">{{ $isFr ? 'Date de réception' : 'Date received' }}</label>
+                        <input id="pay-date" type="date" name="paid_at" max="{{ now()->toDateString() }}"
+                               value="{{ $rin->paid_at ? \Illuminate\Support\Carbon::parse($rin->paid_at)->toDateString() : now()->toDateString() }}" class="ui-field">
+                    </div>
+                    <div>
+                        <label class="ui-label" for="pay-ref">{{ $isFr ? 'Référence de la transaction' : 'Transaction reference' }}</label>
+                        <input id="pay-ref" type="text" name="payment_reference" value="{{ $rin->payment_reference }}" class="ui-field">
+                        <p class="ui-hint">{{ $isFr ? 'N° Mobile Money, référence de virement…' : 'Mobile Money ID, transfer reference…' }}</p>
+                    </div>
+                    <div>
+                        <label class="ui-label" for="pay-note">{{ $isFr ? 'Note' : 'Note' }}</label>
+                        <input id="pay-note" type="text" name="payment_note" value="{{ $rin->payment_note }}" class="ui-field">
+                    </div>
+                </div>
+                <button type="submit" class="ui-btn ui-btn-primary mt-4">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    {{ $isFr ? 'Enregistrer le paiement' : 'Record the payment' }}
+                </button>
+            </form>
+            @endif
+
+            {{-- Buyer confirms or disputes --}}
+            @if($vIsBuyer && $realPaid && ! $rin->confirmed_at)
+            <hr class="ui-divider">
+            <p class="ui-eyebrow mb-3">{{ $isFr ? 'Ce paiement est-il exact ?' : 'Is this record correct?' }}</p>
+            <div class="flex flex-wrap items-start gap-3">
+                <form method="POST" action="{{ route('quotes.respond-payment', ['invoice' => $rin->id, 'lang' => $lang]) }}">
+                    @csrf
+                    <input type="hidden" name="response" value="confirm">
+                    <button type="submit" class="ui-btn ui-btn-primary">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        {{ $isFr ? 'Je confirme le paiement' : 'I confirm the payment' }}
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('quotes.respond-payment', ['invoice' => $rin->id, 'lang' => $lang]) }}" class="flex flex-wrap items-start gap-2">
+                    @csrf
+                    <input type="hidden" name="response" value="dispute">
+                    <input type="text" name="dispute_reason" required maxlength="500"
+                           placeholder="{{ $isFr ? 'Motif de la contestation' : 'Reason for dispute' }}" class="ui-field w-[240px] max-w-full">
+                    <button type="submit" class="ui-btn ui-btn-danger">{{ $isFr ? 'Contester' : 'Dispute' }}</button>
+                </form>
+            </div>
+            @endif
+
+            @if($rin->confirmed_at)
+            <div class="ui-alert ui-alert-ok mt-4">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                {{ $isFr ? 'Paiement confirmé par l\'acheteur le' : 'Payment confirmed by the buyer on' }}
+                {{ \Illuminate\Support\Carbon::parse($rin->confirmed_at)->translatedFormat('d F Y') }}.
+            </div>
+            @endif
+        </section>
 
         <div class="mt-5 flex flex-col 2xl:flex-row gap-5 items-start">
             <div class="flex-1 min-w-0 w-full">

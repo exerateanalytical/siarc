@@ -118,13 +118,21 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
                     </button>
                 </form>
                 @endif
-                @if($isSeller && $o->status !== 'delivered' && $o->status !== 'cancelled')
+                {{-- Either side can pull out, but only before anything ships;
+                     after that it is a return, which they settle between them. --}}
+                @php $canCancel = ! in_array($o->status, ['delivered', 'cancelled'], true)
+                                  && ($isSeller || ! in_array($o->status, ['shipped'], true)); @endphp
+                @if($canCancel)
                 <form method="POST" action="{{ route('orders.update-status', ['order' => $o->id]) }}"
-                      onsubmit="return confirm('{{ $isFr ? 'Annuler cette commande ?' : 'Cancel this order?' }}')">
+                      onsubmit="return confirm('{{ $isFr ? 'Annuler cette commande ? L\'autre partie sera prévenue.' : 'Cancel this order? The other party will be notified.' }}')"
+                      class="flex flex-wrap items-center gap-2">
                     @csrf
                     <input type="hidden" name="status" value="cancelled">
+                    <input type="text" name="reason" maxlength="500"
+                           placeholder="{{ $isFr ? 'Motif (facultatif)' : 'Reason (optional)' }}"
+                           class="ui-field ui-field--sm w-[190px] max-w-full">
                     <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm">
-                        {{ $isFr ? 'Annuler' : 'Cancel' }}
+                        {{ $isFr ? 'Annuler la commande' : 'Cancel the order' }}
                     </button>
                 </form>
                 @endif

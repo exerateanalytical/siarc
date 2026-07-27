@@ -131,6 +131,32 @@ rather than an error page, and their send quota is not consumed. As a last
 resort an admin can unblock anyone from **Admin → Utilisateurs → Marquer
 l'email vérifié**.
 
+### Notification emails and the queue
+
+Verification codes send immediately — the member is waiting for them. Everything
+else ("someone quoted your request", "your order shipped") goes through a queued
+job so a slow relay can't make the platform feel broken.
+
+`QUEUE_CONNECTION=sync` is the default and is always correct: queued work simply
+runs inline. Nothing is lost, the triggering request is just a little slower.
+
+To move that work off the request path, set `QUEUE_CONNECTION=database` **and run
+a worker**:
+
+```bash
+php artisan queue:work --queue=default --tries=3 --sleep=3 --max-time=3600
+```
+
+Keep it alive with supervisor, systemd, or your host's process manager. If your
+host gives you neither, use a cron entry every minute instead:
+
+```bash
+* * * * * cd /path/to/app && php artisan queue:work --stop-when-empty >> /dev/null 2>&1
+```
+
+**Never set `database` without one of those** — the jobs queue up in the
+`jobs` table and no notification email ever goes out.
+
 ---
 
 ## 6. Verify the install

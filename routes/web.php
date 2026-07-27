@@ -108,6 +108,8 @@ Route::post('/tableau-de-bord/produits/nouveau', [ProductWebController::class, '
 Route::get('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'edit'])->name('products.web-edit');
 Route::post('/tableau-de-bord/produits/{slug}/modifier', [ProductWebController::class, 'update'])->name('products.web-update')->middleware('verified.email');
 Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/supprimer', [ProductWebController::class, 'destroyImage'])->name('products.web-delete-image');
+Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/couverture', [ProductWebController::class, 'setCoverImage'])->name('products.web-set-cover-image');
+Route::post('/tableau-de-bord/produits/{slug}/images/{imageId}/ordre', [ProductWebController::class, 'moveImage'])->name('products.web-move-image');
 Route::post('/tableau-de-bord/produits/{slug}/statut', [ProductWebController::class, 'toggleStatus'])->name('products.web-toggle-status')->middleware('verified.email');
 Route::post('/tableau-de-bord/produits/{slug}/supprimer', [ProductWebController::class, 'destroy'])->name('products.web-destroy')->middleware('verified.email');
 
@@ -2920,7 +2922,10 @@ Route::post('/tableau-de-bord/demandes', [App\Http\Controllers\QuoteWebControlle
 Route::post('/tableau-de-bord/demandes/{quoteRequest}/proposition', [App\Http\Controllers\QuoteWebController::class, 'storeProposal'])->name('quotes.store-proposal')->middleware('throttle:30,1');
 Route::post('/tableau-de-bord/propositions/{proposal}/accepter', [App\Http\Controllers\QuoteWebController::class, 'acceptProposal'])->name('quotes.accept-proposal');
 Route::post('/tableau-de-bord/propositions/{proposal}/refuser', [App\Http\Controllers\QuoteWebController::class, 'refuseProposal'])->name('quotes.refuse-proposal');
-Route::post('/tableau-de-bord/factures/{invoice}/basculer', [App\Http\Controllers\QuoteWebController::class, 'toggleInvoice'])->name('quotes.toggle-invoice');
+// Offline settlement: the artisan records the payment they received, the buyer
+// confirms or disputes it. The platform never touches the money.
+Route::post('/tableau-de-bord/factures/{invoice}/paiement', [App\Http\Controllers\QuoteWebController::class, 'recordPayment'])->name('quotes.record-payment');
+Route::post('/tableau-de-bord/factures/{invoice}/paiement/reponse', [App\Http\Controllers\QuoteWebController::class, 'respondToPayment'])->name('quotes.respond-payment');
 Route::get('/tableau-de-bord/commandes', [App\Http\Controllers\QuoteWebController::class, 'orders'])->name('orders.index');
 Route::post('/tableau-de-bord/commandes/{order}/statut', [App\Http\Controllers\QuoteWebController::class, 'updateOrderStatus'])->name('orders.update-status');
 
@@ -3691,18 +3696,28 @@ Route::post('/developer/keys/{id}/revoke', function (Request $request, $id) {
     return back()->with('success', 'API key revoked.');
 })->name('developer.keys.revoke');
 
-// ─── Demo one-click logins (presentation/testing) ────────────────────────────
-// Buttons on /login. Each key maps to a real seeded account so demo messages,
-// quotes and orders land in accounts the audience can open live.
+// ─── Demo one-click logins (presentation/testing only) ──────────────────────
+// Disabled unless APP_DEMO_LOGIN=true, which production must never set. No
+// account is hardcoded: each key resolves to the oldest account holding the
+// matching role, so the route works against whatever a given install actually
+// contains and 404s when there is nothing to sign in as.
 Route::post('/demo-login/{key}', function (Request $request, string $key) {
-    abort_unless(config('app.demo_login', true), 404);
-    $accounts = [
-        'admin'  => 'admin@artisanatcameroun.cm',
-        'vendor' => 'nguemasculptures@example.cm',
-        'buyer'  => 'buyer1@test.cm',
+    abort_unless(config('app.demo_login'), 404);
+    $roles = [
+        'admin'  => 'super_admin',
+        'vendor' => 'business_owner',
+        'buyer'  => 'buyer',
     ];
-    abort_unless(isset($accounts[$key]), 404);
-    $user = DB::table('users')->whereNull('deleted_at')->where('email', $accounts[$key])->first();
+    abort_unless(isset($roles[$key]), 404);
+    $user = DB::table('users')
+        ->join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+        ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+        ->where('roles.name', $roles[$key])
+        ->whereNull('users.deleted_at')
+        ->where('users.status', 'active')
+        ->orderBy('users.created_at')
+        ->select('users.*')
+        ->first();
     abort_if(! $user, 404);
     establishSiacSession($user, $request);
     return redirect('/tableau-de-bord');

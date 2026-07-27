@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Quotes;
 
+use App\Jobs\SendNotificationEmail;
 use App\Modules\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\Concerns\BuildsGalleryData;
 use Tests\TestCase;
 
@@ -174,12 +176,9 @@ class QuoteFlowTest extends TestCase
         $this->assertDatabaseCount('purchase_orders', 0);
     }
 
-    public function test_participants_can_toggle_invoice_payment_and_strangers_cannot(): void
+    /** An invoice with its chain, ready to be settled. */
+    private function makeInvoice(\App\Modules\Auth\Models\User $buyer, \App\Modules\Businesses\Models\Business $business)
     {
-        $buyer    = $this->makeUser();
-        $owner    = $this->makeUser();
-        $business = $this->makeBusiness($owner);
-
         $rfq = \App\Modules\Quotes\Models\QuoteRequest::create([
             'buyer_id' => $buyer->id, 'business_id' => $business->id,
             'title' => 'X', 'status' => 'accepted',
@@ -190,26 +189,124 @@ class QuoteFlowTest extends TestCase
         $order = \App\Modules\Quotes\Models\PurchaseOrder::create([
             'quote_proposal_id' => $proposal->id, 'status' => 'confirmed', 'total' => 1000,
         ]);
-        $invoice = \App\Modules\Quotes\Models\Invoice::create([
+
+        return \App\Modules\Quotes\Models\Invoice::create([
             'purchase_order_id' => $order->id, 'status' => 'unpaid', 'total' => 1000,
         ]);
+    }
 
-        // A stranger is rejected
+    /**
+     * Settlement happens off-platform, so "paid" is a claim, not a fact. Only
+     * the artisan receiving the money may make that claim, and it is attributed
+     * to them.
+     */
+    public function test_only_the_seller_can_record_a_payment(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+        $invoice  = $this->makeInvoice($buyer, $business);
+
+        $payload = ['payment_method' => 'mobile_money', 'payment_reference' => 'MM-4471'];
+
+        // A stranger cannot even see it
         $this->actingAsWebUser($this->makeUser())
-            ->post("/tableau-de-bord/factures/{$invoice->id}/basculer")
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", $payload)
             ->assertStatus(403);
 
-        // The seller can mark it paid
-        $this->actingAsWebUser($owner, 'business_owner')
-            ->post("/tableau-de-bord/factures/{$invoice->id}/basculer")
-            ->assertRedirect();
-        $this->assertSame('paid', $invoice->fresh()->status);
-        $this->assertNotNull($invoice->fresh()->paid_at);
-
-        // The buyer can toggle it back
+        // The buyer is a party, but they are not the one receiving the money
         $this->actingAsWebUser($buyer)
-            ->post("/tableau-de-bord/factures/{$invoice->id}/basculer")
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", $payload)
+            ->assertSessionHasErrors('payment');
+        $this->assertSame('unpaid', $invoice->fresh()->status);
+
+        // The seller can, and the entry carries their name
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", $payload)
             ->assertRedirect();
+
+        $invoice->refresh();
+        $this->assertSame('paid', $invoice->status);
+        $this->assertSame('mobile_money', $invoice->payment_method);
+        $this->assertSame('MM-4471', $invoice->payment_reference);
+        $this->assertSame($owner->id, $invoice->recorded_by);
+        $this->assertNotNull($invoice->paid_at);
+        $this->assertNull($invoice->confirmed_at, 'A fresh record must not count as confirmed.');
+    }
+
+    public function test_the_buyer_confirms_a_recorded_payment(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+        $invoice  = $this->makeInvoice($buyer, $business);
+
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", ['payment_method' => 'cash']);
+
+        // The seller cannot confirm their own claim
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement/reponse", ['response' => 'confirm'])
+            ->assertSessionHasErrors('payment');
+        $this->assertNull($invoice->fresh()->confirmed_at);
+
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement/reponse", ['response' => 'confirm'])
+            ->assertRedirect();
+
+        $invoice->refresh();
+        $this->assertNotNull($invoice->confirmed_at);
+        $this->assertSame($buyer->id, $invoice->confirmed_by);
+        $this->assertSame('paid', $invoice->status);
+    }
+
+    public function test_a_disputed_payment_returns_the_invoice_to_unpaid(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+        $invoice  = $this->makeInvoice($buyer, $business);
+
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", ['payment_method' => 'bank_transfer']);
+
+        // A dispute needs a reason
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement/reponse", ['response' => 'dispute'])
+            ->assertSessionHasErrors('dispute_reason');
+
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement/reponse", [
+                'response' => 'dispute', 'dispute_reason' => 'Rien reçu sur mon compte.',
+            ])->assertRedirect();
+
+        $invoice->refresh();
+        $this->assertSame('unpaid', $invoice->status, 'A disputed payment must stop reading as settled.');
+        $this->assertNotNull($invoice->disputed_at);
+        $this->assertSame('Rien reçu sur mon compte.', $invoice->dispute_reason);
+
+        // Re-recording clears the dispute so the parties can try again
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", [
+                'payment_method' => 'bank_transfer', 'payment_reference' => 'VIR-889',
+            ])->assertRedirect();
+
+        $invoice->refresh();
+        $this->assertSame('paid', $invoice->status);
+        $this->assertNull($invoice->disputed_at);
+    }
+
+    public function test_a_payment_cannot_be_recorded_with_an_unknown_method(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+        $invoice  = $this->makeInvoice($buyer, $business);
+
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/factures/{$invoice->id}/paiement", ['payment_method' => 'bitcoin'])
+            ->assertSessionHasErrors('payment_method');
+
         $this->assertSame('unpaid', $invoice->fresh()->status);
     }
 
@@ -282,5 +379,70 @@ class QuoteFlowTest extends TestCase
             ->assertOk()
             ->assertSee($invoice->reference)
             ->assertSee($order->reference);
+    }
+
+    /**
+     * Notification email must not sit inside the request. It used to be a
+     * synchronous SMTP round trip, so a slow relay made submitting an RFQ feel
+     * broken even though the request had already succeeded.
+     */
+    public function test_notification_email_is_queued_not_sent_inline(): void
+    {
+        Queue::fake();
+
+        $buyer = $this->makeUser();
+        // The courtesy email only goes out if the shop published an address.
+        $business = $this->makeBusiness(null, ['email' => 'atelier@example.test']);
+
+        $this->actingAsWebUser($buyer)->post('/tableau-de-bord/demandes', [
+            'business_slug' => $business->slug,
+            'title'         => 'Commande de tabourets',
+            'description'   => 'Vingt tabourets en bois pour un restaurant.',
+        ])->assertRedirect();
+
+        Queue::assertPushed(SendNotificationEmail::class);
+    }
+
+    /** Fulfilment belongs to the seller; the buyer may only pull out, and only in time. */
+    public function test_buyer_can_cancel_an_order_but_not_advance_it(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+        $invoice  = $this->makeInvoice($buyer, $business);
+        $order    = $invoice->purchaseOrder;
+
+        // A buyer cannot push the order forward
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/commandes/{$order->id}/statut", ['status' => 'shipped'])
+            ->assertSessionHasErrors('status');
+        $this->assertSame('confirmed', $order->fresh()->status);
+
+        // But they can cancel while nothing has shipped
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/commandes/{$order->id}/statut", [
+                'status' => 'cancelled', 'reason' => 'Plus besoin.',
+            ])->assertRedirect();
+        $this->assertSame('cancelled', $order->fresh()->status);
+    }
+
+    public function test_buyer_cannot_cancel_once_the_order_has_shipped(): void
+    {
+        $buyer    = $this->makeUser();
+        $owner    = $this->makeUser();
+        $business = $this->makeBusiness($owner);
+        $order    = $this->makeInvoice($buyer, $business)->purchaseOrder;
+        $order->update(['status' => 'shipped']);
+
+        $this->actingAsWebUser($buyer)
+            ->post("/tableau-de-bord/commandes/{$order->id}/statut", ['status' => 'cancelled'])
+            ->assertSessionHasErrors('status');
+        $this->assertSame('shipped', $order->fresh()->status);
+
+        // The seller still can — they are the one holding the goods
+        $this->actingAsWebUser($owner, 'business_owner')
+            ->post("/tableau-de-bord/commandes/{$order->id}/statut", ['status' => 'cancelled'])
+            ->assertRedirect();
+        $this->assertSame('cancelled', $order->fresh()->status);
     }
 }

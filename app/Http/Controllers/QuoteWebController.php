@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNotificationEmail;
 use App\Modules\Auth\Models\User;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Messaging\Services\ConversationService;
@@ -12,7 +13,6 @@ use App\Modules\Quotes\Models\QuoteProposal;
 use App\Modules\Quotes\Models\QuoteRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Quotation system write-endpoints: RFQ → proposal → acceptance →
@@ -33,15 +33,20 @@ class QuoteWebController extends Controller
         return session('siac_user');
     }
 
-    /** In-app + email notification, mirroring MessagingWebController's pattern. */
+    /**
+     * In-app notification now, email off the request path.
+     *
+     * The in-app record is what the recipient actually relies on, so it is
+     * written synchronously. The email is a courtesy copy and used to be a
+     * blocking SMTP round trip inside the POST — a slow relay made accepting a
+     * quote feel broken.
+     */
     private function notifyUser(string $userId, ?string $email, string $type, string $title, string $body, string $link): void
     {
         UserNotification::notify($userId, $type, $title, mb_substr($body, 0, 140), $link);
 
         if ($email) {
-            Mail::raw($body . "\n\n" . $link, function ($message) use ($email, $title) {
-                $message->to($email)->subject('[Artisan Hub 237] ' . $title);
-            });
+            SendNotificationEmail::dispatch($email, '[Artisan Hub 237] ' . $title, $body . "\n\n" . $link);
         }
     }
 
@@ -318,15 +323,36 @@ class QuoteWebController extends Controller
         }
 
         $lang  = $this->lang($request);
+        $isFr  = $lang === 'fr';
         $order = PurchaseOrder::with('proposal.request.business')->findOrFail($orderId);
 
-        if ($order->proposal->request->business->user_id !== $siacUser['id'] && empty($siacUser['is_admin'])) {
-            abort(403);
-        }
+        $quoteRequest = $order->proposal->request;
+        $isSeller = $quoteRequest->business->user_id === $siacUser['id'];
+        $isBuyer  = $quoteRequest->buyer_id === $siacUser['id'];
+        $isAdmin  = ! empty($siacUser['is_admin']);
+
+        abort_unless($isSeller || $isBuyer || $isAdmin, 403);
 
         $data = $request->validate([
             'status' => ['required', 'in:' . implode(',', self::ORDER_STATUSES)],
+            'reason' => ['nullable', 'string', 'max:500'],
         ]);
+
+        // The seller runs the fulfilment steps because they are the one doing
+        // the work. A buyer can only cancel, and only while nothing has shipped
+        // — after that it is a return, which is between the two of them.
+        if (! $isSeller && ! $isAdmin) {
+            if ($data['status'] !== 'cancelled') {
+                return back()->withErrors(['status' => $isFr
+                    ? 'Seul l\'artisan peut faire avancer une commande.'
+                    : 'Only the artisan can advance an order.']);
+            }
+            if (in_array($order->status, ['shipped', 'delivered'], true)) {
+                return back()->withErrors(['status' => $isFr
+                    ? 'Cette commande est déjà expédiée — contactez l\'artisan pour convenir d\'un retour.'
+                    : 'This order has already shipped — contact the artisan to arrange a return.']);
+            }
+        }
 
         $order->update(['status' => $data['status']]);
 
@@ -337,54 +363,186 @@ class QuoteWebController extends Controller
             'delivered'     => ['Livrée', 'Delivered'],
             'cancelled'     => ['Annulée', 'Cancelled'],
         ];
-        $label = $labels[$data['status']][$lang === 'fr' ? 0 : 1];
+        $label  = $labels[$data['status']][$isFr ? 0 : 1];
+        $reason = trim((string) ($data['reason'] ?? ''));
+        $link   = route('quotes.po', ['lang' => $lang, 'po' => $order->id]);
 
-        $buyer = User::find($order->proposal->request->buyer_id);
-        if ($buyer) {
-            $this->notifyUser(
-                $buyer->id,
-                $buyer->email,
-                'order_status',
-                $lang === 'fr' ? 'Commande mise à jour' : 'Order updated',
-                ($lang === 'fr'
-                    ? "Votre commande {$order->reference} est maintenant : {$label}."
-                    : "Your order {$order->reference} is now: {$label}."),
-                route('quotes.po', ['lang' => $lang, 'po' => $order->id])
-            );
+        // Tell whoever did NOT make the change. An admin intervening tells both,
+        // and says so — a silent staff edit to someone's order is worse than none.
+        $buyer    = User::find($quoteRequest->buyer_id);
+        $sellerId = $quoteRequest->business->user_id;
+
+        $body = ($isFr
+            ? "La commande {$order->reference} est maintenant : {$label}."
+            : "Order {$order->reference} is now: {$label}.")
+            . ($reason !== '' ? "\n\n" . ($isFr ? 'Motif : ' : 'Reason: ') . $reason : '')
+            . ($isAdmin ? "\n\n" . ($isFr
+                ? 'Cette modification a été effectuée par l\'équipe Artisan Hub 237.'
+                : 'This change was made by the Artisan Hub 237 team.') : '');
+
+        $title = $isFr ? 'Commande mise à jour' : 'Order updated';
+
+        if (($isSeller || $isAdmin) && $buyer) {
+            $this->notifyUser($buyer->id, $buyer->email, 'order_status', $title, $body, $link);
+        }
+        if ($isBuyer || $isAdmin) {
+            $this->notifyUser($sellerId, $quoteRequest->business->email, 'order_status', $title, $body, $link);
         }
 
-        return back()->with('success', $lang === 'fr'
+        return back()->with('success', $isFr
             ? "Commande {$order->reference} — statut : {$label}."
             : "Order {$order->reference} — status: {$label}.");
     }
 
     /** Mark the invoice of a purchase order as paid / unpaid. */
-    public function toggleInvoice(Request $request, int $invoiceId): RedirectResponse
+    /** Ways a buyer can settle. The platform handles none of them itself. */
+    public const PAYMENT_METHODS = ['mobile_money', 'bank_transfer', 'cash', 'cheque', 'other'];
+
+    /** Resolve the caller's relationship to an invoice, or 403. */
+    private function invoiceParties(Invoice $invoice, array $siacUser): array
+    {
+        $request  = $invoice->purchaseOrder->proposal->request;
+        $isBuyer  = $request->buyer_id === $siacUser['id'];
+        $isSeller = $request->business->user_id === $siacUser['id'];
+        $isAdmin  = ! empty($siacUser['is_admin']);
+
+        abort_unless($isBuyer || $isSeller || $isAdmin, 403);
+
+        return [$isBuyer, $isSeller, $isAdmin, $request];
+    }
+
+    /**
+     * The seller records a payment they have received off-platform.
+     *
+     * Only the seller (or an admin) may do this: they are the one the money
+     * reaches, so they are the only party in a position to state it arrived.
+     * The entry is attributed and timestamped, and the buyer is notified so
+     * they can confirm or dispute it.
+     */
+    public function recordPayment(Request $request, int $invoiceId): RedirectResponse
     {
         $siacUser = $this->webUser();
         if (! $siacUser) {
             return redirect('/login');
         }
 
-        $lang = $this->lang($request);
+        $lang    = $this->lang($request);
+        $isFr    = $lang === 'fr';
         $invoice = Invoice::with('purchaseOrder.proposal.request.business')->findOrFail($invoiceId);
-        $order   = $invoice->purchaseOrder;
+        [$isBuyer, $isSeller, $isAdmin, $quoteRequest] = $this->invoiceParties($invoice, $siacUser);
 
-        $isBuyer  = $order->proposal->request->buyer_id === $siacUser['id'];
-        $isSeller = $order->proposal->request->business->user_id === $siacUser['id'];
-        if (! $isBuyer && ! $isSeller && empty($siacUser['is_admin'])) {
-            abort(403);
+        if (! $isSeller && ! $isAdmin) {
+            return back()->withErrors(['payment' => $isFr
+                ? 'Seul l\'artisan qui reçoit le paiement peut l\'enregistrer.'
+                : 'Only the artisan receiving the payment can record it.']);
         }
 
-        $paid = $invoice->status !== 'paid';
-        $invoice->update([
-            'status'         => $paid ? 'paid' : 'unpaid',
-            'paid_at'        => $paid ? now() : null,
-            'payment_method' => $paid ? ($request->input('payment_method', 'Virement bancaire')) : null,
+        $data = $request->validate([
+            'payment_method'    => ['required', 'in:' . implode(',', self::PAYMENT_METHODS)],
+            'payment_reference' => ['nullable', 'string', 'max:120'],
+            'payment_note'      => ['nullable', 'string', 'max:500'],
+            'paid_at'           => ['nullable', 'date', 'before_or_equal:today'],
         ]);
 
-        return back()->with('success', $lang === 'fr'
-            ? ($paid ? 'Facture marquée comme payée.' : 'Facture marquée comme impayée.')
-            : ($paid ? 'Invoice marked as paid.' : 'Invoice marked as unpaid.'));
+        $invoice->update([
+            'status'            => 'paid',
+            'paid_at'           => $data['paid_at'] ?? now(),
+            'payment_method'    => $data['payment_method'],
+            'payment_reference' => $data['payment_reference'] ?? null,
+            'payment_note'      => $data['payment_note'] ?? null,
+            'recorded_by'       => $siacUser['id'],
+            // A fresh entry supersedes any earlier confirmation or dispute.
+            'confirmed_at'      => null,
+            'confirmed_by'      => null,
+            'disputed_at'       => null,
+            'dispute_reason'    => null,
+        ]);
+
+        $buyer = User::find($quoteRequest->buyer_id);
+        if ($buyer) {
+            $this->notifyUser(
+                $buyer->id,
+                $buyer->email,
+                'payment_recorded',
+                $isFr ? 'Paiement enregistré' : 'Payment recorded',
+                ($isFr
+                    ? "L'artisan a enregistré le paiement de la facture {$invoice->reference}. Confirmez-le s'il est exact."
+                    : "The artisan recorded payment of invoice {$invoice->reference}. Confirm it if that is correct."),
+                route('quotes.invoice', ['lang' => $lang, 'invoice' => $invoice->id])
+            );
+        }
+
+        return back()->with('success', $isFr
+            ? "Paiement enregistré. {$buyer?->name} sera invité à le confirmer."
+            : "Payment recorded. {$buyer?->name} will be asked to confirm it.");
+    }
+
+    /**
+     * The buyer confirms the recorded payment, or disputes it.
+     *
+     * This is the only signal on the platform that both sides agree money
+     * changed hands — without it, "paid" is one party's word.
+     */
+    public function respondToPayment(Request $request, int $invoiceId): RedirectResponse
+    {
+        $siacUser = $this->webUser();
+        if (! $siacUser) {
+            return redirect('/login');
+        }
+
+        $lang    = $this->lang($request);
+        $isFr    = $lang === 'fr';
+        $invoice = Invoice::with('purchaseOrder.proposal.request.business')->findOrFail($invoiceId);
+        [$isBuyer, $isSeller, $isAdmin, $quoteRequest] = $this->invoiceParties($invoice, $siacUser);
+
+        if (! $isBuyer && ! $isAdmin) {
+            return back()->withErrors(['payment' => $isFr
+                ? 'Seul l\'acheteur peut confirmer ou contester ce paiement.'
+                : 'Only the buyer can confirm or dispute this payment.']);
+        }
+
+        if ($invoice->status !== 'paid') {
+            return back()->withErrors(['payment' => $isFr
+                ? 'Aucun paiement n\'a encore été enregistré pour cette facture.'
+                : 'No payment has been recorded on this invoice yet.']);
+        }
+
+        $data = $request->validate([
+            'response'       => ['required', 'in:confirm,dispute'],
+            'dispute_reason' => ['required_if:response,dispute', 'nullable', 'string', 'max:500'],
+        ]);
+
+        $confirming = $data['response'] === 'confirm';
+
+        $invoice->update($confirming
+            ? ['confirmed_at' => now(), 'confirmed_by' => $siacUser['id'], 'disputed_at' => null, 'dispute_reason' => null]
+            // A dispute puts the invoice back to unpaid: the seller's claim
+            // stands recorded, but the platform stops presenting it as settled.
+            : ['status' => 'unpaid', 'disputed_at' => now(), 'dispute_reason' => $data['dispute_reason'],
+               'confirmed_at' => null, 'confirmed_by' => null]);
+
+        $business = $quoteRequest->business;
+        if ($business) {
+            $this->notifyUser(
+                $business->user_id,
+                $business->email,
+                $confirming ? 'payment_confirmed' : 'payment_disputed',
+                $confirming
+                    ? ($isFr ? 'Paiement confirmé' : 'Payment confirmed')
+                    : ($isFr ? 'Paiement contesté' : 'Payment disputed'),
+                ($confirming
+                    ? ($isFr
+                        ? "L'acheteur a confirmé le paiement de la facture {$invoice->reference}."
+                        : "The buyer confirmed payment of invoice {$invoice->reference}.")
+                    : ($isFr
+                        ? "L'acheteur conteste le paiement de la facture {$invoice->reference} : {$data['dispute_reason']}"
+                        : "The buyer disputes payment of invoice {$invoice->reference}: {$data['dispute_reason']}")),
+                route('quotes.invoice', ['lang' => $lang, 'invoice' => $invoice->id])
+            );
+        }
+
+        return back()->with('success', $confirming
+            ? ($isFr ? 'Paiement confirmé. Merci.' : 'Payment confirmed. Thank you.')
+            : ($isFr ? 'Paiement contesté. L\'artisan a été prévenu.' : 'Payment disputed. The artisan has been notified.'));
     }
 }
