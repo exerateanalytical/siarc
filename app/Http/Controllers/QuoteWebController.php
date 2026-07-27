@@ -46,7 +46,16 @@ class QuoteWebController extends Controller
         UserNotification::notify($userId, $type, $title, mb_substr($body, 0, 140), $link);
 
         if ($email) {
-            SendNotificationEmail::dispatch($email, '[Artisan Hub 237] ' . $title, $body . "\n\n" . $link);
+            // The link goes through as its own argument so the email renders a
+            // real button rather than a bare URL pasted onto the message.
+            SendNotificationEmail::dispatch(
+                $email,
+                '[Artisan Hub 237] ' . $title,
+                $body,
+                $link,
+                $title,
+                $this->lang(request()),
+            );
         }
     }
 

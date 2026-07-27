@@ -2,22 +2,15 @@
 
 namespace App\Modules\Auth\Services\Otp;
 
+use App\Mail\VerificationCodeMail;
 use Illuminate\Support\Facades\Mail;
 
 class EmailOtpSender implements OtpSender
 {
     public function send(string $destination, string $code, string $lang = 'fr'): void
     {
-        $subject = $lang === 'fr'
-            ? 'Votre code de vérification'
-            : 'Your verification code';
-
-        $body = $lang === 'fr'
-            ? "Votre code de vérification est : {$code}\n\nIl expire dans 10 minutes. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.\n\n— Artisan Hub 237"
-            : "Your verification code is: {$code}\n\nIt expires in 10 minutes. If you did not request this, ignore this message.\n\n— Artisan Hub 237";
-
-        Mail::raw($body, function ($mail) use ($destination, $subject) {
-            $mail->to($destination)->subject($subject);
-        });
+        // This is the first email a new member ever receives from the platform,
+        // so it carries the branding rather than arriving as raw text.
+        Mail::to($destination)->send(new VerificationCodeMail($code, $lang));
     }
 }

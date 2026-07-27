@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\PlatformNotificationMail;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -36,13 +37,20 @@ class SendNotificationEmail implements ShouldQueue
         public string $email,
         public string $subject,
         public string $body,
+        public ?string $ctaUrl = null,
+        public ?string $heading = null,
+        public string $lang = 'fr',
     ) {}
 
     public function handle(): void
     {
-        Mail::raw($this->body, function ($message) {
-            $message->to($this->email)->subject($this->subject);
-        });
+        Mail::to($this->email)->send(new PlatformNotificationMail(
+            $this->subject,
+            $this->body,
+            $this->ctaUrl,
+            $this->heading,
+            $this->lang,
+        ));
     }
 
     public function failed(\Throwable $e): void

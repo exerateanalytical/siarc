@@ -158,7 +158,9 @@ class MessagingWebController extends Controller
             SendNotificationEmail::dispatch(
                 $business->email,
                 '[Artisan Hub 237] Nouveau message — ' . $conversation->subject,
-                "Nouveau message de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord Artisan Hub 237."
+                "Nouveau message de {$sender->name} concernant « {$conversation->subject} » :\n\n{$body}",
+                route('messages.thread', ['id' => $conversation->id]),
+                'Nouveau message',
             );
         }
     }
@@ -182,7 +184,9 @@ class MessagingWebController extends Controller
             SendNotificationEmail::dispatch(
                 $buyer->email,
                 '[Artisan Hub 237] Nouvelle réponse — ' . $conversation->subject,
-                "Nouvelle réponse de {$sender->name} concernant \"{$conversation->subject}\":\n\n{$body}\n\nRépondez depuis votre tableau de bord Artisan Hub 237."
+                "Nouvelle réponse de {$sender->name} concernant « {$conversation->subject} » :\n\n{$body}",
+                route('messages.thread', ['id' => $conversation->id]),
+                'Nouvelle réponse',
             );
         }
     }
