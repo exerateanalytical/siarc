@@ -149,7 +149,7 @@
 
     {{-- Brand --}}
     <a href="{{ route('home', ['lang' => $sbLang]) }}" class="h-[64px] flex items-center gap-3 px-4 border-b border-white/10 shrink-0">
-        <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[34px] h-[37px] object-contain shrink-0">
+        <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[34px] h-[37px] object-contain shrink-0">
         <span class="leading-tight min-w-0">
             <span class="block text-[11.5px] font-bold tracking-[0.02em] text-white uppercase whitespace-nowrap">Artisan Hub 237</span>
             <span class="block text-[9.5px] font-semibold text-[#E5A82E] whitespace-nowrap">{{ $sbIsFr ? 'Notre héritage, notre fierté' : 'Our heritage, our pride' }}</span>

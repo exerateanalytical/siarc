@@ -14,6 +14,7 @@
         html, body { overflow-x: clip; }
 body{font-family:'Poppins',system-ui,sans-serif}</style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="min-h-screen bg-[#F3EFE7] flex items-center justify-center p-5">
     <main class="w-full max-w-[440px] bg-white rounded-3xl shadow-[0_24px_60px_-24px_rgba(2,48,27,.35)] p-8">

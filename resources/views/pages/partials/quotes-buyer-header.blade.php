@@ -6,7 +6,7 @@
             <i data-lucide="menu" class="w-6 h-6" style="stroke-width:1.7"></i>
         </button>
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[48px] h-[52px] object-contain">
+            <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[48px] h-[52px] object-contain">
             <span class="leading-tight hidden sm:block">
                 <span class="block text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                 <span class="block text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>

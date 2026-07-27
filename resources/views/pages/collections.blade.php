@@ -14,6 +14,7 @@
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     <style>body{font-family:'Poppins',system-ui,sans-serif}html,body{overflow-x:clip}</style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#FBF8F2] text-[#1D1B16] antialiased">
 @include('pages.partials.directory-header')

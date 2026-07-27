@@ -79,13 +79,14 @@
         #buyer-menu.open { transform: translateX(0); }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F5F5F3] text-[#1B1B18] antialiased">
 
 <!-- Slide-over menu (buyer flows live here) -->
 <aside id="buyer-menu" class="fixed inset-y-0 left-0 z-50 w-[300px] bg-[#002714] overflow-y-auto">
     <div class="bg-[#031E12] px-5 py-4 flex items-center gap-3">
-        <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] object-contain shrink-0">
+        <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[44px] h-[48px] object-contain shrink-0">
         <span class="text-[11.5px] font-bold tracking-[0.02em] text-white uppercase leading-[1.4]">
             {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
             {{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}
@@ -133,7 +134,7 @@
 
     <!-- Header -->
     <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
-        <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
+        <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
         <span class="leading-tight min-w-0">
             <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
             <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>

@@ -47,6 +47,7 @@
         }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="antialiased">
 

@@ -31,6 +31,7 @@
         html, body { overflow-x: clip; }
 body { font-family: 'Poppins', system-ui, sans-serif; }</style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 

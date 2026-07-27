@@ -25,6 +25,7 @@ nav{background:#0A2C1D;padding:.85rem 1.5rem;display:flex;align-items:center;gap
 .tricolor span:nth-child(3){flex:1;background:#E9A411;}
 </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body>
 <nav><a class="logo" href="/"><span class="flag"><span style="background:#094F2B"></span><span style="background:#B61012"></span><span style="background:#E9A411"></span></span>Artisan Hub 237</a></nav>

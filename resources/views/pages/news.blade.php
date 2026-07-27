@@ -23,6 +23,7 @@
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     <style>body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }</style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 

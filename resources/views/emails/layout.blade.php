@@ -65,14 +65,24 @@
                     </td>
                 </tr>
 
-                {{-- Wordmark. Deliberately text, not an image: most clients block
-                     remote images by default, and a blocked logo leaves a broken
-                     icon where the brand should be. --}}
+                {{-- Logo, with the brand name as its alt text.
+
+                     Most clients block remote images until the reader allows
+                     them, so the alt is styled to render in the brand serif and
+                     green — a blocked logo then reads as "Artisan Hub 237"
+                     rather than a broken-image icon. The tagline underneath is
+                     real text and always shows.
+
+                     The src must be absolute; a relative path resolves against
+                     the mail client, not the site. --}}
                 <tr>
                     <td align="left" style="padding:26px 32px 0 32px;">
                         <a href="{{ $site }}" style="text-decoration:none;">
-                            <span style="display:block; font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:bold; color:{{ $green }}; letter-spacing:0.4px;">Artisan Hub 237</span>
-                            <span style="display:block; margin-top:3px; font-family:Arial,Helvetica,sans-serif; font-size:11px; color:{{ $leaf }};">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                            <img src="{{ $site }}/images/brand/logo-full.png"
+                                 alt="Artisan Hub 237"
+                                 width="200" height="68"
+                                 style="display:block; width:200px; max-width:200px; height:auto; border:0; outline:none; text-decoration:none; font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:bold; color:{{ $green }};">
+                            <span style="display:block; margin-top:6px; font-family:Arial,Helvetica,sans-serif; font-size:11px; color:{{ $leaf }};">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                         </a>
                     </td>
                 </tr>

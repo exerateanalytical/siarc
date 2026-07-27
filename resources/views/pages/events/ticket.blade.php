@@ -93,6 +93,7 @@
         }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#FDFDFC] text-[#1D1B16] antialiased">
 
@@ -150,7 +151,7 @@
                     <img src="{{ asset('images/landing/ticket-art.png') }}" alt="" class="absolute right-0 inset-y-0 h-full w-auto object-cover hidden md:block pointer-events-none select-none" aria-hidden="true">
                     <div class="relative p-6 sm:p-8 max-w-[560px]">
                         <div class="flex items-center gap-3.5">
-                            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
+                            <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
                             <span class="leading-tight">
                                 <span class="block text-[12.5px] font-bold tracking-[0.04em] text-[#1D1B16] uppercase">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                                 <span class="block text-[12.5px] font-bold tracking-[0.04em] text-[#1D1B16] uppercase">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>

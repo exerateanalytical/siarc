@@ -64,6 +64,7 @@
         html, body { overflow-x: clip; }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F6F4F2] text-[#1D1B16] antialiased">
 
@@ -87,7 +88,7 @@
             <div class="absolute inset-0 opacity-70 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
             <div class="relative px-5 py-5 lg:px-12 lg:pt-[4.2rem] lg:pb-10">
                 <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center lg:items-start gap-3 lg:gap-4">
-                    <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] lg:w-[64px] lg:h-[70px] object-contain shrink-0">
+                    <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[44px] h-[48px] lg:w-[64px] lg:h-[70px] object-contain shrink-0">
                     <span class="lg:pt-1">
                         <span class="block text-[13.5px] lg:text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
                             Artisan Hub 237<span class="lg:hidden"> — {{ $isFr ? 'L\'artisanat camerounais' : 'Cameroonian craftsmanship' }}</span>

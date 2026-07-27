@@ -157,6 +157,7 @@
         html, body { overflow-x: clip; }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-cream text-[#1D1B16] antialiased">
 

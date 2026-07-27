@@ -33,7 +33,7 @@
         ? max((int) now()->startOfDay()->diffInDays($rpo->expected_delivery_date, false), 0)
         : null;
     $realBizName   = $biz->name_fr ?? '—';
-    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/landing/logo.png');
+    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/brand/logo-mark.png');
     $realBuyerName = $buyer->name ?? '—';
     $realItemCount = $rpp->items->count();
     $realTotalQty  = $rpp->items->sum('quantity');
@@ -113,6 +113,7 @@
         @media (min-width: 1024px) { #qb-sidebar, #qb-sidebar.open { display: block; position: static; width: 264px; overflow-y: visible; } }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
 

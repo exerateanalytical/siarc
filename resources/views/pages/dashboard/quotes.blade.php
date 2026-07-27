@@ -10,7 +10,7 @@
     };
 
     $shopName = $business ? ($isFr ? $business->name_fr : ($business->name_en ?: $business->name_fr)) : ($isFr ? 'Aucune boutique' : 'No shop yet');
-    $shopLogo = ($business && $business->logo) ? asset('storage/' . $business->logo) : asset('images/landing/logo.png');
+    $shopLogo = ($business && $business->logo) ? asset('storage/' . $business->logo) : asset('images/brand/logo-mark.png');
     $firstName = explode(' ', trim($siacUser['name'] ?? ''))[0] ?? '';
     $memberSince = $business ? $fmtDate($business->created_at) : null;
     $artisanId = $business
@@ -212,6 +212,7 @@
         {{-- Sidebar slide-over CSS now lives in pages.partials.dashboard-sidebar --}}
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 
@@ -222,7 +223,7 @@
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
+            <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
             <span class="leading-tight hidden sm:block">
                 <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                 <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>

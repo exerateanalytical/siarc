@@ -152,6 +152,7 @@
         html, body { overflow-x: clip; }
     </style>
     @include('pages.partials.ui-kit')
+    @include('pages.partials.favicon')
 </head>
 <body class="bg-[#F2F3F4] text-[#1B1B18] antialiased">
 
@@ -159,7 +160,7 @@
 <header class="bg-white">
     <div class="max-w-[1024px] mx-auto px-4 flex items-center justify-between gap-4 py-2.5">
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-            <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
+            <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
             <span class="leading-tight">
                 <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">Artisan Hub 237</span>
                 <span class="block text-[10px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
