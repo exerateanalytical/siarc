@@ -37,8 +37,8 @@
         <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'À propos de la plateforme' : 'About the platform' }}</h2>
         <p class="mt-2.5 text-[13px] text-[#55524A] leading-relaxed">
             {{ $isFr
-                ? "La Artisan Hub 237 est la plateforme officielle de promotion et de valorisation du savoir-faire artisanal camerounais à travers le digital. Elle connecte artisans, coopératives et entreprises à des acheteurs locaux et internationaux : vitrines vérifiées, demandes de devis, événements et certification des membres."
-                : 'The Artisan Hub 237 is the official platform promoting Cameroonian craftsmanship through digital. It connects artisans, cooperatives and businesses with local and international buyers: verified showcases, quote requests, events and member certification.'
+                ? "Artisan Hub 237 est une plateforme privée qui met en valeur le savoir-faire artisanal camerounais en ligne. Elle connecte artisans, coopératives et entreprises à des acheteurs locaux et internationaux : vitrines vérifiées, demandes de devis, événements et certification des membres."
+                : 'Artisan Hub 237 is a private platform showcasing Cameroonian craftsmanship online. It connects artisans, cooperatives and businesses with local and international buyers: verified showcases, quote requests, events and member certification.'
             }}
         </p>
     </section>
@@ -75,7 +75,7 @@
             <div class="mt-3 flex items-center gap-4">
                 <img src="{{ asset('images/landing/logo.png') }}" alt="Logo" class="w-[56px] h-[61px] object-contain">
                 <p class="text-[12.5px] text-[#55524A] leading-relaxed">
-                    {{ $isFr ? 'Le logo officiel de la plateforme. Merci de ne pas le modifier ni le déformer.' : 'The official platform logo. Please do not alter or distort it.' }}
+                    {{ $isFr ? 'Le logo de la plateforme. Merci de ne pas le modifier ni le déformer.' : 'The platform logo. Please do not alter or distort it.' }}
                 </p>
             </div>
             <a href="{{ asset('images/landing/logo.png') }}" download class="mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] hover:border-leaf hover:text-leaf text-[13px] font-semibold text-[#1D1B16] px-5 py-2.5 rounded-lg transition-colors">

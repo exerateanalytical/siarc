@@ -3473,9 +3473,9 @@ Route::post('/contact', function (Request $request) {
             \Illuminate\Support\Facades\Mail::raw(
                 "Nom : {$data['name']}\nEmail : {$data['email']}\n\n{$data['message']}",
                 function ($mail) use ($data) {
-                    $mail->to('contact@gvnac.cm')
+                    $mail->to(config('legal.company.email'))
                         ->replyTo($data['email'], $data['name'])
-                        ->subject('[Contact GVNAC] ' . $data['subject']);
+                        ->subject('[Contact Artisan Hub 237] ' . $data['subject']);
                 }
             );
         } catch (\Exception $e) {

@@ -32,6 +32,18 @@ return [
         'host'    => env('LEGAL_HOSTING_PROVIDER', ''),
     ],
 
+    /*
+     * Social profiles. Left blank the icons simply do not render — better than
+     * linking members to an account that does not exist.
+     */
+    'social' => [
+        'facebook'  => env('SOCIAL_FACEBOOK'),
+        'instagram' => env('SOCIAL_INSTAGRAM'),
+        'linkedin'  => env('SOCIAL_LINKEDIN'),
+        'youtube'   => env('SOCIAL_YOUTUBE'),
+        'x'         => env('SOCIAL_X'),
+    ],
+
     'documents' => [
 
         // ─────────────────────────────────────────────────────────────

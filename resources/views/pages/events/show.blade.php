@@ -266,7 +266,7 @@
                                     @endforeach
                                 </ul>
                             </div>
-                            <a href="https://www.youtube.com/@gvnac" target="_blank" rel="noopener" class="block relative rounded-xl overflow-hidden group self-start" aria-label="{{ $isFr ? 'Découvrez l\'édition 2024 en vidéo' : 'Discover the 2024 edition in video' }}">
+                            <a href="{{ config('legal.social.youtube') ?: route('events.index', ['lang' => $lang]) }}" target="_blank" rel="noopener" class="block relative rounded-xl overflow-hidden group self-start" aria-label="{{ $isFr ? 'Découvrez l\'édition 2024 en vidéo' : 'Discover the 2024 edition in video' }}">
                                 <img src="{{ asset('images/landing/edetail-video.png') }}" alt="" class="w-full h-auto group-hover:opacity-95 transition-opacity">
                             </a>
                         </div>

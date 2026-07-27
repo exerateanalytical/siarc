@@ -68,8 +68,8 @@
         ->unique('id')->take(6)->values();
     $designBadges = ['panier-africain-tresse' => 'new', 'sculpture-en-bois-sawa' => 'best', 'vase-en-terre-cuite-grave-a-la-main' => 'new'];
 
-    $contactPhone = $business->phone ?: '+237670416238';
-    $contactEmail = $business->email ?: 'contact@gvnac.cm';
+    $contactPhone = $business->phone ?: null;
+    $contactEmail = $business->email ?: null;
     $waNumber = preg_replace('/\D/', '', $business->whatsapp ?: $contactPhone);
 
     // Default product artwork per category (design: "default product images by category")
@@ -259,24 +259,30 @@
 
             <!-- Contact icon row -->
             <div class="mt-5 flex flex-wrap items-start gap-6">
+                @if($waNumber)
                 <a href="https://wa.me/{{ $waNumber }}" target="_blank" rel="noopener" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-[#22C05C] flex items-center justify-center text-white group-hover:opacity-85 transition-opacity">
                         <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.1c-.2.7-1.2 1.3-2 1.4-.5.1-1.2.2-3.5-.7-2.9-1.2-4.8-4.1-4.9-4.3-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.4.9-.9 1-.7 1.4.9 1.5 2 2.4 3.3 3 .3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1s1.8.8 2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1z"/></svg>
                     </span>
                     <span class="text-[11px] text-[#3A3A35]">WhatsApp</span>
                 </a>
+                @endif
+                @if($contactEmail)
                 <a href="mailto:{{ $contactEmail }}" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-[#E8542F] flex items-center justify-center text-white group-hover:opacity-85 transition-opacity">
                         <i data-lucide="mail" class="w-5 h-5"></i>
                     </span>
                     <span class="text-[11px] text-[#3A3A35]">Email</span>
                 </a>
+                @endif
+                @if($contactPhone)
                 <a href="tel:{{ $contactPhone }}" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-white border border-[#DFDCD5] flex items-center justify-center text-[#3A3A35] group-hover:border-leaf transition-colors">
                         <i data-lucide="phone" class="w-[18px] h-[18px]"></i>
                     </span>
                     <span class="text-[11px] text-[#3A3A35]">{{ $isFr ? 'Appel' : 'Call' }}</span>
                 </a>
+                @endif
                 <button type="button" id="share-btn" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-white border border-[#DFDCD5] flex items-center justify-center text-[#3A3A35] group-hover:border-leaf transition-colors">
                         <i data-lucide="share-2" class="w-[18px] h-[18px]"></i>
