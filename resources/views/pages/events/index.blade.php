@@ -190,7 +190,7 @@
                     <p class="text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Recherche' : 'Search' }}</p>
                     <div class="relative mt-2">
                         <input name="q" type="search" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Nom de l\'événement, lieu...' : 'Event name, venue...' }}"
-                            class="w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md pl-3 pr-8 text-[12px] text-[#3A3A35] placeholder-[#8A857A] focus:outline-none focus:border-gold">
+                            class="ui-field ui-field--sm pr-8">
                         <i data-lucide="search" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[#6F6B60]"></i>
                     </div>
 
@@ -227,12 +227,12 @@
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">Date</p>
                     <div class="relative mt-2">
                         <input name="debut" type="text" onfocus="this.type='date'" placeholder="{{ $isFr ? 'Date de début' : 'Start date' }}"
-                            class="w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md pl-3 pr-8 text-[12px] text-[#3A3A35] placeholder-[#8A857A] focus:outline-none focus:border-gold">
+                            class="ui-field ui-field--sm pr-8">
                         <i data-lucide="calendar" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[#6F6B60] pointer-events-none"></i>
                     </div>
                     <div class="relative mt-2.5">
                         <input name="fin" type="text" onfocus="this.type='date'" placeholder="{{ $isFr ? 'Date de fin' : 'End date' }}"
-                            class="w-full h-[38px] bg-white border border-[#E3E3E1] rounded-md pl-3 pr-8 text-[12px] text-[#3A3A35] placeholder-[#8A857A] focus:outline-none focus:border-gold">
+                            class="ui-field ui-field--sm pr-8">
                         <i data-lucide="calendar" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[#6F6B60] pointer-events-none"></i>
                     </div>
 

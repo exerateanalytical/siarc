@@ -167,6 +167,7 @@
                 rgba(255,255,255,0.95) 9px 12px, transparent 12px 14px);
         }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
 
@@ -474,7 +475,7 @@
                     @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre adresse email' : 'Your email address' }}"
-                        class="flex-1 min-w-0 h-[38px] bg-white border border-[#E3E3E1] rounded-md px-3 text-[12px] text-[#3A3A35] placeholder-[#8A857A] focus:outline-none focus:border-gold">
+                        class="ui-field ui-field--sm flex-1 min-w-0">
                     <button type="submit" class="h-[38px] bg-[#02301B] hover:bg-leaf text-white text-[12px] font-semibold px-3.5 rounded-md transition-colors shrink-0">
                         {{ $isFr ? 'S\'abonner' : 'Subscribe' }}
                     </button>

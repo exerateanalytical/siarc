@@ -200,7 +200,7 @@
             <form action="{{ route('gallery.search') }}" method="GET" class="relative mb-3">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...' }}"
-                    class="w-full h-[38px] bg-white border border-[#E3E3E1] rounded-lg pl-4 pr-9 text-[13px] placeholder-[#8A857A] focus:outline-none focus:border-gold">
+                    class="ui-field pr-9">
                 <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#55524A]">
                     <i data-lucide="search" class="w-4 h-4"></i>
                 </button>
