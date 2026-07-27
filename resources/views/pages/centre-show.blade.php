@@ -144,7 +144,7 @@
             <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] uppercase">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</h2>
             <div class="mt-3 space-y-2.5 text-[12px] text-[#3B382F]">
                 <p class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->contact_phone }}</p>
-                <p class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->contact_email ?? 'contact@artisanat.cm' }}</p>
+                <p class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->contact_email ?? config('legal.company.email') }}</p>
                 <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->address ?? ($centre->city . ', ' . $regionName) }}</p>
             </div>
             <a href="{{ route('contact', ['lang'=>$lang]) }}" class="mt-4 block text-center bg-[#0F7A3D] hover:bg-[#14652F] text-white text-[12.5px] font-semibold py-2.5 rounded-lg">{{ $isFr ? 'Envoyer un message' : 'Send a message' }}</a>

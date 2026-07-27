@@ -122,7 +122,7 @@
                 <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</h4>
                 <ul class="space-y-2.5 text-[12.5px] text-[#B9C4BC] whitespace-nowrap">
                     <li>+237 670 416 238</li>
-                    <li>contact@galerieartisanat.cm</li>
+                    <li>{{ config('legal.company.email') }}</li>
                     <li>{{ $isFr ? 'Lun - Ven : 8h00 - 17h00' : 'Mon - Fri: 8am - 5pm' }}</li>
                 </ul>
                 <a href="{{ route('contact', ['lang' => $lang]) }}"

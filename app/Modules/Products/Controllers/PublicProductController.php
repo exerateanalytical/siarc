@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Products\Models\Product;
 use App\Modules\Products\Resources\ProductListResource;
 use App\Modules\Products\Resources\ProductResource;
+use App\Support\SearchQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -33,10 +34,8 @@ class PublicProductController extends Controller
             $query->where('is_export_ready', true);
         }
         if ($request->filled('q')) {
-            $search = '%' . $request->q . '%';
-            $query->where(fn ($q) => $q->where('name_fr', 'like', $search)
-                                       ->orWhere('name_en', 'like', $search)
-                                       ->orWhere('description_fr', 'like', $search));
+            SearchQuery::apply($query, (string) $request->q, SearchQuery::PRODUCT_COLUMNS, SearchQuery::PRODUCT_RELATIONS);
+            SearchQuery::orderByRelevance($query, (string) $request->q, SearchQuery::PRODUCT_NAMES, SearchQuery::PRODUCT_SECONDARY);
         }
 
         $sort = $request->get('sort', 'newest');

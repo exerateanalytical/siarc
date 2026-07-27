@@ -129,7 +129,7 @@
                         <dl class="mt-3.5 space-y-2.5 text-[12px]">
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Responsable' : 'Manager' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->coordinator ?: '—' }}</dd></div>
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Téléphone' : 'Phone' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->contact_phone }}</dd></div>
-                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">Email</dt><dd class="font-semibold text-[#1B1B18] truncate">{{ $centre->contact_email ?? 'contact@artisanat.cm' }}</dd></div>
+                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">Email</dt><dd class="font-semibold text-[#1B1B18] truncate">{{ $centre->contact_email ?? config('legal.company.email') }}</dd></div>
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Ville' : 'City' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->city ?? $centre->chef_lieu }}</dd></div>
                         </dl>
                     </section>

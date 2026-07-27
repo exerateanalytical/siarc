@@ -28,7 +28,8 @@
     $shownProducts = $products->map(function ($prod) use ($isFr, $designArt) {
         static $i = 0;
         $i++;
-        $firstImage = $prod->images->first();
+        // The seller's chosen cover, not merely the first upload.
+        $firstImage = $prod->images->firstWhere('is_cover', true) ?? $prod->images->first();
         return [
             'slug'  => $prod->slug,
             'img'   => $firstImage

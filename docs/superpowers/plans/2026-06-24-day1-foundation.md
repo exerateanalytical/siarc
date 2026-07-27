@@ -211,15 +211,15 @@ MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="noreply@cameroon-directory.cm"
+MAIL_FROM_ADDRESS="noreply@artisanhub237.com"
 MAIL_FROM_NAME="${APP_NAME}"
 
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_DEFAULT_REGION=eu-west-1
-AWS_BUCKET=cameroon-directory-public
-AWS_PRIVATE_BUCKET=cameroon-directory-private
-AWS_BACKUP_BUCKET=cameroon-directory-backups
+AWS_BUCKET=artisanhub237-public
+AWS_PRIVATE_BUCKET=artisanhub237-private
+AWS_BACKUP_BUCKET=artisanhub237-backups
 AWS_URL=
 
 MEILISEARCH_HOST=http://127.0.0.1:7700

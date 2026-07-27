@@ -448,7 +448,7 @@
                 </a>
                 <p class="mt-4 text-[11.5px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
                 <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="phone" class="w-3 h-3"></i>+237 222 22 22 22</p>
-                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="mail" class="w-3 h-3"></i>contact@artisanhub237.com</p>
+                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="mail" class="w-3 h-3"></i>{{ config('legal.company.email') }}</p>
             </div>
 
             <!-- Downloads -->

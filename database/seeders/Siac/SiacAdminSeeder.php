@@ -6,17 +6,37 @@ use App\Modules\Auth\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
+/**
+ * Seeds the single platform administrator plus the reference rows a fresh
+ * install cannot boot without (system settings, feature flags, certification
+ * types).
+ *
+ * No demo people, businesses or products are created here. The administrator
+ * credentials come from the environment so a deployment never ships with a
+ * password that is written down in the repository; the defaults exist only so
+ * `db:seed` works on a developer machine.
+ */
 class SiacAdminSeeder extends Seeder
 {
     public function run(): void
     {
+        $email    = strtolower(trim((string) env('ADMIN_EMAIL', 'admin@artisanhub237.com')));
+        $password = (string) env('ADMIN_PASSWORD', '');
+        $generated = false;
+
+        if ($password === '') {
+            $password  = 'Admin@' . Str::random(16);
+            $generated = true;
+        }
+
         $admin = User::firstOrCreate(
-            ['email' => 'admin@artisanatcameroun.cm'],
+            ['email' => $email],
             [
-                'name'                => 'Administrateur Artisan Hub 237',
-                'phone'               => '+237 699 00 00 01',
-                'password'            => Hash::make('Admin@ArtisanHub237'),
+                'name'                => (string) env('ADMIN_NAME', 'Administrateur Artisan Hub 237'),
+                'phone'               => env('ADMIN_PHONE'),
+                'password'            => Hash::make($password),
                 'status'              => 'active',
                 'is_email_verified'   => true,
                 'language_preference' => 'fr',
@@ -24,29 +44,15 @@ class SiacAdminSeeder extends Seeder
         );
         $admin->assignRole('super_admin');
 
-        $moderator = User::firstOrCreate(
-            ['email' => 'moderateur@artisanatcameroun.cm'],
-            [
-                'name'                => 'Modérateur Artisan Hub 237',
-                'phone'               => '+237 699 00 00 02',
-                'password'            => Hash::make('Modo@ArtisanHub237'),
-                'status'              => 'active',
-                'is_email_verified'   => true,
-                'language_preference' => 'fr',
-            ]
-        );
-        $moderator->assignRole('moderator');
+        $contactEmail = (string) config('legal.company.email', 'contact@artisanhub237.com');
 
-        // Demo system settings
         $settings = [
-            ['key' => 'platform_name_fr', 'value' => "Artisan Hub 237", 'type' => 'string'],
+            ['key' => 'platform_name_fr', 'value' => 'Artisan Hub 237', 'type' => 'string'],
             ['key' => 'platform_name_en', 'value' => 'Artisan Hub 237', 'type' => 'string'],
-            ['key' => 'contact_email', 'value' => 'contact@artisanatcameroun.cm', 'type' => 'string'],
+            ['key' => 'contact_email', 'value' => $contactEmail, 'type' => 'string'],
             ['key' => 'max_products_per_business', 'value' => '50', 'type' => 'integer'],
             ['key' => 'max_gallery_images', 'value' => '20', 'type' => 'integer'],
             ['key' => 'featured_businesses_count', 'value' => '12', 'type' => 'integer'],
-            ['key' => 'siac_event_date', 'value' => '2026-11-15', 'type' => 'string'],
-            ['key' => 'siac_event_location', 'value' => 'Palais des Congrès, Yaoundé', 'type' => 'string'],
         ];
 
         foreach ($settings as $s) {
@@ -69,7 +75,7 @@ class SiacAdminSeeder extends Seeder
             ]));
         }
 
-        // Certification types
+        // Certification types (real Cameroonian / international schemes)
         $certs = [
             ['name_fr' => 'IGP Cameroun', 'name_en' => 'Cameroon PGI', 'issuing_body_fr' => 'MINCOMMERCE', 'industry_id' => null],
             ['name_fr' => 'Label Artisanat Camerounais', 'name_en' => 'Cameroonian Craft Label', 'issuing_body_fr' => 'MINIMIDT', 'industry_id' => null],
@@ -77,14 +83,25 @@ class SiacAdminSeeder extends Seeder
             ['name_fr' => 'Certification FAO Pisciculture', 'name_en' => 'FAO Aquaculture Certification', 'issuing_body_fr' => 'FAO/MINEPIA', 'industry_id' => null],
         ];
 
+        // `certifications` has no unique index on name_fr, so insertOrIgnore would
+        // duplicate the catalogue on every re-run — check first instead.
         foreach ($certs as $c) {
-            DB::table('certifications')->insertOrIgnore(array_merge($c, [
+            if (DB::table('certifications')->where('name_fr', $c['name_fr'])->exists()) {
+                continue;
+            }
+            DB::table('certifications')->insert(array_merge($c, [
                 'description_fr' => null, 'description_en' => null,
                 'created_at' => now(), 'updated_at' => now(),
             ]));
         }
 
-        $this->command->info("  Admin: admin@artisanatcameroun.cm / Admin@ArtisanHub237");
-        $this->command->info("  Moderator: moderateur@artisanatcameroun.cm / Modo@ArtisanHub237");
+        $this->command->info("  Administrator: {$email}");
+
+        if ($admin->wasRecentlyCreated && $generated) {
+            $this->command->warn("  Generated password (shown once): {$password}");
+            $this->command->warn('  Set ADMIN_EMAIL / ADMIN_PASSWORD in .env before seeding to choose your own.');
+        } elseif (! $admin->wasRecentlyCreated) {
+            $this->command->line('  (already existed — password left untouched)');
+        }
     }
 }

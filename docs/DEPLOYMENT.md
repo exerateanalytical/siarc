@@ -126,9 +126,11 @@ Nothing currently requires the scheduler.
 - **Frontend**: Tailwind runs from the vendored Play runtime
   (`public/vendor/tailwindcss.js`) — there is no npm build step; deploys
   need no Node.js.
-- **Demo accounts** (change or remove before real launch):
-  `admin@artisanatcameroun.cm`, `entrepreneur@siarc2026.cm`,
-  `acheteur@siarc2026.cm`.
+- **Accounts**: seeding creates exactly one user — the platform administrator.
+  Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` before `db:seed`; without
+  `ADMIN_PASSWORD` the seeder generates a random one and prints it once.
+  There are no demo accounts. The one-click `/demo-login/{key}` buttons are
+  inert unless `APP_DEMO_LOGIN=true`, which production must never set.
 
 ## Verifying a deployment
 

@@ -184,6 +184,38 @@ class ProductWebController extends Controller
             ->with('success', $this->lang($request) === 'fr' ? 'Image supprimée.' : 'Image deleted.');
     }
 
+    /**
+     * The cover is what the directory, search results and product cards show,
+     * so it is the seller's single most important merchandising choice.
+     */
+    public function setCoverImage(Request $request, string $slug, int $imageId): RedirectResponse
+    {
+        $business = $this->myBusiness($request);
+        if ($business instanceof RedirectResponse) return $business;
+
+        $product = Product::where('business_id', $business->id)->where('slug', $slug)->firstOrFail();
+        $image = $product->images()->findOrFail($imageId);
+        $this->imageService->setCover($product, $image);
+
+        return redirect()->route('products.web-edit', ['slug' => $product->slug])
+            ->with('success', $this->lang($request) === 'fr' ? 'Photo principale mise à jour.' : 'Main photo updated.');
+    }
+
+    public function moveImage(Request $request, string $slug, int $imageId): RedirectResponse
+    {
+        $business = $this->myBusiness($request);
+        if ($business instanceof RedirectResponse) return $business;
+
+        $direction = $request->input('direction') === 'down' ? 'down' : 'up';
+
+        $product = Product::where('business_id', $business->id)->where('slug', $slug)->firstOrFail();
+        $image = $product->images()->findOrFail($imageId);
+        $this->imageService->move($product, $image, $direction);
+
+        return redirect()->route('products.web-edit', ['slug' => $product->slug])
+            ->with('success', $this->lang($request) === 'fr' ? 'Ordre des photos mis à jour.' : 'Photo order updated.');
+    }
+
     private function handleImages(Request $request, Product $product): void
     {
         foreach ($request->file('images', []) as $file) {

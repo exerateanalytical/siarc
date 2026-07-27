@@ -28,12 +28,12 @@ $PHP artisan test                     # full suite
 To return to **dev mode** for editing: set `APP_ENV=local`, `APP_DEBUG=true` in `.env`, then `optimize:clear`.
 Blade edits do **not** show while `view:cache` is active — run `view:clear` first.
 
-### Demo credentials
-| Role | Email | Password |
-|---|---|---|
-| Admin | `admin@artisanatcameroun.cm` | `Admin@SIARC2026` |
-| Entrepreneur | `entrepreneur@siarc2026.cm` | `Demo@SIARC2026` |
-| Buyer | `acheteur@siarc2026.cm` | `Demo@SIARC2026` |
+### Credentials
+Seeding creates **one** account: the platform administrator, from
+`ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` (defaults to
+`admin@artisanhub237.com` with a randomly generated password printed once).
+No demo entrepreneur/buyer accounts exist — create real ones through
+registration.
 
 ---
 

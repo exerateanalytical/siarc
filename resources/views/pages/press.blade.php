@@ -62,7 +62,7 @@
             <p class="mt-2.5 text-[13px] text-[#55524A] leading-relaxed">
                 {{ $isFr ? 'Pour toute demande d\'interview, de reportage ou d\'information :' : 'For any interview, report or information request:' }}
             </p>
-            <p class="mt-2 text-[13px] font-semibold text-[#14652F]">contact@artisanatcameroun.cm</p>
+            <p class="mt-2 text-[13px] font-semibold text-[#14652F]">{{ config('legal.company.email') }}</p>
             <p class="mt-1 text-[13px] text-[#3B382F]">+237 670 416 238 — {{ $isFr ? 'Lun - Ven : 8h00 - 17h00' : 'Mon - Fri: 8am - 5pm' }}</p>
             <a href="{{ route('contact', ['lang' => $lang]) }}" class="mt-4 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
                 {{ $isFr ? 'Écrire au service presse' : 'Write to the press office' }}

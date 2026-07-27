@@ -117,12 +117,12 @@ body{font-family:'Poppins',system-ui,sans-serif;}</style>
                 <p class="text-xs text-gray-500 mb-2">Authenticate every request with your API key in the header:</p>
                 <div class="bg-gray-900 text-gray-100 rounded-lg p-3 font-mono text-xs overflow-x-auto"><span class="text-green-400">Authorization:</span> <span class="text-yellow-300">Bearer YOUR_API_KEY</span></div>
                 <p class="text-xs text-gray-500 mt-3 mb-2">Example — list companies:</p>
-                <div class="bg-gray-900 text-gray-100 rounded-lg p-3 font-mono text-xs overflow-x-auto leading-relaxed">curl -X GET \<br>&nbsp;&nbsp;<span class="text-yellow-300">https://api.camcompany.cm/v1/companies</span> \<br>&nbsp;&nbsp;-H <span class="text-yellow-300">"Authorization: Bearer ck_YOUR_KEY"</span></div>
+                <div class="bg-gray-900 text-gray-100 rounded-lg p-3 font-mono text-xs overflow-x-auto leading-relaxed">curl -X GET \<br>&nbsp;&nbsp;<span class="text-yellow-300">{{ rtrim(config('app.url'), '/') }}/api/v1/companies</span> \<br>&nbsp;&nbsp;-H <span class="text-yellow-300">"Authorization: Bearer ck_YOUR_KEY"</span></div>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <h2 class="text-sm font-bold text-gray-900 mb-3">Base URL</h2>
-                <div class="bg-gray-900 text-gray-100 rounded-lg p-3 font-mono text-xs"><span class="text-yellow-300">https://api.camcompany.cm/v1</span></div>
+                <div class="bg-gray-900 text-gray-100 rounded-lg p-3 font-mono text-xs"><span class="text-yellow-300">{{ rtrim(config('app.url'), '/') }}/api/v1</span></div>
                 <p class="text-xs text-gray-500 mt-3">All responses are JSON. Rate limit: <strong>60 req/min</strong> authenticated, <strong>20 req/min</strong> public.</p>
             </div>
         </div>

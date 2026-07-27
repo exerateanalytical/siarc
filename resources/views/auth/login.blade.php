@@ -20,13 +20,6 @@
         'X'         => '<path d="M11.6 8.7 17.4 2h-1.4l-5 5.8L7 2H2.5l6.1 8.8L2.5 18h1.4l5.3-6.2 4.3 6.2H18zM4.6 3h2.1l8.7 12.4h-2.1z"/>',
     ];
 
-    $demoAccounts = [
-        ['email' => 'admin@artisanatcameroun.cm', 'password' => 'Admin@ArtisanHub237', 'label' => ['fr' => 'Admin', 'en' => 'Admin']],
-        ['email' => 'entrepreneur@artisanhub237.com', 'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
-        ['email' => 'acheteur@artisanhub237.com',     'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
-        ['email' => 'regional@artisanhub237.com',     'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
-        ['email' => 'technique@artisanhub237.com',    'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Technique', 'en' => 'Technical']],
-    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -217,8 +210,8 @@
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 @foreach([
                     ['admin',  'shield-check', $isFr ? 'Admin' : 'Admin', $isFr ? 'Administrateur' : 'Administrator', '#157A43'],
-                    ['vendor', 'store',        $isFr ? 'Vendeur' : 'Vendor', 'Paul Nguema · Atelier Nguéma', '#C97A16'],
-                    ['buyer',  'shopping-bag', $isFr ? 'Acheteur' : 'Buyer', 'Test Buyer', '#3565DE'],
+                    ['vendor', 'store',        $isFr ? 'Vendeur' : 'Vendor', $isFr ? 'Compte artisan' : 'Artisan account', '#C97A16'],
+                    ['buyer',  'shopping-bag', $isFr ? 'Acheteur' : 'Buyer', $isFr ? 'Compte acheteur' : 'Buyer account', '#3565DE'],
                 ] as [$key, $icon, $label, $who, $col])
                 <form method="POST" action="{{ url('/demo-login/'.$key) }}">
                     @csrf
@@ -277,23 +270,6 @@
                 </a>
             </p>
 
-            <details class="mt-5 text-center">
-                <summary class="text-[12.5px] text-muted cursor-pointer hover:text-[#26251F] transition-colors list-none">
-                    {{ $isFr ? 'Comptes de démonstration' : 'Demo accounts' }}
-                </summary>
-                <div class="mt-3 grid grid-cols-3 gap-2">
-                    @foreach($demoAccounts as $acc)
-                    <button type="button" onclick="demoLogin('{{ $acc['email'] }}','{{ $acc['password'] }}')"
-                        class="py-2 px-1 rounded-lg border border-[#E4E0D8] bg-white hover:border-gold hover:bg-[#FBF9F6] text-[11.5px] font-semibold text-[#26251F] transition-colors">
-                        {{ $acc['label'][$lang] }}
-                    </button>
-                    @endforeach
-                </div>
-                <p class="mt-2 text-[11px] text-muted">
-                    {{ $isFr ? 'Un clic pour se connecter.' : 'One click to log in.' }}
-                </p>
-            </details>
-
             <p class="mt-4 text-center">
                 <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-[#26251F] transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
@@ -308,12 +284,6 @@
 
 <script>
     lucide.createIcons();
-
-    function demoLogin(email, password) {
-        document.getElementById('email').value = email;
-        document.getElementById('password').value = password;
-        document.getElementById('login-form').submit();
-    }
 
     // Password visibility toggle
     document.getElementById('password-toggle').addEventListener('click', function () {

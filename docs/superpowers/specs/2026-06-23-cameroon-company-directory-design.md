@@ -326,8 +326,8 @@ popular_searches_cache       — Aggregated popular search terms
 
 ### 6.1 Base URL & Versioning
 ```
-Production:  https://api.cameroon-directory.cm/api/v1
-Staging:     https://staging-api.cameroon-directory.cm/api/v1
+Production:  https://api.artisanhub237.com/api/v1
+Staging:     https://staging-api.artisanhub237.com/api/v1
 Local:       http://localhost:8000/api/v1
 ```
 
@@ -547,12 +547,12 @@ Referrer-Policy: strict-origin-when-cross-origin
 ### 10.1 Bucket Structure (AWS S3)
 
 ```
-cameroon-directory-public   (CDN-served, public read)
+artisanhub237-public   (CDN-served, public read)
   companies/{uuid}/logo.webp, cover.webp, gallery/
   cms/posts/{uuid}/cover.webp
   certificates/public/{uuid}/verification-badge.svg
 
-cameroon-directory-private  (signed URLs only, no public access)
+artisanhub237-private  (signed URLs only, no public access)
   verification/{company_uuid}/documents/
   kyc/{investor_uuid}/
   offerings/{offering_uuid}/documents/ + signed-agreements/
@@ -562,7 +562,7 @@ cameroon-directory-private  (signed URLs only, no public access)
   compliance/sar/
   exports/{export_uuid}/
 
-cameroon-directory-backups  (private, versioned, lifecycle policy)
+artisanhub237-backups  (private, versioned, lifecycle policy)
   database/{date}/db-backup.sql.gz.enc
   logs/{date}/app.log.gz
 ```

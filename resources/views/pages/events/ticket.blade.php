@@ -209,8 +209,8 @@
 
             <!-- Contact bar -->
             <div class="bg-[#06301A] px-6 py-3.5 flex flex-wrap items-center gap-x-8 gap-y-2">
-                <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="globe" class="w-4 h-4 text-[#E5A82E]"></i>www.galerieartisanat.cm</span>
-                <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="mail" class="w-4 h-4 text-[#E5A82E]"></i>contact@galerieartisanat.cm</span>
+                <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="globe" class="w-4 h-4 text-[#E5A82E]"></i>{{ preg_replace('#^https?://#', '', config('app.url')) }}</span>
+                <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="mail" class="w-4 h-4 text-[#E5A82E]"></i>{{ config('legal.company.email') }}</span>
                 <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="phone" class="w-4 h-4 text-[#E5A82E]"></i>+237 670 416 238</span>
                 <span class="ml-auto flex items-center gap-2">
                     @foreach(['facebook' => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>', 'instagram' => '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>', 'linkedin' => '<path d="M4.98 3.5a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM3.5 8.5h3v8h-3zM9 8.5h2.8v1.1h.1c.4-.7 1.4-1.4 2.8-1.4 3 0 3.5 1.9 3.5 4.3v4h-3v-3.5c0-.8 0-1.9-1.2-1.9s-1.4.9-1.4 1.9v3.5H9z" transform="scale(0.83) translate(2,1)"/>', 'youtube' => '<path d="M18.2 6.3a2.1 2.1 0 0 0-1.5-1.5C15.4 4.4 10 4.4 10 4.4s-5.4 0-6.7.4A2.1 2.1 0 0 0 1.8 6.3 22 22 0 0 0 1.5 10a22 22 0 0 0 .3 3.7 2.1 2.1 0 0 0 1.5 1.5c1.3.4 6.7.4 6.7.4s5.4 0 6.7-.4a2.1 2.1 0 0 0 1.5-1.5A22 22 0 0 0 18.5 10a22 22 0 0 0-.3-3.7zM8.3 12.5v-5l4.4 2.5z"/>'] as $sKey => $sPath)

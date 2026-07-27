@@ -375,7 +375,7 @@
                         <div>
                             <label for="ob-email" class="{{ $labelCls }}">Email <span class="ui-req">*</span></label>
                             <div class="relative"><i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
-                                <input type="email" id="ob-email" name="email" value="{{ old('email') }}" placeholder="aristide.ndop@gmail.com" class="{{ $fieldCls }}"></div>
+                                <input type="email" id="ob-email" name="email" value="{{ old('email') }}" placeholder="vous@exemple.cm" class="{{ $fieldCls }}"></div>
                             <p class="ui-hint">{{ $isFr ? 'Un code de vérification y sera envoyé.' : 'A verification code will be sent there.' }}</p>
                         </div>
                     </div>
@@ -650,7 +650,7 @@
                     <span class="font-bold text-[#1B1B18]">{{ $isFr ? "Besoin d'aide ?" : 'Need help?' }}</span>
                     {{ $isFr ? 'Notre équipe est là pour vous accompagner.' : 'Our team is here to support you.' }}<br>
                     {{ $isFr ? 'Contactez-nous par email à' : 'Contact us by email at' }}
-                    <a href="mailto:support@galerie-artisanat.cm" class="font-semibold text-[#14652F] break-all">support@galerie-artisanat.cm</a>
+                    <a href="mailto:{{ config('legal.company.email') }}" class="font-semibold text-[#14652F] break-all">{{ config('legal.company.email') }}</a>
                     {{ $isFr ? 'ou par téléphone au' : 'or by phone on' }}
                     <a href="tel:+237690123456" class="font-semibold text-[#14652F]">+237 690 123 456</a>.
                 </p>

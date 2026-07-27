@@ -126,9 +126,19 @@ class Product extends Model
         return $this->hasMany(ProductImage::class)->orderBy('sort_order');
     }
 
+    /**
+     * The image used on cards, in the directory and in search results.
+     *
+     * An explicit cover wins; products created before sellers could choose one
+     * have no `is_cover` row at all, so the first by sort_order still applies.
+     */
     public function primaryImage(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(ProductImage::class)->orderBy('sort_order')->limit(1);
+        return $this->hasOne(ProductImage::class)
+            ->orderByDesc('is_cover')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->limit(1);
     }
 
     public function documents(): \Illuminate\Database\Eloquent\Relations\HasMany

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Businesses\Resources\BusinessListResource;
 use App\Modules\Businesses\Resources\BusinessResource;
+use App\Support\SearchQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,13 +28,14 @@ class PublicBusinessController extends Controller
             $query->where('verification_tier', $request->tier);
         }
         if ($request->filled('q')) {
-            $search = '%' . $request->q . '%';
-            $query->where(fn ($q) => $q->where('name_fr', 'like', $search)
-                                       ->orWhere('name_en', 'like', $search)
-                                       ->orWhere('description_fr', 'like', $search));
+            SearchQuery::apply($query, (string) $request->q, SearchQuery::BUSINESS_COLUMNS, SearchQuery::BUSINESS_RELATIONS);
         }
         if ($request->boolean('featured')) {
             $query->featured();
+        }
+
+        if ($request->filled('q')) {
+            SearchQuery::orderByRelevance($query, (string) $request->q, SearchQuery::BUSINESS_NAMES, SearchQuery::BUSINESS_SECONDARY);
         }
 
         $sort = $request->get('sort', 'featured');

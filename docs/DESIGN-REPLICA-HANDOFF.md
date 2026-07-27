@@ -163,7 +163,7 @@ Concretely, this means:
   tickets): POST `/contact` validates (name/email/subject/message/consent
   `accepted`), rate-limited 5/5min per IP. Logged-in → real `SupportTicket`
   + first reply (message + "— name <email>" appended). Guest → `Mail::raw`
-  to contact@gvnac.cm in try/catch (non-fatal; .env uses smtp→127.0.0.1:1025
+  to config('legal.company.email') in try/catch (non-fatal; .env uses smtp→127.0.0.1:1025
   Mailpit, usually down in dev — same pattern as password-reset mail).
   Both redirect back with a success flash rendered above the form.
 - "Nous contacter" links elsewhere now point at `route('contact')`:
@@ -220,7 +220,7 @@ Concretely, this means:
   Régions/Collections/Événements/À propos, active = gold underline) and
   `directory-footer` (options: `$dfExplorer`/`$dfRessources` arrays,
   `$dfNewsletterText`, `$dfShowHelp` → BESOIN D'AIDE ? column with
-  +237 670 416 238 / contact@galerieartisanat.cm / Lun - Ven : 8h00 - 17h00 /
+  +237 670 416 238 / config('legal.company.email') / Lun - Ven : 8h00 - 17h00 /
   gold-outline "Nous contacter →" → route('contact'); `$dfSocialStyle='outline'`,
   `$dfShowLegalLinks=false`).
 - View REPLACED `pages/businesses/index.blade.php` (was a layouts/app page);
@@ -370,8 +370,8 @@ Concretely, this means:
   (logo/brand, badge, uppercase title, description, 5 illustrated chips
   `ticket-chip-1..5.png`, stats box 500+/50+/20+/10+), artwork
   `ticket-art.png` (re-cropped from x852 to exclude the baked stats-box
-  fragment), dark contact bar (www.galerieartisanat.cm /
-  contact@galerieartisanat.cm / +237 670 416 238 / social), CSS perforation,
+  fragment), dark contact bar (config('app.url') /
+  config('legal.company.email') / +237 670 416 238 / social), CSS perforation,
   stub with LIVE QR code (vendored qrcodejs, encodes the event URL + ticket
   id), ENTRÉE GRATUITE (red) or the price, dashed divider, DATE/HEURE/LIEU/
   TYPE rows, TICKET ID (GVC-2025-00012345 for the design event, generated
