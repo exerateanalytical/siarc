@@ -111,33 +111,56 @@ class SiacTaxonomySeeder extends Seeder
             ],
         ];
 
+        // Idempotent: the official-craft-taxonomy migration already seeds part of
+        // this tree (the `artisanat` / `aquaculture` industries and the artisanat
+        // sectors + categories), so plain inserts here broke `migrate && db:seed`
+        // on a fresh install. Existing rows are reused as-is — the migration owns
+        // their content — and only the missing ones are added.
+        $newIndustries = 0;
+        $newSectors    = 0;
+        $newCategories = 0;
+
         foreach ($industries as $sort => $ind) {
-            $industryId = DB::table('industries')->insertGetId([
-                'slug'           => $ind['slug'],
-                'name_fr'        => $ind['name_fr'],
-                'name_en'        => $ind['name_en'],
-                'description_fr' => $ind['description_fr'],
-                'description_en' => $ind['description_en'],
-                'icon'           => $ind['icon'],
-                'sort_order'     => $ind['sort_order'],
-                'is_active'      => true,
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ]);
+            $industryId = DB::table('industries')->where('slug', $ind['slug'])->value('id');
+
+            if (! $industryId) {
+                $industryId = DB::table('industries')->insertGetId([
+                    'slug'           => $ind['slug'],
+                    'name_fr'        => $ind['name_fr'],
+                    'name_en'        => $ind['name_en'],
+                    'description_fr' => $ind['description_fr'],
+                    'description_en' => $ind['description_en'],
+                    'icon'           => $ind['icon'],
+                    'sort_order'     => $ind['sort_order'],
+                    'is_active'      => true,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
+                $newIndustries++;
+            }
 
             foreach ($ind['sectors'] as $sSort => $sec) {
-                $sectorId = DB::table('sectors')->insertGetId([
-                    'industry_id' => $industryId,
-                    'slug'        => $sec['slug'],
-                    'name_fr'     => $sec['name_fr'],
-                    'name_en'     => $sec['name_en'],
-                    'sort_order'  => $sSort + 1,
-                    'is_active'   => true,
-                    'created_at'  => now(),
-                    'updated_at'  => now(),
-                ]);
+                $sectorId = DB::table('sectors')->where('slug', $sec['slug'])->value('id');
+
+                if (! $sectorId) {
+                    $sectorId = DB::table('sectors')->insertGetId([
+                        'industry_id' => $industryId,
+                        'slug'        => $sec['slug'],
+                        'name_fr'     => $sec['name_fr'],
+                        'name_en'     => $sec['name_en'],
+                        'sort_order'  => $sSort + 1,
+                        'is_active'   => true,
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ]);
+                    $newSectors++;
+                }
 
                 foreach ($sec['categories'] as $cSort => $cat) {
+                    if (DB::table('product_categories')->where('slug', $cat['slug'])->exists()) {
+                        continue;
+                    }
+
                     DB::table('product_categories')->insert([
                         'sector_id'   => $sectorId,
                         'parent_id'   => null,
@@ -149,6 +172,7 @@ class SiacTaxonomySeeder extends Seeder
                         'created_at'  => now(),
                         'updated_at'  => now(),
                     ]);
+                    $newCategories++;
                 }
             }
         }
@@ -169,7 +193,20 @@ class SiacTaxonomySeeder extends Seeder
             ['industry_id' => $artisanatId, 'field_key' => 'origine_ethnique', 'name_fr' => 'Origine ethnique', 'name_en' => 'Ethnic origin', 'field_type' => 'text', 'unit' => null, 'sort_order' => 3],
         ];
 
+        // attribute_templates has no unique index, so re-runnability is keyed on
+        // the (industry, field_key) pair the rest of the app looks templates up by.
+        $newTemplates = 0;
+
         foreach ($templates as $t) {
+            $exists = DB::table('attribute_templates')
+                ->where('industry_id', $t['industry_id'])
+                ->where('field_key', $t['field_key'])
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
             DB::table('attribute_templates')->insert(array_merge($t, [
                 'options_fr' => isset($t['options_fr']) ? json_encode($t['options_fr']) : null,
                 'options_en' => isset($t['options_en']) ? json_encode($t['options_en']) : null,
@@ -177,8 +214,9 @@ class SiacTaxonomySeeder extends Seeder
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ]));
+            $newTemplates++;
         }
 
-        $this->command->info('  5 industries, 14 sectors, 27 categories, 6 attribute templates seeded.');
+        $this->command->info("  {$newIndustries} industries, {$newSectors} sectors, {$newCategories} categories, {$newTemplates} attribute templates seeded.");
     }
 }

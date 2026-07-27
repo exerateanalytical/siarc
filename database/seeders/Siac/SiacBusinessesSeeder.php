@@ -17,6 +17,11 @@ class SiacBusinessesSeeder extends Seeder
     {
         $data = $this->businessData();
 
+        // Idempotent: businesses/products are keyed by a unique slug derived from
+        // their name, so a re-run of `db:seed` used to die on a duplicate slug.
+        // Existing rows are reused (and their id fed to the children) instead.
+        $newBusinesses = 0;
+
         foreach ($data as $bData) {
             // Create or find the user
             $user = User::firstOrCreate(
@@ -37,41 +42,53 @@ class SiacBusinessesSeeder extends Seeder
             $region   = DB::table('regions')->where('code', $bData['region_code'])->first();
             $city     = DB::table('cities')->where('region_id', $region->id)->where('name_fr', $bData['city'])->first();
 
-            $business = Business::create([
-                'user_id'           => $user->id,
-                'industry_id'       => $industry->id,
-                'region_id'         => $region->id,
-                'city_id'           => $city?->id,
-                'name_fr'           => $bData['name_fr'],
-                'name_en'           => $bData['name_en'] ?? $bData['name_fr'],
-                'tagline_fr'        => $bData['tagline_fr'],
-                'tagline_en'        => $bData['tagline_en'] ?? $bData['tagline_fr'],
-                'description_fr'    => $bData['description_fr'],
-                'description_en'    => $bData['description_en'] ?? $bData['description_fr'],
-                'phone'             => $bData['phone'],
-                'whatsapp'          => $bData['phone'],
-                'email'             => $bData['email'],
-                'address_fr'        => $bData['address'],
-                'year_established'  => $bData['year'],
-                'employee_count'    => $bData['employees'],
-                'ownership_type'    => $bData['ownership'] ?? 'private',
-                'languages_spoken'  => ['fr'],
-                'verification_tier' => $bData['tier'],
-                'status'            => 'published',
-                'is_featured'       => $bData['featured'] ?? false,
-                'views_count'       => rand(20, 800),
-            ]);
+            $business = Business::withTrashed()->where('email', $bData['email'])->first();
+
+            if (! $business) {
+                $business = Business::create([
+                    'user_id'           => $user->id,
+                    'industry_id'       => $industry->id,
+                    'region_id'         => $region->id,
+                    'city_id'           => $city?->id,
+                    'name_fr'           => $bData['name_fr'],
+                    'name_en'           => $bData['name_en'] ?? $bData['name_fr'],
+                    'tagline_fr'        => $bData['tagline_fr'],
+                    'tagline_en'        => $bData['tagline_en'] ?? $bData['tagline_fr'],
+                    'description_fr'    => $bData['description_fr'],
+                    'description_en'    => $bData['description_en'] ?? $bData['description_fr'],
+                    'phone'             => $bData['phone'],
+                    'whatsapp'          => $bData['phone'],
+                    'email'             => $bData['email'],
+                    'address_fr'        => $bData['address'],
+                    'year_established'  => $bData['year'],
+                    'employee_count'    => $bData['employees'],
+                    'ownership_type'    => $bData['ownership'] ?? 'private',
+                    'languages_spoken'  => ['fr'],
+                    'verification_tier' => $bData['tier'],
+                    'status'            => 'published',
+                    'is_featured'       => $bData['featured'] ?? false,
+                    'views_count'       => rand(20, 800),
+                ]);
+                $newBusinesses++;
+            }
 
             // Tags
             foreach ($bData['tags'] as $tag) {
-                DB::table('business_tags')->insert(['business_id' => $business->id, 'tag' => $tag]);
+                DB::table('business_tags')->insertOrIgnore(['business_id' => $business->id, 'tag' => $tag]);
             }
 
             // Products
             foreach ($bData['products'] as $pData) {
                 $category = DB::table('product_categories')->where('slug', $pData['category'])->first();
 
-                $product = Product::create([
+                // The slug generator silently de-duplicates ("-1", "-2"), so a
+                // second run would quietly clone every product without this check.
+                $product = Product::withTrashed()
+                    ->where('business_id', $business->id)
+                    ->where('name_fr', $pData['name_fr'])
+                    ->first();
+
+                $product ??= Product::create([
                     'business_id'     => $business->id,
                     'category_id'     => $category?->id,
                     'name_fr'         => $pData['name_fr'],
@@ -92,13 +109,17 @@ class SiacBusinessesSeeder extends Seeder
                         ->orWhere('name_en', $attr['key_en'])
                         ->first();
                     if ($template) {
-                        ProductAttribute::create([
-                            'product_id'           => $product->id,
-                            'attribute_template_id' => $template->id,
-                            'value_fr'             => $attr['value_fr'],
-                            'value_en'             => $attr['value_en'] ?? $attr['value_fr'],
-                            'unit'                 => $attr['unit'] ?? null,
-                        ]);
+                        ProductAttribute::firstOrCreate(
+                            [
+                                'product_id'            => $product->id,
+                                'attribute_template_id' => $template->id,
+                            ],
+                            [
+                                'value_fr' => $attr['value_fr'],
+                                'value_en' => $attr['value_en'] ?? $attr['value_fr'],
+                                'unit'     => $attr['unit'] ?? null,
+                            ]
+                        );
                     }
                 }
             }
@@ -106,7 +127,7 @@ class SiacBusinessesSeeder extends Seeder
             $this->command->line("  + {$business->name_fr}");
         }
 
-        $this->command->info('  Businesses & products seeded.');
+        $this->command->info("  {$newBusinesses} new businesses seeded; products & tags ensured.");
     }
 
     private function businessData(): array

@@ -82,59 +82,65 @@
             <img src="{{ asset('images/landing/auth-hero.png') }}" alt="" class="w-full h-full object-cover">
         </div>
 
-        <!-- Brand panel -->
+        {{-- Brand panel.
+
+             On desktop this is the left half of the hero. On a phone the full
+             version pushed the email field 1040px down — past the fold, behind a
+             screenful of marketing — so mobile gets a compact lockup instead and
+             the sign-in card lands immediately below it. The headline, blurb and
+             the three feature bullets are desktop-only. --}}
         <div class="relative lg:absolute lg:inset-y-0 lg:left-0 lg:w-[43.5%] overflow-hidden">
             <div class="absolute inset-0 opacity-70 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
-            <div class="relative px-8 py-9 lg:px-12 lg:pt-[4.2rem] lg:pb-10">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-start gap-4">
-                    <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[64px] h-[70px] object-contain shrink-0">
-                    <span class="pt-1">
-                        <span class="block text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
-                            Artisan Hub 237<br>
-                            {{ $isFr ? 'L\'artisanat' : 'Cameroonian' }}<br>
-                            {{ $isFr ? 'camerounais' : 'craftsmanship' }}
+            <div class="relative px-5 py-5 lg:px-12 lg:pt-[4.2rem] lg:pb-10">
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center lg:items-start gap-3 lg:gap-4">
+                    <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] lg:w-[64px] lg:h-[70px] object-contain shrink-0">
+                    <span class="lg:pt-1">
+                        <span class="block text-[13.5px] lg:text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
+                            Artisan Hub 237<span class="lg:hidden"> — {{ $isFr ? 'L\'artisanat camerounais' : 'Cameroonian craftsmanship' }}</span>
+                            <span class="hidden lg:inline"><br>{{ $isFr ? 'L\'artisanat' : 'Cameroonian' }}<br>{{ $isFr ? 'camerounais' : 'craftsmanship' }}</span>
                         </span>
-                        <span class="mt-3.5 block text-[14.5px] text-sage leading-[1.5]">
-                            {{ $isFr ? "Notre héritage, notre fierté," : 'Our heritage, our pride,' }}<br>
-                            {{ $isFr ? 'notre avenir' : 'our future' }}
+                        <span class="mt-1 lg:mt-3.5 block text-[11.5px] lg:text-[14.5px] text-sage leading-[1.4] lg:leading-[1.5]">
+                            {{ $isFr ? "Notre héritage, notre fierté," : 'Our heritage, our pride,' }}<span class="lg:hidden"> </span><br class="hidden lg:inline">{{ $isFr ? 'notre avenir' : 'our future' }}
                         </span>
                     </span>
                 </a>
 
-                <h1 class="mt-14 lg:mt-[4.4rem] font-serif text-[30px] lg:text-[38px] text-white leading-tight lg:whitespace-nowrap">
-                    {{ $isFr ? 'Bienvenue de retour !' : 'Welcome back!' }}
-                </h1>
-                <div class="mt-5 w-[58px] h-[4px] bg-goldlt"></div>
+                <div class="hidden lg:block">
+                    <h1 class="mt-14 lg:mt-[4.4rem] font-serif text-[30px] lg:text-[38px] text-white leading-tight lg:whitespace-nowrap">
+                        {{ $isFr ? 'Bienvenue de retour !' : 'Welcome back!' }}
+                    </h1>
+                    <div class="mt-5 w-[58px] h-[4px] bg-goldlt"></div>
 
-                <p class="mt-8 text-[17.5px] text-sage leading-[1.75] max-w-[420px]">
-                    {{ $isFr
-                        ? "Connectez-vous pour accéder à la plus grande vitrine de l'artisanat camerounais."
-                        : 'Sign in to access the largest showcase of Cameroonian craftsmanship.'
-                    }}
-                </p>
+                    <p class="mt-8 text-[17.5px] text-sage leading-[1.75] max-w-[420px]">
+                        {{ $isFr
+                            ? "Connectez-vous pour accéder à la plus grande vitrine de l'artisanat camerounais."
+                            : 'Sign in to access the largest showcase of Cameroonian craftsmanship.'
+                        }}
+                    </p>
 
-                <div class="mt-12 lg:mt-[3.8rem] space-y-9">
-                    @foreach($loginFeatures as [$featIcon, $featTitle, $featDesc])
-                    <div class="flex items-start gap-5">
-                        <span class="w-[62px] h-[62px] shrink-0 rounded-full border border-gold/60 flex items-center justify-center">
-                            <i data-lucide="{{ $featIcon }}" class="w-7 h-7 text-goldlt" style="stroke-width:1.5"></i>
-                        </span>
-                        <span class="pt-0.5">
-                            <span class="block text-[17px] font-semibold text-white">{{ $featTitle }}</span>
-                            <span class="mt-1 block text-[15.5px] text-sage leading-[1.5] whitespace-pre-line">{{ $featDesc }}</span>
-                        </span>
+                    <div class="mt-12 lg:mt-[3.8rem] space-y-9">
+                        @foreach($loginFeatures as [$featIcon, $featTitle, $featDesc])
+                        <div class="flex items-start gap-5">
+                            <span class="w-[62px] h-[62px] shrink-0 rounded-full border border-gold/60 flex items-center justify-center">
+                                <i data-lucide="{{ $featIcon }}" class="w-7 h-7 text-goldlt" style="stroke-width:1.5"></i>
+                            </span>
+                            <span class="pt-0.5">
+                                <span class="block text-[17px] font-semibold text-white">{{ $featTitle }}</span>
+                                <span class="mt-1 block text-[15.5px] text-sage leading-[1.5] whitespace-pre-line">{{ $featDesc }}</span>
+                            </span>
+                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
             </div>
         </div>
 
         <!-- Login card -->
-        <div class="relative z-10 mx-4 mb-6 lg:m-0 lg:absolute lg:left-[44%] lg:top-1/2 lg:-translate-y-1/2 lg:w-[39.8%] bg-[#F9F6F1] rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.35)] px-7 py-8 lg:px-11 lg:py-10">
-            <h2 class="font-serif text-[36px] lg:text-[40px] text-[#1D1B16] leading-tight">
+        <div class="relative z-10 mx-3 -mt-3 mb-5 lg:m-0 lg:absolute lg:left-[44%] lg:top-1/2 lg:-translate-y-1/2 lg:w-[39.8%] bg-[#F9F6F1] rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.35)] px-5 py-6 lg:px-11 lg:py-10">
+            <h2 class="font-serif text-[28px] lg:text-[40px] text-[#1D1B16] leading-tight">
                 {{ $isFr ? 'Se connecter' : 'Sign in' }}
             </h2>
-            <p class="mt-1 text-[18px] text-[#6F6B60]">
+            <p class="mt-1 text-[14.5px] lg:text-[18px] text-[#6F6B60]">
                 {{ $isFr ? 'Accédez à votre compte' : 'Access your account' }}
             </p>
 

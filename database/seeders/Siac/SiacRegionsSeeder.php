@@ -22,26 +22,46 @@ class SiacRegionsSeeder extends Seeder
             ['code' => 'EN', 'name_fr' => 'Extrême-Nord',  'name_en' => 'Far North',       'cities' => ['Maroua', 'Mora', 'Kousséri', 'Yagoua', 'Kaélé']],
         ];
 
-        foreach ($regions as $r) {
-            $regionId = DB::table('regions')->insertGetId([
-                'code'       => $r['code'],
-                'name_fr'    => $r['name_fr'],
-                'name_en'    => $r['name_en'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        // Idempotent: earlier migrations already seed the region/city reference
+        // data, so a plain insert here made `migrate && db:seed` fail on a fresh
+        // install with a duplicate-key error. Re-running the seeder must be safe.
+        $cityCount = 0;
 
-            foreach ($r['cities'] as $city) {
-                DB::table('cities')->insert([
-                    'region_id'  => $regionId,
-                    'name_fr'    => $city,
-                    'name_en'    => $city,
+        foreach ($regions as $r) {
+            $regionId = DB::table('regions')->where('code', $r['code'])->value('id');
+
+            if (! $regionId) {
+                $regionId = DB::table('regions')->insertGetId([
+                    'code'       => $r['code'],
+                    'name_fr'    => $r['name_fr'],
+                    'name_en'    => $r['name_en'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
             }
+
+            foreach ($r['cities'] as $city) {
+                $exists = DB::table('cities')
+                    ->where('region_id', $regionId)
+                    ->where('name_fr', $city)
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
+
+                DB::table('cities')->insert([
+                    'region_id'  => $regionId,
+                    'name_fr'    => $city,
+                    'name_en'    => $city,
+                    'slug'       => \Illuminate\Support\Str::slug($city),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $cityCount++;
+            }
         }
 
-        $this->command->info('  10 regions + 50 cities seeded.');
+        $this->command->info('  Regions ensured; ' . $cityCount . ' new cities seeded.');
     }
 }
