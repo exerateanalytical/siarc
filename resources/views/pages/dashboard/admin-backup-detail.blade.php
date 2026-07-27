@@ -30,7 +30,7 @@
         [$isFr?'Chemin de stockage':'Storage path', ($settings['backup_path'] ?? '/backups/gvna').'/'.$created->format('Y/m/d').'/'],
     ];
     $infoRight = [
-        [$isFr?'Base de données':'Database', 'gvna_production'],
+        [$isFr?'Base de données':'Database', 'artisanhub237_production'],
         [$isFr?'Version DB':'DB Version', $settings['backup_db'] ?? 'MySQL 8.0'],
         [$isFr?'Encodage':'Encoding', 'UTF-8'],
         ['Compression', $isFr?'ZIP (Déflation)':'ZIP (Deflate)'],

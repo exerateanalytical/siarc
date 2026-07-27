@@ -1,9 +1,9 @@
 @php
     $isFr = $lang === 'fr';
 
-    $buyerName = $siacUser['name'] ?? 'Jean Dupont';
-    $buyerEmail = $siacUser['email'] ?? 'jean.dupont@achatpro.com';
-    $buyerPhone = $siacUser['phone'] ?? '+237 6 12 34 56 78';
+    $buyerName = $siacUser['name'] ?? '';
+    $buyerEmail = $siacUser['email'] ?? '';
+    $buyerPhone = $siacUser['phone'] ?? '';
     $vendorUrl = $quoteVendor
         ? route('businesses.show', ['slug' => $quoteVendor->slug, 'lang' => $lang])
         : route('businesses.index', ['lang' => $lang]);
@@ -125,11 +125,11 @@
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Entreprise' : 'Company' }}</label>
-                            <input type="text" id="rfq-company" value="Achat Pro SARL" class="{{ $fieldCls }}">
+                            <input type="text" id="rfq-company" value="" placeholder="{{ $isFr ? 'Nom de votre entreprise (facultatif)' : 'Your company name (optional)' }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Fonction' : 'Role' }}</label>
-                            <input type="text" value="{{ $isFr ? 'Responsable des achats' : 'Purchasing manager' }}" class="{{ $fieldCls }}">
+                            <input type="text" value="" placeholder="{{ $isFr ? 'Votre fonction (facultatif)' : 'Your role (optional)' }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Pays' : 'Country' }} <span class="text-[#DC2626]">*</span></label>
@@ -341,9 +341,14 @@
             @json($isFr ? 'Demande de devis — ' : 'Quote request — ') + document.getElementById('rfq-title').value,
             document.getElementById('rfq-desc').value,
             document.getElementById('rfq-msg').value,
-            @json($isFr ? 'Contact : ' : 'Contact: ') + document.getElementById('rfq-name').value
-                + ' (' + document.getElementById('rfq-company').value + ') — '
-                + document.getElementById('rfq-email').value + ' — ' + document.getElementById('rfq-phone').value,
+            (function () {
+                // Only include the contact details the buyer actually filled in.
+                const v = id => (document.getElementById(id).value || '').trim();
+                const company = v('rfq-company');
+                const bits = [v('rfq-name') + (company ? ' (' + company + ')' : ''), v('rfq-email'), v('rfq-phone')]
+                    .map(s => s.trim()).filter(Boolean);
+                return bits.length ? @json($isFr ? 'Contact : ' : 'Contact: ') + bits.join(' — ') : '';
+            })(),
         ].filter(Boolean);
         document.getElementById('rfq-body').value = parts.join('\n\n').slice(0, 2000);
         localStorage.removeItem('rfqDraft');

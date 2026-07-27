@@ -36,14 +36,17 @@
         ]];
     }
 
-    // [label, value, color, bold]
+    // Live-computed client side from the item rows (see the recompute() script
+    // at the bottom). Rendered at zero so nothing is ever invented — the design
+    // shipped a fixed 4,751,750 / 5,952,258 breakdown here.
+    // [label, id, color, bold]
     $financeRows = [
-        [$isFr ? 'Sous-total' : 'Subtotal',                        '4,751,750 FCFA', '#1B1B18', false],
-        [$isFr ? 'Remise globale (2%)' : 'Global discount (2%)',   '-95,035 FCFA',   '#E5484D', false],
-        [$isFr ? 'Sous-total après remise' : 'Subtotal after discount', '4,656,715 FCFA', '#1B1B18', true],
-        [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)',      '895,543 FCFA',   '#1B1B18', false],
-        [$isFr ? 'Frais de livraison (est.)' : 'Delivery costs (est.)', '250,000 FCFA', '#1B1B18', false],
-        [$isFr ? 'Assurance (est.)' : 'Insurance (est.)',          '150,000 FCFA',   '#1B1B18', false],
+        [$isFr ? 'Sous-total' : 'Subtotal',                             'fin-subtotal', '#1B1B18', false],
+        [$isFr ? 'Remise globale' : 'Global discount',                  'fin-discount', '#E5484D', false],
+        [$isFr ? 'Sous-total après remise' : 'Subtotal after discount', 'fin-net',      '#1B1B18', true],
+        [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)',           'fin-tax',      '#1B1B18', false],
+        [$isFr ? 'Frais de livraison' : 'Delivery costs',               'fin-delivery', '#1B1B18', false],
+        [$isFr ? 'Assurance' : 'Insurance',                             'fin-insurance','#1B1B18', false],
     ];
 
     $included = $isFr
@@ -88,17 +91,10 @@
                 <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Construisez et personnalisez votre proposition pour l\'envoyer à l\'artisan.' : 'Build and customise your proposal to send it to the artisan.' }}</p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
-                @if($isReal)
                 <button type="submit" form="bld-form" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
                     {{ $isFr ? 'Envoyer la proposition' : 'Send the proposal' }}
                     <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
-                @else
-                <a href="{{ route('quotes.proposal', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-white transition-colors">
-                    {{ $isFr ? 'Étape suivante' : 'Next step' }}
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
-                @endif
             </div>
         </div>
 
@@ -164,24 +160,21 @@
                             <div id="bld-rows">
                                 @foreach($rows as $rIdx => [$rImg, $rName, $rRef, $rSpec, $rQty, $rPrice, $rDisc, $rTotal])
                                 <div class="bld-row border-b border-[#F1F2F1] py-3.5">
-                                    @if($isReal)
-                                    <input type="hidden" name="items[{{ $rIdx }}][name]" value="{{ $rName }}">
-                                    <input type="hidden" name="items[{{ $rIdx }}][description]" value="{{ $rSpec }}">
-                                    @endif
                                     <div class="grid grid-cols-[minmax(220px,1.4fr)_90px_110px_120px_110px_130px_120px_80px] gap-3 items-center">
-                                        <div class="flex items-center gap-3">
-                                            <img src="{{ asset('images/landing/' . $rImg) }}" alt="" class="w-[46px] h-[46px] shrink-0 rounded-lg object-cover">
-                                            <div class="min-w-0">
-                                                <p class="text-[12.5px] font-bold text-[#1B1B18] leading-snug">{{ $rName }}</p>
-                                                <p class="mt-0.5 text-[11px] text-[#6F6B60]">{{ $rRef }}</p>
-                                            </div>
+                                        <div class="min-w-0">
+                                            {{-- Editable: a seller quoting an RFQ names each line themselves.
+                                                 Prefilled from the request so the common single-line case is one click. --}}
+                                            <input type="text" @if($isReal) name="items[{{ $rIdx }}][name]" required @endif value="{{ $rName }}"
+                                                   placeholder="{{ $isFr ? 'Nom de l\'article' : 'Item name' }}"
+                                                   class="w-full h-[38px] border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] font-semibold text-[#1B1B18] focus:outline-none focus:border-[#14532D]">
+                                            <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $rRef }}</p>
                                         </div>
                                         <input type="text" @if($isReal) name="items[{{ $rIdx }}][quantity]" @endif value="{{ $rQty }}" class="bld-qty {{ $inputCls }} text-center">
                                         <div class="relative">
-                                            <select class="w-full h-[44px] border border-[#E5E7E5] rounded-lg pl-3 pr-7 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none">
-                                                <option>{{ $isFr ? 'Pièces' : 'Pieces' }}</option>
-                                                <option>Lot</option>
-                                                <option>Kg</option>
+                                            <select @if($isReal) name="items[{{ $rIdx }}][unit]" @endif class="w-full h-[44px] border border-[#E5E7E5] rounded-lg pl-3 pr-7 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none focus:border-[#14532D]">
+                                                <option value="{{ $isFr ? 'Pièces' : 'Pieces' }}">{{ $isFr ? 'Pièces' : 'Pieces' }}</option>
+                                                <option value="Lot">Lot</option>
+                                                <option value="Kg">Kg</option>
                                             </select>
                                             <i data-lucide="chevron-down" class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
                                         </div>
@@ -190,19 +183,17 @@
                                             <input type="text" @if($isReal) name="items[{{ $rIdx }}][discount_pct]" @endif value="{{ $rDisc }}" class="bld-disc flex-1 min-w-0 {{ $inputCls }} text-center">
                                             <span class="shrink-0 text-[12.5px] text-[#55524A]">%</span>
                                         </div>
-                                        <div class="relative">
-                                            <select class="w-full h-[44px] border border-[#E5E7E5] rounded-lg pl-3 pr-7 text-[13px] bg-white appearance-none cursor-pointer focus:outline-none">
-                                                <option>TVA 19.25%</option>
-                                                <option>{{ $isFr ? 'Exonéré' : 'Exempt' }}</option>
-                                            </select>
-                                            <i data-lucide="chevron-down" class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8A857A] pointer-events-none"></i>
-                                        </div>
+                                        {{-- TVA is applied once on the proposal total, not per line, so
+                                             this reports the rate rather than pretending to be a choice. --}}
+                                        <p class="text-[12.5px] text-[#55524A] text-center">TVA 19.25%</p>
                                         <p class="bld-total text-[13px] font-bold text-[#14652F] text-right whitespace-nowrap">{{ $rTotal }}</p>
                                         <div class="flex items-center justify-center gap-2">
                                             <button type="button" class="bld-del w-[34px] h-[34px] rounded-lg border border-[#F5DADA] hover:border-[#DC2626] flex items-center justify-center text-[#DC2626]"><i data-lucide="trash-2" class="w-4 h-4" style="stroke-width:1.7"></i></button>
                                         </div>
                                     </div>
-                                    <p class="mt-2 text-[11.5px] text-[#6F6B60]"><span class="font-semibold text-[#55524A]">{{ $isFr ? 'Spécifications' : 'Specifications' }}:</span> {{ $rSpec }}</p>
+                                    <input type="text" @if($isReal) name="items[{{ $rIdx }}][description]" @endif value="{{ $rSpec }}"
+                                           placeholder="{{ $isFr ? 'Spécifications (matière, finition, dimensions…)' : 'Specifications (material, finish, dimensions…)' }}"
+                                           class="mt-2 w-full h-[36px] border border-[#F1F2F1] rounded-lg px-3 text-[11.5px] text-[#3B382F] placeholder-[#A5A099] focus:outline-none focus:border-[#14532D]">
                                 </div>
                                 @endforeach
                             </div>
@@ -210,8 +201,8 @@
                     </div>
 
                     <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                        <p id="bld-count" class="text-[12.5px] text-[#3B382F]"><span class="font-bold">4 articles</span> &nbsp;•&nbsp; {{ $isFr ? 'Quantité totale' : 'Total quantity' }}: <span class="font-bold">50 {{ $isFr ? 'unités' : 'units' }}</span></p>
-                        <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Sous-total' : 'Subtotal' }} &nbsp; <span id="bld-subtotal" class="text-[15.5px] font-bold text-[#14652F]">4,951,250 FCFA</span></p>
+                        <p id="bld-count" class="text-[12.5px] text-[#3B382F]"><span class="font-bold">0 articles</span> &nbsp;•&nbsp; {{ $isFr ? 'Quantité totale' : 'Total quantity' }}: <span class="font-bold">0 {{ $isFr ? 'unités' : 'units' }}</span></p>
+                        <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Sous-total' : 'Subtotal' }} &nbsp; <span id="bld-subtotal" class="text-[15.5px] font-bold text-[#14652F]">0 FCFA</span></p>
                     </div>
                 </section>
 
@@ -225,7 +216,7 @@
                             <span class="text-[13px] text-[#55524A]">%</span>
                             <div class="flex-1 min-w-0 ml-2">
                                 <label class="block text-[11px] text-[#6F6B60] mb-1">{{ $isFr ? 'Montant de remise' : 'Discount amount' }}</label>
-                                <input type="text" value="95,035 FCFA" readonly class="w-full h-[38px] bg-[#F7F8F7] border border-[#EDEEED] rounded-lg px-3 text-[12.5px] text-[#3B382F] focus:outline-none">
+                                <input type="text" id="bld-discount-amount" value="0 FCFA" readonly class="w-full h-[38px] bg-[#F7F8F7] border border-[#EDEEED] rounded-lg px-3 text-[12.5px] text-[#3B382F] focus:outline-none">
                             </div>
                         </div>
                         <h2 class="mt-6 text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Devise de la proposition' : 'Proposal currency' }}</h2>
@@ -330,23 +321,16 @@
                         </div>
                     </div>
                     <dl class="mt-4 space-y-3">
-                        @foreach($financeRows as [$fnLabel, $fnValue, $fnColor, $fnBold])
+                        @foreach($financeRows as [$fnLabel, $fnId, $fnColor, $fnBold])
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12px] text-[#3B382F]">{{ $fnLabel }}</dt>
-                            <dd class="text-[12px] {{ $fnBold ? 'font-bold' : 'font-semibold' }}" style="color:{{ $fnColor }}">{{ $fnValue }}</dd>
+                            <dd id="{{ $fnId }}" class="text-[12px] {{ $fnBold ? 'font-bold' : 'font-semibold' }}" style="color:{{ $fnColor }}">0 FCFA</dd>
                         </div>
                         @endforeach
                     </dl>
                     <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
                         <span class="text-[13.5px] font-bold text-[#1B1B18] uppercase">{{ $isFr ? 'Total général' : 'Grand total' }}</span>
-                        <span class="text-[14.5px] font-bold text-[#14652F]">5,952,258 FCFA</span>
-                    </div>
-                    <div class="mt-4 bg-[#EFF6F1] rounded-xl px-4 py-3.5">
-                        <p class="flex items-center gap-2 text-[12px] font-bold text-[#157A43]"><i data-lucide="badge-check" class="w-4 h-4" style="stroke-width:1.8"></i> {{ $isFr ? 'Vous économisez' : 'You save' }}</p>
-                        <div class="mt-1 flex items-center justify-between gap-3">
-                            <p class="text-[12px] text-[#3B382F]"><span class="font-bold">95,035 FCFA</span> {{ $isFr ? 'sur cette proposition' : 'on this proposal' }}</p>
-                            <a href="{{ route('quotes.proposal', ['lang' => $lang]) }}" class="shrink-0 text-[11.5px] font-semibold text-[#14652F] underline underline-offset-2">{{ $isFr ? 'Voir le détail' : 'See the detail' }}</a>
-                        </div>
+                        <span id="fin-grand" class="text-[14.5px] font-bold text-[#14652F]">0 FCFA</span>
                     </div>
                 </section>
 
@@ -382,18 +366,48 @@
     const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     const num = s => parseFloat((s || '0').toString().replace(/[^\d.]/g, '')) || 0;
 
-    // Live row totals + footer recompute (design values render initially, edits use qty × price × (1 − remise))
+    // Everything the seller sees is computed from what they typed — no figure
+    // on this page is pre-baked. Mirrors QuoteProposal::recalculateTotals().
+    const TAX_RATE = 0.1925;
+    const fcfa = n => fmt(n) + ' FCFA';
+    const byId = id => document.getElementById(id);
+
     function recompute() {
         let sub = 0, qty = 0, count = 0;
         document.querySelectorAll('.bld-row').forEach(row => {
             count++;
             const q = num(row.querySelector('.bld-qty').value);
+            const p = num(row.querySelector('.bld-price').value);
+            const d = num(row.querySelector('.bld-disc').value);
             qty += q;
-            sub += num(row.querySelector('.bld-total').textContent);
+            sub += q * p * (1 - d / 100);
         });
-        document.getElementById('bld-subtotal').textContent = fmt(sub) + ' FCFA';
-        document.getElementById('bld-count').innerHTML = '<span class="font-bold">' + count + ' articles</span> &nbsp;•&nbsp; ' + @json($isFr ? 'Quantité totale' : 'Total quantity') + ': <span class="font-bold">' + fmt(qty) + ' ' + @json($isFr ? 'unités' : 'units') + '</span>';
+        byId('bld-subtotal').textContent = fcfa(sub);
+        byId('bld-count').innerHTML = '<span class="font-bold">' + count + ' articles</span> &nbsp;•&nbsp; ' + @json($isFr ? 'Quantité totale' : 'Total quantity') + ': <span class="font-bold">' + fmt(qty) + ' ' + @json($isFr ? 'unités' : 'units') + '</span>';
+
+        const gPct     = num((document.querySelector('[name="global_discount_pct"]') || {}).value);
+        const delivery = num((document.querySelector('[name="delivery_fee"]') || {}).value);
+        const insurance= num((document.querySelector('[name="insurance_fee"]') || {}).value);
+        const discount = Math.round(sub * gPct / 100);
+        const net      = sub - discount;
+        const tax      = Math.round(net * TAX_RATE);
+
+        const set = (id, v) => { const el = byId(id); if (el) el.textContent = v; };
+        set('fin-subtotal', fcfa(sub));
+        set('fin-discount', '-' + fcfa(discount));
+        set('fin-net',      fcfa(net));
+        set('fin-tax',      fcfa(tax));
+        set('fin-delivery', fcfa(delivery));
+        set('fin-insurance',fcfa(insurance));
+        set('fin-grand',    fcfa(net + tax + delivery + insurance));
+
+        const dAmount = document.getElementById('bld-discount-amount');
+        if (dAmount) dAmount.value = fcfa(discount);
     }
+    ['global_discount_pct', 'delivery_fee', 'insurance_fee'].forEach(n => {
+        const el = document.querySelector('[name="' + n + '"]');
+        if (el) el.addEventListener('input', recompute);
+    });
     function bindRow(row) {
         ['.bld-qty', '.bld-price', '.bld-disc'].forEach(sel => row.querySelector(sel).addEventListener('input', () => {
             const q = num(row.querySelector('.bld-qty').value);
@@ -405,6 +419,7 @@
         row.querySelector('.bld-del').addEventListener('click', () => { row.remove(); recompute(); });
     }
     document.querySelectorAll('.bld-row').forEach(bindRow);
+    recompute();
 
     let bldCounter = document.querySelectorAll('.bld-row').length;
     document.getElementById('bld-add').addEventListener('click', () => {

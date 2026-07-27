@@ -257,12 +257,11 @@ class QuoteFlowTest extends TestCase
             ->assertSee($proposal->reference)
             ->assertSee(number_format($proposal->total));
 
-        // A stranger gets the demo fallback — none of the real data leaks
+        // A stranger is sent back to their own list. The page used to fall back
+        // to demo content instead; redirecting is both honest and leak-free.
         $this->actingAsWebUser($this->makeUser())
             ->get("/tableau-de-bord/propositions/detail?proposal={$proposal->id}")
-            ->assertOk()
-            ->assertDontSee($proposal->reference)
-            ->assertDontSee(number_format($proposal->total));
+            ->assertRedirect();
 
         // Buyer accepts; PO and invoice pages render the generated records
         $this->actingAsWebUser($buyer)

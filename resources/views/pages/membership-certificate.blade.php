@@ -1,25 +1,20 @@
 @php
     $isFr = $lang === 'fr';
 
-    // Personalisation: real business data patches the design's demo values;
-    // without a business the certificate renders exactly as designed.
+    // The route guarantees a business, so every value below is that member's own.
     $frMonths = [1 => 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
     $fmtDate = function ($date) use ($frMonths) {
         $d = \Illuminate\Support\Carbon::parse($date);
         return $d->day . ' ' . $frMonths[$d->month] . ' ' . $d->year;
     };
 
-    $personalized = (bool) $business;
-    if ($personalized) {
-        $certName    = mb_strtoupper($business->name_fr);
-        $seed        = md5('gvn-cert-' . $business->id);
-        $certNumber  = $business->certificate_no ?? ('GVN-' . \Illuminate\Support\Carbon::parse($business->created_at)->year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT));
-        $certCode    = strtoupper(substr($seed, 6, 4) . '-' . substr($seed, 10, 4) . '-' . substr($seed, 14, 4));
-        $certStart   = $fmtDate($business->certificate_issued_at ?? $business->created_at);
-        $certEnd     = $fmtDate($business->certificate_expires_at ?? \Illuminate\Support\Carbon::parse($business->created_at)->addYear()->subDay());
-    } else {
-        $certNumber  = 'GVN-2025-0002587';
-    }
+    $personalized = true;
+    $certName    = mb_strtoupper($business->name_fr);
+    $seed        = md5('ah237-cert-' . $business->id);
+    $certNumber  = $business->certificate_no ?? ('AH237-' . \Illuminate\Support\Carbon::parse($business->created_at)->year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT));
+    $certCode    = strtoupper(substr($seed, 6, 4) . '-' . substr($seed, 10, 4) . '-' . substr($seed, 14, 4));
+    $certStart   = $fmtDate($business->certificate_issued_at ?? $business->created_at);
+    $certEnd     = $fmtDate($business->certificate_expires_at ?? \Illuminate\Support\Carbon::parse($business->created_at)->addYear()->subDay());
 
     $verifyUrl = route('certificate.verify', ['numero' => $certNumber]);
 @endphp

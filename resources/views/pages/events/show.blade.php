@@ -88,7 +88,6 @@
     ];
 
     $partners = [
-        ['edetail-partner-1.png', 'MINPMEESA', ''],
         ['edetail-partner-2.png', 'ONUDI', $isFr ? 'Organisation des Nations Unies pour le Développement Industriel' : 'United Nations Industrial Development Organization'],
         ['edetail-partner-3.png', 'BANGE', $isFr ? 'Banque Nationale pour le Développement Économique' : 'National Bank for Economic Development'],
         ['edetail-partner-4.png', 'CAMPOST', $isFr ? 'Société Nationale des Postes du Cameroun' : 'National Postal Company of Cameroon'],
@@ -120,8 +119,8 @@
     $dfShowPayments = true;
     $dfBgColor = '#021A0D';
     $dfBrandParagraph = $isFr
-        ? 'Plateforme officielle de promotion et de valorisation de l\'artisanat camerounais à travers le digital.'
-        : 'Official platform for promoting Cameroonian craftsmanship through digital.';
+        ? 'Plateforme privée de promotion et de valorisation de l\'artisanat camerounais à travers le digital.'
+        : 'Private platform for promoting Cameroonian craftsmanship through digital.';
     $dfNewsletterText = $isFr ? 'Recevez nos nouveautés et offres exclusives.' : 'Receive our new arrivals and exclusive offers.';
 @endphp
 <!DOCTYPE html>
@@ -437,18 +436,18 @@
                 <div class="mt-4 flex items-start gap-3">
                     <img src="{{ asset('images/landing/edetail-org-logo.png') }}" alt="" class="w-[38px] h-auto object-contain shrink-0">
                     <div>
-                        <p class="text-[12.5px] font-bold text-[#1D1B16]">MINPMEESA</p>
-                        <p class="mt-1 text-[11px] text-[#6F6B60] leading-snug">{{ $isFr ? 'Ministère des Petites et Moyennes Entreprises, de l\'Économie Sociale et de l\'Artisanat' : 'Ministry of Small and Medium-Sized Enterprises, Social Economy and Handicrafts' }}</p>
+                        <p class="text-[12.5px] font-bold text-[#1D1B16]">Artisan Hub 237</p>
+                        <p class="mt-1 text-[11px] text-[#6F6B60] leading-snug">{{ $isFr ? 'Plateforme privée dédiée à l\'artisanat camerounais' : 'Private platform dedicated to Cameroonian craftsmanship' }}</p>
                     </div>
                 </div>
-                <a href="https://minpmeesa.gov.cm" target="_blank" rel="noopener"
+                <a href="{{ route('about', ['lang' => $lang]) }}"
                     class="mt-4 w-full h-[36px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] transition-colors">
-                    {{ $isFr ? 'Visiter le site officiel' : 'Visit the official website' }}
+                    {{ $isFr ? 'En savoir plus sur nous' : 'Learn more about us' }}
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </a>
                 <p class="mt-4 text-[11.5px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
                 <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="phone" class="w-3 h-3"></i>+237 222 22 22 22</p>
-                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="mail" class="w-3 h-3"></i>info@minpmeesa.gov.cm</p>
+                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="mail" class="w-3 h-3"></i>contact@artisanhub237.com</p>
             </div>
 
             <!-- Downloads -->

@@ -9,7 +9,6 @@ $roleLabels = [
     'moderator'          => ['fr' => 'Modérateur', 'en' => 'Moderator'],
     'business_owner'     => ['fr' => 'Entrepreneur', 'en' => 'Business Owner'],
     'regional_rep'       => ['fr' => 'Représentant régional', 'en' => 'Regional Rep'],
-    'ministry'           => ['fr' => 'Ministère', 'en' => 'Ministry'],
     'technical_reviewer' => ['fr' => 'Département technique', 'en' => 'Technical Department'],
 ];
 $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'Acheteur' : 'Buyer');

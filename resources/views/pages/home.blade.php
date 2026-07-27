@@ -36,7 +36,7 @@
         ['l1' => 'Nos événements,', 'l2' => 'le grand rendez-vous,', 'gold' => 'de nos filières artisanales.',
          'sub' => "Salons, expositions, rencontres :\nvivez les événements qui font rayonner\nle savoir-faire camerounais."],
         ['l1' => 'Un héritage séculaire,', 'l2' => 'une vitrine nationale,', 'gold' => 'ouverte sur le monde.',
-         'sub' => "La galerie virtuelle officielle qui connecte\nles artisans camerounais aux acheteurs\net partenaires du monde entier."],
+         'sub' => "La galerie virtuelle privée qui connecte\nles artisans camerounais aux acheteurs\net partenaires du monde entier."],
     ] : [
         ['l1' => 'The living heritage', 'l2' => 'of Cameroon,', 'gold' => 'open to the whole world.',
          'sub' => "Discover the richness of our craftsmanship,\nmeet our artisans, explore our regions\nand support an ancestral heritage."],
@@ -47,7 +47,7 @@
         ['l1' => 'Our events,', 'l2' => 'the flagship gatherings,', 'gold' => 'of our craft industries.',
          'sub' => "Fairs, exhibitions, meetings:\nexperience the events that showcase\nCameroonian craftsmanship."],
         ['l1' => 'An ancestral heritage,', 'l2' => 'a national showcase,', 'gold' => 'open to the world.',
-         'sub' => "The official virtual gallery connecting\nCameroonian artisans with buyers\nand partners worldwide."],
+         'sub' => "The private virtual gallery connecting\nCameroonian artisans with buyers\nand partners worldwide."],
     ];
 
     // Hero stats: regions is live data; the marketing figures are admin-editable

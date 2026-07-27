@@ -409,8 +409,8 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Description' : 'Description' }}</label>
             <textarea name="settings[about_description]" rows="6" class="{{ $inputCls }}">{{ $p('about_description', $isFr
-                ? 'La Artisan Hub 237 est une plateforme digitale officielle qui valorise, promeut et connecte les artisans, leurs œuvres et le patrimoine culturel camerounais au monde entier.'
-                : 'The Artisan Hub 237 is an official digital platform that showcases, promotes and connects artisans, their works and Cameroonian cultural heritage to the whole world.') }}</textarea>
+                ? 'Artisan Hub 237 est une plateforme digitale privée qui valorise, promeut et connecte les artisans, leurs œuvres et le patrimoine culturel camerounais au monde entier.'
+                : 'Artisan Hub 237 is a private digital platform that showcases, promotes and connects artisans, their works and Cameroonian cultural heritage to the whole world.') }}</textarea>
         </div>
         <button type="submit" class="{{ $greenBtn }}">
             {{ $isFr ? 'Enregistrer' : 'Save' }}

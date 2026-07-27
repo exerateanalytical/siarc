@@ -352,22 +352,24 @@
                     class="mt-4 w-full h-[38px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center text-[12.5px] font-semibold text-[#1D1B16] transition-colors">
                     {{ $isFr ? 'Voir la boutique' : 'View the shop' }}
                 </a>
-                <div class="mt-4 pt-4 border-t border-[#F0EEE9] grid grid-cols-3 divide-x divide-[#F0EEE9] text-center">
+                @php
+                    // Only stats that exist for this artisan — no invented figures.
+                    $vendorStats = array_values(array_filter([
+                        ['package', number_format((int) ($sellerStats['products_count'] ?? 0)), $isFr ? 'Produits' : 'Products'],
+                        $sellerStats['satisfied_pct'] !== null
+                            ? ['thumbs-up', $sellerStats['satisfied_pct'] . '%', $isFr ? 'Avis positifs' : 'Positive reviews'] : null,
+                        $sellerStats['tenure_years'] !== null
+                            ? ['briefcase', $sellerStats['tenure_years'] . ' ' . ($isFr ? 'ans' : 'yrs'), $isFr ? 'Sur la plateforme' : 'On the platform'] : null,
+                    ]));
+                @endphp
+                <div class="mt-4 pt-4 border-t border-[#F0EEE9] grid divide-x divide-[#F0EEE9] text-center" style="grid-template-columns: repeat({{ count($vendorStats) }}, minmax(0, 1fr))">
+                    @foreach($vendorStats as [$vsIcon, $vsValue, $vsLabel])
                     <div class="px-1">
-                        <i data-lucide="package" class="w-[18px] h-[18px] text-[#B07C14] mx-auto"></i>
-                        <p class="mt-1.5 text-[13px] font-bold text-[#1D1B16] leading-none">156</p>
-                        <p class="mt-1 text-[10.5px] text-[#6F6B60]">{{ $isFr ? 'Produits' : 'Products' }}</p>
+                        <i data-lucide="{{ $vsIcon }}" class="w-[18px] h-[18px] text-[#B07C14] mx-auto"></i>
+                        <p class="mt-1.5 text-[13px] font-bold text-[#1D1B16] leading-none">{{ $vsValue }}</p>
+                        <p class="mt-1 text-[10.5px] text-[#6F6B60]">{{ $vsLabel }}</p>
                     </div>
-                    <div class="px-1">
-                        <i data-lucide="thumbs-up" class="w-[18px] h-[18px] text-[#B07C14] mx-auto"></i>
-                        <p class="mt-1.5 text-[13px] font-bold text-[#1D1B16] leading-none">98%</p>
-                        <p class="mt-1 text-[10.5px] text-[#6F6B60]">{{ $isFr ? 'Avis positifs' : 'Positive reviews' }}</p>
-                    </div>
-                    <div class="px-1">
-                        <i data-lucide="briefcase" class="w-[18px] h-[18px] text-[#B07C14] mx-auto"></i>
-                        <p class="mt-1.5 text-[13px] font-bold text-[#1D1B16] leading-none">2 {{ $isFr ? 'ans' : 'yrs' }}</p>
-                        <p class="mt-1 text-[10.5px] text-[#6F6B60]">{{ $isFr ? 'Sur la plateforme' : 'On the platform' }}</p>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 

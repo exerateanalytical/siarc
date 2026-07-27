@@ -11,7 +11,7 @@
         ['square-pen',     'Propositions', route('quotes.index', ['lang' => $lang, 'tab' => 'propositions']), false, null, null],
         ['message-circle', $isFr ? 'Commandes' : 'Orders', 'group', [
             [$isFr ? 'Toutes les commandes' : 'All orders', route('messages.inbox', ['lang' => $lang]), false, null, null],
-            [$isFr ? 'Bons de cornmande' : 'Purchase orders', route('quotes.po', ['lang' => $lang]),    true,  null, null],
+            [$isFr ? 'Bons de cornmande' : 'Purchase orders', route('orders.index', ['lang' => $lang]),    true,  null, null],
             [$isFr ? 'En production' : 'In production',     route('messages.inbox', ['lang' => $lang]), false, null, null],
             [$isFr ? 'Expéditions' : 'Shipments',           route('support.index', ['lang' => $lang]),  false, null, null],
             [$isFr ? 'Livraisons' : 'Deliveries',           route('support.index', ['lang' => $lang]),  false, null, null],
@@ -24,88 +24,84 @@
         ['settings',       $isFr ? 'Paramètres' : 'Settings', route('profile.show', ['lang' => $lang]), false, null, null],
     ];
 
-    // [thumb, name, desc, qty, unit, total]
-    $poRows = [
-        ['qv-prod-1.png', $isFr ? 'Mobilier en bois massif pour hôtel' : 'Solid wood furniture for a hotel', $isFr ? 'Bois massif (Ayous), finition vernie naturelle, style moderne.' : 'Solid wood (Ayous), natural varnished finish, modern style.', '10', '175,000', '1,750,000'],
-        ['qv-prod-2.png', $isFr ? 'Masque traditionnel Bamiléké' : 'Traditional Bamileke mask',              $isFr ? 'Bois de fromager sculpté à la main, origine Ouest Cameroun.' : 'Hand-carved fromager wood, West Cameroon origin.', '20', '70,000', '1,400,000'],
-        ['qv-prod-3.png', $isFr ? 'Table basse décorative en bois' : 'Decorative wooden coffee table',       $isFr ? 'Bois massif, motif traditionnel camerounais, vernis naturel.' : 'Solid wood, traditional Cameroonian pattern, natural varnish.', '5', '92,000', '460,000'],
-        ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '58,000', '870,000'],
-    ];
-
     // Real purchase order threading (?po=ID, authorized in the route)
-    $isReal = isset($realPo) && $realPo;
-    if ($isReal) {
-        $rpo = $realPo;
-        $rpp = $rpo->proposal;
-        $poRows = $rpp->items->map(fn ($it, $i) => [
-            'qv-prod-' . (($i % 4) + 1) . '.png',
-            $it->name,
-            $it->description ?? '',
-            (string) $it->quantity,
-            number_format($it->unit_price),
-            number_format($it->total),
-        ])->all();
-        $realPoRef     = $rpo->reference;
-        $realQuoRef    = $rpp->reference;
-        $realOrderDate = $rpo->created_at->format('d/m/Y');
-        $realBizName   = $rpp->request->business->name_fr ?? 'Art Bois Nature';
-        $realBuyerName = $rpp->request->buyer->name ?? 'Achat Pro SARL';
-        $realItemCount = $rpp->items->count();
-        $realTotalQty  = $rpp->items->sum('quantity');
-        $realTotal     = number_format($rpp->total) . ' FCFA';
-    }
+    $rpo   = $realPo;
+    $rpp   = $rpo->proposal;
+    $rq    = $rpp->request;
+    $biz   = $rq?->business;
+    $buyer = $rq?->buyer;
 
-    // [bold label, rest]
-    $poConditions = $isFr ? [
-        ['Livraison:', '24 Juin 2024 (± 2 jours)'],
-        ['Lieu de livraison:', 'Entrepôt Achat Pro SARL, Bonamoussadi, Douala'],
-        ['Incoterm:', 'DDP (Livré droits acquittés)'],
-        ['Paiement:', '50% acompte, 50% à la livraison'],
-        ['Validité du bon:', '15 jours'],
-        ['Garantie:', '12 mois sur tous les produits'],
-    ] : [
-        ['Delivery:', '24 June 2024 (± 2 days)'],
-        ['Delivery location:', 'Achat Pro SARL warehouse, Bonamoussadi, Douala'],
-        ['Incoterm:', 'DDP (Delivered Duty Paid)'],
-        ['Payment:', '50% deposit, 50% on delivery'],
-        ['Order validity:', '15 days'],
-        ['Warranty:', '12 months on all products'],
-    ];
+    // [thumb, name, desc, qty, unit, total]
+    $poRows = $rpp->items->map(fn ($it, $i) => [
+        'qv-prod-' . (($i % 4) + 1) . '.png',
+        $it->name,
+        $it->description ?? '',
+        (string) $it->quantity,
+        number_format($it->unit_price),
+        number_format($it->total),
+    ])->all();
+
+    $realPoRef     = $rpo->reference;
+    $realQuoRef    = $rpp->reference;
+    $realOrderDate = $rpo->created_at->format('d/m/Y');
+    $realConfirmAt = $rpo->updated_at->format('d/m/Y H:i');
+    $realDelivery  = $rpo->expected_delivery_date?->format('d/m/Y');
+    $realDeliveryIn = $rpo->expected_delivery_date
+        ? max((int) now()->startOfDay()->diffInDays($rpo->expected_delivery_date, false), 0)
+        : null;
+    $realBizName   = $biz->name_fr ?? '—';
+    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/landing/logo.png');
+    $realBuyerName = $buyer->name ?? '—';
+    $realItemCount = $rpp->items->count();
+    $realTotalQty  = $rpp->items->sum('quantity');
+    $realTotal     = number_format($rpo->total) . ' FCFA';
+
+    $poStatusLabels = $isFr
+        ? ['created' => 'Créé', 'confirmed' => 'Confirmé', 'in_production' => 'En production', 'shipped' => 'Expédié', 'delivered' => 'Livré', 'cancelled' => 'Annulé']
+        : ['created' => 'Created', 'confirmed' => 'Confirmed', 'in_production' => 'In production', 'shipped' => 'Shipped', 'delivered' => 'Delivered', 'cancelled' => 'Cancelled'];
+    $poStatusLabel = $poStatusLabels[$rpo->status] ?? $rpo->status;
+
+    // [bold label, rest] — only conditions the record actually carries
+    $poConditions = array_values(array_filter([
+        $realDelivery ? [($isFr ? 'Livraison:' : 'Delivery:'), $realDelivery] : null,
+        $rpp->delivery_location ? [($isFr ? 'Lieu de livraison:' : 'Delivery location:'), $rpp->delivery_location] : null,
+        $rpp->incoterms ? ['Incoterm:', $rpp->incoterms] : null,
+        $rpp->payment_terms ? [($isFr ? 'Paiement:' : 'Payment:'), $rpp->payment_terms] : null,
+        $rpp->production_delay ? [($isFr ? 'Production:' : 'Production:'), $rpp->production_delay] : null,
+        $rpp->delivery_delay ? [($isFr ? 'Délai de livraison:' : 'Delivery time:'), $rpp->delivery_delay] : null,
+    ]));
 
     // [label, value, color, bold]
     $poTotals = [
-        [$isFr ? 'Sous-total' : 'Subtotal',                        '4,480,000 FCFA', '#1B1B18', false],
-        [$isFr ? 'Remise (2.33%)' : 'Discount (2.33%)',            '-104,250 FCFA',  '#E5484D', false],
-        [$isFr ? 'Sous-total après remise' : 'Subtotal after discount', '4,375,750 FCFA', '#1B1B18', false],
-        [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)',      '842,503 FCFA',   '#1B1B18', false],
-        [$isFr ? 'Frais de livraison' : 'Delivery costs',          '150,000 FCFA',   '#1B1B18', false],
+        [$isFr ? 'Sous-total' : 'Subtotal', number_format($rpp->subtotal) . ' FCFA', '#1B1B18', false],
+        [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rpp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rpp->discount_amount) . ' FCFA', '#E5484D', false],
+        [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rpp->tax_amount) . ' FCFA', '#1B1B18', false],
+        [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rpp->delivery_fee) . ' FCFA', '#1B1B18', false],
+        [$isFr ? 'Assurance' : 'Insurance', number_format($rpp->insurance_fee) . ' FCFA', '#1B1B18', false],
     ];
 
-    if ($isReal) {
-        $poTotals = [
-            [$isFr ? 'Sous-total' : 'Subtotal', number_format($rpp->subtotal) . ' FCFA', '#1B1B18', false],
-            [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rpp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rpp->discount_amount) . ' FCFA', '#E5484D', false],
-            [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rpp->tax_amount) . ' FCFA', '#1B1B18', false],
-            [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rpp->delivery_fee) . ' FCFA', '#1B1B18', false],
-            [$isFr ? 'Assurance' : 'Insurance', number_format($rpp->insurance_fee) . ' FCFA', '#1B1B18', false],
-        ];
-    }
+    // [icon, title, sub, done] — driven by the order status
+    $poStage = ['created' => 0, 'confirmed' => 1, 'in_production' => 2, 'shipped' => 3, 'delivered' => 4][$rpo->status] ?? 0;
+    $poTimeline = collect([
+        ['check',    $isFr ? 'Bon de commande créé' : 'Purchase order created'],
+        ['check',    $isFr ? 'Confirmé par le fournisseur' : 'Confirmed by the supplier'],
+        ['settings', $isFr ? 'En production' : 'In production'],
+        ['truck',    $isFr ? 'Expédié' : 'Shipped'],
+        ['package',  $isFr ? 'Livré' : 'Delivered'],
+    ])->map(function ($step, $i) use ($poStage, $rpo, $realConfirmAt, $isFr) {
+        $done = $i <= $poStage;
+        $sub  = ! $done
+            ? ($isFr ? 'En attente' : 'Pending')
+            : ($i === 0 ? $rpo->created_at->format('d/m/Y H:i') : ($i === $poStage ? $realConfirmAt : ''));
 
-    // [icon, title, sub, done]
-    $poTimeline = [
-        ['check',    $isFr ? 'Bon de commande créé' : 'Purchase order created',        '25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 16:35', true],
-        ['check',    $isFr ? 'Confirmé par le fournisseur' : 'Confirmed by the supplier', '25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 17:20', true],
-        ['settings', $isFr ? 'En production' : 'In production', $isFr ? 'En attente' : 'Pending', false],
-        ['truck',    $isFr ? 'Expédié' : 'Shipped',             $isFr ? 'En attente' : 'Pending', false],
-        ['package',  $isFr ? 'Livré' : 'Delivered',             $isFr ? 'En attente' : 'Pending', false],
-    ];
+        return [$step[0], $step[1], $sub, $done];
+    })->all();
 
     // [icon (img|lucide), title, file]
-    $poDocs = [
-        ['img',    $isFr ? 'Devis (Version 2)' : 'Quote (Version 2)',            $isReal ? $realQuoRef . '.pdf' : 'QUO-2024-000189-V2.pdf'],
-        ['img',    $isFr ? 'Facture proforma' : 'Proforma invoice',              $isReal && $rpo->invoice ? $rpo->invoice->reference . '.pdf' : 'INV-2024-00056.pdf'],
-        ['lucide', $isFr ? 'Conditions de livraison' : 'Delivery conditions',    'CDC-2024-00045.pdf'],
-    ];
+    $poDocs = array_values(array_filter([
+        ['img', $isFr ? 'Devis' : 'Quote', $realQuoRef . '.pdf'],
+        $rpo->invoice ? ['img', $isFr ? 'Facture' : 'Invoice', $rpo->invoice->reference . '.pdf'] : null,
+    ]));
 
     // [icon, label, url, danger]
     $poActions = [
@@ -147,8 +143,8 @@
         <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
             <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
             {{ session('success') }}
-            @if($isReal && $realPo->invoice)
-            — <a href="{{ route('quotes.invoice', ['lang' => $lang, 'invoice' => $realPo->invoice->id]) }}" class="font-bold underline underline-offset-2">{{ $isFr ? 'Voir la facture' : 'View the invoice' }} {{ $realPo->invoice->reference }}</a>
+            @if($rpo->invoice)
+            — <a href="{{ route('quotes.invoice', ['lang' => $lang, 'invoice' => $rpo->invoice->id]) }}" class="font-bold underline underline-offset-2">{{ $isFr ? 'Voir la facture' : 'View the invoice' }} {{ $rpo->invoice->reference }}</a>
             @endif
         </div>
         @endif
@@ -157,7 +153,7 @@
         <nav class="flex items-center gap-2 text-[12.5px] text-[#55524A]">
             <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Commandes' : 'Orders' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-            <a href="{{ route('quotes.po', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Bons de commande' : 'Purchase orders' }}</a>
+            <a href="{{ route('orders.index', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Bons de commande' : 'Purchase orders' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
             <span class="font-semibold text-[#1B1B18]">{{ $isFr ? 'Détails du bon de commande' : 'Purchase order details' }}</span>
         </nav>
@@ -165,12 +161,12 @@
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">
                     {{ $isFr ? 'Bon de commande' : 'Purchase order' }}
-                    <span class="bg-[#E2F3E8] rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $isFr ? 'Confirmé' : 'Confirmed' }}</span>
+                    <span class="bg-[#E2F3E8] rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] text-[#157A43] uppercase">{{ $poStatusLabel }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    PO N°: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realPoRef : 'PO-2024-00045' }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Basé sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realQuoRef : 'QUO-2024-000189 (Version 2)' }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Date de commande' : 'Order date' }}: <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realOrderDate : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024') }}</span>
+                    PO N°: <span class="font-semibold text-[#1B1B18]">{{ $realPoRef }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Basé sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">{{ $realQuoRef }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Date de commande' : 'Order date' }}: <span class="font-semibold text-[#1B1B18]">{{ $realOrderDate }}</span>
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -195,35 +191,47 @@
                 <!-- Supplier / buyer / dates -->
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="flex items-start gap-4">
-                        <img src="{{ asset('images/landing/qv-abn-logo.png') }}" alt="Art Bois Nature" class="w-[84px] shrink-0 object-contain">
+                        <img src="{{ $realBizLogo }}" alt="{{ $realBizName }}" class="w-[84px] shrink-0 object-contain">
                         <div class="min-w-0">
                             <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Fournisseur' : 'Supplier' }}</p>
                             <p class="mt-1 flex flex-wrap items-center gap-2">
-                                <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realBizName : 'Art Bois Nature' }}</span>
+                                <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $realBizName }}</span>
+                                @if(in_array($biz?->verification_tier, ['verified', 'certified'], true))
                                 <span class="inline-flex items-center gap-1 bg-[#E2F3E8] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
+                                @endif
                             </p>
-                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? 'Yaoundé, Centre, Cameroun' : 'Yaounde, Centre, Cameroon' }}</p>
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> +237 6 70 12 34 56</p>
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> contact@artbois.cm</p>
+                            @if($biz?->address_fr)
+                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? $biz->address_fr : ($biz->address_en ?: $biz->address_fr) }}</p>
+                            @endif
+                            @if($biz?->phone)
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->phone }}</p>
+                            @endif
+                            @if($biz?->email)
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->email }}</p>
+                            @endif
                             <a href="{{ $vendorUrl }}" class="mt-2 inline-block text-[12px] font-semibold text-[#1B1B18] underline underline-offset-4 hover:text-[#14652F]">{{ $isFr ? 'Voir le profil du fournisseur' : 'View the supplier profile' }}</a>
                         </div>
                     </div>
                     <div>
                         <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Acheteur' : 'Buyer' }}</p>
-                        <p class="mt-1 text-[14.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realBuyerName : 'Achat Pro SARL' }}</p>
-                        <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">Bonamoussadi, Douala<br>{{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
-                        <p class="mt-2 text-[12.5px] text-[#3B382F]">NIU: P098765432109876</p>
+                        <p class="mt-1 text-[14.5px] font-bold text-[#1B1B18]">{{ $realBuyerName }}</p>
+                        @if($buyer?->email)
+                        <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $buyer->email }}</p>
+                        @endif
+                        @if($buyer?->phone)
+                        <p class="mt-2 text-[12.5px] text-[#3B382F]">{{ $buyer->phone }}</p>
+                        @endif
                     </div>
                     <div class="flex items-start gap-3.5">
                         <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
                         <div>
                             <p class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Dates importantes' : 'Important dates' }}</p>
                             <p class="mt-2.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de commande' : 'Order date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realOrderDate : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024') }}</p>
+                            <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realOrderDate }}</p>
                             <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de livraison prévue' : 'Expected delivery date' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#E5484D]">24 {{ $isFr ? 'Juin' : 'June' }} 2024 <span class="font-semibold">(30 {{ $isFr ? 'jours' : 'days' }})</span></p>
+                            <p class="text-[12.5px] font-bold text-[#E5484D]">{{ $realDelivery ?? '—' }} @if($realDeliveryIn !== null)<span class="font-semibold">({{ $realDeliveryIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
                             <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Statut' : 'Status' }}</p>
-                            <p class="text-[12.5px] font-bold text-[#157A43]">{{ $isFr ? 'Confirmé' : 'Confirmed' }}</p>
+                            <p class="text-[12.5px] font-bold text-[#157A43]">{{ $poStatusLabel }}</p>
                         </div>
                     </div>
                 </section>
@@ -278,11 +286,15 @@
                         </div>
                         <div>
                             <h3 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Instructions spéciales' : 'Special instructions' }}</h3>
-                            <p class="mt-3 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? "Veuillez assurer un emballage renforcé pour l'export et apposer le logo Achat Pro SARL sur les caisses." : 'Please ensure reinforced packaging for export and affix the Achat Pro SARL logo on the crates.' }}</p>
+                            <p class="mt-3 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $rpp->notes ?: '—' }}</p>
                             <p class="mt-4 text-[12.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Personne de contact:' : 'Contact person:' }}</p>
-                            <p class="mt-1 text-[12.5px] text-[#3B382F]">{{ $siacUser['name'] ?? 'Jean Dupont' }}</p>
-                            <p class="mt-1.5 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> +237 6 80 00 11 22</p>
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> jean.dupont@achatpro.cm</p>
+                            <p class="mt-1 text-[12.5px] text-[#3B382F]">{{ $realBuyerName }}</p>
+                            @if($buyer?->phone)
+                            <p class="mt-1.5 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $buyer->phone }}</p>
+                            @endif
+                            @if($buyer?->email)
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $buyer->email }}</p>
+                            @endif
                         </div>
                         <div>
                             <dl class="space-y-2.5">
@@ -295,7 +307,7 @@
                             </dl>
                             <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
                                 <span class="text-[14.5px] font-bold text-[#157A43]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
-                                <span class="text-[15.5px] font-bold text-[#157A43]">{{ $isReal ? $realTotal : '5,368,253 FCFA' }}</span>
+                                <span class="text-[15.5px] font-bold text-[#157A43]">{{ $realTotal }}</span>
                             </div>
                         </div>
                     </div>
@@ -329,26 +341,26 @@
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Nombre d\'articles' : 'Number of items' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realItemCount : 4 }}</dd>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realItemCount }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Quantité totale' : 'Total quantity' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isReal ? $realTotalQty : 50 }} {{ $isFr ? 'Pièces' : 'Pieces' }}</dd>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realTotalQty }} {{ $isFr ? 'Pièces' : 'Pieces' }}</dd>
                         </div>
                         <div>
                             <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Montant total' : 'Total amount' }}</dt>
-                            <dd class="mt-1 text-right text-[21px] font-bold text-[#157A43]">{{ $isReal ? $realTotal : '5,368,253 FCFA' }}</dd>
+                            <dd class="mt-1 text-right text-[21px] font-bold text-[#157A43]">{{ $realTotal }}</dd>
                         </div>
                     </dl>
                     <div class="mt-4 border-t border-[#F0F1F0] pt-4">
                         <div class="bg-[#EFF6F1] rounded-xl px-4 py-3.5 flex items-start gap-3">
                             <i data-lucide="badge-check" class="w-[22px] h-[22px] shrink-0 text-[#1F8A4C]" style="stroke-width:1.7"></i>
                             <p class="text-[12px] leading-relaxed">
-                                <span class="font-bold text-[#157A43]">{{ $isFr ? 'Commande confirmée' : 'Order confirmed' }}</span><br>
+                                <span class="font-bold text-[#157A43]">{{ $poStatusLabel }}</span><br>
                                 <span class="text-[#3B382F]">{{ $isFr ? 'Le fournisseur a confirmé ce bon de commande.' : 'The supplier has confirmed this purchase order.' }}</span>
                             </p>
                         </div>
-                        <p class="mt-2.5 text-[11.5px] text-[#6F6B60]">25 {{ $isFr ? 'Mai' : 'May' }} 2024 à 17:20</p>
+                        <p class="mt-2.5 text-[11.5px] text-[#6F6B60]">{{ $realConfirmAt }}</p>
                     </div>
                 </section>
 

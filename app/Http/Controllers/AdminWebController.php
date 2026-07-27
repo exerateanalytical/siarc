@@ -182,7 +182,7 @@ class AdminWebController extends Controller
         $admin = $this->requireAdmin($request);
         if ($admin instanceof RedirectResponse) return $admin;
 
-        $assignableRoles = ['buyer', 'business_owner', 'regional_rep', 'ministry', 'technical_reviewer', 'moderator', 'admin'];
+        $assignableRoles = ['buyer', 'business_owner', 'regional_rep', 'technical_reviewer', 'moderator', 'admin'];
         $data = $request->validate([
             'role'      => ['required', 'in:' . implode(',', $assignableRoles)],
             'region_id' => ['nullable', 'exists:regions,id'],

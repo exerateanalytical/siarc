@@ -52,15 +52,6 @@ class SiacDemoSeeder extends Seeder
             DB::table('users')->where('id', $regionalRepId)->update(['assigned_region_id' => $centreRegion->id]);
         }
 
-        // Demo Ministry account
-        $ministryId = $this->upsertUser(
-            email: 'ministry@artisanhub237.com',
-            name: 'Ministry User',
-            password: 'Demo@ArtisanHub237',
-            lang: 'fr',
-        );
-        $this->assignRole($ministryId, 'ministry');
-
         // Demo Technical Reviewer
         $technicalId = $this->upsertUser(
             email: 'technique@artisanhub237.com',
@@ -74,7 +65,6 @@ class SiacDemoSeeder extends Seeder
         $this->command->line('  entrepreneur@artisanhub237.com   / Demo@ArtisanHub237  (business_owner)');
         $this->command->line('  acheteur@artisanhub237.com       / Demo@ArtisanHub237  (buyer)');
         $this->command->line('  regional@artisanhub237.com       / Demo@ArtisanHub237  (regional_rep)');
-        $this->command->line('  ministry@artisanhub237.com       / Demo@ArtisanHub237  (ministry)');
         $this->command->line('  technique@artisanhub237.com      / Demo@ArtisanHub237  (technical_reviewer)');
         $this->command->line('  admin@artisanatcameroun.cm / Admin@ArtisanHub237  (super_admin)');
     }

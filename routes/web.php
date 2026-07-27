@@ -209,7 +209,6 @@ Route::get('/tableau-de-bord/admin/roles', function (Request $request) {
         'business_owner'     => ['Artisan / Vendeur', 'Artisan / Seller', 'store', false],
         'technical_reviewer' => ['Vérificateur KYC', 'KYC Reviewer', 'file-check', false],
         'regional_rep'       => ['Consultant Régional', 'Regional Consultant', 'map-pin', false],
-        'ministry'           => ['Ministère', 'Ministry', 'landmark', false],
         'buyer'              => ['Acheteur / Visiteur', 'Buyer / Visitor', 'user', false],
     ];
 
@@ -1084,10 +1083,6 @@ use App\Http\Controllers\RegionalRepWebController;
 
 Route::get('/tableau-de-bord/representant-regional', [RegionalRepWebController::class, 'dashboard'])->name('dashboard.regional-rep');
 
-use App\Http\Controllers\MinistryWebController;
-
-Route::get('/tableau-de-bord/ministere', [MinistryWebController::class, 'dashboard'])->name('dashboard.ministry');
-
 use App\Http\Controllers\TechnicalReviewerWebController;
 
 Route::get('/tableau-de-bord/technique', [TechnicalReviewerWebController::class, 'dashboard'])->name('dashboard.technical-reviewer');
@@ -1518,7 +1513,6 @@ Route::get('/tableau-de-bord', function (Request $request) {
 
     $role = $siacUser['role'] ?? null;
     if (in_array($role, ['super_admin', 'admin', 'moderator'])) return redirect('/tableau-de-bord/admin');
-    if ($role === 'ministry') return redirect('/tableau-de-bord/ministere');
     if ($role === 'technical_reviewer') return redirect('/tableau-de-bord/technique');
     if ($role === 'regional_rep') return redirect('/tableau-de-bord/representant-regional');
     if ($role === 'business_owner') return redirect('/tableau-de-bord/entrepreneur');
@@ -2675,10 +2669,31 @@ Route::get('/tableau-de-bord/entrepreneur', function (Request $request) {
 
     $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
+    // RFQ pipeline, by status — the mobile dashboard used to invent these.
+    $rfqByStatus = $business
+        ? DB::table('quote_requests')->where('business_id', $business->id)
+            ->selectRaw('status, COUNT(*) as c')->groupBy('status')->pluck('c', 'status')
+        : collect();
+    $pipeline = [
+        'received'    => (int) $rfqByStatus->sum(),
+        'pending'     => (int) ($rfqByStatus['pending'] ?? 0),
+        'quoted'      => (int) ($rfqByStatus['quoted'] ?? 0),
+        'negotiation' => (int) ($rfqByStatus['negotiation'] ?? 0),
+        'accepted'    => (int) ($rfqByStatus['accepted'] ?? 0),
+    ];
+
+    $unreadMessages = $business
+        ? DB::table('messages as m')->join('conversations as c', 'c.id', '=', 'm.conversation_id')
+            ->where('c.business_id', $business->id)
+            ->where('m.sender_id', '!=', $siacUser['id'])
+            ->whereNull('m.read_at')
+            ->count()
+        : 0;
+
     return view('pages.dashboard.entrepreneur', compact(
         'lang', 'siacUser', 'business', 'productCount', 'products', 'messageCount', 'latestVerification', 'eventParticipations',
         'bizPurchaseOrders', 'ordersCount', 'revenueTotal', 'pendingInvoiceTotal', 'reviewsCount', 'positiveReviewsPct', 'recentMessages',
-        'notificationCount'
+        'notificationCount', 'pipeline', 'unreadMessages'
     ));
 })->name('dashboard.entrepreneur');
 
@@ -2742,6 +2757,15 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
     $activeClientsCount = $allRfqs->pluck('buyer_id')->unique()->count();
     $thisMonthRfqs = $allRfqs->filter(fn ($r) => $r->created_at >= now()->startOfMonth())->count();
 
+    // Money still on the table: proposals sent but not yet answered.
+    $openProposalValue = $business
+        ? (int) DB::table('quote_proposals as qp')
+            ->join('quote_requests as qr', 'qr.id', '=', 'qp.quote_request_id')
+            ->where('qr.business_id', $business->id)
+            ->whereIn('qp.status', ['sent', 'draft'])
+            ->sum('qp.total')
+        : 0;
+
     $businessDocuments = $business
         ? DB::table('business_documents')->where('business_id', $business->id)->orderByDesc('issued_at')->get()
         : collect();
@@ -2764,7 +2788,7 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
     return view('pages.dashboard.quotes', compact(
         'lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs',
         'rfqCountsByStatus', 'ordersCount', 'quotesSentCount', 'activeClientsCount', 'thisMonthRfqs',
-        'businessDocuments', 'recentReviews', 'recentMessages', 'notificationCount'
+        'businessDocuments', 'recentReviews', 'recentMessages', 'notificationCount', 'openProposalValue'
     ));
 })->name('dashboard.quotes');
 
@@ -2817,6 +2841,30 @@ Route::get('/tableau-de-bord/demandes', function (Request $request) {
     return view('pages.quotes.index', compact('lang', 'siacUser', 'messageCount', 'realRequests', 'notificationCount'));
 })->name('quotes.index');
 
+// A request that has not been quoted yet has no proposal to open, so it needs
+// its own detail page — previously those rows dead-ended in the message inbox.
+Route::get('/tableau-de-bord/demandes/detail', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (!$siacUser) return redirect('/login?next=' . urlencode($request->fullUrl()));
+
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+
+    $rfq = \App\Modules\Quotes\Models\QuoteRequest::with(['business', 'buyer', 'proposals' => fn ($q) => $q->orderByDesc('version')])
+        ->findOrFail($request->query('rfq'));
+
+    abort_unless(
+        $rfq->buyer_id === $siacUser['id']
+            || optional($rfq->business)->user_id === $siacUser['id']
+            || !empty($siacUser['is_admin']),
+        403
+    );
+
+    $isOwner = optional($rfq->business)->user_id === $siacUser['id'];
+
+    return view('pages.quotes.request-detail', compact('lang', 'siacUser', 'rfq', 'isOwner'));
+})->name('quotes.request-detail');
+
 // Quotation system write-endpoints (real backend behind the replica pages)
 Route::post('/tableau-de-bord/demandes', [App\Http\Controllers\QuoteWebController::class, 'storeRequest'])->name('quotes.store')->middleware('throttle:30,1');
 Route::post('/tableau-de-bord/demandes/{quoteRequest}/proposition', [App\Http\Controllers\QuoteWebController::class, 'storeProposal'])->name('quotes.store-proposal')->middleware('throttle:30,1');
@@ -2836,7 +2884,6 @@ Route::post('/tableau-de-bord/commandes/{order}/statut', [App\Http\Controllers\Q
 // and order progress on `orders.index`.
 foreach ([
     '/tableau-de-bord/commandes/bon'            => ['quotes.po',       'pages.quotes.po'],
-    '/tableau-de-bord/propositions/apercu'      => ['quotes.proposal', 'pages.quotes.proposal'],
     '/tableau-de-bord/propositions/articles'    => ['quotes.builder',  'pages.quotes.builder'],
     '/tableau-de-bord/factures/detail'          => ['quotes.invoice',  'pages.quotes.invoice'],
     '/tableau-de-bord/propositions/detail'      => ['quotes.detail',   'pages.quotes.detail'],
@@ -2848,7 +2895,6 @@ foreach ([
         $lang = $request->query('lang', $request->cookie('lang', 'fr'));
         $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
 
-        $quoteVendor = DB::table('businesses')->whereNull('deleted_at')->where('slug', 'art-bois-nature')->first();
         $messageCount = DB::table('conversations')->where('buyer_id', $siacUser['id'])->count();
         $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
@@ -2882,6 +2928,20 @@ foreach ([
             $r = \App\Modules\Quotes\Models\QuoteRequest::with('business')->find($request->query('rfq'));
             $builderRfq = ($r && (optional($r->business)->user_id === $siacUser['id'] || !empty($siacUser['is_admin']))) ? $r : null;
         }
+
+        // Every one of these pages describes a specific record. Without one
+        // there is nothing honest to show, so send the user to their list
+        // instead of rendering the design's invented buyer and totals.
+        if (! $realProposal && ! $realPo && ! $realInvoice && ! $builderRfq) {
+            $ownsBusiness = DB::table('businesses')->whereNull('deleted_at')->where('user_id', $siacUser['id'])->exists();
+
+            return redirect()->route($ownsBusiness ? 'dashboard.quotes' : 'quotes.index', ['lang' => $lang]);
+        }
+
+        $quoteVendor = $realProposal?->request?->business
+            ?? $realPo?->proposal?->request?->business
+            ?? $realInvoice?->purchaseOrder?->proposal?->request?->business
+            ?? $builderRfq?->business;
 
         return view($qfView, compact('lang', 'siacUser', 'quoteVendor', 'messageCount', 'notificationCount', 'realProposal', 'realPo', 'realInvoice', 'builderRfq'));
     })->name($qfName);
@@ -2929,7 +2989,38 @@ Route::get('/tableau-de-bord/acheteur', function (Request $request) {
 
     $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
-    return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats', 'buyerSince', 'notificationCount'));
+    // The buyer's own purchase history — the dashboard used to invent this.
+    $buyerOrders = \App\Modules\Quotes\Models\PurchaseOrder::query()
+        ->with(['proposal.request.business', 'invoice'])
+        ->whereHas('proposal.request', fn ($q) => $q->where('buyer_id', $siacUser['id']))
+        ->latest('created_at')
+        ->limit(5)
+        ->get();
+
+    $orderStats = DB::table('purchase_orders')
+        ->join('quote_proposals', 'quote_proposals.id', '=', 'purchase_orders.quote_proposal_id')
+        ->join('quote_requests', 'quote_requests.id', '=', 'quote_proposals.quote_request_id')
+        ->where('quote_requests.buyer_id', $siacUser['id'])
+        ->selectRaw('COUNT(*) as orders_count, COALESCE(SUM(purchase_orders.total), 0) as spend_total')
+        ->first();
+
+    $buyerStats = [
+        'orders'     => (int) ($orderStats->orders_count ?? 0),
+        'spend'      => (int) ($orderStats->spend_total ?? 0),
+        'requests'   => DB::table('quote_requests')->where('buyer_id', $siacUser['id'])->count(),
+        'saved'      => DB::table('saved_businesses')->where('user_id', $siacUser['id'])->count()
+                        + DB::table('saved_products')->where('user_id', $siacUser['id'])->count(),
+        'pending'    => DB::table('quote_requests')->where('buyer_id', $siacUser['id'])->where('status', 'pending')->count(),
+    ];
+
+    $unreadMessages = DB::table('messages')
+        ->join('conversations', 'conversations.id', '=', 'messages.conversation_id')
+        ->where('conversations.buyer_id', $siacUser['id'])
+        ->where('messages.sender_id', '!=', $siacUser['id'])
+        ->whereNull('messages.read_at')
+        ->count();
+
+    return view('pages.dashboard.buyer', compact('lang', 'siacUser', 'savedBusinesses', 'conversations', 'stats', 'buyerSince', 'notificationCount', 'buyerOrders', 'buyerStats', 'unreadMessages'));
 })->name('dashboard.buyer');
 
 // ─────────────────────────────────────────────
@@ -3228,10 +3319,15 @@ Route::get('/certificat-adhesion', function (Request $request) {
         ->where('user_id', $siacUser['id'])
         ->first();
 
-    // Issue + persist the certificate number on first view so it is verifiable.
-    if ($business) {
-        $business = ensureCertificate($business);
+    // A certificate belongs to a business. Without one there is nothing to
+    // issue, so send the user to create their shop rather than render a
+    // specimen certificate bearing an invented number.
+    if (! $business) {
+        return redirect()->route('business.create', ['lang' => $lang]);
     }
+
+    // Issue + persist the certificate number on first view so it is verifiable.
+    $business = ensureCertificate($business);
 
     return view('pages.membership-certificate', compact('lang', 'siacUser', 'business'));
 })->name('membership.certificate');
@@ -3473,14 +3569,34 @@ Route::get('/presse', function (Request $request) {
     return view('pages.press', compact('lang', 'pressStats'));
 })->name('press');
 
-Route::get('/terms', function (Request $request) {
+// ─────────────────────────────────────────────
+// Legal & policy documents
+//
+// One template, one content source (config/legal.php). Artisan Hub 237 is a
+// private marketplace operator, so these state plainly that we are not a
+// public body, are not party to the sale, and process no payments.
+// ─────────────────────────────────────────────
+Route::get('/legal/{doc}', function (Request $request, string $doc) {
     $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
-    return view('terms', compact('lang'));
-})->name('terms');
-Route::get('/privacy', function (Request $request) {
-    $lang = in_array($request->query('lang', $request->cookie('lang')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang')) : 'fr';
-    return view('privacy', compact('lang'));
-})->name('privacy');
+
+    $allDocs = config('legal.documents');
+    abort_unless(isset($allDocs[$doc]), 404);
+
+    return view('pages.legal', [
+        'lang'       => $lang,
+        'doc'        => $allDocs[$doc],
+        'allDocs'    => $allDocs,
+        'activeSlug' => $doc,
+        'updatedAt'  => config('legal.updated_at'),
+    ]);
+})->name('legal.show');
+
+// Stable short URLs — these are linked from the footer, signup and emails, so
+// they keep working even though the content now lives under /legal/*.
+Route::get('/terms', fn (Request $r) => redirect()->route('legal.show', ['doc' => 'conditions', 'lang' => $r->query('lang')]))->name('terms');
+Route::get('/privacy', fn (Request $r) => redirect()->route('legal.show', ['doc' => 'confidentialite', 'lang' => $r->query('lang')]))->name('privacy');
+Route::get('/disclaimer', fn (Request $r) => redirect()->route('legal.show', ['doc' => 'avertissement', 'lang' => $r->query('lang')]))->name('disclaimer');
+Route::get('/mentions-legales', fn (Request $r) => redirect()->route('legal.show', ['doc' => 'mentions-legales', 'lang' => $r->query('lang')]))->name('legal-notice');
 
 // ─────────────────────────────────────────────
 // Developer / API Keys

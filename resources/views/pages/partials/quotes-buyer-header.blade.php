@@ -9,7 +9,7 @@
             <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[48px] h-[52px] object-contain">
             <span class="leading-tight hidden sm:block">
                 <span class="block text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-                <span class="block text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                <span class="block text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
                 <span class="block text-[10.5px] font-semibold text-[#157A43] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>

@@ -25,7 +25,6 @@
         ['email' => 'entrepreneur@artisanhub237.com', 'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Entrepreneur', 'en' => 'Business']],
         ['email' => 'acheteur@artisanhub237.com',     'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Acheteur', 'en' => 'Buyer']],
         ['email' => 'regional@artisanhub237.com',     'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Rép. régional', 'en' => 'Regional Rep']],
-        ['email' => 'ministry@artisanhub237.com',      'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Ministère', 'en' => 'Ministry']],
         ['email' => 'technique@artisanhub237.com',    'password' => 'Demo@ArtisanHub237',  'label' => ['fr' => 'Technique', 'en' => 'Technical']],
     ];
 @endphp
@@ -91,9 +90,9 @@
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[64px] h-[70px] object-contain shrink-0">
                     <span class="pt-1">
                         <span class="block text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
-                            {{ $isFr ? 'Artisan Hub 237' : 'National Virtual' }}<br>
-                            {{ $isFr ? 'Nationale de l\'Artisanat' : 'Gallery of Crafts' }}<br>
-                            {{ $isFr ? 'du Cameroun' : 'of Cameroon' }}
+                            Artisan Hub 237<br>
+                            {{ $isFr ? 'L\'artisanat' : 'Cameroonian' }}<br>
+                            {{ $isFr ? 'camerounais' : 'craftsmanship' }}
                         </span>
                         <span class="mt-3.5 block text-[14.5px] text-sage leading-[1.5]">
                             {{ $isFr ? "Notre héritage, notre fierté," : 'Our heritage, our pride,' }}<br>

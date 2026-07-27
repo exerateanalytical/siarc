@@ -56,7 +56,6 @@ return new class extends Migration
             'moderator'   => ['modules' => array_merge($contentModules, ['moderation']), 'actions' => ['view', 'create', 'edit', 'delete']],
             'technical_reviewer' => ['modules' => ['kyc', 'artisans', 'users'], 'actions' => ['view', 'edit']],
             'regional_rep'=> ['modules' => ['artisans', 'reports', 'events'], 'actions' => ['view', 'export']],
-            'ministry'    => ['modules' => ['reports', 'artisans', 'commerce'], 'actions' => ['view', 'export']],
             'business_owner' => ['modules' => ['products', 'collections'], 'actions' => ['view', 'create', 'edit']],
             'buyer'       => ['modules' => [], 'actions' => []],
         ];

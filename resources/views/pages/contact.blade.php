@@ -40,8 +40,8 @@
 
     $infoCards = [
         ['icon' => 'contact-info-1.png', 'title' => $isFr ? 'Adresse' : 'Address',
-         'lines' => $isFr ? ['Ministère des Arts et de la Culture', 'Immeuble de la Culture,', 'Yaoundé, Cameroun']
-                          : ['Ministry of Arts and Culture', 'Immeuble de la Culture,', 'Yaoundé, Cameroon']],
+         'lines' => $isFr ? ['Artisan Hub 237', 'Douala, Littoral', 'Cameroun']
+                          : ['Artisan Hub 237', 'Douala, Littoral', 'Cameroon']],
         ['icon' => 'contact-info-2.png', 'title' => $isFr ? 'Téléphone' : 'Phone',
          'lines' => ['+237 222 22 22 22', '+237 677 00 11 22']],
         ['icon' => 'contact-info-3.png', 'title' => 'Email',
@@ -225,14 +225,19 @@
                 </form>
             </div>
 
-            <!-- Map (location card is part of the artwork; a real link covers its button) -->
-            <div class="relative rounded-xl overflow-hidden border border-[#ECE7DF] min-h-[320px]">
-                <img src="{{ asset('images/landing/contact-map.png') }}" alt="{{ $isFr ? 'Carte — Ministère des Arts et de la Culture, Yaoundé' : 'Map — Ministry of Arts and Culture, Yaoundé' }}"
-                    class="absolute inset-0 w-full h-full object-cover">
-                <a href="https://www.google.com/maps/dir/?api=1&destination=Minist%C3%A8re+des+Arts+et+de+la+Culture%2C+Yaound%C3%A9%2C+Cameroun"
+            <!-- Location card -->
+            <div class="relative rounded-xl overflow-hidden border border-[#ECE7DF] min-h-[320px] bg-[#F6F1EB] flex flex-col items-center justify-center text-center px-6 py-10"
+                role="img" aria-label="{{ $isFr ? 'Localisation — Artisan Hub 237, Douala, Cameroun' : 'Location — Artisan Hub 237, Douala, Cameroon' }}">
+                <i data-lucide="map-pin" class="w-10 h-10 text-[#123D27]"></i>
+                <p class="mt-4 text-[15px] font-semibold text-[#1D1B16]">Artisan Hub 237</p>
+                <p class="mt-1 text-[13px] text-[#6B665C]">{{ $isFr ? 'Douala, Littoral, Cameroun' : 'Douala, Littoral, Cameroon' }}</p>
+                <a href="https://www.google.com/maps/search/?api=1&query=Douala%2C+Cameroun"
                     target="_blank" rel="noopener"
-                    aria-label="{{ $isFr ? 'Itinéraire vers le Ministère des Arts et de la Culture' : 'Directions to the Ministry of Arts and Culture' }}"
-                    class="absolute left-[58.6%] top-[51.1%] w-[16%] h-[8.5%] rounded-lg"></a>
+                    aria-label="{{ $isFr ? 'Itinéraire vers Artisan Hub 237, Douala' : 'Directions to Artisan Hub 237, Douala' }}"
+                    class="mt-6 inline-flex items-center gap-2 border border-[#123D27] text-[#123D27] hover:bg-[#123D27]/5 text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                    <i data-lucide="map" class="w-4 h-4"></i>
+                    {{ $isFr ? 'Voir sur la carte' : 'View on the map' }}
+                </a>
             </div>
         </div>
     </div>

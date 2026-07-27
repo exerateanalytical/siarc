@@ -111,8 +111,8 @@
     $dfShowPayments = true;
     $dfBgColor = '#021A0D';
     $dfBrandParagraph = $isFr
-        ? 'Plateforme officielle de promotion et de valorisation de l\'artisanat camerounais à travers le digital.'
-        : 'Official platform for promoting Cameroonian craftsmanship through digital.';
+        ? 'Plateforme privée de promotion et de valorisation de l\'artisanat camerounais à travers le digital.'
+        : 'Private platform for promoting Cameroonian craftsmanship through digital.';
     $dfNewsletterText = $isFr ? 'Recevez nos nouveautés et offres exclusives.' : 'Receive our new arrivals and exclusive offers.';
 @endphp
 <!DOCTYPE html>

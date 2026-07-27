@@ -438,11 +438,19 @@ class FrontendController extends Controller
         }
 
         $business = $product->business;
+        $reviewsCount = $business->reviewsCount();
         $sellerStats = [
             'avg_rating'       => $business->averageRating(),
-            'reviews_count'    => $business->reviewsCount(),
+            'reviews_count'    => $reviewsCount,
             'repeat_customers' => $business->repeatCustomersCount(),
             'deals_reported'   => $business->dealsReportedCount(),
+            // The vendor strip on this page used to show a fixed 156 products /
+            // 98% / 2 yrs for every artisan. Same figures as businesses/show.
+            'products_count'   => $business->products()->where('status', 'published')->count(),
+            'satisfied_pct'    => $reviewsCount
+                ? (int) round($business->reviews()->where('status', 'published')->where('rating', '>=', 4)->count() / $reviewsCount * 100)
+                : null,
+            'tenure_years'     => $business->created_at ? max(0, (int) $business->created_at->diffInYears(now())) : null,
         ];
 
         $qualityScore = $product->computeQualityScore();

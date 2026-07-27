@@ -12,11 +12,11 @@
     ];
 
     $heroItems = $isFr ? [
-        ['shield', "Plateforme officielle\nsoutenue par le Ministère\ndes Arts et de la Culture"],
+        ['shield', "Plateforme privée\nindépendante au service\ndes artisans camerounais"],
         ['users',  "Préserver notre patrimoine\nimmatériel pour les\ngénérations futures"],
         ['globe',  "Connecter le Cameroun\nau monde à travers son\nartisanat"],
     ] : [
-        ['shield', "Official platform\nsupported by the Ministry\nof Arts and Culture"],
+        ['shield', "Independent private\nplatform serving\nCameroonian artisans"],
         ['users',  "Preserving our intangible\nheritage for future\ngenerations"],
         ['globe',  "Connecting Cameroon\nto the world through its\ncraftsmanship"],
     ];
@@ -169,8 +169,8 @@
 
             <p class="mt-6 text-[13.5px] text-white/85 leading-relaxed max-w-md">
                 {{ $isFr
-                    ? "Une plateforme officielle dédiée à la promotion, à la préservation et à la valorisation de l'artisanat camerounais, héritage vivant de notre diversité culturelle et de notre créativité."
-                    : "An official platform dedicated to promoting, preserving and showcasing Cameroonian craftsmanship, the living heritage of our cultural diversity and creativity."
+                    ? "Une entreprise privée camerounaise dédiée à la promotion, à la préservation et à la valorisation de l'artisanat camerounais, héritage vivant de notre diversité culturelle et de notre créativité."
+                    : "A Cameroonian private company dedicated to promoting, preserving and showcasing Cameroonian craftsmanship, the living heritage of our cultural diversity and creativity."
                 }}
             </p>
         </div>

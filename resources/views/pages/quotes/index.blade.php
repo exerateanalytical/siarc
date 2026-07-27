@@ -1,19 +1,9 @@
 @php
     $isFr = $lang === 'fr';
 
-    // Design rows verbatim. [ref, date, thumb, product, artisan, place, type, amount, amountSub, status, statusSub, dateCol, expiry]
+    // Row shape: [ref, date, thumb, product, artisan, place, type, amount,
+    // amountSub, status, statusSub, dateCol, expiry, detailUrl].
     // type/status keys: sent|received / received|nego|accepted|refused|waiting
-    $rows = [
-        ['ENQ-2024-000158', $isFr ? '12 Mai 2024' : '12 May 2024', 'qp-thumb-1.png', $isFr ? 'Masque traditionnel Bamileké' : 'Traditional Bamileke mask', 'Atelier Nshome Artisanat', 'Bafoussam, Ouest', 'sent', '180,000 FCFA', $isFr ? 'Estimation' : 'Estimate', 'received', $isFr ? '2 propositions' : '2 proposals', $isFr ? '12 Mai 2024' : '12 May 2024', $isFr ? 'Expire le 25 Mai 2024' : 'Expires 25 May 2024'],
-        ['ENQ-2024-000157', $isFr ? '10 Mai 2024' : '10 May 2024', 'qp-thumb-2.png', $isFr ? 'Statue en bois - Fécondité' : 'Wooden statue - Fertility', 'Art Bois Nature', $isFr ? 'Yaoundé, Centre' : 'Yaounde, Centre', 'sent', '250,000 FCFA', $isFr ? 'Estimation' : 'Estimate', 'nego', $isFr ? '1 proposition' : '1 proposal', $isFr ? '10 Mai 2024' : '10 May 2024', $isFr ? 'Expire le 24 Mai 2024' : 'Expires 24 May 2024'],
-        ['ENQ-2024-000156', $isFr ? '09 Mai 2024' : '09 May 2024', 'qp-thumb-3.png', $isFr ? 'Tabouret sculpté *' : 'Carved stool *', 'Les Ateliers du Noun', 'Foumbot, Ouest', 'sent', '75,000 FCFA', $isFr ? 'Estimation' : 'Estimate', 'received', $isFr ? '3 propositions' : '3 proposals', $isFr ? '09 Mai 2024' : '09 May 2024', $isFr ? 'Expire le 23 Mai 2024' : 'Expires 23 May 2024'],
-        ['QUO-2024-000142', $isFr ? '08 Mai 2024' : '08 May 2024', 'qp-thumb-4.png', $isFr ? 'Coffre en bois décoratif' : 'Decorative wooden chest', 'Heritage Decor', 'Douala, Littoral', 'received', '210,000 FCFA', 'Proposition', 'nego', $isFr ? 'V2 - En attente' : 'V2 - Pending', $isFr ? '08 Mai 2024' : '08 May 2024', $isFr ? 'Expire le 18 Mai 2024' : 'Expires 18 May 2024'],
-        ['QUO-2024-000139', $isFr ? '07 Mai 2024' : '07 May 2024', 'qp-thumb-5.png', $isFr ? 'Collier perles artisanales' : 'Artisanal bead necklace', 'Perles du Cameroun', $isFr ? 'Maroua, Extrême-Nord' : 'Maroua, Far North', 'received', '45,000 FCFA', 'Proposition', 'accepted', $isFr ? 'Commande créée' : 'Order created', $isFr ? '07 Mai 2024' : '07 May 2024', '-'],
-        ['ENQ-2024-000150', $isFr ? '06 Mai 2024' : '06 May 2024', 'qp-thumb-6.png', $isFr ? 'Décoration murale *' : 'Wall decoration *', 'Heritage Decor', 'Douala, Littoral', 'sent', '125,000 FCFA', $isFr ? 'Estimation' : 'Estimate', 'received', $isFr ? '1 proposition' : '1 proposal', $isFr ? '06 Mai 2024' : '06 May 2024', $isFr ? 'Expire le 20 Mai 2024' : 'Expires 20 May 2024'],
-        ['QUO-2024-000137', $isFr ? '05 Mai 2024' : '05 May 2024', 'qp-thumb-7.png', $isFr ? 'Mobilier de bureau en bois' : 'Wooden office furniture', 'Design Studio Paris', 'Paris, France', 'received', '350,000 FCFA', 'Proposition', 'refused', null, $isFr ? '05 Mai 2024' : '05 May 2024', '-'],
-        ['ENQ-2024-000148', $isFr ? '04 Mai 2024' : '04 May 2024', 'qp-thumb-8.png', $isFr ? 'Paniers tressés *' : 'Woven baskets *', "Terres d'Artisanat", 'Bamenda, Nord-Ouest', 'sent', '60,000 FCFA', $isFr ? 'Estimation' : 'Estimate', 'waiting', $isFr ? '0 proposition' : '0 proposals', $isFr ? '04 Mai 2024' : '04 May 2024', $isFr ? 'Expire le 18 Mai 2024' : 'Expires 18 May 2024'],
-    ];
-
     $typePills = [
         'sent'     => [$isFr ? 'Demande envoyée' : 'Request sent',       '#3565DE', '#E8EFFB'],
         'received' => [$isFr ? 'Proposition reçue' : 'Proposal received', '#157A43', '#E2F3E8'],
@@ -26,13 +16,14 @@
         'waiting'  => [$isFr ? 'En attente' : 'Pending',                  '#55524A', '#F0F1F2'],
     ];
 
-    // Real RFQs of the logged-in buyer, mapped into the same row shape and
-    // rendered AHEAD of the design demo rows (index 13 = real detail URL).
+    // Real RFQs of the logged-in buyer. The design also shipped eight fixture
+    // rows here (Atelier Nshome, Design Studio Paris, "180,000 FCFA"…) which
+    // every buyer saw mixed into their own list; they are gone.
     $statusMap = ['pending' => 'waiting', 'quoted' => 'received', 'negotiation' => 'nego', 'accepted' => 'accepted', 'refused' => 'refused', 'expired' => 'waiting'];
-    $realRows = [];
+    $rows = [];
     foreach (($realRequests ?? collect()) as $rr) {
         $latest = $rr->proposals->first();
-        $realRows[] = [
+        $rows[] = [
             $rr->reference,
             $rr->created_at->format('d/m/Y'),
             'qp-thumb-' . (($rr->id % 8) + 1) . '.png',
@@ -48,20 +39,20 @@
             $latest && $latest->valid_until ? (($isFr ? 'Expire le ' : 'Expires ') . $latest->valid_until->format('d/m/Y')) : '-',
             $latest
                 ? route('quotes.detail', ['lang' => $lang, 'proposal' => $latest->id])
-                : route('messages.inbox', ['lang' => $lang]),
+                : route('quotes.request-detail', ['lang' => $lang, 'rfq' => $rr->id]),
         ];
     }
-    $rows = array_merge($realRows, $rows);
 
-    // Tabs filter the design rows (?tab=), search filters by text (?q=)
+    // Tabs filter the rows (?tab=), search filters by text (?q=). Counts are
+    // derived from the buyer's own rows, never hardcoded.
+    $countBy = fn (callable $f) => count(array_filter($rows, $f));
     $tabs = [
-        ['toutes',       $isFr ? 'Toutes' : 'All',                          18, fn ($r) => true],
-        ['demandes',     $isFr ? 'Demandes envoyées' : 'Requests sent',      8, fn ($r) => $r[6] === 'sent'],
-        ['propositions', $isFr ? 'Propositions reçues' : 'Proposals received', 6, fn ($r) => $r[6] === 'received'],
-        ['negociation',  $isFr ? 'En négociation' : 'In negotiation',        3, fn ($r) => $r[9] === 'nego'],
-        ['acceptees',    $isFr ? 'Acceptées' : 'Accepted',                   1, fn ($r) => $r[9] === 'accepted'],
-        ['refusees',     $isFr ? 'Refusées' : 'Refused',                     0, fn ($r) => $r[9] === 'refused'],
-        ['expirees',     $isFr ? 'Expirées' : 'Expired',                     0, fn ($r) => false],
+        ['toutes',       $isFr ? 'Toutes' : 'All',                            count($rows), fn ($r) => true],
+        ['demandes',     $isFr ? 'Demandes envoyées' : 'Requests sent',        $countBy(fn ($r) => $r[6] === 'sent'), fn ($r) => $r[6] === 'sent'],
+        ['propositions', $isFr ? 'Propositions reçues' : 'Proposals received', $countBy(fn ($r) => $r[6] === 'received'), fn ($r) => $r[6] === 'received'],
+        ['negociation',  $isFr ? 'En négociation' : 'In negotiation',          $countBy(fn ($r) => $r[9] === 'nego'), fn ($r) => $r[9] === 'nego'],
+        ['acceptees',    $isFr ? 'Acceptées' : 'Accepted',                     $countBy(fn ($r) => $r[9] === 'accepted'), fn ($r) => $r[9] === 'accepted'],
+        ['refusees',     $isFr ? 'Refusées' : 'Refused',                       $countBy(fn ($r) => $r[9] === 'refused'), fn ($r) => $r[9] === 'refused'],
     ];
     $tab = request()->query('tab', 'toutes');
     $q = trim((string) request()->query('q', ''));
@@ -72,31 +63,53 @@
         return true;
     }));
 
-    // Résumé cards: [label, labelColor, value, delta, deltaColor, icon, iconColor, bg]
+    // Résumé cards, computed from the buyer's own rows: [label, labelColor,
+    // value, icon, iconColor, bg]
+    $cSent     = $countBy(fn ($r) => $r[6] === 'sent');
+    $cReceived = $countBy(fn ($r) => $r[6] === 'received');
+    $cNego     = $countBy(fn ($r) => $r[9] === 'nego');
+    $cAccepted = $countBy(fn ($r) => $r[9] === 'accepted');
+    $cRefused  = $countBy(fn ($r) => $r[9] === 'refused');
+    $cWaiting  = $countBy(fn ($r) => $r[9] === 'waiting');
+    $spendTotal = ($realRequests ?? collect())
+        ->flatMap(fn ($rr) => $rr->proposals->where('status', 'accepted'))
+        ->sum('total');
+
     $resumeCards = [
-        [$isFr ? 'Demandes envoyées' : 'Requests sent',      '#1B1B18', '8', '+14%',  '#3565DE', 'trending-up',    '#3565DE', '#EEF1FC'],
-        [$isFr ? 'Propositions reçues' : 'Proposals received','#1B1B18', '6', '+20%',  '#157A43', 'badge-check',    '#157A43', '#EFF6F1'],
-        [$isFr ? 'En négociation' : 'In negotiation',        '#C97A16', '3', '-10%',  '#E8890C', 'message-circle', '#E8890C', '#FDF4E7'],
-        [$isFr ? 'Acceptées' : 'Accepted',                   '#1B1B18', '1', '+100%', '#157A43', 'file-check-2',   '#157A43', '#F3F7F4'],
-        [$isFr ? 'Commandes créées' : 'Orders created',      '#7C4FE0', '1', '+100%', '#7C4FE0', 'shopping-bag',   '#7C4FE0', '#F1EFFA'],
-        [$isFr ? 'Total dépensé' : 'Total spent',            '#0F766E', '210,000 FCFA', '+100%', '#157A43', 'upload', '#0F766E', '#EBF5F3'],
+        [$isFr ? 'Demandes envoyées' : 'Requests sent',       '#1B1B18', (string) $cSent,     'trending-up',    '#3565DE', '#EEF1FC'],
+        [$isFr ? 'Propositions reçues' : 'Proposals received', '#1B1B18', (string) $cReceived, 'badge-check',    '#157A43', '#EFF6F1'],
+        [$isFr ? 'En négociation' : 'In negotiation',         '#C97A16', (string) $cNego,     'message-circle', '#E8890C', '#FDF4E7'],
+        [$isFr ? 'Acceptées' : 'Accepted',                    '#1B1B18', (string) $cAccepted, 'file-check-2',   '#157A43', '#F3F7F4'],
+        [$isFr ? 'Refusées' : 'Refused',                      '#B42025', (string) $cRefused,  'x-circle',       '#E5484D', '#FDE8E8'],
+        [$isFr ? 'Total engagé' : 'Total committed',          '#0F766E', number_format((int) $spendTotal, 0, ',', ' ') . ' FCFA', 'upload', '#0F766E', '#EBF5F3'],
     ];
 
-    // Donut legend: [label, pct, count, color]
+    // Donut legend: [label, pct, count, color] — proportional to real counts.
+    $donutTotal = max(1, count($rows));
+    $pct = fn ($n) => round($n / $donutTotal * 100, 1);
     $donutParts = [
-        [$isFr ? 'Propositions reçues' : 'Proposals received', '33.3%', 6, '#1F8A4C'],
-        [$isFr ? 'En négociation' : 'In negotiation',          '16.7%', 3, '#F5A623'],
-        [$isFr ? 'Acceptées' : 'Accepted',                     '5.6%',  1, '#14652F'],
-        [$isFr ? 'En attente' : 'Pending',                     '38.9%', 7, '#B9BEC4'],
-        [$isFr ? 'Refusées' : 'Refused',                       '5.6%',  1, '#E5484D'],
+        [$isFr ? 'Propositions reçues' : 'Proposals received', $pct($cReceived) . '%', $cReceived, '#1F8A4C'],
+        [$isFr ? 'En négociation' : 'In negotiation',          $pct($cNego) . '%',     $cNego,     '#F5A623'],
+        [$isFr ? 'Acceptées' : 'Accepted',                     $pct($cAccepted) . '%', $cAccepted, '#14652F'],
+        [$isFr ? 'En attente' : 'Pending',                     $pct($cWaiting) . '%',  $cWaiting,  '#B9BEC4'],
+        [$isFr ? 'Refusées' : 'Refused',                       $pct($cRefused) . '%',  $cRefused,  '#E5484D'],
     ];
-    $donutCss = 'conic-gradient(#1F8A4C 0 33.3%, #F5A623 33.3% 50%, #14652F 50% 55.6%, #B9BEC4 55.6% 94.4%, #E5484D 94.4% 100%)';
+    // Build the conic-gradient stops cumulatively so the ring matches the legend.
+    $donutCss = 'conic-gradient(';
+    $acc = 0; $stops = [];
+    foreach ($donutParts as [, $dpPct, $dpCount, $dpColor]) {
+        $slice = $pct($dpCount);
+        $stops[] = $dpColor . ' ' . $acc . '% ' . ($acc + $slice) . '%';
+        $acc += $slice;
+    }
+    if ($acc < 100) { $stops[] = '#EDEDEB ' . $acc . '% 100%'; }
+    $donutCss .= implode(', ', $stops) . ')';
 
     $quickActions = [
         ['circle-plus', $isFr ? 'Créer une demande de devis' : 'Create a quote request', route('quotes.create', ['lang' => $lang]), true],
-        ['shopping-bag', $isFr ? 'Voir mes commandes' : 'View my orders',                route('messages.inbox', ['lang' => $lang]), false],
-        ['map-pin',      $isFr ? 'Mes adresses de livraison' : 'My delivery addresses',  route('profile.show', ['lang' => $lang]), false],
-        ['credit-card',  $isFr ? 'Mes moyens de paiement' : 'My payment methods',        route('profile.show', ['lang' => $lang]), false],
+        ['shopping-bag', $isFr ? 'Voir mes commandes' : 'View my orders',                route('orders.index', ['lang' => $lang]), false],
+        ['message-circle', $isFr ? 'Mes messages' : 'My messages',                       route('messages.inbox', ['lang' => $lang]), false],
+        ['user-cog',     $isFr ? 'Mon profil' : 'My profile',                            route('profile.show', ['lang' => $lang]), false],
     ];
 
     $selfUrl = fn (array $extra = []) => route('quotes.index', array_merge(['lang' => $lang, 'tab' => $tab], $q !== '' ? ['q' => $q] : [], $extra));
@@ -310,13 +323,12 @@
                         </span>
                     </div>
                     <div class="mt-4 grid grid-cols-2 gap-3">
-                        @foreach($resumeCards as [$rcLabel, $rcLabelColor, $rcValue, $rcDelta, $rcDeltaColor, $rcIcon, $rcIconColor, $rcBg])
+                        @foreach($resumeCards as [$rcLabel, $rcLabelColor, $rcValue, $rcIcon, $rcIconColor, $rcBg])
                         <div class="rounded-xl p-3.5" style="background:{{ $rcBg }}">
                             <p class="text-[11.5px] font-semibold leading-snug" style="color:{{ $rcLabelColor }}">{{ $rcLabel }}</p>
-                            <p class="mt-1.5 text-[19px] font-bold text-[#1B1B18] leading-tight {{ strlen($rcValue) > 5 ? 'text-[15px]' : '' }}">{{ $rcValue }}</p>
-                            <div class="mt-1.5 flex items-center justify-between gap-2">
-                                <span class="text-[11.5px] font-bold" style="color:{{ $rcDeltaColor }}">{{ $rcDelta }}</span>
-                                <i data-lucide="{{ $rcIcon }}" class="w-[17px] h-[17px]" style="stroke-width:1.7;color:{{ $rcIconColor }}"></i>
+                            <div class="mt-1.5 flex items-end justify-between gap-2">
+                                <p class="text-[19px] font-bold text-[#1B1B18] leading-tight {{ strlen($rcValue) > 5 ? 'text-[15px]' : '' }}">{{ $rcValue }}</p>
+                                <i data-lucide="{{ $rcIcon }}" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.7;color:{{ $rcIconColor }}"></i>
                             </div>
                         </div>
                         @endforeach

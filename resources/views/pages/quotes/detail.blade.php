@@ -11,63 +11,49 @@
         ['historique', $isFr ? 'Historique' : 'History', null, route('quotes.index', ['lang' => $lang])],
     ];
 
-    // [thumb, name, desc, qty, unit, price, discount, tax, total]
-    $rows = [
-        ['qv-prod-1.png', $isFr ? 'Mobilier en bois massif pour hôtel' : 'Solid wood furniture for a hotel', $isFr ? 'Bois massif (Ayous), finition vernie naturelle, style moderne.' : 'Solid wood (Ayous), natural varnished finish, modern style.', '10', '180,000', '5%', '171,000', '1,710,000'],
-        ['qv-prod-2.png', $isFr ? 'Masque traditionnel Bamiléké' : 'Traditional Bamileke mask',              $isFr ? 'Bois de fromager sculpté à la main, origine Ouest Cameroun.' : 'Hand-carved fromager wood, West Cameroon origin.', '20', '75,000', '0%', '145,000', '1,500,000'],
-        ['qv-prod-3.png', $isFr ? 'Table basse décorative en bois' : 'Decorative wooden coffee table',       $isFr ? 'Bois massif, motif traditionnel camerounais, vernis naturel.' : 'Solid wood, traditional Cameroonian pattern, natural varnish.', '5', '95,000', '3%', '88,250', '461,750'],
-        ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '60,000', '0%', '115,500', '1,080,000'],
-    ];
-
     // Real proposal threading (?proposal=ID, authorized in the route)
-    $isReal = isset($realProposal) && $realProposal;
-    if ($isReal) {
-        $rp = $realProposal;
-        $rows = $rp->items->map(fn ($it, $i) => [
-            'qv-prod-' . (($i % 4) + 1) . '.png',
-            $it->name,
-            $it->description ?? '',
-            (string) $it->quantity,
-            number_format($it->unit_price),
-            rtrim(rtrim(number_format($it->discount_pct, 2), '0'), '.') . '%',
-            number_format((int) round($it->total * 0.1925)),
-            number_format($it->total),
-        ])->all();
-        $realRef      = $rp->reference;
-        $realBizName  = $rp->request->business->name_fr ?? 'Art Bois Nature';
-        $realSentAt   = $rp->created_at->format('d/m/Y H:i');
-        $realValid    = $rp->valid_until?->format('d/m/Y');
-        $realStatusFr = ['draft' => 'BROUILLON', 'sent' => 'EN ATTENTE DE RÉPONSE', 'accepted' => 'ACCEPTÉE', 'refused' => 'REFUSÉE'][$rp->status] ?? strtoupper($rp->status);
-    }
+    $rp  = $realProposal;
+    $rq  = $rp->request;
+    $biz = $rq?->business;
+
+    // [thumb, name, desc, qty, unit, price, discount, tax, total]
+    $rows = $rp->items->map(fn ($it, $i) => [
+        'qv-prod-' . (($i % 4) + 1) . '.png',
+        $it->name,
+        $it->description ?? '',
+        (string) $it->quantity,
+        number_format($it->unit_price),
+        rtrim(rtrim(number_format($it->discount_pct, 2), '0'), '.') . '%',
+        number_format((int) round($it->total * 0.1925)),
+        number_format($it->total),
+    ])->all();
+
+    $realRef      = $rp->reference;
+    $realBizName  = $biz->name_fr ?? '—';
+    $realBizLogo  = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/landing/logo.png');
+    $realSentAt   = $rp->created_at->format('d/m/Y H:i');
+    $realValid    = $rp->valid_until?->format('d/m/Y');
+    $realDaysLeft = $rp->valid_until ? (int) now()->startOfDay()->diffInDays($rp->valid_until, false) : null;
+    $realWanted   = $rq?->desired_response_date?->format('d/m/Y');
+    $realStatusFr = ['draft' => 'BROUILLON', 'sent' => 'EN ATTENTE DE RÉPONSE', 'accepted' => 'ACCEPTÉE', 'refused' => 'REFUSÉE'][$rp->status] ?? strtoupper($rp->status);
 
     // [label, value, color]
     $totals = [
-        [$isFr ? 'Sous-total' : 'Subtotal',                        '4,751,750 FCFA', '#1B1B18'],
-        [$isFr ? 'Remise globale (2%)' : 'Global discount (2%)',   '-95,035 FCFA',   '#E5484D'],
-        [$isFr ? 'Sous-total après remise' : 'Subtotal after discount', '4,656,715 FCFA', '#1B1B18'],
-        [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)',      '895,543 FCFA',   '#1B1B18'],
-        [$isFr ? 'Frais de livraison (est.)' : 'Delivery costs (est.)', '250,000 FCFA', '#1B1B18'],
-        [$isFr ? 'Assurance (est.)' : 'Insurance (est.)',          '150,000 FCFA',   '#1B1B18'],
+        [$isFr ? 'Sous-total' : 'Subtotal', number_format($rp->subtotal) . ' FCFA', '#1B1B18'],
+        [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rp->discount_amount) . ' FCFA', '#E5484D'],
+        [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rp->tax_amount) . ' FCFA', '#1B1B18'],
+        [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rp->delivery_fee) . ' FCFA', '#1B1B18'],
+        [$isFr ? 'Assurance' : 'Insurance', number_format($rp->insurance_fee) . ' FCFA', '#1B1B18'],
     ];
-
-    if ($isReal) {
-        $totals = [
-            [$isFr ? 'Sous-total' : 'Subtotal', number_format($rp->subtotal) . ' FCFA', '#1B1B18'],
-            [($isFr ? 'Remise globale' : 'Global discount') . ' (' . rtrim(rtrim(number_format($rp->global_discount_pct, 2), '0'), '.') . '%)', '-' . number_format($rp->discount_amount) . ' FCFA', '#E5484D'],
-            [$isFr ? 'Taxes (TVA 19.25%)' : 'Taxes (VAT 19.25%)', number_format($rp->tax_amount) . ' FCFA', '#1B1B18'],
-            [$isFr ? 'Frais de livraison' : 'Delivery costs', number_format($rp->delivery_fee) . ' FCFA', '#1B1B18'],
-            [$isFr ? 'Assurance' : 'Insurance', number_format($rp->insurance_fee) . ' FCFA', '#1B1B18'],
-        ];
-    }
 
     // [icon, label]
-    $importantInfo = [
-        ['calendar-days', $isFr ? 'Valide jusqu\'au 25 Juin 2024' : 'Valid until 25 June 2024'],
+    $importantInfo = array_values(array_filter([
+        $realValid ? ['calendar-days', ($isFr ? 'Valide jusqu\'au ' : 'Valid until ') . $realValid] : null,
         ['badge-percent', $isFr ? 'Les prix incluent la TVA (19.25%)' : 'Prices include VAT (19.25%)'],
-        ['truck',         $isFr ? 'Livraison à Marseille, France' : 'Delivery to Marseille, France'],
+        $rp->delivery_location ? ['truck', ($isFr ? 'Livraison à ' : 'Delivery to ') . $rp->delivery_location] : null,
         ['shield-check',  $isFr ? 'Paiement sécurisé via notre plateforme' : 'Secure payment via our platform'],
         ['badge-check',   $isFr ? 'Protection acheteur incluse' : 'Buyer protection included'],
-    ];
+    ]));
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -114,12 +100,12 @@
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">
                     {{ $isFr ? 'Proposition de devis' : 'Quote proposal' }}
-                    <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $isReal ? $realStatusFr : ($isFr ? 'En attente de réponse' : 'Awaiting response') }}</span>
+                    <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $realStatusFr }}</span>
                 </h1>
                 <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    {{ $isFr ? 'Proposée par' : 'Proposed by' }} <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realBizName : 'Art Bois Nature' }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Envoyée le' : 'Sent on' }} <span class="font-semibold text-[#1B1B18]">{{ $isReal ? $realSentAt : ('25 ' . ($isFr ? 'Mai' : 'May') . ' 2024 à 14:32') }}</span>
-                    @if($isReal) &nbsp;•&nbsp; <span class="font-semibold text-[#1B1B18]">{{ $realRef }}</span> @endif
+                    {{ $isFr ? 'Proposée par' : 'Proposed by' }} <span class="font-semibold text-[#1B1B18]">{{ $realBizName }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Envoyée le' : 'Sent on' }} <span class="font-semibold text-[#1B1B18]">{{ $realSentAt }}</span>
+                    &nbsp;•&nbsp; <span class="font-semibold text-[#1B1B18]">{{ $realRef }}</span>
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -144,31 +130,41 @@
                 <!-- Artisan / reference / validity card -->
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5 flex flex-col lg:flex-row gap-6 lg:divide-x divide-[#F0F1F0]">
                     <div class="flex items-start gap-4 flex-1 min-w-0">
-                        <img src="{{ asset('images/landing/qv-abn-logo.png') }}" alt="Art Bois Nature" class="w-[88px] shrink-0 object-contain">
+                        <img src="{{ $realBizLogo }}" alt="{{ $realBizName }}" class="w-[88px] shrink-0 object-contain">
                         <div class="min-w-0">
                             <p class="text-[11.5px] text-[#6F6B60]">{{ $isFr ? 'Proposée par' : 'Proposed by' }}</p>
                             <p class="mt-0.5 flex flex-wrap items-center gap-2">
-                                <span class="text-[14.5px] font-bold text-[#1B1B18]">Art Bois Nature</span>
+                                <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $realBizName }}</span>
+                                @if(in_array($biz?->verification_tier, ['verified', 'certified'], true))
                                 <span class="inline-flex items-center gap-1 bg-[#E2F3E8] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
+                                @endif
                             </p>
-                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? 'Yaoundé, Centre, Cameroun' : 'Yaounde, Centre, Cameroon' }}</p>
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> +237 6 70 12 34 56</p>
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> contact@artbois.cm</p>
+                            @if($biz?->address_fr)
+                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? $biz->address_fr : ($biz->address_en ?: $biz->address_fr) }}</p>
+                            @endif
+                            @if($biz?->phone)
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->phone }}</p>
+                            @endif
+                            @if($biz?->email)
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->email }}</p>
+                            @endif
                             <a href="{{ $vendorUrl }}" class="mt-2 inline-block text-[12px] font-semibold text-[#1B1B18] underline underline-offset-4 hover:text-[#14652F]">{{ $isFr ? 'Voir le profil de l\'artisan' : 'View the artisan\'s profile' }}</a>
                         </div>
                     </div>
                     <div class="lg:px-6">
                         <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Référence de la demande' : 'Request reference' }}</p>
-                        <p class="mt-1 text-[14px] font-bold text-[#1B1B18]">RFQ-2024-000189</p>
+                        <p class="mt-1 text-[14px] font-bold text-[#1B1B18]">{{ $rq?->reference ?? '—' }}</p>
                         <p class="mt-4 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Date de réponse souhaitée' : 'Desired response date' }}</p>
-                        <p class="mt-1 text-[13.5px] font-bold text-[#1B1B18]">25 {{ $isFr ? 'Mai' : 'May' }} 2024</p>
+                        <p class="mt-1 text-[13.5px] font-bold text-[#1B1B18]">{{ $realWanted ?? '—' }}</p>
                     </div>
                     <div class="lg:pl-6 flex items-start gap-3.5">
                         <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
                         <div>
                             <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Valide jusqu\'au' : 'Valid until' }}</p>
-                            <p class="mt-0.5 text-[14px] font-bold text-[#1B1B18]">25 {{ $isFr ? 'Juin' : 'June' }} 2024</p>
-                            <p class="mt-0.5 text-[11.5px] text-[#6F6B60]">(30 {{ $isFr ? 'jours restants' : 'days left' }})</p>
+                            <p class="mt-0.5 text-[14px] font-bold text-[#1B1B18]">{{ $realValid ?? '—' }}</p>
+                            @if($realDaysLeft !== null)
+                            <p class="mt-0.5 text-[11.5px] text-[#6F6B60]">({{ max($realDaysLeft, 0) }} {{ $isFr ? 'jours restants' : 'days left' }})</p>
+                            @endif
                         </div>
                     </div>
                 </section>
@@ -194,7 +190,7 @@
                     </div>
 
                     <div class="px-5 py-5">
-                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Articles proposés' : 'Proposed items' }} <span class="font-normal text-[#55524A]">(4 articles)</span></h2>
+                        <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Articles proposés' : 'Proposed items' }} <span class="font-normal text-[#55524A]">({{ count($rows) }} {{ $isFr ? 'articles' : 'items' }})</span></h2>
                         <div class="mt-3 overflow-x-auto">
                             <table class="w-full min-w-[880px]">
                                 <thead>
@@ -236,15 +232,15 @@
                         <div class="mt-5 border-t border-[#F0F1F0] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <div>
                                 <h3 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Conditions de paiement' : 'Payment terms' }}</h3>
-                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $isFr ? '50% à la commande, 50% avant expédition' : '50% on order, 50% before shipment' }}</p>
+                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $rp->payment_terms ?: '—' }}</p>
                                 <h3 class="mt-4 text-[13px] font-bold text-[#1B1B18]">Incoterms</h3>
-                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">FOB - Free On Board</p>
+                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $rp->incoterms ?: '—' }}</p>
                             </div>
                             <div>
                                 <h3 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Délais de production' : 'Production time' }}</h3>
-                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $isFr ? '7 - 10 jours ouvrables' : '7 - 10 working days' }}</p>
+                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $rp->production_delay ?: '—' }}</p>
                                 <h3 class="mt-4 text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Délais de livraison' : 'Delivery time' }}</h3>
-                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $isFr ? '15 - 20 jours ouvrables' : '15 - 20 working days' }}</p>
+                                <p class="mt-1.5 text-[12.5px] text-[#3B382F]">{{ $rp->delivery_delay ?: '—' }}</p>
                             </div>
                             <div>
                                 <dl class="space-y-2.5">
@@ -257,7 +253,7 @@
                                 </dl>
                                 <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
                                     <span class="text-[14.5px] font-bold text-[#157A43] uppercase">{{ $isFr ? 'Total général' : 'Grand total' }}</span>
-                                    <span class="text-[15.5px] font-bold text-[#157A43]">{{ $isReal ? number_format($rp->total) . ' FCFA' : '5,952,258 FCFA' }}</span>
+                                    <span class="text-[15.5px] font-bold text-[#157A43]">{{ number_format($rp->total) }} FCFA</span>
                                 </div>
                             </div>
                         </div>
@@ -276,7 +272,7 @@
                     <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Statut de la proposition' : 'Proposal status' }}</h2>
                     <p class="mt-3.5 flex items-center gap-2.5">
                         <span class="w-[22px] h-[22px] shrink-0 rounded-full bg-[#F5B301] flex items-center justify-center"><i data-lucide="clock" class="w-3 h-3 text-white" style="stroke-width:2.6"></i></span>
-                        <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $isFr ? 'En attente de réponse' : 'Awaiting response' }}</span>
+                        <span class="bg-[#FDF3E0] rounded-md px-3 py-1 text-[11px] font-bold tracking-[0.03em] text-[#C97A16] uppercase">{{ $realStatusFr }}</span>
                     </p>
                     <p class="mt-3 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'L\'artisan attend votre réponse.' : 'The artisan awaits your reply.' }}<br>{{ $isFr ? 'Délai estimé : 1 à 3 jours ouvrables' : 'Estimated time: 1 to 3 working days' }}</p>
                 </section>
@@ -284,7 +280,7 @@
                 <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                     <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-3.5 space-y-3">
-                        @if($isReal && in_array($rp->status, ['sent', 'draft']))
+                        @if(in_array($rp->status, ['sent', 'draft']))
                         <form method="POST" action="{{ route('quotes.accept-proposal', ['proposal' => $rp->id, 'lang' => $lang]) }}">
                             @csrf
                             <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
@@ -292,7 +288,7 @@
                                 {{ $isFr ? 'Accepter la proposition' : 'Accept the proposal' }}
                             </button>
                         </form>
-                        @elseif($isReal && $rp->purchaseOrder)
+                        @elseif($rp->purchaseOrder)
                         <a href="{{ route('quotes.po', ['lang' => $lang, 'po' => $rp->purchaseOrder->id]) }}" class="flex items-center justify-center gap-2.5 bg-[#0E5A2D] hover:bg-[#14652F] rounded-lg px-4 py-3 text-[13px] font-semibold text-white transition-colors">
                             <i data-lucide="file-text" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                             {{ $isFr ? 'Voir le bon de commande' : 'View the purchase order' }}
@@ -303,7 +299,7 @@
                             <i data-lucide="square-pen" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                             {{ $isFr ? 'Demander des modifications' : 'Request modifications' }}
                         </a>
-                        @if($isReal && in_array($rp->status, ['sent', 'draft']))
+                        @if(in_array($rp->status, ['sent', 'draft']))
                         <form method="POST" action="{{ route('quotes.refuse-proposal', ['proposal' => $rp->id, 'lang' => $lang]) }}">
                             @csrf
                             <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-white border border-[#F5C9C9] hover:border-[#E5484D] rounded-lg px-4 py-3 text-[13px] font-semibold text-[#E5484D] transition-colors">
@@ -319,7 +315,7 @@
                     </div>
                 </section>
 
-                @if($isReal && (int) $rp->discount_amount > 0)
+                @if((int) $rp->discount_amount > 0)
                 <section class="bg-[#EFF6F1] rounded-2xl px-5 py-4 flex items-start gap-3">
                     <i data-lucide="piggy-bank" class="w-[22px] h-[22px] shrink-0 text-[#1F8A4C]" style="stroke-width:1.7"></i>
                     <p class="text-[12px] leading-relaxed">

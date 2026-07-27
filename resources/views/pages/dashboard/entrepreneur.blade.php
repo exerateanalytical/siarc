@@ -195,49 +195,43 @@
 
         <!-- ══════════════ Mobile dashboard (seller mobile dashboard.png) ══════════════ -->
         @php
-            $visits = number_format(max((int) ($business->views_count ?? 0), 0) ?: 1245, 0, ',', ' ');
+            // Mobile mirrors the desktop figures — same queries, same truth. The
+            // design fixtures that used to live here (356K revenue, 28 orders,
+            // a fake activity feed) shipped to every seller on a phone.
+            $visits = number_format((int) ($business->views_count ?? 0), 0, ',', ' ');
             $smKpis = [
-                ['sm-kpi-1.png', '356K', 'FCFA', $isFr ? 'Revenus' : 'Revenue',            '↑ 24%', true,  '#sm-wallet'],
-                ['sm-kpi-2.png', '28',  null,   $isFr ? 'Commandes' : 'Orders',            '↑ 18%', true,  route('messages.inbox')],
-                ['sm-kpi-3.png', '145', null,   $isFr ? 'Demandes' : 'Requests',           '↑ 15%', true,  route('messages.inbox')],
-                ['sm-kpi-4.png', '38',  null,   $isFr ? 'Devis en attente' : 'Pending quotes', '↓ 8%', false, route('messages.inbox')],
-                ['sm-kpi-5.png', (string) $messageCount, null, 'Messages',                 '↓ 12%', false, route('messages.inbox')],
-                ['sm-kpi-6.png', $visits, null, $isFr ? 'Visites' : 'Visits',              '↑ 12%', true,  $ownStoreUrl],
+                ['sm-kpi-1.png', number_format($revenueTotal, 0, ',', ' '), 'FCFA', $isFr ? 'Revenus' : 'Revenue', route('orders.index')],
+                ['sm-kpi-2.png', (string) $ordersCount, null, $isFr ? 'Commandes' : 'Orders',                      route('orders.index')],
+                ['sm-kpi-3.png', (string) $pipeline['received'], null, $isFr ? 'Demandes' : 'Requests',            route('dashboard.quotes')],
+                ['sm-kpi-4.png', (string) $pipeline['pending'], null, $isFr ? 'Devis en attente' : 'Pending quotes', route('dashboard.quotes')],
+                ['sm-kpi-5.png', (string) ($unreadMessages ?? 0), null, 'Messages',                                route('messages.inbox')],
+                ['sm-kpi-6.png', $visits, null, $isFr ? 'Visites' : 'Visits',                                      $ownStoreUrl],
             ];
             $smPipeline = [
-                ['sm-pipe-1.png', '145', $isFr ? "Demandes\nreçues" : "Requests\nreceived"],
-                ['sm-pipe-2.png', '38',  $isFr ? 'Préparation' : 'Preparing'],
-                ['sm-pipe-3.png', '24',  $isFr ? 'Devis envoyés' : 'Quotes sent'],
-                ['sm-pipe-4.png', '18',  $isFr ? 'En négociation' : 'Negotiating'],
-                ['sm-pipe-5.png', '14',  $isFr ? 'Acceptés' : 'Accepted'],
+                ['sm-pipe-1.png', (string) $pipeline['received'],    $isFr ? "Demandes\nreçues" : "Requests\nreceived"],
+                ['sm-pipe-2.png', (string) $pipeline['pending'],     $isFr ? 'À traiter' : 'To handle'],
+                ['sm-pipe-3.png', (string) $pipeline['quoted'],      $isFr ? 'Devis envoyés' : 'Quotes sent'],
+                ['sm-pipe-4.png', (string) $pipeline['negotiation'], $isFr ? 'En négociation' : 'Negotiating'],
+                ['sm-pipe-5.png', (string) $pipeline['accepted'],    $isFr ? 'Acceptés' : 'Accepted'],
             ];
-            $smActivity = $isFr ? [
-                ['sm-act-1.png', "Nouvelle demande de devis pour \u{201C}Masque Bamileké Royal\u{201D}", 'Il y a 15 min', '#157A43'],
-                ['sm-act-2.png', 'Commande #GVN-2025-0016 confirmée', 'Il y a 1 h', '#F5A623'],
-                ['sm-act-3.png', 'Nouveau message de Jean M. (France)', 'Il y a 2 h', '#2E6BE0'],
-                ['sm-act-4.png', "Avis 5 étoiles reçu pour \u{201C}Collier Perles Recyclées\u{201D}", 'Il y a 5 h', '#8B5CF6'],
-                ['sm-act-5.png', 'Paiement reçu pour commande #GVN-2025-0014', 'Il y a 1 jour', '#157A43'],
-            ] : [
-                ['sm-act-1.png', "New quote request for \u{201C}Masque Bamileké Royal\u{201D}", '15 min ago', '#157A43'],
-                ['sm-act-2.png', 'Order #GVN-2025-0016 confirmed', '1 h ago', '#F5A623'],
-                ['sm-act-3.png', 'New message from Jean M. (France)', '2 h ago', '#2E6BE0'],
-                ['sm-act-4.png', "5-star review received for \u{201C}Collier Perles Recyclées\u{201D}", '5 h ago', '#8B5CF6'],
-                ['sm-act-5.png', 'Payment received for order #GVN-2025-0014', '1 day ago', '#157A43'],
-            ];
+            // Same merged feed the desktop column renders, re-shaped for the
+            // mobile card. Empty when nothing has happened yet.
+            $smActivity = collect($activity)->map(fn ($a) => [
+                $a[0], str_replace("\n", ' — ', $a[3]),
+                ($isFr ? 'Il y a ' : '') . $a[2] . ($isFr ? '' : ' ago'),
+                $a[1],
+            ])->all();
             $smActions = [
                 ['sm-qa-1.png', $isFr ? "Ajouter\nun produit" : "Add\na product",          route('products.web-create'), null],
-                ['sm-qa-2.png', $isFr ? "Créer\nun devis" : "Create\na quote",             route('messages.inbox'), null],
-                ['sm-qa-3.png', $isFr ? "Répondre\naux messages" : "Reply\nto messages",   route('messages.inbox'), (string) $messageCount],
-                ['sm-qa-4.png', $isFr ? "Voir\ncommandes" : "View\norders",                route('messages.inbox'), null],
+                ['sm-qa-2.png', $isFr ? "Mes\nproduits" : "My\nproducts",                  route('products.web-index'), (string) $productCount],
+                ['sm-qa-3.png', $isFr ? "Répondre\naux messages" : "Reply\nto messages",   route('messages.inbox'), (string) ($unreadMessages ?? 0)],
+                ['sm-qa-4.png', $isFr ? "Voir\ncommandes" : "View\norders",                route('orders.index'), (string) $ordersCount],
                 ['sm-qa-5.png', $isFr ? "Créer\névénement" : "Create\nan event",           route('events.index'), null],
                 ['sm-qa-6.png', $isFr ? "Ma\nboutique" : "My\nshop",                       $ownStoreUrl, null],
             ];
-            $smProducts = [
-                ['sm-prod-1.png', $isFr ? 'Masque Bamileké Royal' : 'Royal Bamileke Mask',           '1.2K', '24'],
-                ['sm-prod-2.png', $isFr ? 'Panier Tressé Traditionnel' : 'Traditional Woven Basket', '980',  '18'],
-                ['sm-prod-3.png', $isFr ? 'Collier Perles Recyclées' : 'Recycled Bead Necklace',     '760',  '12'],
-                ['sm-prod-4.png', $isFr ? 'Statue Traditionnelle Sawa' : 'Traditional Sawa Statue',  '650',  '9'],
-            ];
+            $smProducts = collect($realPopular)->take(4)->map(fn ($p) => [
+                $p, $isFr ? $p->name_fr : ($p->name_en ?? $p->name_fr), (string) ((int) ($p->views_count ?? 0)),
+            ])->all();
         @endphp
         <div class="lg:hidden">
             <!-- Mobile header -->
@@ -245,7 +239,7 @@
                 <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[39px] h-[42px] object-contain shrink-0">
                 <span class="leading-tight min-w-0">
                     <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-                    <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                    <span class="block text-[12px] font-bold tracking-[0.01em] text-[#14532D] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
                     <span class="block text-[9.5px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
                 <a href="{{ route('notifications.index') }}" class="relative ml-auto p-1 shrink-0" aria-label="Notifications">
@@ -297,13 +291,12 @@
 
                 <!-- KPI tiles -->
                 <div class="grid grid-cols-3 gap-2">
-                    @foreach($smKpis as [$kIcon, $kVal, $kUnit, $kLabel, $kDelta, $kUp, $kHref])
+                    @foreach($smKpis as [$kIcon, $kVal, $kUnit, $kLabel, $kHref])
                     <a href="{{ $kHref }}" class="bg-white border border-[#F0F0EE] rounded-xl px-2.5 py-3 flex items-start gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
                         <img src="{{ asset('images/landing/' . $kIcon) }}" alt="" class="w-[28px] h-[28px] shrink-0" aria-hidden="true">
                         <span class="min-w-0">
                             <span class="block text-[15px] font-bold text-[#1B1B18] leading-tight">{{ $kVal }}@if($kUnit)<span class="text-[9px] font-bold ml-0.5">{{ $kUnit }}</span>@endif</span>
                             <span class="block text-[10px] text-[#55524A] leading-tight">{{ $kLabel }}</span>
-                            <span class="block mt-0.5 text-[10px] font-semibold {{ $kUp ? 'text-[#157A43]' : 'text-[#D43C3C]' }}">{{ $kDelta }}</span>
                         </span>
                         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6] ml-auto self-center shrink-0"></i>
                     </a>
@@ -314,7 +307,7 @@
                 <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Pipeline des devis' : 'Quote pipeline' }}</h2>
-                        <a href="{{ route('messages.inbox') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
+                        <a href="{{ route('dashboard.quotes') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
                     </div>
                     <div class="relative mt-4 flex items-start">
                         <span class="absolute left-[10%] right-[10%] top-[15px] border-t-2 border-dashed border-[#DBDDDB]"></span>
@@ -334,16 +327,19 @@
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité récente' : 'Recent activity' }}</h2>
                         <a href="{{ route('notifications.index') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
                     </div>
+                    @if(empty($smActivity))
+                    <p class="mt-3 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Rien pour le moment. Les demandes de devis, commandes et messages apparaîtront ici.' : 'Nothing yet. Quote requests, orders and messages will appear here.' }}</p>
+                    @else
                     <div class="mt-2 divide-y divide-[#F4F4F2]">
                         @foreach($smActivity as [$aIcon, $aText, $aTime, $aColor])
                         <div class="flex items-center gap-2.5 py-2.5">
-                            <img src="{{ asset('images/landing/' . $aIcon) }}" alt="" class="w-[19px] h-[19px] shrink-0" aria-hidden="true">
+                            <i data-lucide="{{ $aIcon }}" class="w-[19px] h-[19px] shrink-0" style="color:{{ $aColor }};stroke-width:1.7"></i>
                             <p class="flex-1 min-w-0 text-[11.5px] text-[#1B1B18] leading-snug">{{ $aText }}</p>
                             <span class="text-[10px] text-[#8A857A] whitespace-nowrap shrink-0">{{ $aTime }}</span>
-                            <span class="w-[7px] h-[7px] rounded-full shrink-0" style="background:{{ $aColor }}"></span>
                         </div>
                         @endforeach
                     </div>
+                    @endif
                 </section>
 
                 <!-- Actions rapides -->
@@ -368,31 +364,39 @@
                 <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Produits les plus performants' : 'Top performing products' }}</h2>
-                        <a href="{{ $ownStoreUrl }}" class="text-[11.5px] font-medium text-[#157A43] whitespace-nowrap ml-2">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
+                        <a href="{{ route('products.web-index') }}" class="text-[11.5px] font-medium text-[#157A43] whitespace-nowrap ml-2">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
                     </div>
+                    @if(empty($smProducts))
+                    <p class="mt-3 text-[11.5px] text-[#8A857A]">
+                        {{ $isFr ? 'Aucun produit publié pour le moment.' : 'No published products yet.' }}
+                        <a href="{{ route('products.web-create') }}" class="font-semibold text-[#157A43]">{{ $isFr ? 'Ajouter un produit' : 'Add a product' }}</a>
+                    </p>
+                    @else
                     <div class="mt-3 grid grid-cols-4 gap-2">
-                        @foreach($smProducts as [$prImg, $prName, $prViews, $prQuotes])
-                        <a href="{{ route('products.index', ['lang' => $lang]) }}" class="min-w-0">
-                            <img src="{{ asset('images/landing/' . $prImg) }}" alt="" class="w-full rounded-xl">
+                        @foreach($smProducts as [$pr, $prName, $prViews])
+                        <a href="{{ route('products.web-edit', ['slug' => $pr->slug]) }}" class="min-w-0">
+                            <span class="block w-full aspect-square rounded-xl bg-[#F4F6F4] border border-[#EBEEEA] flex items-center justify-center">
+                                <i data-lucide="package" class="w-5 h-5 text-[#8A857A]"></i>
+                            </span>
                             <p class="mt-1.5 text-[10px] font-bold text-[#1B1B18] leading-tight truncate">{{ $prName }}</p>
-                            <p class="mt-0.5 text-[9px] text-[#8A857A] truncate">{{ $prViews }} {{ $isFr ? 'vues' : 'views' }} <span class="mx-0.5">•</span> {{ $prQuotes }} {{ $isFr ? 'devis' : 'quotes' }}</p>
+                            <p class="mt-0.5 text-[9px] text-[#8A857A] truncate">{{ $prViews }} {{ $isFr ? 'vues' : 'views' }}</p>
                         </a>
                         @endforeach
                     </div>
+                    @endif
                 </section>
 
-                <!-- Wallet bar -->
+                {{-- Outstanding invoices. There is no wallet or payout rail on the
+                     platform, so this reports what buyers still owe rather than a
+                     withdrawable balance. --}}
                 <section id="sm-wallet" class="bg-[#02301B] rounded-2xl p-3 flex items-center gap-2.5">
                     <img src="{{ asset('images/landing/sm-wallet-icon.png') }}" alt="" class="w-[29px] h-[29px] shrink-0" aria-hidden="true">
                     <div class="min-w-0">
-                        <p class="text-[10.5px] text-[#B9CBBE] leading-tight">{{ $isFr ? 'Solde disponible' : 'Available balance' }}</p>
-                        <p class="text-[16px] font-bold text-white leading-tight whitespace-nowrap">156 500 <span class="text-[9.5px]">FCFA</span></p>
+                        <p class="text-[10.5px] text-[#B9CBBE] leading-tight">{{ $isFr ? 'Factures en attente de paiement' : 'Invoices awaiting payment' }}</p>
+                        <p class="text-[16px] font-bold text-white leading-tight whitespace-nowrap">{{ number_format((int) $pendingInvoiceTotal, 0, ',', ' ') }} <span class="text-[9.5px]">FCFA</span></p>
                     </div>
-                    <a href="{{ route('support.index') }}" class="ml-auto shrink-0 bg-[#FEBF00] text-[#3A2A03] text-[11px] font-bold px-3 py-2 rounded-lg whitespace-nowrap">
-                        {{ $isFr ? 'Retirer mes gains' : 'Withdraw earnings' }}
-                    </a>
-                    <a href="{{ route('notifications.index') }}" class="shrink-0 w-[28px] h-[28px] rounded-full border border-white/40 flex items-center justify-center text-white" aria-label="{{ $isFr ? 'Historique' : 'History' }}">
-                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    <a href="{{ route('orders.index') }}" class="ml-auto shrink-0 bg-[#FEBF00] text-[#3A2A03] text-[11px] font-bold px-3 py-2 rounded-lg whitespace-nowrap">
+                        {{ $isFr ? 'Voir les commandes' : 'View orders' }}
                     </a>
                 </section>
 

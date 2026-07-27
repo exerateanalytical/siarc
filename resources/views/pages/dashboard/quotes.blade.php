@@ -41,6 +41,11 @@
         ['users',         '#4A63D8', '#EDEDF8', $isFr ? 'Clients actifs' : 'Active clients',        (string) ($activeClientsCount ?? 0), '', '#157A43'],
     ];
 
+    // Conversion + potential value, derived from the same real counts as the
+    // pipeline above rather than the design's 23% / 12,450,000 FCFA.
+    $conversionPct = $totalRfqCount > 0 ? (int) round($acceptedCount / $totalRfqCount * 100) : 0;
+    $potentialValue = (int) ($openProposalValue ?? 0);
+
     // [label, ringColor, count] + segment colors between dots
     $pipeStages = [
         [$isFr ? 'Nouvelles' : 'New',                  '#2E6BE6', (string) $pendingCount],
@@ -146,6 +151,20 @@
         $avgRating !== null ? [$isFr ? 'Avis clients' : 'Client reviews', $avgRating . '/5', '#1B1B18', null] : null,
     ]));
 
+    // Shop-health score: the average of four real signals, so the ring always
+    // agrees with the checklist rendered next to it.
+    $healthScore = (int) round((
+        min(100, $profilePct)
+        + (($business?->status === 'published') ? 100 : 0)
+        + min(100, $publishedProductsCount * 20)
+        + ($avgRating !== null ? (float) $avgRating / 5 * 100 : 0)
+    ) / 4);
+    [$healthLabel, $healthHint] = $healthScore >= 80
+        ? [$isFr ? 'Excellente' : 'Excellent', $isFr ? 'Continuez ainsi !' : 'Keep it up!']
+        : ($healthScore >= 50
+            ? [$isFr ? 'Correcte' : 'Fair', $isFr ? 'Quelques points à compléter.' : 'A few things left to complete.']
+            : [$isFr ? 'À améliorer' : 'Needs work', $isFr ? 'Complétez votre boutique.' : 'Complete your shop.']);
+
     // Real business documents on file (issued/expiry dates)
     $docRows = ($businessDocuments ?? collect())->map(function ($d) use ($isFr) {
         $expired = $d->expires_at && \Illuminate\Support\Carbon::parse($d->expires_at)->isPast();
@@ -205,7 +224,7 @@
             <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[46px] h-[50px] object-contain">
             <span class="leading-tight hidden sm:block">
                 <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
                 <span class="block text-[10.5px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
@@ -333,14 +352,14 @@
                 <div class="mt-6 bg-[#F2F5F2] rounded-xl px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-3">
                     <div>
                         <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Taux de conversion' : 'Conversion rate' }}</p>
-                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18]">23%</p>
-                        <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Ce mois :' : 'This month:' }} <span class="font-semibold text-[#157A43]">+5% ↗</span></p>
+                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18]">{{ $conversionPct }}%</p>
+                        <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $acceptedCount }}/{{ $totalRfqCount }} {{ $isFr ? 'acceptées' : 'accepted' }}</p>
                     </div>
                     <div class="hidden sm:block w-px self-stretch bg-[#DFE5DF]"></div>
                     <div class="min-w-0">
                         <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Valeur potentielle' : 'Potential value' }}</p>
-                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] whitespace-nowrap">12,450,000 <span class="text-[#157A43]">FCFA</span></p>
-                        <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Ce mois' : 'This month' }}</p>
+                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] whitespace-nowrap">{{ number_format($potentialValue, 0, ',', ' ') }} <span class="text-[#157A43]">FCFA</span></p>
+                        <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Propositions en attente' : 'Proposals awaiting reply' }}</p>
                     </div>
                     <img src="{{ asset('images/landing/qd-spark.png') }}" alt="" class="ml-auto h-[52px] object-contain" aria-hidden="true">
                 </div>
@@ -434,13 +453,13 @@
                 <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Santé de votre boutique' : 'Your shop health' }}</h2>
                 <div class="mt-4 flex items-center gap-5">
                     <div class="shrink-0 text-center">
-                        <div class="relative w-[108px] h-[108px] rounded-full" style="background:conic-gradient(from -30deg, #B9BEB9 0 15%, #14652F 15% 100%)">
+                        <div class="relative w-[108px] h-[108px] rounded-full" style="background:conic-gradient(#14652F 0 {{ $healthScore }}%, #E4E7E4 {{ $healthScore }}% 100%)">
                             <div class="absolute inset-[13px] rounded-full bg-white flex items-center justify-center">
-                                <span class="text-[24px] font-bold text-[#1B1B18]">85%</span>
+                                <span class="text-[24px] font-bold text-[#1B1B18]">{{ $healthScore }}%</span>
                             </div>
                         </div>
-                        <p class="mt-2.5 text-[13px] font-bold text-[#14532D]">{{ $isFr ? 'Excellente' : 'Excellent' }}</p>
-                        <p class="text-[11.5px] text-[#6F6B60]">{{ $isFr ? 'Continuez ainsi !' : 'Keep it up!' }}</p>
+                        <p class="mt-2.5 text-[13px] font-bold text-[#14532D]">{{ $healthLabel }}</p>
+                        <p class="text-[11.5px] text-[#6F6B60]">{{ $healthHint }}</p>
                     </div>
                     <ul class="flex-1 min-w-0 space-y-2.5">
                         @foreach($healthChecks as [$hcLabel, $hcValue, $hcColor, $hcSuffix])

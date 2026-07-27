@@ -15,7 +15,7 @@
     $ratingAvg = $hasReviews ? number_format($reviews->avg('rating'), 1) : null;
     $ratingCount = $reviews->count();
 
-    $memberYear = $business->created_at?->format('Y') ?? '2021';
+    $memberYear = $business->created_at?->format('Y') ?? date('Y');
     // Internal platform member ID (deterministic, not a legal registration number)
     $vendorId = 'ENT-' . strtoupper(mb_substr($business->slug, 0, 2)) . '-' . $memberYear . '-' . str_pad((string) $business->id, 4, '0', STR_PAD_LEFT);
     // Registration number: only show a real one on file — never fabricate a legal ID
@@ -23,9 +23,10 @@
     $regNumber = $regDoc ? ($regDoc->issued_by ?? ($isFr ? 'Sur dossier' : 'On file')) : null;
     $activityZone = $industryName ?? '—';
 
-    $contactPhone = $business->phone ?: '+237670416238';
-    $waNumber = preg_replace('/\D/', '', $business->whatsapp ?: $contactPhone);
-    $contactEmail = $business->email ?: 'contact@gvnac.cm';
+    // Never invent contact details — a wrong number sends a buyer to a stranger.
+    $contactPhone = $business->phone ?: null;
+    $waNumber = ($business->whatsapp ?: $contactPhone) ? preg_replace('/\D/', '', $business->whatsapp ?: $contactPhone) : null;
+    $contactEmail = $business->email ?: null;
     $languages = collect($business->languages_spoken ?? ['Français', 'English'])->implode(', ');
 
     $heroStats = array_values(array_filter([
@@ -204,24 +205,29 @@
                     {{ $isFr ? 'Envoyer un message' : 'Send a message' }}
                 </a>
 
-                <div class="mt-4 grid grid-cols-4 divide-x divide-[#EEEBE4] border border-[#EEEBE4] rounded-lg overflow-hidden">
-                    <a href="https://wa.me/{{ $waNumber }}" target="_blank" rel="noopener" class="flex flex-col items-center gap-1 py-3 hover:bg-[#F8F6F1] transition-colors">
+                {{-- Only the channels this business actually published. --}}
+                @php
+                    $contactChannels = array_values(array_filter([
+                        $waNumber      ? ['wa',   'https://wa.me/' . $waNumber,     'WhatsApp'] : null,
+                        $contactPhone  ? ['tel',  'tel:' . $contactPhone,           $isFr ? 'Appeler' : 'Call'] : null,
+                        $contactEmail  ? ['mail', 'mailto:' . $contactEmail,        'Email'] : null,
+                        $business->website ? ['web', $business->website,            $isFr ? 'Site web' : 'Website'] : null,
+                    ]));
+                @endphp
+                @if($contactChannels)
+                <div class="mt-4 grid divide-x divide-[#EEEBE4] border border-[#EEEBE4] rounded-lg overflow-hidden" style="grid-template-columns: repeat({{ count($contactChannels) }}, minmax(0, 1fr))">
+                    @foreach($contactChannels as [$ccKind, $ccHref, $ccLabel])
+                    <a href="{{ $ccHref }}" @if(in_array($ccKind, ['wa', 'web'])) target="_blank" rel="noopener" @endif class="flex flex-col items-center gap-1 py-3 hover:bg-[#F8F6F1] transition-colors">
+                        @if($ccKind === 'wa')
                         <svg viewBox="0 0 24 24" fill="#22C05C" class="w-[18px] h-[18px]"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.1c-.2.7-1.2 1.3-2 1.4-.5.1-1.2.2-3.5-.7-2.9-1.2-4.8-4.1-4.9-4.3-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.4.9-.9 1-.7 1.4.9 1.5 2 2.4 3.3 3 .3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1s1.8.8 2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1z"/></svg>
-                        <span class="text-[10.5px] text-[#3A3A35]">WhatsApp</span>
+                        @else
+                        <i data-lucide="{{ ['tel' => 'phone', 'mail' => 'mail', 'web' => 'globe'][$ccKind] }}" class="w-[17px] h-[17px] {{ $ccKind === 'mail' ? 'text-[#E8542F]' : 'text-[#3A3A35]' }}"></i>
+                        @endif
+                        <span class="text-[10.5px] text-[#3A3A35]">{{ $ccLabel }}</span>
                     </a>
-                    <a href="tel:{{ $contactPhone }}" class="flex flex-col items-center gap-1 py-3 hover:bg-[#F8F6F1] transition-colors">
-                        <i data-lucide="phone" class="w-[17px] h-[17px] text-[#3A3A35]"></i>
-                        <span class="text-[10.5px] text-[#3A3A35]">{{ $isFr ? 'Appeler' : 'Call' }}</span>
-                    </a>
-                    <a href="mailto:{{ $contactEmail }}" class="flex flex-col items-center gap-1 py-3 hover:bg-[#F8F6F1] transition-colors">
-                        <i data-lucide="mail" class="w-[17px] h-[17px] text-[#E8542F]"></i>
-                        <span class="text-[10.5px] text-[#3A3A35]">Email</span>
-                    </a>
-                    <a href="{{ $business->website ?: '#' }}" @if($business->website) target="_blank" rel="noopener" @endif class="flex flex-col items-center gap-1 py-3 hover:bg-[#F8F6F1] transition-colors">
-                        <i data-lucide="globe" class="w-[17px] h-[17px] text-[#3A3A35]"></i>
-                        <span class="text-[10.5px] text-[#3A3A35]">{{ $isFr ? 'Site web' : 'Website' }}</span>
-                    </a>
+                    @endforeach
                 </div>
+                @endif
             </div>
 
             <!-- Practical info card -->
@@ -508,25 +514,30 @@
                 </a>
             </div>
 
-            <!-- Testimonial -->
+            {{-- Featured testimonial — the highest-rated real review, or nothing.
+                 The design shipped an invented "Marie-Louise T." quote here that
+                 rendered on every shop, including brand-new ones. --}}
+            @php $featured = $hasReviews ? $reviews->sortByDesc('rating')->first() : null; @endphp
+            @if($featured && trim((string) $featured->body) !== '')
             <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
                 <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Ce que disent nos clients' : 'What our clients say' }}</h2>
-                <p class="mt-3 text-[12px] text-[#3A3A35] leading-relaxed">
-                    “{{ $isFr ? 'Des pièces magnifiques, livraison rapide et service client exceptionnel. Je recommande vivement !' : 'Magnificent pieces, fast delivery and exceptional customer service. I highly recommend!' }}”
-                </p>
+                <p class="mt-3 text-[12px] text-[#3A3A35] leading-relaxed">“{{ $featured->body }}”</p>
                 <div class="mt-3.5 flex items-center gap-3">
-                    <img src="{{ asset('images/landing/vdetail-client.png') }}" alt="" class="w-10 h-10 rounded-full object-cover">
+                    <span class="w-10 h-10 rounded-full bg-[#F5F1E9] border border-[#ECECEA] flex items-center justify-center text-[13px] font-bold text-[#8A857A] shrink-0">
+                        {{ mb_strtoupper(mb_substr($featured->reviewer->name ?? '?', 0, 1)) }}
+                    </span>
                     <div class="flex-1 min-w-0">
-                        <p class="text-[12px] font-semibold text-[#1D1B16]">Marie-Louise T.</p>
-                        <p class="text-[10.5px] text-[#6F6B60]">{{ $isFr ? 'Client vérifié' : 'Verified client' }}</p>
+                        <p class="text-[12px] font-semibold text-[#1D1B16] truncate">{{ $featured->reviewer->name ?? ($isFr ? 'Client' : 'Client') }}</p>
+                        <p class="text-[10.5px] text-[#6F6B60]">{{ $featured->created_at?->translatedFormat('F Y') }}</p>
                     </div>
-                    <span class="flex items-center gap-0.5">
-                        @for($i = 0; $i < 5; $i++)
+                    <span class="flex items-center gap-0.5 shrink-0">
+                        @for($i = 0; $i < (int) $featured->rating; $i++)
                         <svg viewBox="0 0 20 20" class="w-3 h-3 fill-[#EFA912]"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
                         @endfor
                     </span>
                 </div>
             </div>
+            @endif
         </aside>
     </div>
 </div>

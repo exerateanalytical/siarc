@@ -45,7 +45,7 @@ if (! function_exists('establishSiacSession')) {
         $siacRole = DB::table('model_has_roles')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('model_has_roles.model_id', $user->id)
-            ->orderByRaw("CASE roles.name WHEN 'super_admin' THEN 1 WHEN 'admin' THEN 2 WHEN 'ministry' THEN 3 WHEN 'technical_reviewer' THEN 4 WHEN 'regional_rep' THEN 5 WHEN 'moderator' THEN 6 WHEN 'business_owner' THEN 7 ELSE 8 END ASC")
+            ->orderByRaw("CASE roles.name WHEN 'super_admin' THEN 1 WHEN 'admin' THEN 2 WHEN 'technical_reviewer' THEN 3 WHEN 'regional_rep' THEN 4 WHEN 'moderator' THEN 5 WHEN 'business_owner' THEN 6 ELSE 7 END ASC")
             ->value('roles.name');
 
         $displayName = $user->name ?? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
@@ -167,8 +167,8 @@ if (! function_exists('certNumberFor')) {
     function certNumberFor(int $businessId, $createdAt = null): string
     {
         $year = $createdAt ? \Illuminate\Support\Carbon::parse($createdAt)->year : (int) date('Y');
-        $seed = md5('gvn-cert-' . $businessId);
-        return 'GVN-' . $year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT);
+        $seed = md5('ah237-cert-' . $businessId);
+        return 'AH237-' . $year . '-' . str_pad((string) (hexdec(substr($seed, 0, 6)) % 10000000), 7, '0', STR_PAD_LEFT);
     }
 }
 

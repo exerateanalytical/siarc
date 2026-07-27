@@ -25,7 +25,6 @@
         'buyer'              => $isFr ? 'Acheteur' : 'Buyer',
         'business_owner'     => $isFr ? 'Entrepreneur' : 'Business Owner',
         'regional_rep'       => $isFr ? 'Représentant régional' : 'Regional Rep',
-        'ministry'           => $isFr ? 'Ministère' : 'Ministry',
         'technical_reviewer' => $isFr ? 'Département technique' : 'Technical Dept.',
         'moderator'          => $isFr ? 'Modérateur' : 'Moderator',
         'admin'              => $isFr ? 'Administrateur' : 'Admin',
@@ -139,8 +138,6 @@
                             : ($isFr ? 'Artisan' : 'Artisan');
                     } elseif ($roleName === 'regional_rep') {
                         $roleLabel = $isFr ? 'Représentant régional' : 'Regional Rep';
-                    } elseif ($roleName === 'ministry') {
-                        $roleLabel = $isFr ? 'Ministère' : 'Ministry';
                     } elseif ($roleName === 'technical_reviewer') {
                         $roleLabel = 'Support';
                     } else {

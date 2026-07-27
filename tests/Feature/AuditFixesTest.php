@@ -15,15 +15,6 @@ class AuditFixesTest extends TestCase
 {
     use BuildsGalleryData, RefreshDatabase;
 
-    public function test_ministry_dashboard_renders_on_sqlite(): void
-    {
-        // Guards MinistryWebController DATE_FORMAT -> PHP/Carbon grouping.
-        $this->makeBusiness(null, ['status' => 'published']);
-        $u = $this->makeUser();
-        $session = ['siac_user' => ['id' => $u->id, 'name' => 'M', 'email' => $u->email, 'role' => 'ministry', 'is_admin' => false]];
-        $this->withSession($session)->get('/tableau-de-bord/ministere')->assertOk();
-    }
-
     public function test_admin_api_consumers_renders_on_sqlite(): void
     {
         // Guards AdminWebController FIELD() -> CASE ordering.

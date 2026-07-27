@@ -41,7 +41,6 @@
         'business_owner'     => ['label' => ['fr' => 'Artisan / Entreprise', 'en' => 'Artisan / Business'], 'icon' => 'briefcase'],
         'buyer'              => ['label' => ['fr' => 'Acheteur', 'en' => 'Buyer'],                'icon' => 'shopping-bag'],
         'regional_rep'       => ['label' => ['fr' => 'Représentant régional', 'en' => 'Regional Rep'], 'icon' => 'map'],
-        'ministry'           => ['label' => ['fr' => 'Ministère', 'en' => 'Ministry'],            'icon' => 'landmark'],
         'technical_reviewer' => ['label' => ['fr' => 'Département technique', 'en' => 'Technical Department'], 'icon' => 'microscope'],
     ];
     $meta = $roleMeta[$role] ?? ['label' => ['fr' => 'Utilisateur', 'en' => 'User'], 'icon' => 'user'];
@@ -133,11 +132,6 @@
     } elseif ($role === 'regional_rep') {
         $navGroups = [['title' => null, 'items' => [
             ['dashboard.regional-rep', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
-            ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
-        ]]];
-    } elseif ($role === 'ministry') {
-        $navGroups = [['title' => null, 'items' => [
-            ['dashboard.ministry', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
             ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
         ]]];
     } elseif ($role === 'technical_reviewer') {

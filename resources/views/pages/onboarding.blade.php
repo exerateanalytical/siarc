@@ -85,12 +85,12 @@
     ];
 
     $securityItems = $isFr ? [
-        ['ob-sec-1.png', 'Plateforme officielle', "Soutenue par les institutions\nnationales pour la promotion\nde l'artisanat."],
+        ['ob-sec-1.png', 'Plateforme indépendante', "Une entreprise privée\nau service de la promotion\nde l'artisanat."],
         ['ob-sec-2.png', 'Données sécurisées',    "Vos données sont protégées\net ne sont jamais partagées\nsans votre consentement."],
         ['ob-sec-3.png', 'Conformité',            "Conforme aux normes\nnationales et internationales\nde protection des données."],
         ['ob-sec-4.png', 'Accès global',          "Accédez à de nouveaux\nmarchés et opportunités\ninternationales."],
     ] : [
-        ['ob-sec-1.png', 'Official platform',  "Supported by national\ninstitutions promoting\ncraftsmanship."],
+        ['ob-sec-1.png', 'Independent platform',  "A private company\nworking to promote\ncraftsmanship."],
         ['ob-sec-2.png', 'Secured data',       "Your data is protected\nand never shared without\nyour consent."],
         ['ob-sec-3.png', 'Compliance',         "Compliant with national\nand international data\nprotection standards."],
         ['ob-sec-4.png', 'Global access',      "Access new international\nmarkets and\nopportunities."],
@@ -2087,7 +2087,7 @@
 
         <section class="relative mt-4 bg-[#0F3323] rounded-2xl overflow-hidden px-6 py-8">
             <div class="absolute inset-0 opacity-[0.06] bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
-            <h2 class="relative text-center text-[16px] font-bold text-white">{{ $isFr ? 'Une plateforme officielle et sécurisée' : 'An official and secure platform' }}</h2>
+            <h2 class="relative text-center text-[16px] font-bold text-white">{{ $isFr ? 'Une plateforme fiable et sécurisée' : 'A trusted and secure platform' }}</h2>
             <div class="relative mt-7 grid grid-cols-2 lg:grid-cols-4 gap-y-7 lg:divide-x divide-white/10">
                 @foreach($securityItems as [$secIcon, $secTitle, $secDesc])
                 <div class="text-center px-4">
@@ -2114,9 +2114,9 @@
     </section>
 
     @foreach([
-        3 => [null, $isFr ? 'Une plateforme officielle et sécurisée' : 'An official and secure platform', $isFr ? 'Vos informations sont protégées et ne seront jamais partagées sans votre consentement.' : 'Your information is protected and will never be shared without your consent.', [
+        3 => [null, $isFr ? 'Une plateforme fiable et sécurisée' : 'A trusted and secure platform', $isFr ? 'Vos informations sont protégées et ne seront jamais partagées sans votre consentement.' : 'Your information is protected and will never be shared without your consent.', [
             ['lock',        $isFr ? "Données\nprotégées" : "Protected\ndata"],
-            ['badge-check', $isFr ? "Vérification\nofficielle" : "Official\nverification"],
+            ['badge-check', $isFr ? "Vérification\nd'identité" : "Identity\nverification"],
             ['shield-check',$isFr ? "Confiance\ngarantie" : "Guaranteed\ntrust"],
         ]],
         4 => ['shield-check', $isFr ? 'Pourquoi bien choisir vos catégories ?' : 'Why choose your categories well?', $isFr ? 'Cela permet aux acheteurs de vous trouver facilement et de recevoir des demandes de devis pertinentes pour votre activité.' : 'It lets buyers find you easily and brings you quote requests relevant to your activity.', [

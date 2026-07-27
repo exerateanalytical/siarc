@@ -13,7 +13,7 @@ class SiacRolesSeeder extends Seeder
 
         foreach ([
             'super_admin', 'admin', 'moderator', 'business_owner', 'buyer',
-            'regional_rep', 'ministry', 'technical_reviewer',
+            'regional_rep', 'technical_reviewer',
         ] as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => $guard]);
         }

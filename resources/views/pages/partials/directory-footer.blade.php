@@ -22,7 +22,7 @@
         ($isFr ? 'Actualités' : 'News')                              => route('news.index', ['lang' => $lang]),
         ($isFr ? 'Vérifier un certificat' : 'Verify a certificate')  => route('certificate.verify', ['lang' => $lang]),
         ($isFr ? 'API & Développeurs' : 'API & Developers')          => url('/docs/api'),
-        ($isFr ? 'Conditions d\'utilisation' : 'Terms of use')       => route('terms'),
+        ($isFr ? 'Nous contacter' : 'Contact us')                    => route('contact', ['lang' => $lang]),
     ];
     $dfNewsletterText = $dfNewsletterText ?? ($isFr ? 'Restez informé de nos actualités et de nos nouveautés.' : 'Stay informed of our news and new arrivals.');
     $dfShowHelp = $dfShowHelp ?? false;
@@ -61,7 +61,7 @@
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-10 h-11 object-contain">
                     <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
                         {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
-                        {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
+                        {{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}
                     </span>
                 </div>
                 <p class="mt-2 text-[11px] text-[#9DB3A6]">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</p>
@@ -170,17 +170,24 @@
 
         <!-- Legal bar -->
         <div class="mt-7 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] text-[#93A79B]">
-            <span>&copy; 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
-            @if($dfShowPayments)
-            <img src="{{ asset('images/landing/event-payments.png') }}" alt="MTN Mobile Money, Orange Money, VISA, Mastercard, PayPal" class="h-[16px] w-auto">
-            @elseif($dfShowLegalLinks)
-            <span class="flex items-center gap-3 whitespace-nowrap">
-                <a href="{{ route('terms') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Mentions légales' : 'Legal notice' }}</a>
-                <span class="text-white/20">|</span>
-                <a href="{{ route('privacy') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Politique de confidentialité' : 'Privacy policy' }}</a>
+            <span>&copy; {{ date('Y') }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
+            @if($dfShowLegalLinks)
+            <span class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                @foreach(config('legal.documents') as $lgSlug => $lgDoc)
+                @if(! $loop->first)<span class="text-white/20">|</span>@endif
+                <a href="{{ route('legal.show', ['doc' => $lgSlug, 'lang' => $lang]) }}" class="hover:text-white transition-colors whitespace-nowrap">{{ $lgDoc['title'][$lang] }}</a>
+                @endforeach
             </span>
             @endif
         </div>
+
+        {{-- Standing disclosure. Artisan Hub 237 is a private operator and is
+             not a party to any sale made through the platform. --}}
+        <p class="mt-3 text-[11px] text-[#7C917F] leading-relaxed">
+            {{ $isFr
+               ? 'Artisan Hub 237 est une plateforme privée et indépendante. Elle n\'est affiliée à aucun ministère ni organisme public, n\'est pas partie aux ventes conclues entre acheteurs et artisans, et ne traite aucun paiement.'
+               : 'Artisan Hub 237 is a private, independent platform. It is not affiliated with any ministry or public body, is not a party to sales concluded between buyers and artisans, and processes no payments.' }}
+        </p>
     </div>
 </footer>
 

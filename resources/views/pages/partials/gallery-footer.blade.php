@@ -31,7 +31,7 @@
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-10 h-11 object-contain">
                     <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
                         {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
-                        {{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}
+                        {{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}
                     </span>
                 </div>
                 <p class="mt-4 text-[12px] text-sage leading-relaxed">

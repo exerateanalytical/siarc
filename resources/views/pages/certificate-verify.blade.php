@@ -2,7 +2,9 @@
     $isFr = $lang === 'fr';
     $siacUser = session('siac_user');
 
-    $certNumber = ($numero ?? '') !== '' ? $numero : 'GVN-2025-0002587';
+    // Only ever the number the visitor actually typed. Defaulting to a specimen
+    // number used to render a "valid certificate" for a member nobody searched.
+    $certNumber = trim((string) ($numero ?? ''));
 
     $navLinks = [
         [$isFr ? 'Accueil' : 'Home',          route('home', ['lang' => $lang])],
@@ -45,7 +47,7 @@
     ] : [];
 
     // Personalised certificate canvas (real name/number/dates over the design).
-    $seed = $b ? md5('gvn-cert-' . $b->id) : '';
+    $seed = $b ? md5('ah237-cert-' . $b->id) : '';
     $certCanvas = $found ? [
         'ccName'   => mb_strtoupper($certName),
         'ccNumber' => $b->certificate_no,
@@ -135,7 +137,7 @@
         <div id="panel-num" class="px-6 sm:px-10 py-7">
             <form method="GET" action="{{ route('certificate.verify') }}" class="flex flex-col sm:flex-row gap-3">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <input name="numero" type="text" value="{{ $numero ?? '' }}" placeholder="Ex: GVN-2025-0002587"
+                <input name="numero" type="text" value="{{ $numero ?? '' }}" placeholder="Ex: AH237-2026-0000001"
                     class="flex-1 h-[52px] border border-[#E4E2DD] rounded-lg px-5 text-[14px] placeholder-[#A09B8F] focus:outline-none focus:border-goldlt focus:ring-1 focus:ring-goldlt/40 transition">
                 <button type="submit" class="h-[52px] bg-deep hover:bg-leaf text-white text-[14px] font-semibold px-8 rounded-lg transition-colors whitespace-nowrap">
                     {{ $isFr ? 'Vérifier le certificat' : 'Verify the certificate' }}
@@ -213,7 +215,7 @@
         </div>
         @else
         <div class="px-6 sm:px-8 py-10 text-center">
-            <p class="text-[14px] text-[#55524A] max-w-[480px] mx-auto">{{ $isFr ? 'Vérifiez le numéro saisi et réessayez. Un certificat authentique porte un numéro au format GVN-AAAA-XXXXXXX.' : 'Check the number entered and try again. A genuine certificate has a number in the GVN-YYYY-XXXXXXX format.' }}</p>
+            <p class="text-[14px] text-[#55524A] max-w-[480px] mx-auto">{{ $isFr ? 'Vérifiez le numéro saisi et réessayez. Un certificat authentique porte un numéro au format AH237-AAAA-XXXXXXX.' : 'Check the number entered and try again. A genuine certificate has a number in the AH237-YYYY-XXXXXXX format.' }}</p>
         </div>
         @endif
     </section>
@@ -254,8 +256,8 @@
             </div>
             <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">
                 {{ $isFr
-                    ? "Ce certificat prouve que l'artisan ou entrepreneur mentionné fait partie du réseau officiel des artisans du Cameroun et bénéficie des avantages et services de la plateforme."
-                    : 'This certificate proves that the mentioned artisan or entrepreneur is part of the official network of Cameroonian artisans and benefits from the platform\'s advantages and services.'
+                    ? "Ce certificat prouve que l'artisan ou entrepreneur mentionné fait partie du réseau des artisans membres d'Artisan Hub 237 et bénéficie des avantages et services de la plateforme."
+                    : 'This certificate proves that the mentioned artisan or entrepreneur is part of the Artisan Hub 237 member network and benefits from the platform\'s advantages and services.'
                 }}
             </p>
         </div>
@@ -300,10 +302,13 @@
 <script>
     lucide.createIcons();
 
-    // Live QR codes encoding this verification URL
-    const verifyUrl = @json(route('certificate.verify', ['numero' => $certNumber]));
-    new QRCode(document.getElementById('qr-code'), { text: verifyUrl, width: 88, height: 88, correctLevel: QRCode.CorrectLevel.M });
-    new QRCode(document.getElementById('qr-tab-code'), { text: verifyUrl, width: 132, height: 132, correctLevel: QRCode.CorrectLevel.M });
+    // Live QR codes encoding this verification URL. Only meaningful once a
+    // certificate has actually been looked up.
+    const verifyUrl = @json($certNumber !== '' ? route('certificate.verify', ['numero' => $certNumber]) : route('certificate.verify'));
+    ['qr-code', 'qr-tab-code'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) new QRCode(el, { text: verifyUrl, width: i ? 132 : 88, height: i ? 132 : 88, correctLevel: QRCode.CorrectLevel.M });
+    });
 
     // Tabs
     const tabNum = document.getElementById('tab-num');

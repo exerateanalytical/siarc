@@ -100,7 +100,7 @@
                 <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-[44px] h-[48px] object-contain">
                 <span class="leading-tight">
                     <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'de l\'Artisanat du Cameroun' : 'of Cameroonian Crafts' }}</span>
+                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
                     <span class="block text-[10px] text-[#6F6B60] mt-0.5 whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
             </a>
@@ -287,3 +287,18 @@
         </nav>
     </div>
 </div>
+
+{{-- The hamburger toggle ships WITH the markup it controls. Consuming pages used
+     to each duplicate this handler, and five of them drifted without one — the
+     mobile menu button was simply dead on those pages. @once keeps it to a
+     single emission even when the header is included more than once. --}}
+@once
+<script>
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('#mobile-menu-btn');
+        if (!btn) return;
+        const menu = document.getElementById('mobile-menu');
+        if (menu) menu.classList.toggle('hidden');
+    });
+</script>
+@endonce

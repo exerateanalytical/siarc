@@ -125,6 +125,7 @@ class QuoteWebController extends Controller
             'items'                 => ['required', 'array', 'min:1'],
             'items.*.name'          => ['required', 'string', 'max:255'],
             'items.*.quantity'      => ['required', 'integer', 'min:1'],
+            'items.*.unit'          => ['nullable', 'string', 'max:40'],
             'items.*.unit_price'    => ['required', 'integer', 'min:0'],
             'items.*.discount_pct'  => ['nullable', 'numeric', 'min:0', 'max:100'],
             'items.*.description'   => ['nullable', 'string', 'max:500'],
@@ -161,6 +162,7 @@ class QuoteWebController extends Controller
                 'name'         => $item['name'],
                 'description'  => $item['description'] ?? null,
                 'quantity'     => $item['quantity'],
+                'unit'         => $item['unit'] ?? 'Pièces',
                 'unit_price'   => $item['unit_price'],
                 'discount_pct' => $item['discount_pct'] ?? 0,
             ]);

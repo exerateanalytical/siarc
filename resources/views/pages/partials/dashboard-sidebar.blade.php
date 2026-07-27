@@ -34,7 +34,6 @@
         'business_owner'     => [['fr' => 'Artisan / Entreprise', 'en' => 'Artisan / Business'], 'briefcase'],
         'buyer'              => [['fr' => 'Acheteur', 'en' => 'Buyer'], 'shopping-bag'],
         'regional_rep'       => [['fr' => 'Représentant régional', 'en' => 'Regional Rep'], 'map'],
-        'ministry'           => [['fr' => 'Ministère', 'en' => 'Ministry'], 'landmark'],
         'technical_reviewer' => [['fr' => 'Département technique', 'en' => 'Technical Dept.'], 'microscope'],
     ];
     [$sbRoleLabel, $sbRoleIcon] = $sbRoleMeta[$sbRole] ?? [['fr' => 'Utilisateur', 'en' => 'User'], 'user'];
@@ -75,6 +74,7 @@
             [['fr' => 'Mon activité', 'en' => 'My activity'], [
                 ['dashboard.entrepreneur', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
                 ['dashboard.quotes', 'file-text', 'Demandes de devis', 'Quote requests'],
+                ['orders.index', 'clipboard-list', 'Commandes reçues', 'Received orders'],
                 ['messages.inbox', 'message-circle', 'Messages', 'Messages'],
                 ['events.index', 'calendar-days', 'Événements', 'Events'],
             ]],
@@ -96,6 +96,7 @@
             [['fr' => 'Mon activité', 'en' => 'My activity'], [
                 ['dashboard.buyer', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
                 ['quotes.index', 'file-text', 'Mes demandes & devis', 'My requests & quotes'],
+                ['orders.index', 'clipboard-list', 'Mes commandes', 'My orders'],
                 ['messages.inbox', 'message-circle', 'Messages', 'Messages'],
                 ['saved.index', 'bookmark', 'Mes favoris', 'Saved'],
             ]],
@@ -114,7 +115,6 @@
     } else {
         $sbRoleDash = [
             'regional_rep'       => 'dashboard.regional-rep',
-            'ministry'           => 'dashboard.ministry',
             'technical_reviewer' => 'dashboard.technical-reviewer',
         ][$sbRole] ?? 'dashboard.siac';
         $sbGroups = [
