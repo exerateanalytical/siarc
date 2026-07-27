@@ -52,7 +52,13 @@ return [
     |
     */
 
-    'demo_login' => (bool) env('APP_DEMO_LOGIN', false),
+    // One-click sign-in as the oldest super_admin, with no password. Invaluable
+    // locally, catastrophic in production — so it is force-disabled there rather
+    // than trusted to the .env, which is the file most likely to be copied from
+    // a developer machine.
+    'demo_login' => env('APP_ENV') === 'production'
+        ? false
+        : (bool) env('APP_DEMO_LOGIN', false),
 
     /*
     |--------------------------------------------------------------------------

@@ -98,21 +98,11 @@ return new class extends Migration
             ['Centre des Métiers de Foumban',     'OU', 'principal',  460, 'Bronze, Perles, Sculpture',       'Foumban',   110],
             ['Atelier Régional de Kribi',         'SU', 'secondaire', 130, 'Coquillages, Vannerie',           'Kribi',     120],
         ];
-        $now = now();
-        foreach ($centres as $i => [$name, $code, $type, $artisans, $spec, $city, $sort]) {
-            DB::table('artisan_centres')->insert([
-                'slug' => Str::slug($name) . '-' . ($i + 1),
-                'name_fr' => $name, 'name_en' => $name,
-                'region_id' => $rid($code), 'type' => $type,
-                'artisans_count' => $artisans, 'specialties_fr' => $spec, 'specialties_en' => $spec,
-                'city' => $city,
-                'description_fr' => 'Centre d\'artisanat regroupant des artisans de la région, dédié à la promotion et à la transmission des savoir-faire locaux.',
-                'description_en' => 'A craft centre bringing together regional artisans, dedicated to promoting and passing on local know-how.',
-                'contact_phone' => '+237 6 ' . rand(70, 99) . ' ' . rand(10, 99) . ' ' . rand(10, 99) . ' ' . rand(10, 99),
-                'status' => 'active', 'sort_order' => $sort,
-                'created_at' => $now->copy()->subDays(rand(30, 400)), 'updated_at' => $now,
-            ]);
-        }
+        // The twelve centres this used to insert were invented, and their
+        // "contact" numbers were generated with rand() — the site published
+        // random Cameroonian mobile numbers, which belong to real people, as the
+        // switchboard for named institutions. Removed on the owner's
+        // instruction; centres are entered by an administrator.
     }
 
     public function down(): void

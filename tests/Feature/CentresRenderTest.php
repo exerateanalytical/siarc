@@ -13,9 +13,16 @@ class CentresRenderTest extends TestCase
 
     public function test_centre_admin_detail_and_public_pages_render(): void
     {
-        // The migration seeds artisan_centres; grab a real one.
-        $centre = DB::table('artisan_centres')->first();
-        $this->assertNotNull($centre, 'artisan_centres should be seeded by migration');
+        // Build the centre this test describes. It used to read one the migration
+        // seeded, which quietly made twelve invented centres — with rand()
+        // generated phone numbers — a thing the suite required to exist.
+        $centreId = DB::table('artisan_centres')->insertGetId([
+            'slug' => 'centre-test', 'name_fr' => 'Centre Test', 'name_en' => 'Test Centre',
+            'region_id' => DB::table('regions')->value('id'),
+            'type' => 'centre', 'city' => 'Yaoundé', 'status' => 'active', 'sort_order' => 1,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $centre = DB::table('artisan_centres')->find($centreId);
 
         // Admin detail (requires admin session)
         $admin = $this->makeUser();
@@ -59,9 +66,15 @@ class CentresRenderTest extends TestCase
 
     public function test_news_admin_detail_and_public_pages_render(): void
     {
-        // announcements are seeded by migration
-        $article = DB::table('announcements')->where('status', 'published')->first();
-        $this->assertNotNull($article);
+        // Same reasoning as the centre above: create the article rather than
+        // depending on eight fabricated ones being seeded.
+        $articleId = DB::table('announcements')->insertGetId([
+            'slug' => 'article-test', 'title_fr' => 'Article Test', 'title_en' => 'Test Article',
+            'excerpt_fr' => 'Extrait.', 'body_fr' => 'Contenu de test.',
+            'status' => 'published', 'published_at' => now(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $article = DB::table('announcements')->find($articleId);
 
         $admin = $this->makeUser();
         $this->withSession(['siac_user' => [
