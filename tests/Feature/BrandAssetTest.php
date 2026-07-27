@@ -116,15 +116,41 @@ class BrandAssetTest extends TestCase
     }
 
     /**
-     * Email images must be absolute. A relative src resolves against the mail
-     * client's own host, so the logo silently fails to load in every inbox.
+     * The email logo must never be a relative path.
+     *
+     * A relative src resolves against the mail client's own host, so the logo
+     * silently fails in every inbox. The layout embeds the image in the message
+     * instead — which surfaces as a cid: reference on a real send and as a data:
+     * URI when the view is merely rendered. Either is self-contained; only a
+     * bare path is broken.
      */
-    public function test_email_logo_is_an_absolute_url_with_a_text_fallback(): void
+    public function test_email_logo_is_self_contained_with_a_text_fallback(): void
     {
         $html = (new VerificationCodeMail('482913', 'fr'))->render();
 
-        $this->assertMatchesRegularExpression('/<img src="https?:\/\/[^"]+logo[^"]*"/', $html);
+        $this->assertMatchesRegularExpression('/<img\s+src="([^"]+)"/', $html, 'No logo image in the email.');
+        preg_match('/<img\s+src="([^"]+)"/', $html, $m);
+
+        $this->assertMatchesRegularExpression(
+            '/^(cid:|data:image\/|https?:\/\/)/',
+            $m[1],
+            'The email logo src must be embedded or absolute; a relative path resolves against the mail client and never loads.'
+        );
+
         // Clients block remote images by default, so the alt has to carry the brand.
         $this->assertStringContainsString('alt="Artisan Hub 237"', $html);
+    }
+
+    /** The embedded copy has to stay small — it rides along in every message. */
+    public function test_the_email_logo_build_exists_and_is_lightweight(): void
+    {
+        $path = public_path('images/brand/logo-email.png');
+
+        $this->assertFileExists($path, 'The email-sized logo is missing; the layout embeds this exact file.');
+        $this->assertLessThan(
+            120 * 1024,
+            filesize($path),
+            'The email logo is heavy enough to bloat every message the platform sends.'
+        );
     }
 }

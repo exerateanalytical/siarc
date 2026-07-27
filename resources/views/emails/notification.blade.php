@@ -2,6 +2,7 @@
     $isFr = ($lang ?? 'fr') === 'fr';
 @endphp
 @component('emails.layout', [
+    'message'   => $message ?? null,
     'lang'      => $lang,
     'subject'   => $subject,
     'preheader' => \Illuminate\Support\Str::limit(strip_tags($body), 110),

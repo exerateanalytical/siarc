@@ -1,5 +1,6 @@
 @php $isFr = ($lang ?? 'fr') === 'fr'; @endphp
 @component('emails.layout', [
+    'message'   => $message ?? null,
     'lang'      => $lang,
     'subject'   => $subject,
     'preheader' => $isFr ? 'Lien de réinitialisation, valable 60 minutes.' : 'Password reset link, valid for 60 minutes.',

@@ -2,6 +2,7 @@
     $isFr = ($lang ?? 'fr') === 'fr';
 @endphp
 @component('emails.layout', [
+    'message'   => $message ?? null,
     'lang'      => $lang,
     'subject'   => $subject,
     'preheader' => $isFr ? "Votre code : {$code} — valable 10 minutes." : "Your code: {$code} — valid for 10 minutes.",

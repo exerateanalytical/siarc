@@ -251,6 +251,36 @@
             </div>
             @endif
 
+            {{-- The craft categories a visitor recognises, shown first. The official
+                 nomenclature (secteur → filière → corps → métier) follows below;
+                 leading with it meant the page opened on "Banque & Finance". --}}
+            @unless($current)
+            <div class="mt-4">
+                <div class="flex items-center gap-3">
+                    <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] whitespace-nowrap">{{ $isFr ? 'Catégories populaires' : 'Popular categories' }}</h2>
+                    <span class="h-px flex-1 bg-[#EAE7DE]"></span>
+                </div>
+                <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                    @foreach($featured as $tile)
+                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $tile->slug]) }}" class="group bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all">
+                        <span class="block mx-auto w-[84px] h-[84px] rounded-full overflow-hidden">
+                            <img src="{{ asset('images/landing/' . $tile->image_icon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
+                        </span>
+                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] leading-snug line-clamp-2 min-h-[34px] flex items-center justify-center">{{ $nm($tile) }}</h3>
+                        <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endunless
+
+@unless($current)
+            <div class="mt-9 flex items-center gap-3">
+                <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] whitespace-nowrap">{{ $isFr ? 'Toutes les catégories officielles' : 'All official categories' }}</h2>
+                <span class="h-px flex-1 bg-[#EAE7DE]"></span>
+            </div>
+            @endunless
+
             <!-- Category cards — grid view -->
             <div id="cards-grid" class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 @foreach($children as $child)
@@ -306,26 +336,6 @@
                 @endforeach
             </div>
 
-            {{-- Featured illustrated trades — kept as a shortcut on the root only --}}
-            @unless($current)
-            <div class="mt-9">
-                <div class="flex items-center gap-3">
-                    <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] whitespace-nowrap">{{ $isFr ? 'Métiers en vedette' : 'Featured trades' }}</h2>
-                    <span class="h-px flex-1 bg-[#EAE7DE]"></span>
-                </div>
-                <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-                    @foreach($featured as $tile)
-                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $tile->slug]) }}" class="group bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all">
-                        <span class="block mx-auto w-[84px] h-[84px] rounded-full overflow-hidden">
-                            <img src="{{ asset('images/landing/' . $tile->image_icon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
-                        </span>
-                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] leading-snug line-clamp-2 min-h-[34px] flex items-center justify-center">{{ $nm($tile) }}</h3>
-                        <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
-                    </a>
-                    @endforeach
-                </div>
-            </div>
-            @endunless
 
             <!-- Trust strip -->
             <div class="mt-7 bg-[#F6F6EF] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9]">

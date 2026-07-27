@@ -78,10 +78,22 @@
                 <tr>
                     <td align="left" style="padding:26px 32px 0 32px;">
                         <a href="{{ $site }}" style="text-decoration:none;">
-                            {{-- asset() builds this from APP_URL, so it is already
-                                 absolute — which email needs, since a relative
-                                 path would resolve against the mail client. --}}
-                            <img src="{{ brand_asset('full') }}"
+                            @php
+                                // Embed the logo in the message rather than linking
+                                // to it. A remote src depends on the site being
+                                // publicly reachable AND on the reader allowing
+                                // remote images, which most clients block by
+                                // default — so the brand would be missing on first
+                                // open, every time. The embedded copy is a 400px
+                                // wide, ~60KB build made for this.
+                                //
+                                // $message only exists during a real send; falls
+                                // back to the URL when the view is merely rendered.
+                                $logoSrc = isset($message)
+                                    ? $message->embed(public_path('images/brand/logo-email.png'))
+                                    : brand_asset('full');
+                            @endphp
+                            <img src="{{ $logoSrc }}"
                                  alt="Artisan Hub 237"
                                  width="200" height="68"
                                  style="display:block; width:200px; max-width:200px; height:auto; border:0; outline:none; text-decoration:none; font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:bold; color:{{ $green }};">
