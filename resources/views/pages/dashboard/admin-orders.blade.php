@@ -87,14 +87,14 @@
 
 @section('content')
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="shrink-0 inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary shrink-0">
                     <i data-lucide="download" class="w-4 h-4"></i>
                     {{ $isFr ? 'Exporter' : 'Export' }}
                 </a>
             </div>
 
             {{-- Status tab band --}}
-            <section class="mt-4 bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden">
+            <section class="ui-card ui-card--flush mt-4">
                 <div class="grid grid-cols-3 sm:grid-cols-6 divide-x divide-[#F5F1E8]">
                     @foreach($statusTabs as $tabKey => [$tabLabel, $tabCount])
                     <a href="{{ request()->fullUrlWithQuery(['statut' => $tabKey === 'toutes' ? null : $tabKey, 'page' => null]) }}"
@@ -107,68 +107,68 @@
             </section>
 
             {{-- Search + filters --}}
-            <form method="GET" action="{{ route('admin.orders') }}" class="mt-4 bg-white border border-[#EFEBE2] rounded-2xl p-3 flex flex-wrap items-center gap-2.5">
+            <form method="GET" action="{{ route('admin.orders') }}" class="ui-card mt-4 flex flex-wrap items-center gap-2.5">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <div class="flex items-center gap-2.5 bg-[#FCFAF5] border border-[#E9E4D8] rounded-lg px-3.5 h-[38px] flex-1 min-w-[210px]">
-                    <i data-lucide="search" class="w-[15px] h-[15px] shrink-0 text-[#8A857A]"></i>
-                    <input type="text" name="q" value="{{ request()->query('q') }}" placeholder="{{ $isFr ? 'Rechercher une commande...' : 'Search an order...' }}" class="flex-1 min-w-0 bg-transparent text-[12.5px] focus:outline-none placeholder-[#8A857A]">
+                <div class="ui-field-group flex-1 min-w-[210px]">
+                    <i data-lucide="search" class="w-[15px] h-[15px] shrink-0"></i>
+                    <input type="text" name="q" value="{{ request()->query('q') }}" placeholder="{{ $isFr ? 'Rechercher une commande...' : 'Search an order...' }}" class="ui-field-bare flex-1 min-w-0">
                 </div>
-                <select name="statut" class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12.5px] text-[#3B382F] focus:outline-none">
+                <select name="statut" class="ui-field ui-select">
                     <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                     @foreach($statutOptions as $optKey => $optLabel)
                     <option value="{{ $optKey }}" @selected(request()->query('statut') === $optKey)>{{ $optLabel }}</option>
                     @endforeach
                 </select>
-                <select name="paiement" class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12.5px] text-[#3B382F] focus:outline-none">
+                <select name="paiement" class="ui-field ui-select">
                     <option value="">{{ $isFr ? 'Méthode de paiement' : 'Payment method' }}</option>
                     @foreach($paymentMethods as $pm)
                     <option value="{{ $pm }}" @selected(request()->query('paiement') === $pm)>{{ $pm }}</option>
                     @endforeach
                 </select>
-                <select name="date" class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12.5px] text-[#3B382F] focus:outline-none">
+                <select name="date" class="ui-field ui-select">
                     <option value="">Date</option>
                     @foreach($dateOptions as $optKey => $optLabel)
                     <option value="{{ $optKey }}" @selected(request()->query('date') === $optKey)>{{ $optLabel }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="inline-flex items-center gap-2 border border-[#14652F] text-[#14652F] hover:bg-[#F0F7F2] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold transition-colors">
+                <button type="submit" class="ui-btn ui-btn-secondary">
                     <i data-lucide="filter" class="w-4 h-4"></i>
                     {{ $isFr ? 'Filtrer' : 'Filter' }}
                 </button>
             </form>
 
             {{-- Orders table --}}
-            <section class="mt-4 bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[860px]">
+            <section class="ui-card ui-card--flush mt-4">
+                <div class="ui-table-wrap">
+                    <table class="ui-table min-w-[860px]">
                         <thead>
-                            <tr class="bg-[#F8F4EC] text-left">
-                                <th class="pl-5 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Commande' : 'Order' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Client</th>
-                                <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Montant' : 'Amount' }}</th>
-                                <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Paiement' : 'Payment' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Date</th>
-                                <th class="px-2 pr-5 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                            <tr>
+                                <th>{{ $isFr ? 'Commande' : 'Order' }}</th>
+                                <th>Client</th>
+                                <th class="text-right">{{ $isFr ? 'Montant' : 'Amount' }}</th>
+                                <th class="text-center">{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                <th>{{ $isFr ? 'Paiement' : 'Payment' }}</th>
+                                <th>Date</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#F5F1E8]">
+                        <tbody>
                             @forelse($adminOrders as $o)
                             <tr>
-                                <td class="pl-5 pr-2 py-3">
+                                <td>
                                     <p class="text-[12.5px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $o->reference ?? ('PO-' . $o->id) }}</p>
                                 </td>
-                                <td class="px-2 py-3">
+                                <td>
                                     <p class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $o->client_name ?? '—' }}</p>
                                     @if($o->business_name)
                                     <p class="text-[11px] text-[#8A857A]">{{ $o->business_name }}</p>
                                     @endif
                                 </td>
-                                <td class="px-2 py-3 text-right text-[12.5px] font-semibold text-[#1B1B18] whitespace-nowrap">{{ number_format($o->total, 0, ',', ' ') }} FCFA</td>
-                                <td class="px-2 py-3 text-center">
+                                <td class="text-right font-semibold text-[#1B1B18] whitespace-nowrap">{{ number_format($o->total, 0, ',', ' ') }} FCFA</td>
+                                <td class="text-center">
                                     <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $statusPills[$o->status] ?? 'bg-[#F1EFE9] text-[#55524A]' }}">{{ $statusLabels[$o->status] ?? $o->status }}</span>
                                 </td>
-                                <td class="px-2 py-3">
+                                <td>
                                     @if($o->payment_method)
                                         @php [$payIcon, $payClasses] = $payBadge($o->payment_method); @endphp
                                         <span class="inline-flex items-center gap-2">
@@ -185,15 +185,15 @@
                                         <span class="text-[12px] text-[#8A857A]">—</span>
                                     @endif
                                 </td>
-                                <td class="px-2 py-3 text-[12px] text-[#6F6B60] whitespace-nowrap">{{ $fmtDate($o->created_at) }}</td>
-                                <td class="px-2 pr-5 py-3 text-right">
-                                    <a href="{{ route('quotes.po', ['po' => $o->id, 'lang' => $lang]) }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] text-[#55524A] hover:text-[#14652F] hover:border-[#14652F] transition-colors" title="{{ $isFr ? 'Voir la commande' : 'View order' }}">
+                                <td class="whitespace-nowrap">{{ $fmtDate($o->created_at) }}</td>
+                                <td class="text-right">
+                                    <a href="{{ route('quotes.po', ['po' => $o->id, 'lang' => $lang]) }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[#55524A] hover:text-[#14652F] hover:border-[#14652F] transition-colors" title="{{ $isFr ? 'Voir la commande' : 'View order' }}">
                                         <i data-lucide="eye" class="w-[15px] h-[15px]"></i>
                                     </a>
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="7" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune commande.' : 'No orders.' }}</td></tr>
+                            <tr><td colspan="7" class="ui-empty">{{ $isFr ? 'Aucune commande.' : 'No orders.' }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -209,17 +209,17 @@
                     </p>
                     @if($pgLast > 1)
                     <nav class="flex items-center gap-1.5">
-                        <a href="{{ $pgCurrent > 1 ? $adminOrders->url($pgCurrent - 1) : '#' }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] text-[#55524A] {{ $pgCurrent > 1 ? 'hover:border-[#14652F] hover:text-[#14652F]' : 'opacity-40 pointer-events-none' }}">
+                        <a href="{{ $pgCurrent > 1 ? $adminOrders->url($pgCurrent - 1) : '#' }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[#55524A] {{ $pgCurrent > 1 ? 'hover:border-[#14652F] hover:text-[#14652F]' : 'opacity-40 pointer-events-none' }}">
                             <i data-lucide="chevron-left" class="w-4 h-4"></i>
                         </a>
                         @foreach($pgItems as $pg)
                             @if($pg === '…')
                             <span class="inline-flex items-center justify-center w-[30px] h-[30px] text-[12px] text-[#8A857A]">…</span>
                             @else
-                            <a href="{{ $adminOrders->url($pg) }}" class="inline-flex items-center justify-center min-w-[30px] h-[30px] px-1.5 rounded-lg text-[12px] font-semibold {{ $pg === $pgCurrent ? 'bg-[#0F4824] text-white' : 'border border-[#E9E4D8] text-[#55524A] hover:border-[#14652F] hover:text-[#14652F]' }}">{{ $pg }}</a>
+                            <a href="{{ $adminOrders->url($pg) }}" class="inline-flex items-center justify-center min-w-[30px] h-[30px] px-1.5 rounded-lg text-[12px] font-semibold {{ $pg === $pgCurrent ? 'bg-[#0F4824] text-white' : 'border border-[#EAE5D8] text-[#55524A] hover:border-[#14652F] hover:text-[#14652F]' }}">{{ $pg }}</a>
                             @endif
                         @endforeach
-                        <a href="{{ $pgCurrent < $pgLast ? $adminOrders->url($pgCurrent + 1) : '#' }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] text-[#55524A] {{ $pgCurrent < $pgLast ? 'hover:border-[#14652F] hover:text-[#14652F]' : 'opacity-40 pointer-events-none' }}">
+                        <a href="{{ $pgCurrent < $pgLast ? $adminOrders->url($pgCurrent + 1) : '#' }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[#55524A] {{ $pgCurrent < $pgLast ? 'hover:border-[#14652F] hover:text-[#14652F]' : 'opacity-40 pointer-events-none' }}">
                             <i data-lucide="chevron-right" class="w-4 h-4"></i>
                         </a>
                     </nav>

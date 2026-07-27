@@ -46,22 +46,22 @@
         </p>
     </div>
     <div class="flex items-center gap-2.5 shrink-0">
-        <a href="{{ route('onboarding') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+        <a href="{{ route('onboarding') }}" class="ui-btn ui-btn-primary">
             <i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Ajouter un utilisateur' : 'Add a user' }}
         </a>
-        <a href="{{ route('admin.reports') }}" class="inline-flex items-center gap-2 bg-white border border-[#DCEBDD] hover:border-[#157A43] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#157A43] transition-colors">
+        <a href="{{ route('admin.reports') }}" class="ui-btn ui-btn-secondary">
             <i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}
         </a>
     </div>
 </div>
 
 @if(session('success'))
-<div class="mt-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 flex items-start gap-2">
+<div class="ui-alert ui-alert-ok mt-4">
     <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
 </div>
 @endif
 @if($errors->any())
-<div class="mt-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3.5">
+<div class="ui-alert ui-alert-danger mt-4">
     @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
 </div>
 @endif
@@ -70,20 +70,20 @@
 <div class="mt-4 flex flex-wrap items-stretch gap-1 bg-[#F1EDE3] border border-[#EAE5D8] rounded-xl p-1 overflow-x-auto">
     @foreach($tabs as $key => $label)
     <a href="{{ route('admin.users', array_merge(request()->except('page', 'role'), $key === 'tous' ? [] : ['role' => $key])) }}"
-       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white border border-[#E3DFD3] shadow-sm font-bold text-[#1B1B18]' : 'font-semibold text-[#C97A16] hover:bg-white/60' }}">
+       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white border border-[#EAE5D8] shadow-sm font-bold text-[#1B1B18]' : 'font-semibold text-[#C97A16] hover:bg-white/60' }}">
         {{ $label }} ({{ number_format($roleCounts[$key] ?? 0) }})
     </a>
     @endforeach
 </div>
 
 {{-- Search + filters --}}
-<form method="GET" action="{{ route('admin.users') }}" class="mt-4 bg-white border border-[#EFEBE2] rounded-2xl p-3 flex flex-wrap items-center gap-2.5">
-    <div class="relative flex-1 min-w-[220px]">
-        <i data-lucide="search" class="w-4 h-4 text-[#B8B2A4] absolute left-3 top-1/2 -translate-y-1/2"></i>
+<form method="GET" action="{{ route('admin.users') }}" class="ui-card mt-4 flex flex-wrap items-center gap-2.5">
+    <div class="ui-field-group flex-1 min-w-[220px]">
+        <i data-lucide="search" class="w-4 h-4"></i>
         <input name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un utilisateur...' : 'Search for a user...' }}"
-               class="w-full text-[12.5px] border border-[#EAE5D8] rounded-lg pl-9 pr-3 h-[38px] focus:outline-none focus:border-[#157A43]">
+               class="ui-field-bare">
     </div>
-    <select name="role" class="text-[12.5px] border border-[#EAE5D8] rounded-lg px-3 h-[38px] bg-white focus:outline-none focus:border-[#157A43]">
+    <select name="role" class="ui-field ui-select">
         <option value="">{{ $isFr ? 'Rôle' : 'Role' }}</option>
         @foreach($tabs as $key => $label)
             @if($key !== 'tous')
@@ -91,36 +91,36 @@
             @endif
         @endforeach
     </select>
-    <select name="statut" class="text-[12.5px] border border-[#EAE5D8] rounded-lg px-3 h-[38px] bg-white focus:outline-none focus:border-[#157A43]">
+    <select name="statut" class="ui-field ui-select">
         <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
         <option value="actif" {{ request('statut') === 'actif' ? 'selected' : '' }}>{{ $isFr ? 'Actif' : 'Active' }}</option>
         <option value="suspendu" {{ request('statut') === 'suspendu' ? 'selected' : '' }}>{{ $isFr ? 'Suspendu' : 'Suspended' }}</option>
     </select>
-    <select name="kyc" class="text-[12.5px] border border-[#EAE5D8] rounded-lg px-3 h-[38px] bg-white focus:outline-none focus:border-[#157A43]">
+    <select name="kyc" class="ui-field ui-select">
         <option value="">{{ $isFr ? 'Vérification KYC' : 'KYC Verification' }}</option>
         <option value="verifie" {{ request('kyc') === 'verifie' ? 'selected' : '' }}>{{ $isFr ? 'Vérifié' : 'Verified' }}</option>
         <option value="en_attente" {{ request('kyc') === 'en_attente' ? 'selected' : '' }}>{{ $isFr ? 'En attente' : 'Pending' }}</option>
     </select>
-    <button type="submit" class="inline-flex items-center gap-2 bg-white border border-[#DCEBDD] hover:border-[#157A43] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#157A43] transition-colors">
+    <button type="submit" class="ui-btn ui-btn-secondary">
         <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>{{ $isFr ? 'Filtrer' : 'Filter' }}
     </button>
 </form>
 
 {{-- Users table --}}
-<section class="mt-4 bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full min-w-[860px]">
+<section class="ui-card ui-card--flush mt-4">
+    <div class="ui-table-wrap">
+        <table class="ui-table min-w-[860px]">
             <thead>
-                <tr class="bg-[#F8F4EC] text-left">
-                    <th class="pl-5 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Utilisateur' : 'User' }}</th>
-                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Rôle' : 'Role' }}</th>
-                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">KYC</th>
-                    <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Inscrit le' : 'Joined' }}</th>
-                    <th class="px-2 pr-5 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                <tr>
+                    <th>{{ $isFr ? 'Utilisateur' : 'User' }}</th>
+                    <th>{{ $isFr ? 'Rôle' : 'Role' }}</th>
+                    <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                    <th>KYC</th>
+                    <th>{{ $isFr ? 'Inscrit le' : 'Joined' }}</th>
+                    <th class="text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-[#F5F1E8]">
+            <tbody>
                 @forelse($users as $u)
                 @php
                     $roleName = $u->role_name ?? null;
@@ -152,7 +152,7 @@
                     $isSelf = $selfId !== null && $u->id === $selfId;
                 @endphp
                 <tr>
-                    <td class="pl-5 pr-2 py-3.5">
+                    <td>
                         <div class="flex items-center gap-3">
                             @if(!empty($u->avatar))
                             <img src="{{ asset($u->avatar) }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover shrink-0">
@@ -165,27 +165,27 @@
                             </div>
                         </div>
                     </td>
-                    <td class="px-2 py-3.5 text-[12px] text-[#3B382F]">{{ $roleLabel }}</td>
-                    <td class="px-2 py-3.5">
+                    <td>{{ $roleLabel }}</td>
+                    <td>
                         @if($u->status === 'active')
-                        <span class="inline-block rounded-md bg-[#E2F3E8] px-2.5 py-1 text-[10.5px] font-semibold text-[#157A43]">{{ $isFr ? 'Actif' : 'Active' }}</span>
+                        <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Actif' : 'Active' }}</span>
                         @elseif($u->status === 'suspended')
-                        <span class="inline-block rounded-md bg-[#FDE8E8] px-2.5 py-1 text-[10.5px] font-semibold text-[#C0392B]">{{ $isFr ? 'Suspendu' : 'Suspended' }}</span>
+                        <span class="ui-pill ui-pill-danger">{{ $isFr ? 'Suspendu' : 'Suspended' }}</span>
                         @else
-                        <span class="inline-block rounded-md bg-[#F1EDE3] px-2.5 py-1 text-[10.5px] font-semibold text-[#8A857A]">{{ ucfirst($u->status) }}</span>
+                        <span class="ui-pill ui-pill-neutral">{{ ucfirst($u->status) }}</span>
                         @endif
                     </td>
-                    <td class="px-2 py-3.5">
+                    <td>
                         @if($isVisitor)
                         <span class="text-[12px] text-[#8A857A]">-</span>
                         @elseif($kycVerified)
-                        <span class="inline-block rounded-md bg-[#E2F3E8] px-2.5 py-1 text-[10.5px] font-semibold text-[#157A43]">{{ $isFr ? 'Vérifié' : 'Verified' }}</span>
+                        <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Vérifié' : 'Verified' }}</span>
                         @else
-                        <span class="inline-block rounded-md bg-[#FDF0DC] px-2.5 py-1 text-[10.5px] font-semibold text-[#C97A16]">{{ $isFr ? 'En attente' : 'Pending' }}</span>
+                        <span class="ui-pill ui-pill-warn">{{ $isFr ? 'En attente' : 'Pending' }}</span>
                         @endif
                     </td>
-                    <td class="px-2 py-3.5 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $joinedLabel }}</td>
-                    <td class="px-2 pr-5 py-3.5 text-right whitespace-nowrap">
+                    <td class="whitespace-nowrap">{{ $joinedLabel }}</td>
+                    <td class="text-right whitespace-nowrap">
                         <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[#6F6B60] hover:border-[#157A43] hover:text-[#157A43] transition-colors align-middle">
                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                         </a>
@@ -227,14 +227,14 @@
                                 @endif
                                 <form method="POST" action="{{ route('admin.users.update-role', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-2">
                                     @csrf
-                                    <p class="text-[10.5px] font-bold uppercase tracking-[0.05em] text-[#8A6D1F] mb-1.5">{{ $isFr ? 'Changer le rôle' : 'Change role' }}</p>
-                                    <select name="role" onchange="this.closest('form').querySelector('.region-select-wrap').classList.toggle('hidden', this.value !== 'regional_rep')" class="w-full text-[12px] border border-[#EAE5D8] rounded-lg px-2 py-1.5 mb-1.5 focus:outline-none focus:border-[#157A43]">
+                                    <p class="ui-eyebrow mb-1.5">{{ $isFr ? 'Changer le rôle' : 'Change role' }}</p>
+                                    <select name="role" onchange="this.closest('form').querySelector('.region-select-wrap').classList.toggle('hidden', this.value !== 'regional_rep')" class="ui-field ui-select w-full mb-1.5">
                                         @foreach($assignableRoleLabels as $val => $label)
                                         <option value="{{ $val }}" {{ ($roleName ?? 'buyer') === $val ? 'selected' : '' }}>{{ $label }}</option>
                                         @endforeach
                                     </select>
                                     <div class="region-select-wrap {{ $roleName !== 'regional_rep' ? 'hidden' : '' }} mb-1.5">
-                                        <select name="region_id" class="w-full text-[12px] border border-[#EAE5D8] rounded-lg px-2 py-1.5 focus:outline-none focus:border-[#157A43]">
+                                        <select name="region_id" class="ui-field ui-select w-full">
                                             <option value="">{{ $isFr ? 'Région...' : 'Region...' }}</option>
                                             @foreach($regions ?? [] as $region)
                                             <option value="{{ $region->id }}" {{ ($u->assigned_region_id ?? null) === $region->id ? 'selected' : '' }}>{{ $isFr ? $region->name_fr : $region->name_en }}</option>
@@ -249,7 +249,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucun utilisateur trouvé.' : 'No users found.' }}</td></tr>
+                <tr><td colspan="6" class="ui-empty">{{ $isFr ? 'Aucun utilisateur trouvé.' : 'No users found.' }}</td></tr>
                 @endforelse
             </tbody>
         </table>

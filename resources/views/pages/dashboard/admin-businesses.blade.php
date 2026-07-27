@@ -104,11 +104,11 @@
             {{-- Header actions (design topbar buttons live here, chrome is canonical) --}}
             <div class="flex flex-wrap items-center justify-end gap-3">
                 <div class="flex items-center gap-2.5 shrink-0">
-                    <a href="{{ route('business.create') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                    <a href="{{ route('business.create') }}" class="ui-btn ui-btn-primary">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Ajouter un vendeur' : 'Add a vendor' }}
                     </a>
-                    <a href="{{ route('admin.reports') }}#exports" class="inline-flex items-center gap-2 bg-white border border-[#DCD6C8] hover:border-[#157A43] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#157A43] transition-colors">
+                    <a href="{{ route('admin.reports') }}#exports" class="ui-btn ui-btn-secondary">
                         <i data-lucide="download" class="w-4 h-4"></i>
                         {{ $isFr ? 'Exporter' : 'Export' }}
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 opacity-80"></i>
@@ -117,7 +117,7 @@
             </div>
 
             @if(session('success'))
-            <div class="mt-3 bg-[#E2F3E8] border border-[#BFE3CC] text-[#157A43] text-[12.5px] rounded-xl px-4 py-3 flex items-start gap-2">
+            <div class="ui-alert ui-alert-ok mt-3">
                 <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
             </div>
             @endif
@@ -125,7 +125,7 @@
             {{-- 6 stat cards --}}
             <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
                 @foreach($vbCards as [$vbIcon, $vbIconColor, $vbTile, $vbLabel, $vbValue])
-                <div class="bg-white border border-[#EFEBE2] rounded-2xl px-4 py-3.5 flex items-start gap-3">
+                <div class="ui-card flex items-start gap-3">
                     <span class="shrink-0 w-[38px] h-[38px] rounded-full flex items-center justify-center" style="background: {{ $vbTile }}">
                         <i data-lucide="{{ $vbIcon }}" class="w-[18px] h-[18px]" style="color: {{ $vbIconColor }}"></i>
                     </span>
@@ -139,68 +139,68 @@
 
             <div class="mt-4 grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-4 items-start">
                 {{-- LEFT: filter bar + vendors table + pagination --}}
-                <section class="min-w-0 bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden">
+                <section class="ui-card ui-card--flush min-w-0">
                     {{-- Filter bar --}}
                     <form method="GET" action="{{ route('admin.businesses') }}" class="p-4 flex flex-wrap items-center gap-2.5 border-b border-[#F5F1E8]">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="flex items-center gap-2 bg-[#FBF9F4] border border-[#E9E4D8] rounded-lg px-3 h-[36px] flex-1 min-w-[170px]">
+                        <div class="ui-field-group flex-1 min-w-[170px]">
                             <i data-lucide="search" class="w-[15px] h-[15px] text-[#8A857A] shrink-0"></i>
-                            <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un vendeur...' : 'Search a vendor...' }}" class="flex-1 min-w-0 bg-transparent text-[12px] focus:outline-none placeholder-[#8A857A]">
+                            <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un vendeur...' : 'Search a vendor...' }}" class="ui-field-bare flex-1 min-w-0">
                         </div>
-                        <select name="status" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="status" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                             <option value="published" @selected($vbCurStatus === 'published')>{{ $isFr ? 'Actif' : 'Active' }}</option>
                             <option value="draft" @selected($vbCurStatus === 'draft')>{{ $isFr ? 'En attente' : 'Pending' }}</option>
                             <option value="suspended" @selected($vbCurStatus === 'suspended')>{{ $isFr ? 'Suspendu' : 'Suspended' }}</option>
                             <option value="rejected" @selected($vbCurStatus === 'rejected')>{{ $isFr ? 'Rejeté' : 'Rejected' }}</option>
                         </select>
-                        <select name="type" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="type" class="ui-field ui-select">
                             <option value="">Type</option>
                             <option value="entreprise" @selected(request('type') === 'entreprise')>{{ $isFr ? 'Entreprise' : 'Business' }}</option>
                             <option value="artisan" @selected(request('type') === 'artisan')>Artisan</option>
                         </select>
-                        <select name="region" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="region" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Région' : 'Region' }}</option>
                             @foreach($vbRegions as $vbRegion)
                             <option value="{{ $vbRegion }}" @selected(request('region') === $vbRegion)>{{ $vbRegion }}</option>
                             @endforeach
                         </select>
-                        <select name="categorie" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="categorie" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Catégorie' : 'Category' }}</option>
                             @foreach($vbCategories as $vbCategory)
                             <option value="{{ $vbCategory }}" @selected(request('categorie') === $vbCategory)>{{ $vbCategory }}</option>
                             @endforeach
                         </select>
-                        <select name="date" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="date" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Date d\'inscription' : 'Registration date' }}</option>
                             <option value="recent" @selected(request('date') === 'recent')>{{ $isFr ? 'Plus récents' : 'Most recent' }}</option>
                             <option value="ancienne" @selected(request('date') === 'ancienne')>{{ $isFr ? 'Plus anciens' : 'Oldest' }}</option>
                         </select>
-                        <button type="submit" class="inline-flex items-center gap-1.5 h-[36px] bg-white border border-[#E9E4D8] hover:border-[#157A43] hover:text-[#157A43] rounded-lg px-3.5 text-[12px] font-semibold text-[#3B382F] transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-secondary">
                             <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Filtres' : 'Filters' }}
                         </button>
                         <span class="hidden lg:flex items-center gap-1 ml-auto">
-                            <span class="w-[32px] h-[32px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
+                            <span class="w-[32px] h-[32px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
                             <span class="w-[32px] h-[32px] rounded-lg bg-[#0F4824] flex items-center justify-center text-white"><i data-lucide="list" class="w-4 h-4"></i></span>
                         </span>
                     </form>
 
                     {{-- Vendors table --}}
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[900px]">
+                    <div class="ui-table-wrap">
+                        <table class="ui-table min-w-[900px]">
                             <thead>
-                                <tr class="bg-[#F8F4EC] text-left">
-                                    <th class="pl-5 pr-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Vendeur' : 'Vendor' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Type</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Catégorie principale' : 'Main category' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Région' : 'Region' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">KYC</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Inscription' : 'Registration' }}</th>
-                                    <th class="px-2 pr-5 py-3 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                                <tr>
+                                    <th>{{ $isFr ? 'Vendeur' : 'Vendor' }}</th>
+                                    <th>Type</th>
+                                    <th>{{ $isFr ? 'Catégorie principale' : 'Main category' }}</th>
+                                    <th>{{ $isFr ? 'Région' : 'Region' }}</th>
+                                    <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                    <th>KYC</th>
+                                    <th>{{ $isFr ? 'Inscription' : 'Registration' }}</th>
+                                    <th class="text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#F5F1E8]">
+                            <tbody>
                                 @forelse($businesses as $b)
                                 @php
                                     $vbSt = $vbStatusMeta[$vbStatusKey($b->status)];
@@ -209,7 +209,7 @@
                                     $vbHue = $vbHues[abs(crc32($b->name_fr ?? '')) % count($vbHues)];
                                 @endphp
                                 <tr>
-                                    <td class="pl-5 pr-2 py-3">
+                                    <td>
                                         <div class="flex items-center gap-3 min-w-[210px]">
                                             @if($b->logo)
                                             <img src="{{ asset('storage/' . $b->logo) }}" alt="" class="w-[38px] h-[38px] rounded-lg object-cover shrink-0">
@@ -223,21 +223,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-2 py-3"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbTy['pill'] }}">{{ $vbTy['label'] }}</span></td>
-                                    <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $isFr ? ($b->industry->name_fr ?? '—') : ($b->industry->name_en ?? $b->industry->name_fr ?? '—') }}</td>
-                                    <td class="px-2 py-3">
+                                    <td><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbTy['pill'] }}">{{ $vbTy['label'] }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $isFr ? ($b->industry->name_fr ?? '—') : ($b->industry->name_en ?? $b->industry->name_fr ?? '—') }}</td>
+                                    <td>
                                         <p class="text-[12px] font-semibold text-[#3B382F]">{{ $isFr ? ($b->region?->name_fr ?? '—') : ($b->region?->name_en ?? $b->region?->name_fr ?? '—') }}</p>
                                         @if($b->city)<p class="text-[11px] text-[#8A857A]">{{ $b->city->name_fr ?? $b->city->name ?? '' }}</p>@endif
                                     </td>
-                                    <td class="px-2 py-3"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbSt['pill'] }}">{{ $vbSt['label'] }}</span></td>
-                                    <td class="px-2 py-3"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbKy['pill'] }}">{{ $vbKy['label'] }}</span></td>
-                                    <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $vbDate($b->created_at) }}</td>
-                                    <td class="px-2 pr-5 py-3 text-right whitespace-nowrap">
-                                        <a href="{{ route('admin.businesses.detail', ['id' => $b->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43] align-middle"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
-                                        <a href="{{ route('admin.businesses.detail', ['id' => $b->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16] align-middle"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
+                                    <td><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbSt['pill'] }}">{{ $vbSt['label'] }}</span></td>
+                                    <td><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbKy['pill'] }}">{{ $vbKy['label'] }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $vbDate($b->created_at) }}</td>
+                                    <td class="text-right whitespace-nowrap">
+                                        <a href="{{ route('admin.businesses.detail', ['id' => $b->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43] align-middle"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
+                                        <a href="{{ route('admin.businesses.detail', ['id' => $b->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16] align-middle"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
                                         <span class="relative group ml-1 inline-flex align-middle">
-                                            <button type="button" title="{{ $isFr ? 'Plus d\'options' : 'More options' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18]"><i data-lucide="more-vertical" class="w-3.5 h-3.5"></i></button>
-                                            <span class="absolute right-0 top-full w-44 bg-white rounded-xl shadow-lg border border-[#E7E7E5] py-1.5 hidden group-hover:block group-focus-within:block z-30 text-left">
+                                            <button type="button" title="{{ $isFr ? 'Plus d\'options' : 'More options' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18]"><i data-lucide="more-vertical" class="w-3.5 h-3.5"></i></button>
+                                            <span class="absolute right-0 top-full w-44 bg-white rounded-xl shadow-lg border border-[#EAE5D8] py-1.5 hidden group-hover:block group-focus-within:block z-30 text-left">
                                                 @if($b->status !== 'published')
                                                 <form method="POST" action="{{ route('admin.businesses.update-status', ['id' => $b->id]) }}">
                                                     @csrf
@@ -266,7 +266,7 @@
                                 </tr>
                                 @empty
                                 {{-- The design shipped 8 invented companies here; an honest empty state replaces them --}}
-                                <tr><td colspan="8" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</td></tr>
+                                <tr><td colspan="8" class="ui-empty">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -281,9 +281,9 @@
                         </p>
                         <div class="flex items-center gap-1.5">
                             @if($businesses->onFirstPage())
-                            <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
+                            <span class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
                             @else
-                            <a href="{{ $businesses->previousPageUrl() }}" class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#3B382F] hover:border-[#157A43]" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></a>
+                            <a href="{{ $businesses->previousPageUrl() }}" class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#3B382F] hover:border-[#157A43]" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></a>
                             @endif
                             @php
                                 $vbCur = $businesses->currentPage();
@@ -295,19 +295,19 @@
                             @if($vbPage === $vbCur)
                             <span class="w-[28px] h-[28px] rounded-lg bg-[#0F4824] text-white text-[11.5px] font-bold flex items-center justify-center" aria-current="page">{{ $vbPage }}</span>
                             @else
-                            <a href="{{ $businesses->url($vbPage) }}" class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] text-[11.5px] text-[#3B382F] flex items-center justify-center hover:border-[#157A43]">{{ $vbPage }}</a>
+                            <a href="{{ $businesses->url($vbPage) }}" class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] text-[11.5px] text-[#3B382F] flex items-center justify-center hover:border-[#157A43]">{{ $vbPage }}</a>
                             @endif
                             @endforeach
                             @if($vbEnd < $vbLast)
                             <span class="px-0.5 text-[11.5px] text-[#8A857A]">…</span>
-                            <a href="{{ $businesses->url($vbLast) }}" class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] text-[11.5px] text-[#3B382F] flex items-center justify-center hover:border-[#157A43]">{{ $vbLast }}</a>
+                            <a href="{{ $businesses->url($vbLast) }}" class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] text-[11.5px] text-[#3B382F] flex items-center justify-center hover:border-[#157A43]">{{ $vbLast }}</a>
                             @endif
                             @if($businesses->hasMorePages())
-                            <a href="{{ $businesses->nextPageUrl() }}" class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#3B382F] hover:border-[#157A43]" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
+                            <a href="{{ $businesses->nextPageUrl() }}" class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#3B382F] hover:border-[#157A43]" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
                             @else
-                            <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                            <span class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
                             @endif
-                            <span class="ml-2 h-[28px] rounded-lg border border-[#E9E4D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center gap-1">{{ $businesses->perPage() }} / page</span>
+                            <span class="ml-2 h-[28px] rounded-lg border border-[#EAE5D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center gap-1">{{ $businesses->perPage() }} / page</span>
                         </div>
                     </div>
                 </section>
@@ -315,9 +315,9 @@
                 {{-- RIGHT rail --}}
                 <div class="space-y-4">
                     {{-- Répartition par statut (donut) --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Répartition par statut' : 'Breakdown by status' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Répartition par statut' : 'Breakdown by status' }}</h2>
                             <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <div class="mt-4 flex justify-center">
@@ -340,9 +340,9 @@
                     </section>
 
                     {{-- Nouveaux vendeurs --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Nouveaux vendeurs' : 'New vendors' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Nouveaux vendeurs' : 'New vendors' }}</h2>
                             <a href="{{ route('admin.businesses', ['lang' => $lang]) }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <ul class="mt-3 divide-y divide-[#F5F1E8]">
@@ -363,9 +363,9 @@
                     </section>
 
                     {{-- Top catégories --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Top catégories' : 'Top categories' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Top catégories' : 'Top categories' }}</h2>
                             <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <ul class="mt-3.5 space-y-3">
@@ -386,10 +386,10 @@
                     </section>
 
                     {{-- Actions rapides --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
-                        <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3.5 grid grid-cols-2 gap-2.5">
-                            <a href="{{ route('business.create') }}" class="inline-flex items-center justify-center gap-1.5 h-[40px] rounded-lg bg-[#157A43] hover:bg-[#14652F] text-white text-[11.5px] font-semibold px-2 transition-colors">
+                            <a href="{{ route('business.create') }}" class="ui-btn ui-btn-primary">
                                 <i data-lucide="plus" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate">{{ $isFr ? 'Ajouter un vendeur' : 'Add a vendor' }}</span>
                             </a>
                             <a href="{{ route('admin.reports') }}#exports" class="inline-flex items-center justify-center gap-1.5 h-[40px] rounded-lg bg-[#3B82F6] hover:bg-[#2F6FDB] text-white text-[11.5px] font-semibold px-2 transition-colors">

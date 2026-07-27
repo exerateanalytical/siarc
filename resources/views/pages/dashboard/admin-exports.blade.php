@@ -140,30 +140,28 @@
                     {{-- Filters --}}
                     <form method="GET" class="mt-5 flex flex-wrap items-center gap-2.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="flex items-center gap-1.5 h-[42px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl px-3">
-                            <input type="text" name="du" value="{{ $filters['du'] !== '' ? $filters['du'] : ($isFr ? '01 Mai 2025' : '01 May 2025') }}" class="w-[74px] bg-transparent text-[12px] font-medium text-[#23231F] focus:outline-none" aria-label="{{ $isFr ? 'Du' : 'From' }}">
-                            <i data-lucide="move-right" class="w-4 h-4 text-[#B06E12] shrink-0"></i>
-                            <input type="text" name="au" value="{{ $filters['au'] !== '' ? $filters['au'] : ($isFr ? '12 Mai 2025' : '12 May 2025') }}" class="w-[74px] bg-transparent text-[12px] font-medium text-[#23231F] focus:outline-none" aria-label="{{ $isFr ? 'Au' : 'To' }}">
+                        <div class="ui-field-group">ers['du'] !== '' ? $filters['<input type="text" name="du" value="{{ $filters['du'] !== '' ? $filters['du'] : ($isFr ? '01 Mai 2025' : '01 May 2025') }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Du' : 'From' }}">ext-[#B06E12] shrink-0"></i>
+                            <input type="text" name="au" value="{{ $filters['au'] !== '' ? $filters['au'] : ($isFr ? '12 Mai 2025' : '12 May 2025') }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Au' : 'To' }}">
                             <button type="submit" class="shrink-0 text-[#B06E12]" aria-label="{{ $isFr ? 'Filtrer par période' : 'Filter by period' }}"><i data-lucide="calendar-days" class="w-[16px] h-[16px]"></i></button>
                         </div>
-                        <select name="type" onchange="this.form.submit()" class="h-[42px] w-[142px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl pl-3 pr-7 text-[12px] font-medium text-[#3B382F] cursor-pointer">
+                        <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-[142px]">
                             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
                             @foreach($datasets as $dk => $dl)
                             <option value="{{ $dk }}" @selected($filters['type']===$dk)>{{ $dl }}</option>
                             @endforeach
                         </select>
-                        <select name="statut" onchange="this.form.submit()" class="h-[42px] w-[138px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl pl-3 pr-7 text-[12px] font-medium text-[#3B382F] cursor-pointer">
+                        <select name="statut" onchange="this.form.submit()" class="ui-field ui-select w-[138px]">
                             <option value="">{{ $isFr ? 'Tous les status' : 'All statuses' }}</option>
                             @foreach($statusMeta as $sv => $sm)
                             <option value="{{ $sv }}" @selected($filters['statut']===$sv)>{{ $sm[0] }}</option>
                             @endforeach
                         </select>
-                        <div class="flex-1 min-w-[120px] flex items-center gap-2 h-[42px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl px-3">
-                            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher un export...' : 'Search an export...' }}" class="flex-1 min-w-0 bg-transparent text-[12.5px] focus:outline-none placeholder-[#8A8578]">
+                        <div class="ui-field-group flex-1 min-w-[120px]">
+                            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher un export...' : 'Search an export...' }}" class="ui-field-bare flex-1 min-w-0">
                             <button type="submit" class="shrink-0 text-[#B06E12]" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"><i data-lucide="search" class="w-[17px] h-[17px]"></i></button>
                         </div>
                         {{-- Nouvel Export: real POST — exports the currently filtered dataset (artisans by default) --}}
-                        <button type="submit" form="dex-new" class="h-[42px] inline-flex items-center gap-2 bg-[#093F1F] hover:bg-[#0F5229] rounded-xl px-4 text-[12.5px] font-semibold text-white transition-colors"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Nouvel Export' : 'New Export' }}</button>
+                        <button type="submit" form="dex-new" class="ui-btn ui-btn-primary ui-btn-lg"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Nouvel Export' : 'New Export' }}</button>
                     </form>
                     <form id="dex-new" method="POST" action="{{ route('admin.exports.create') }}" class="hidden">
                         @csrf
@@ -174,28 +172,28 @@
 
                     {{-- Table --}}
                     <section class="sub-card mt-4 px-5 py-5">
-                        <div class="overflow-x-auto">
-                            <table class="w-full min-w-[880px]">
+                        <div class="ui-table-wrap">
+                            <table class="ui-table min-w-[880px]">
                                 <thead>
-                                    <tr class="text-left border-b border-[#F5EBDA]">
-                                        <th class="pb-3 pr-3 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Nom de l\'export' : 'Export name' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Type de données' : 'Data type' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">Format</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Taille' : 'Size' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Créé le' : 'Created' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">Expiration</th>
-                                        <th class="pb-3 pl-2 text-right text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">Actions</th>
+                                    <tr class="border-b border-[#F5EBDA]">
+                                        <th>{{ $isFr ? 'Nom de l\'export' : 'Export name' }}</th>
+                                        <th>{{ $isFr ? 'Type de données' : 'Data type' }}</th>
+                                        <th>Format</th>
+                                        <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                        <th>{{ $isFr ? 'Taille' : 'Size' }}</th>
+                                        <th>{{ $isFr ? 'Créé le' : 'Created' }}</th>
+                                        <th>Expiration</th>
+                                        <th class="text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[#F7EEDF]">
+                                <tbody>
                                     @forelse($exports as $e)
                                     @php
                                         [$stLabel, $stText, $stIcon] = $statusMeta[$e->status] ?? [$e->status, 'text-[#6E6B63]', 'dot'];
                                         [$fpLabel, $fpCls] = $formatPill[$e->format] ?? [strtoupper($e->format), 'bg-[#EFEFEA] text-[#55524A]'];
                                     @endphp
                                     <tr>
-                                        <td class="py-3.5 pr-3">
+                                        <td>
                                             <div class="flex items-center gap-3">
                                                 <img src="{{ asset('images/landing/' . ($fileIcon[$e->format] ?? 'dex-file-csv.png')) }}" alt="" class="w-[26px] h-[28px] object-contain shrink-0">
                                                 <span class="min-w-0">
@@ -204,22 +202,22 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-2 text-[12.5px] text-[#3B382F] whitespace-nowrap">{{ $datasets[$e->dataset] ?? $e->dataset }}</td>
-                                        <td class="py-3.5 px-2"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-bold tracking-[0.04em] {{ $fpCls }}">{{ $fpLabel }}</span></td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap">
+                                        <td class="whitespace-nowrap">{{ $datasets[$e->dataset] ?? $e->dataset }}</td>
+                                        <td><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-bold tracking-[0.04em] {{ $fpCls }}">{{ $fpLabel }}</span></td>
+                                        <td class="whitespace-nowrap">
                                             <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold {{ $stText }}">
                                                 @if($stIcon === 'dot')<span class="w-2 h-2 rounded-full shrink-0 {{ $e->status === 'en_cours' ? 'bg-[#DF860A]' : 'bg-[#1B62BC]' }}"></span>
                                                 @else<i data-lucide="{{ $stIcon }}" class="w-[15px] h-[15px] shrink-0"></i>@endif
                                                 {{ $stLabel }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-2 text-[12.5px] font-semibold text-[#23231F] whitespace-nowrap">{{ $dexSize($e->size_bytes) }}</td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $dexDate($e->created_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($e->created_at)->format('H:i') }}</span></td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap">
+                                        <td class="font-semibold text-[#23231F] whitespace-nowrap">{{ $dexSize($e->size_bytes) }}</td>
+                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $dexDate($e->created_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($e->created_at)->format('H:i') }}</span></td>
+                                        <td class="whitespace-nowrap">
                                             @if($e->expires_at)<span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $dexDate($e->expires_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($e->expires_at)->format('H:i') }}</span>
                                             @else<span class="text-[12.5px] text-[#3B382F]">–</span>@endif
                                         </td>
-                                        <td class="py-3.5 pl-2">
+                                        <td>
                                             <div class="flex items-center justify-end gap-1.5">
                                                 @if($e->status === 'en_cours')
                                                 <form method="POST" action="{{ route('admin.exports.status', ['id' => $e->id]) }}">@csrf<input type="hidden" name="lang" value="{{ $lang }}"><input type="hidden" name="statut" value="planifie">
@@ -277,7 +275,7 @@
                                 <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#C9C2B2]"><i data-lucide="chevrons-right" class="w-4 h-4"></i></span>
                                 @endif
                             </div>
-                            <select onchange="window.location = this.value" class="h-9 bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] pl-3.5 pr-8 text-[12.5px] font-medium text-[#3B382F] cursor-pointer">
+                            <select onchange="window.location = this.value" class="ui-field ui-select">
                                 @foreach($perOptions as $po)
                                 <option value="{{ $perUrl($po) }}" @selected($perPage === $po || ($po === 10 && $perPage === 8))>{{ $po }} {{ $isFr ? 'par page' : 'per page' }}</option>
                                 @endforeach
@@ -290,7 +288,7 @@
                 <aside class="space-y-4 min-w-0">
                     {{-- Activité d'export --}}
                     <section class="sub-card px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#23231F] uppercase tracking-[0.01em]">{{ $isFr ? 'Activité d\'export' : 'Export activity' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Activité d\'export' : 'Export activity' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
                             <span class="w-[88px] h-[88px] rounded-full shrink-0" style="background: {{ $dexConic }}"><span class="block w-[48px] h-[48px] rounded-full bg-[#FEFAF4] m-[20px]"></span></span>
                             <div class="flex-1 space-y-2">
@@ -306,7 +304,7 @@
 
                     {{-- Exports par type de données --}}
                     <section class="sub-card px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#23231F] uppercase tracking-[0.01em]">{{ $isFr ? 'Exports par type de données' : 'Exports by data type' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Exports par type de données' : 'Exports by data type' }}</h2>
                         <div class="mt-4 space-y-4">
                             @forelse($typeBars as [$tIcon, $tLabel, $tValue, $tColor, $tPct])
                             <div>
@@ -324,7 +322,7 @@
 
                     {{-- Actions rapides --}}
                     <section class="sub-card px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#23231F] uppercase tracking-[0.01em]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
                             <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0"><span class="text-[12.5px] font-medium text-[#3B382F] group-hover:text-[#14652F]">{{ $qLabel }}</span></a>

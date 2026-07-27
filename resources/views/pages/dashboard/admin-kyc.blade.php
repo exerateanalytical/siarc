@@ -32,11 +32,11 @@
 
     // Five stat cards [icon, iconColor, tileBg, cardBg, value, label, sub, spark]
     $kycCards = [
-        ['users-round', '#157A43', '#E8F2EC', 'bg-white border-[#EFF0EF]',        $kycStats['total'],        $isFr ? 'Total Demandes' : 'Total requests',   '+' . $kycStats['this_month'] . ($isFr ? ' ce mois' : ' this month'), '#3FA96A'],
-        ['hourglass',   '#C97A16', '#FDF3E0', 'bg-white border-[#EFF0EF]',        $kycStats['pending'],      $isFr ? 'En Attente' : 'Pending',              $kycStats['pct_pending'] . ($isFr ? '% du total' : '% of total'),   '#E9A83A'],
+        ['users-round', '#157A43', '#E8F2EC', 'bg-white border-[#EFEBE2]',        $kycStats['total'],        $isFr ? 'Total Demandes' : 'Total requests',   '+' . $kycStats['this_month'] . ($isFr ? ' ce mois' : ' this month'), '#3FA96A'],
+        ['hourglass',   '#C97A16', '#FDF3E0', 'bg-white border-[#EFEBE2]',        $kycStats['pending'],      $isFr ? 'En Attente' : 'Pending',              $kycStats['pct_pending'] . ($isFr ? '% du total' : '% of total'),   '#E9A83A'],
         ['shield-check','#3565DE', '#E8EFFB', 'bg-[#F4F8FF] border-[#CFE0F7]',    $kycStats['approved'],     $isFr ? 'Approuvées' : 'Approved',             $kycStats['pct_approved'] . ($isFr ? '% du total' : '% of total'),  '#3565DE'],
-        ['shield-x',    '#DC2626', '#FDECEC', 'bg-white border-[#EFF0EF]',        $kycStats['rejected'],     $isFr ? 'Rejetées' : 'Rejected',              $kycStats['pct_rejected'] . ($isFr ? '% du total' : '% of total'),  '#DC2626'],
-        ['clock',       '#7C4FE0', '#F0EAFB', 'bg-white border-[#EFF0EF]',        $kycStats['in_review'],    $isFr ? 'En Vérification' : 'In verification', $kycStats['pct_review'] . ($isFr ? '% du total' : '% of total'),    '#7C4FE0'],
+        ['shield-x',    '#DC2626', '#FDECEC', 'bg-white border-[#EFEBE2]',        $kycStats['rejected'],     $isFr ? 'Rejetées' : 'Rejected',              $kycStats['pct_rejected'] . ($isFr ? '% du total' : '% of total'),  '#DC2626'],
+        ['clock',       '#7C4FE0', '#F0EAFB', 'bg-white border-[#EFEBE2]',        $kycStats['in_review'],    $isFr ? 'En Vérification' : 'In verification', $kycStats['pct_review'] . ($isFr ? '% du total' : '% of total'),    '#7C4FE0'],
     ];
 
     // Right rail — répartition par rôle (real distribution) [label, count, pct, color]
@@ -88,49 +88,49 @@
 
             <div class="mt-5 grid grid-cols-1 2xl:grid-cols-[1fr_320px] gap-5 items-start">
                 {{-- Requests table --}}
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Demandes KYC récentes' : 'Recent KYC requests' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Demandes KYC récentes' : 'Recent KYC requests' }}</h2>
 
                     <form method="GET" class="mt-4 flex flex-wrap items-center gap-2.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="flex-1 min-w-[180px] flex items-center gap-2 h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3.5">
+                        <div class="ui-field-group flex-1 min-w-[180px]">
                             <i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i>
-                            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher...' : 'Search...' }}" class="flex-1 min-w-0 text-[12.5px] focus:outline-none placeholder-[#8A857A]">
+                            <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher...' : 'Search...' }}" class="ui-field-bare flex-1 min-w-0">
                         </div>
-                        <select name="statut" onchange="this.form.submit()" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
+                        <select name="statut" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Tous les statuts' : 'All statuses' }}</option>
                             @foreach(['submitted' => ($isFr?'En attente':'Pending'), 'under_review' => ($isFr?'En vérification':'In review'), 'approved' => ($isFr?'Approuvée':'Approved'), 'rejected' => ($isFr?'Rejetée':'Rejected')] as $sv => $sl)
                             <option value="{{ $sv }}" @selected($filters['statut'] === $sv)>{{ $sl }}</option>
                             @endforeach
                         </select>
-                        <select name="role" onchange="this.form.submit()" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
+                        <select name="role" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Tous les rôles' : 'All roles' }}</option>
                             @foreach(['artisan' => ($isFr?'Artisan':'Artisan'), 'entreprise' => ($isFr?'Boutique':'Shop'), 'cooperative' => ($isFr?'Coopérative':'Cooperative')] as $rv => $rl)
                             <option value="{{ $rv }}" @selected($filters['role'] === $rv)>{{ $rl }}</option>
                             @endforeach
                         </select>
-                        <button type="submit" class="h-[40px] inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 text-[12.5px] font-semibold text-white transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-primary">
                             <i data-lucide="filter" class="w-4 h-4"></i>{{ $isFr ? 'Filtrer' : 'Filter' }}
                         </button>
-                        <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="h-[40px] inline-flex items-center gap-2 bg-[#FBF6EA] border border-[#EAD9AC] hover:border-[#C9942E] rounded-lg px-4 text-[12.5px] font-semibold text-[#7A5A12] transition-colors">
+                        <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary">
                             <i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}
                         </a>
                     </form>
 
-                    <div class="mt-4 overflow-x-auto">
-                        <table class="w-full min-w-[760px]">
+                    <div class="ui-table-wrap mt-4">
+                        <table class="ui-table min-w-[760px]">
                             <thead>
-                                <tr class="text-left border-b border-[#F0F1F0]">
-                                    <th class="pb-2.5 pr-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Utilisateur' : 'User' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Rôle' : 'Role' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Type</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Soumis le' : 'Submitted' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Dernière MàJ' : 'Last update' }}</th>
-                                    <th class="pb-2.5 pl-2 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Actions</th>
+                                <tr class="border-b border-[#EFEBE2]">
+                                    <th>{{ $isFr ? 'Utilisateur' : 'User' }}</th>
+                                    <th>{{ $isFr ? 'Rôle' : 'Role' }}</th>
+                                    <th>Type</th>
+                                    <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                    <th>{{ $isFr ? 'Soumis le' : 'Submitted' }}</th>
+                                    <th>{{ $isFr ? 'Dernière MàJ' : 'Last update' }}</th>
+                                    <th class="text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#F4F5F4]">
+                            <tbody>
                                 @forelse($applications as $app)
                                 @php
                                     [$stLabel, $stCls] = $kycStatusMeta[$app->status] ?? [$app->status, 'bg-[#EEECE6] text-[#6F6B60]'];
@@ -138,7 +138,7 @@
                                     $initial = mb_strtoupper(mb_substr($app->owner_name ?? $app->business_name ?? '?', 0, 1));
                                 @endphp
                                 <tr>
-                                    <td class="py-3.5 pr-3">
+                                    <td>
                                         <div class="flex items-center gap-3">
                                             @if($app->logo)
                                             <img src="{{ asset('storage/' . $app->logo) }}" alt="" class="w-9 h-9 rounded-full object-cover shrink-0">
@@ -151,19 +151,19 @@
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="py-3.5 px-2"><span class="inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
-                                    <td class="py-3.5 px-2 text-[12px] text-[#3B382F]">{{ $app->vendor_type === 'artisan' ? ($isFr ? 'Individuel' : 'Individual') : ($isFr ? 'Entreprise' : 'Business') }}</td>
-                                    <td class="py-3.5 px-2"><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>{{ $stLabel }}</span></td>
-                                    <td class="py-3.5 px-2 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[11px] text-[#8A857A]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
-                                    <td class="py-3.5 px-2 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[11px] text-[#8A857A]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
-                                    <td class="py-3.5 pl-2">
+                                    <td><span class="inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
+                                    <td>{{ $app->vendor_type === 'artisan' ? ($isFr ? 'Individuel' : 'Individual') : ($isFr ? 'Entreprise' : 'Business') }}</td>
+                                    <td><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>{{ $stLabel }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[11px] text-[#8A857A]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[11px] text-[#8A857A]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
+                                    <td>
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#E5E7E5] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#E5E7E5] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
                                             @if($app->status === 'approved')
                                             <span class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center text-[#157A43]" title="{{ $isFr ? 'Vérifié' : 'Verified' }}"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
                                             @else
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#E5E7E5] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
                                             @endif
                                         </div>
                                     </td>
@@ -203,8 +203,8 @@
 
                 {{-- Right rail --}}
                 <aside class="space-y-4">
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="flex items-center gap-2 text-[13px] font-bold text-[#1B1B18]"><i data-lucide="pie-chart" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Répartition par rôle' : 'Distribution by role' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Répartition par rôle' : 'Distribution by role' }}</h2>
                         <div class="mt-4 space-y-3.5">
                             @foreach($kycRoleDist as $rd)
                             @php $pct = round($rd['count'] / $kycRoleTotal * 100, 1); @endphp
@@ -221,9 +221,9 @@
                         </div>
                     </section>
 
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="flex items-center gap-2 text-[13px] font-bold text-[#1B1B18]"><i data-lucide="zap" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Vérification rapide' : 'Quick verification' }}</h2>
-                        <div class="mt-2 divide-y divide-[#F4F5F4]">
+                    <section class="ui-card">
+                        <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Vérification rapide' : 'Quick verification' }}</h2>
+                        <div class="mt-2 divide-y divide-[#F5F1E8]">
                             @foreach($kycQuickLinks as [$qlIcon, $qlLabel, $qlUrl])
                             <a href="{{ $qlUrl }}" class="flex items-center gap-3 py-2.5 group">
                                 <i data-lucide="{{ $qlIcon }}" class="w-[17px] h-[17px] text-[#55524A] group-hover:text-[#14652F]"></i>
@@ -242,8 +242,8 @@
 
             {{-- Process + documents --}}
             <div class="mt-5 grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-5">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                    <h2 class="flex items-center gap-2 text-[14px] font-bold text-[#1B1B18]"><i data-lucide="git-branch" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Étapes du processus KYC' : 'KYC process steps' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="git-branch" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Étapes du processus KYC' : 'KYC process steps' }}</h2>
                     <div class="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
                         @foreach($kycProcess as $i => [$pIcon, $pTitle, $pDesc])
                         <div class="flex flex-col">
@@ -255,8 +255,8 @@
                     </div>
                 </section>
 
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                    <h2 class="flex items-center gap-2 text-[14px] font-bold text-[#1B1B18]"><i data-lucide="file-check" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Documents requis' : 'Required documents' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Documents requis' : 'Required documents' }}</h2>
                     <ul class="mt-4 space-y-3">
                         @foreach($kycDocs as $doc)
                         <li class="flex items-center gap-2.5 text-[12.5px] text-[#3B382F]"><i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] shrink-0"></i>{{ $doc }}</li>

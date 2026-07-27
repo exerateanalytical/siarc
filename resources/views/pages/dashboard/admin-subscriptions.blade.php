@@ -110,56 +110,56 @@
                     <section class="sub-card mt-5 px-5 py-5">
                         <form method="GET" class="flex flex-wrap items-center gap-2.5">
                             <input type="hidden" name="lang" value="{{ $lang }}">
-                            <div class="flex-1 min-w-[160px] flex items-center gap-2 h-[42px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl px-3.5">
-                                <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher...' : 'Search...' }}" class="flex-1 min-w-0 bg-transparent text-[12.5px] focus:outline-none placeholder-[#8A8578]">
+                            <div class="ui-field-group flex-1 min-w-[160px]">
+                                <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher...' : 'Search...' }}" class="ui-field-bare flex-1 min-w-0">
                                 <button type="submit" class="shrink-0 text-[#55524A]" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"><i data-lucide="search" class="w-[17px] h-[17px]"></i></button>
                             </div>
-                            <select name="statut" onchange="this.form.submit()" class="h-[42px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl pl-3.5 pr-8 text-[12.5px] font-medium text-[#3B382F] cursor-pointer">
+                            <select name="statut" onchange="this.form.submit()" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Tous les status' : 'All statuses' }}</option>
                                 @foreach(['active'=>($isFr?'Actif':'Active'),'pending'=>($isFr?'En attente':'Pending'),'expired'=>($isFr?'Expiré':'Expired'),'cancelled'=>($isFr?'Annulé':'Cancelled')] as $sv=>$sl)
                                 <option value="{{ $sv }}" @selected($filters['statut']===$sv)>{{ $sl }}</option>
                                 @endforeach
                             </select>
-                            <select name="plan" onchange="this.form.submit()" class="h-[42px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl pl-3.5 pr-8 text-[12.5px] font-medium text-[#3B382F] cursor-pointer">
+                            <select name="plan" onchange="this.form.submit()" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Tous les plans' : 'All plans' }}</option>
                                 @foreach($plans as $pl)
                                 <option value="{{ $pl->slug }}" @selected($filters['plan']===$pl->slug)>{{ $isFr ? $pl->name_fr : ($pl->name_en ?? $pl->name_fr) }}</option>
                                 @endforeach
                             </select>
-                            <select name="role" onchange="this.form.submit()" class="h-[42px] bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl pl-3.5 pr-8 text-[12.5px] font-medium text-[#3B382F] cursor-pointer">
+                            <select name="role" onchange="this.form.submit()" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Tous les rôles' : 'All roles' }}</option>
                                 @foreach(['artisan'=>'Artisan','entreprise'=>($isFr?'Entreprise':'Enterprise'),'cooperative'=>($isFr?'Boutique':'Shop')] as $rv=>$rl)
                                 <option value="{{ $rv }}" @selected($filters['role']===$rv)>{{ $rl }}</option>
                                 @endforeach
                             </select>
-                            <div class="h-[42px] flex items-center gap-2 bg-[#FEFAF4] border border-[#F0E2C9] rounded-xl pl-3.5 cursor-pointer">
-                                <i data-lucide="calendar-days" class="w-[16px] h-[16px] text-[#B06E12]"></i>
-                                <select name="periode" onchange="this.form.submit()" class="no-chevron h-full bg-transparent pr-3.5 text-[12.5px] font-semibold text-[#23231F] cursor-pointer focus:outline-none">
+                            <div class="ui-field-group">
+                                <i data-lucide="calendar-days" class="w-[16px] h-[16px]"></i>
+                                <select name="periode" onchange="this.form.submit()" class="ui-field-bare ui-select">
                                     <option value="">{{ $isFr ? 'Période' : 'Period' }}</option>
                                     <option value="mois" @selected($filters['periode']==='mois')>{{ $isFr ? 'Ce mois' : 'This month' }}</option>
                                     <option value="trimestre" @selected($filters['periode']==='trimestre')>{{ $isFr ? '3 derniers mois' : 'Last 3 months' }}</option>
                                     <option value="annee" @selected($filters['periode']==='annee')>{{ $isFr ? 'Cette année' : 'This year' }}</option>
                                 </select>
                             </div>
-                            <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="h-[42px] inline-flex items-center gap-2 bg-[#FEFAF4] border border-[#F0E2C9] hover:border-[#C9942E] rounded-xl px-4 text-[12.5px] font-semibold text-[#B06E12]"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}</a>
-                            <a href="{{ route('admin.businesses', ['lang' => $lang]) }}" class="h-[42px] inline-flex items-center gap-2 bg-[#093F1F] hover:bg-[#0F5229] rounded-xl px-4 text-[12.5px] font-semibold text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Nouvel Abonnement' : 'New Subscription' }}</a>
+                            <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-lg"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}</a>
+                            <a href="{{ route('admin.businesses', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary ui-btn-lg"><i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Nouvel Abonnement' : 'New Subscription' }}</a>
                         </form>
 
-                        <div class="mt-4 overflow-x-auto">
-                            <table class="w-full min-w-[860px]">
+                        <div class="ui-table-wrap mt-4">
+                            <table class="ui-table min-w-[860px]">
                                 <thead>
-                                    <tr class="text-left border-b border-[#F5EBDA]">
-                                        <th class="pb-3 pr-3 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Abonné' : 'Subscriber' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Rôle' : 'Role' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">Plan</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Montant' : 'Amount' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Prochain paiement' : 'Next payment' }}</th>
-                                        <th class="pb-3 px-2 text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">{{ $isFr ? 'Souscription le' : 'Subscribed on' }}</th>
-                                        <th class="pb-3 pl-2 text-right text-[10.5px] font-bold tracking-[0.06em] text-[#6E6B63] uppercase">Actions</th>
+                                    <tr class="border-b border-[#F5EBDA]">
+                                        <th>{{ $isFr ? 'Abonné' : 'Subscriber' }}</th>
+                                        <th>{{ $isFr ? 'Rôle' : 'Role' }}</th>
+                                        <th>Plan</th>
+                                        <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                        <th>{{ $isFr ? 'Montant' : 'Amount' }}</th>
+                                        <th>{{ $isFr ? 'Prochain paiement' : 'Next payment' }}</th>
+                                        <th>{{ $isFr ? 'Souscription le' : 'Subscribed on' }}</th>
+                                        <th class="text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[#F7EEDF]">
+                                <tbody>
                                     @forelse($subscriptions as $s)
                                     @php
                                         [$stLabel, $stText, $stDot] = $subStatusMeta[$s->status] ?? [$s->status, 'text-[#6E6B63]', '#9B978D'];
@@ -177,7 +177,7 @@
                                         }
                                     @endphp
                                     <tr>
-                                        <td class="py-3.5 pr-3">
+                                        <td>
                                             <div class="flex items-center gap-3">
                                                 @if($s->logo)<img src="{{ asset('storage/' . $s->logo) }}" alt="" class="w-9 h-9 rounded-full object-cover shrink-0">
                                                 @else<span class="w-9 h-9 rounded-full bg-[#14652F] text-white text-[13px] font-bold flex items-center justify-center shrink-0">{{ $initial }}</span>@endif
@@ -187,22 +187,22 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-2"><span class="inline-block rounded-lg px-3 py-1 text-[11.5px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
-                                        <td class="py-3.5 px-2">
+                                        <td><span class="inline-block rounded-lg px-3 py-1 text-[11.5px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
+                                        <td>
                                             <span class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#23231F]">
                                                 @if($planIsImg)<img src="{{ asset('images/landing/' . $s->plan_icon) }}" alt="" class="w-[22px] h-[22px] object-contain shrink-0">
                                                 @else<i data-lucide="{{ $s->plan_icon ?? 'gem' }}" class="w-4 h-4" style="color: {{ $s->plan_color }}"></i>@endif
                                                 {{ $isFr ? $s->plan_fr : ($s->plan_en ?? $s->plan_fr) }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap"><span class="inline-flex items-center gap-1.5 text-[12px] font-semibold {{ $stText }}"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ number_format($s->amount) }} FCFA</span><span class="block text-[11.5px] text-[#8A8578]">/ {{ $isFr ? 'an' : 'year' }}</span></td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap">
+                                        <td class="whitespace-nowrap"><span class="inline-flex items-center gap-1.5 text-[12px] font-semibold {{ $stText }}"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
+                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ number_format($s->amount) }} FCFA</span><span class="block text-[11.5px] text-[#8A8578]">/ {{ $isFr ? 'an' : 'year' }}</span></td>
+                                        <td class="whitespace-nowrap">
                                             <span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $subDate($s->next_payment_at) }}</span>
                                             @if($nextLine)<span class="block text-[11.5px] {{ $nextLineRed ? 'text-[#D0342C] font-medium' : 'text-[#8A8578]' }}">{{ $nextLine }}</span>@endif
                                         </td>
-                                        <td class="py-3.5 px-2 whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $subDate($s->started_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($s->started_at)->format('H:i') }}</span></td>
-                                        <td class="py-3.5 pl-2">
+                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $subDate($s->started_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($s->started_at)->format('H:i') }}</span></td>
+                                        <td>
                                             <div class="flex items-center justify-end gap-1.5">
                                                 <a href="{{ route('admin.businesses.detail', ['id' => $s->business_id, 'lang' => $lang]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#C9942E] flex items-center justify-center text-[#8A6B3F]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-[15px] h-[15px]"></i></a>
                                                 <a href="{{ route('admin.businesses.detail', ['id' => $s->business_id, 'lang' => $lang]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#C9942E] flex items-center justify-center text-[#8A6B3F]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-[15px] h-[15px]"></i></a>
@@ -245,7 +245,7 @@
                                 <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#C9C2B2]"><i data-lucide="chevrons-right" class="w-4 h-4"></i></span>
                                 @endif
                             </div>
-                            <select onchange="window.location = this.value" class="h-9 bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] pl-3.5 pr-8 text-[12.5px] font-medium text-[#3B382F] cursor-pointer">
+                            <select onchange="window.location = this.value" class="ui-field ui-select">
                                 @foreach($perOptions as $po)
                                 <option value="{{ $perUrl($po) }}" @selected($perPage === $po || ($po === 10 && $perPage === 8))>{{ $po }} {{ $isFr ? 'par page' : 'per page' }}</option>
                                 @endforeach
@@ -271,7 +271,7 @@
 
                     {{-- Répartition par plan --}}
                     <section class="sub-card px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#23231F] uppercase tracking-[0.01em]">{{ $isFr ? 'Répartition par plan' : 'Distribution by plan' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Répartition par plan' : 'Distribution by plan' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
                             <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $planConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] m-[22px]"></span></span>
                             <div class="flex-1 space-y-2">
@@ -289,7 +289,7 @@
 
                     {{-- Résumé financier --}}
                     <section class="sub-card px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#23231F] uppercase tracking-[0.01em]">{{ $isFr ? 'Résumé financier' : 'Financial summary' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Résumé financier' : 'Financial summary' }}</h2>
                         <dl class="mt-4 space-y-3">
                             @foreach($financeRows as [$fLabel, $fValue, $fColor])
                             <div class="flex items-center justify-between text-[12.5px]"><dt class="font-medium text-[#3B382F]">{{ $fLabel }}</dt><dd class="font-semibold" style="color: {{ $fColor }}">{{ $fValue }}</dd></div>
@@ -306,7 +306,7 @@
 
                     {{-- Actions rapides --}}
                     <section class="sub-card px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#23231F] uppercase tracking-[0.01em]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
                             <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0"><span class="text-[12.5px] font-medium text-[#3B382F] group-hover:text-[#14652F]">{{ $qLabel }}</span></a>
@@ -324,7 +324,5 @@
 
             <style>
                 .sub-card { background-color: #FEFAF4; border: 1px solid #F3E5D0; border-radius: 16px; box-shadow: 0 1px 2px rgba(90, 70, 30, 0.04); }
-                select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233B382F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; }
-                select.no-chevron { background-image: none; }
             </style>
 @endsection

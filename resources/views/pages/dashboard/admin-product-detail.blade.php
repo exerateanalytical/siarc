@@ -71,13 +71,13 @@
             </nav>
         </div>
         <div class="flex items-center gap-2.5">
-            <a href="{{ route('admin.products', $langQ) }}" class="h-[40px] inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 text-[13px] font-semibold text-white transition-colors">
+            <a href="{{ route('admin.products', $langQ) }}" class="ui-btn ui-btn-primary">
                 <i data-lucide="edit" class="w-4 h-4"></i>{{ $isFr ? 'Modifier' : 'Edit' }}
             </a>
-            <button type="button" class="h-[40px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-4 text-[13px] font-semibold text-[#3B382F] transition-colors">
+            <button type="button" class="ui-btn ui-btn-secondary">
                 <i data-lucide="copy" class="w-4 h-4"></i>{{ $isFr ? 'Dupliquer' : 'Duplicate' }}
             </button>
-            <button type="button" class="h-[40px] inline-flex items-center gap-2 bg-[#FBF6EA] border border-[#EAD9AC] hover:border-[#C9942E] rounded-lg px-4 text-[13px] font-semibold text-[#7A5A12] transition-colors">
+            <button type="button" class="ui-btn ui-btn-secondary">
                 <i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}
             </button>
         </div>
@@ -93,14 +93,14 @@
         <div class="space-y-5">
 
             {{-- Product hero card --}}
-            <section class="bg-white border border-gray-200 rounded-xl p-5">
+            <section class="ui-card">
                 <div class="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-5">
 
                     {{-- Gallery --}}
                     <div class="flex gap-3">
                         <div class="flex flex-col gap-2.5 w-[62px] shrink-0">
                             @forelse($thumbs->take(4) as $t)
-                            <div class="w-[62px] h-[58px] rounded-lg overflow-hidden bg-[#EDE7DA] border border-gray-200">
+                            <div class="w-[62px] h-[58px] rounded-lg overflow-hidden bg-[#EDE7DA] border border-[#EFEBE2]">
                                 <img src="{{ asset('storage/' . $t->file_path) }}" alt="{{ $t->caption_fr ?? '' }}" class="{{ $ci }}">
                             </div>
                             @empty
@@ -109,7 +109,7 @@
                             <div class="w-[62px] h-[58px] rounded-lg bg-[#1B1B18] text-white flex items-center justify-center text-[13px] font-bold">+{{ $imgs->count() - 5 }}</div>
                             @endif
                         </div>
-                        <div class="w-[230px] max-w-full h-[248px] rounded-xl overflow-hidden bg-[#EDE7DA] border border-gray-200 flex items-center justify-center">
+                        <div class="w-[230px] max-w-full h-[248px] rounded-xl overflow-hidden bg-[#EDE7DA] border border-[#EFEBE2] flex items-center justify-center">
                             @if($cover)
                             <img src="{{ asset('storage/' . $cover->file_path) }}" alt="{{ $cover->caption_fr ?? $pName }}" class="{{ $ci }}">
                             @else
@@ -171,7 +171,7 @@
                 </div>
 
                 {{-- Meta row --}}
-                <div class="mt-5 pt-4 border-t border-[#F0F1F0] grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="mt-5 pt-4 border-t border-[#EFEBE2] grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="flex items-start gap-2.5">
                         <i data-lucide="tag" class="w-4 h-4 text-[#8A857A] mt-0.5"></i>
                         <div><p class="text-[11px] text-[#8A857A]">{{ $isFr ? 'Catégorie' : 'Category' }}</p><p class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $catName ?? '—' }}</p></div>
@@ -192,8 +192,8 @@
             </section>
 
             {{-- Tab bar + panels --}}
-            <section class="bg-white border border-gray-200 rounded-xl">
-                <div class="px-5 border-b border-[#F0F1F0] overflow-x-auto">
+            <section class="ui-card">
+                <div class="px-5 border-b border-[#EFEBE2] overflow-x-auto">
                     <div class="flex items-center gap-6 min-w-max">
                         @foreach($pdTabs as $i => $tab)
                         <button type="button" class="relative py-3.5 text-[12.5px] whitespace-nowrap {{ $i === 0 ? 'font-semibold text-[#14652F]' : 'text-[#8A857A] hover:text-[#3B382F]' }}">
@@ -209,7 +209,7 @@
 
                     {{-- Informations Générales --}}
                     <div>
-                        <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'INFORMATIONS GÉNÉRALES' : 'GENERAL INFORMATION' }}</h3>
+                        <h3 class="ui-card-title">{{ $isFr ? 'INFORMATIONS GÉNÉRALES' : 'GENERAL INFORMATION' }}</h3>
                         <dl class="mt-4 space-y-3.5">
                             <div class="grid grid-cols-[130px_1fr] gap-3">
                                 <dt class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Nom du produit' : 'Product name' }}</dt>
@@ -239,7 +239,7 @@
                                 <dt class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Mots-clés' : 'Keywords' }}</dt>
                                 <dd class="flex flex-wrap gap-1.5">
                                     @forelse(($productAttributes ?? collect()) as $attr)
-                                    <span class="inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium bg-[#E2F3E8] text-[#157A43]">{{ $attr->value_fr }}{{ $attr->unit ? ' '.$attr->unit : '' }}</span>
+                                    <span class="ui-pill ui-pill-ok">{{ $attr->value_fr }}{{ $attr->unit ? ' '.$attr->unit : '' }}</span>
                                     @empty
                                     <span class="text-[12.5px] text-[#8A857A]">—</span>
                                     @endforelse
@@ -250,7 +250,7 @@
 
                     {{-- Informations du Vendeur --}}
                     <div>
-                        <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'INFORMATIONS DU VENDEUR' : 'SELLER INFORMATION' }}</h3>
+                        <h3 class="ui-card-title">{{ $isFr ? 'INFORMATIONS DU VENDEUR' : 'SELLER INFORMATION' }}</h3>
                         <dl class="mt-4 space-y-3.5">
                             <div class="grid grid-cols-[130px_1fr] gap-3">
                                 <dt class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Nom du vendeur' : 'Seller name' }}</dt>
@@ -296,36 +296,36 @@
             </section>
 
             {{-- Prix & Variantes --}}
-            <section class="bg-white border border-gray-200 rounded-xl p-5">
-                <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'PRIX & VARIANTES' : 'PRICE & VARIANTS' }}</h3>
-                <div class="mt-4 overflow-x-auto">
-                    <table class="w-full min-w-[640px]">
+            <section class="ui-card">
+                <h3 class="ui-card-title">{{ $isFr ? 'PRIX & VARIANTES' : 'PRICE & VARIANTS' }}</h3>
+                <div class="ui-table-wrap mt-4">
+                    <table class="ui-table min-w-[640px]">
                         <thead>
-                            <tr class="text-left border-b border-[#F0F1F0]">
-                                <th class="pb-2.5 pr-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">#</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Variante' : 'Variant' }}</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Prix (FCFA)' : 'Price (FCFA)' }}</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Prix Promo (FCFA)' : 'Promo (FCFA)' }}</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Stock</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">SKU</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                <th class="pb-2.5 pl-2 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Actions</th>
+                            <tr class="border-b border-[#EFEBE2]">
+                                <th>#</th>
+                                <th>{{ $isFr ? 'Variante' : 'Variant' }}</th>
+                                <th>{{ $isFr ? 'Prix (FCFA)' : 'Price (FCFA)' }}</th>
+                                <th>{{ $isFr ? 'Prix Promo (FCFA)' : 'Promo (FCFA)' }}</th>
+                                <th>Stock</th>
+                                <th>SKU</th>
+                                <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#F4F5F4]">
+                        <tbody>
                             <tr>
-                                <td class="py-3.5 pr-3 text-[12.5px] text-[#3B382F]">1</td>
-                                <td class="py-3.5 px-2 text-[12.5px] font-semibold text-[#1B1B18]">{{ $pName }}</td>
-                                <td class="py-3.5 px-2 text-[12.5px] text-[#3B382F]">{{ $p->price_amount ? number_format($p->price_amount, 0, ',', ' ') : '—' }}</td>
-                                <td class="py-3.5 px-2 text-[12.5px] text-[#8A857A]">—</td>
-                                <td class="py-3.5 px-2 text-[12.5px] text-[#3B382F]">{{ $p->quantity_available !== null ? number_format($p->quantity_available) : '—' }}</td>
-                                <td class="py-3.5 px-2 text-[12.5px] text-[#3B382F]">{{ $p->sku ?? '—' }}</td>
-                                <td class="py-3.5 px-2"><span class="inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}">{{ $stLabel }}</span></td>
-                                <td class="py-3.5 pl-2">
+                                <td>1</td>
+                                <td class="font-semibold text-[#1B1B18]">{{ $pName }}</td>
+                                <td>{{ $p->price_amount ? number_format($p->price_amount, 0, ',', ' ') : '—' }}</td>
+                                <td class="text-[#8A857A]">—</td>
+                                <td>{{ $p->quantity_available !== null ? number_format($p->quantity_available) : '—' }}</td>
+                                <td>{{ $p->sku ?? '—' }}</td>
+                                <td><span class="inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}">{{ $stLabel }}</span></td>
+                                <td>
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <span class="w-8 h-8 rounded-lg border border-[#E5E7E5] flex items-center justify-center text-[#55524A]"><i data-lucide="edit" class="w-4 h-4"></i></span>
-                                        <span class="w-8 h-8 rounded-lg border border-[#E5E7E5] flex items-center justify-center text-[#55524A]"><i data-lucide="link" class="w-4 h-4"></i></span>
-                                        <span class="w-8 h-8 rounded-lg border border-[#E5E7E5] flex items-center justify-center text-[#55524A]"><i data-lucide="more-vertical" class="w-4 h-4"></i></span>
+                                        <span class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A]"><i data-lucide="edit" class="w-4 h-4"></i></span>
+                                        <span class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A]"><i data-lucide="link" class="w-4 h-4"></i></span>
+                                        <span class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A]"><i data-lucide="more-vertical" class="w-4 h-4"></i></span>
                                     </div>
                                 </td>
                             </tr>
@@ -339,8 +339,8 @@
         <aside class="space-y-5">
 
             {{-- Statut & Stock --}}
-            <section class="bg-white border border-gray-200 rounded-xl p-5">
-                <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'STATUT & STOCK' : 'STATUS & STOCK' }}</h3>
+            <section class="ui-card">
+                <h3 class="ui-card-title">{{ $isFr ? 'STATUT & STOCK' : 'STATUS & STOCK' }}</h3>
                 <dl class="mt-4 space-y-3.5 text-[12.5px]">
                     <div class="flex items-center justify-between">
                         <dt class="text-[#8A857A]">{{ $isFr ? 'Statut du produit' : 'Product status' }}</dt>
@@ -370,12 +370,12 @@
             </section>
 
             {{-- Historique des Prix --}}
-            <section class="bg-white border border-gray-200 rounded-xl p-5">
+            <section class="ui-card">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'HISTORIQUE DES PRIX (FCFA)' : 'PRICE HISTORY (FCFA)' }}</h3>
-                    <span class="inline-flex items-center gap-1 text-[11px] text-[#8A857A] border border-[#E5E7E5] rounded-lg px-2.5 py-1">{{ $isFr ? '6 derniers mois' : 'Last 6 months' }}<i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></span>
+                    <h3 class="ui-card-title">{{ $isFr ? 'HISTORIQUE DES PRIX (FCFA)' : 'PRICE HISTORY (FCFA)' }}</h3>
+                    <span class="inline-flex items-center gap-1 text-[11px] text-[#8A857A] border border-[#EAE5D8] rounded-lg px-2.5 py-1">{{ $isFr ? '6 derniers mois' : 'Last 6 months' }}<i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></span>
                 </div>
-                <div class="mt-4 relative h-[190px] rounded-lg border border-dashed border-[#EAE6DC] bg-[#FBFAF6] flex items-center justify-center">
+                <div class="mt-4 relative h-[190px] rounded-lg border border-dashed border-[#EAE5D8] bg-[#FBFAF6] flex items-center justify-center">
                     <svg viewBox="0 0 320 170" class="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="none" aria-hidden="true">
                         @foreach([30, 65, 100, 135] as $gy)
                         <line x1="0" y1="{{ $gy }}" x2="320" y2="{{ $gy }}" stroke="#D9D3C5" stroke-width="1"/>
@@ -389,8 +389,8 @@
             </section>
 
             {{-- Performances du Produit --}}
-            <section class="bg-white border border-gray-200 rounded-xl p-5">
-                <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'PERFORMANCES DU PRODUIT' : 'PRODUCT PERFORMANCE' }}</h3>
+            <section class="ui-card">
+                <h3 class="ui-card-title">{{ $isFr ? 'PERFORMANCES DU PRODUIT' : 'PRODUCT PERFORMANCE' }}</h3>
                 <div class="mt-4 grid grid-cols-2 gap-3">
                     <div class="rounded-xl bg-[#EEF5FF] border border-[#DCE8FB] px-4 py-3.5">
                         <p class="text-[20px] font-bold text-[#1B1B18] leading-none">{{ number_format($p->views_count ?? 0) }}</p>
@@ -412,31 +412,31 @@
             </section>
 
             {{-- Actions Rapides --}}
-            <section class="bg-white border border-gray-200 rounded-xl p-5">
-                <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'ACTIONS RAPIDES' : 'QUICK ACTIONS' }}</h3>
+            <section class="ui-card">
+                <h3 class="ui-card-title">{{ $isFr ? 'ACTIONS RAPIDES' : 'QUICK ACTIONS' }}</h3>
                 <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     @if($p->business_slug ?? null)
-                    <a href="{{ route('products.show', array_merge(['slug' => $p->slug ?? $p->id], $langQ)) }}" class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#3B382F] transition-colors">
+                    <a href="{{ route('products.show', array_merge(['slug' => $p->slug ?? $p->id], $langQ)) }}" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="eye" class="w-4 h-4 text-[#14652F]"></i>{{ $isFr ? 'Voir le produit' : 'View product' }}
                     </a>
                     @else
-                    <span class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#B9B4A9]">
+                    <span class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="eye" class="w-4 h-4"></i>{{ $isFr ? 'Voir le produit' : 'View product' }}
                     </span>
                     @endif
-                    <button type="button" class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#3B382F] transition-colors">
+                    <button type="button" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#14652F]"></i>{{ $isFr ? 'Historique des ventes' : 'Sales history' }}
                     </button>
-                    <button type="button" class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#3B382F] transition-colors">
+                    <button type="button" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="image" class="w-4 h-4 text-[#14652F]"></i>{{ $isFr ? 'Gérer les images' : 'Manage images' }}
                     </button>
-                    <button type="button" class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#3B382F] transition-colors">
+                    <button type="button" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="package" class="w-4 h-4 text-[#14652F]"></i>{{ $isFr ? 'Ajuster le stock' : 'Adjust stock' }}
                     </button>
-                    <button type="button" class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#3B382F] transition-colors">
+                    <button type="button" class="ui-btn ui-btn-secondary ui-btn-lg">
                         <i data-lucide="copy" class="w-4 h-4 text-[#14652F]"></i>{{ $isFr ? 'Dupliquer' : 'Duplicate' }}
                     </button>
-                    <button type="button" class="h-[42px] inline-flex items-center gap-2 bg-[#FDECEC] border border-[#F5CFCF] hover:border-[#DC2626] rounded-lg px-3.5 text-[12.5px] font-semibold text-[#DC2626] transition-colors">
+                    <button type="button" class="ui-btn ui-btn-danger ui-btn-lg">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>{{ $isFr ? 'Supprimer' : 'Delete' }}
                     </button>
                 </div>

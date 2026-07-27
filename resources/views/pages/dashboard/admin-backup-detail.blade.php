@@ -69,12 +69,12 @@
 
 @section('content')
             @if(session('success'))
-            <div class="mt-1 mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}</div>
+            <div class="ui-alert ui-alert-ok mt-1 mb-4"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}</div>
             @endif
 
             <div class="flex items-start justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.backups', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-3.5 h-[38px] text-[12px] font-semibold text-[#3B382F]"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour':'Back' }}</a>
+                    <a href="{{ route('admin.backups', ['lang'=>$lang]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour':'Back' }}</a>
                 </div>
                 <img src="{{ asset('images/landing/hh-statue.png') }}" alt="" class="hidden lg:block w-[120px] h-[100px] object-cover rounded-xl opacity-95" aria-hidden="true">
             </div>
@@ -82,24 +82,24 @@
             <div class="mt-4 grid grid-cols-1 2xl:grid-cols-[1fr_320px] gap-5 items-start">
                 <div class="space-y-5">
                     {{-- Title card --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
+                    <section class="ui-card">
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div class="flex items-center gap-3.5">
                                 <span class="w-[54px] h-[54px] rounded-xl bg-[#E8F2EC] flex items-center justify-center"><i data-lucide="database" class="w-7 h-7 text-[#157A43]"></i></span>
                                 <div>
-                                    <span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold bg-[#E2F3E8] text-[#157A43]">{{ $backup->status === 'success' ? ($isFr?'Réussi':'Success') : ucfirst($backup->status) }}</span>
+                                    <span class="ui-pill ui-pill-ok">{{ $backup->status === 'success' ? ($isFr?'Réussi':'Success') : ucfirst($backup->status) }}</span>
                                     <p class="mt-1 text-[18px] font-bold text-[#1B1B18]">{{ $backup->filename }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2.5">
-                                <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12px] font-semibold text-[#3B382F]"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr?'Télécharger':'Download' }}</a>
-                                <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#CFE0D4] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12px] font-semibold text-[#14652F]"><i data-lucide="shield-check" class="w-4 h-4"></i>{{ $isFr?'Vérifier':'Verify' }}</a>
+                                <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr?'Télécharger':'Download' }}</a>
+                                <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="shield-check" class="w-4 h-4"></i>{{ $isFr?'Vérifier':'Verify' }}</a>
                                 <form method="POST" action="{{ route('admin.backups.clean') }}">@csrf<input type="hidden" name="lang" value="{{ $lang }}">
-                                    <button type="submit" class="inline-flex items-center gap-2 bg-white border border-[#F5C9C9] hover:border-[#DC2626] rounded-lg px-4 h-[38px] text-[12px] font-semibold text-[#DC2626]"><i data-lucide="trash-2" class="w-4 h-4"></i>{{ $isFr?'Supprimer':'Delete' }}</button>
+                                    <button type="submit" class="ui-btn ui-btn-danger"><i data-lucide="trash-2" class="w-4 h-4"></i>{{ $isFr?'Supprimer':'Delete' }}</button>
                                 </form>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3 border-t border-[#F0F1F0] pt-4">
+                        <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3 border-t border-[#EFEBE2] pt-4">
                             @foreach($metaRow as [$mIcon, $mVal, $mLabel])
                             <div class="flex items-start gap-2.5"><i data-lucide="{{ $mIcon }}" class="w-4 h-4 mt-0.5 text-[#C9942E] shrink-0"></i><div><p class="text-[12px] font-semibold text-[#1B1B18]">{{ $mVal }}</p><p class="text-[10.5px] text-[#8A857A]">{{ $mLabel }}</p></div></div>
                             @endforeach
@@ -107,40 +107,40 @@
                     </section>
 
                     {{-- Info tabs --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                        <div class="flex items-center gap-6 border-b border-[#EAE7DE] overflow-x-auto">
+                    <section class="ui-card">
+                        <div class="flex items-center gap-6 border-b border-[#EFEBE2] overflow-x-auto">
                             @foreach($tabs as [$tLabel, $tActive])<span class="pb-3 whitespace-nowrap text-[13px] font-semibold {{ $tActive ? 'text-[#14652F] border-b-2 border-[#14652F]' : 'text-[#8A857A]' }}">{{ $tLabel }}</span>@endforeach
                         </div>
                         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3">
-                            @foreach($infoLeft as [$l, $v])<div class="flex items-start justify-between gap-3 border-b border-[#F4F5F4] pb-2.5"><dt class="text-[12px] text-[#6F6B60]">{{ $l }} :</dt><dd class="text-[12px] font-semibold text-[#1B1B18] text-right">{{ $v }}</dd></div>@endforeach
-                            @foreach($infoRight as [$l, $v])<div class="flex items-start justify-between gap-3 border-b border-[#F4F5F4] pb-2.5"><dt class="text-[12px] text-[#6F6B60]">{{ $l }} :</dt><dd class="text-[12px] font-semibold text-[#1B1B18] text-right">{{ $v }}</dd></div>@endforeach
+                            @foreach($infoLeft as [$l, $v])<div class="flex items-start justify-between gap-3 border-b border-[#EFEBE2] pb-2.5"><dt class="text-[12px] text-[#6F6B60]">{{ $l }} :</dt><dd class="text-[12px] font-semibold text-[#1B1B18] text-right">{{ $v }}</dd></div>@endforeach
+                            @foreach($infoRight as [$l, $v])<div class="flex items-start justify-between gap-3 border-b border-[#EFEBE2] pb-2.5"><dt class="text-[12px] text-[#6F6B60]">{{ $l }} :</dt><dd class="text-[12px] font-semibold text-[#1B1B18] text-right">{{ $v }}</dd></div>@endforeach
                         </div>
                         <div class="mt-4">
                             <p class="text-[12px] text-[#6F6B60]">{{ $isFr?'Somme de contrôle (SHA256)':'Checksum (SHA256)' }} :</p>
-                            <p class="mt-1.5 bg-[#F7F8F7] border border-[#EFF0EF] rounded-lg px-3.5 py-2.5 text-[11.5px] font-mono text-[#3B382F] break-all">{{ $checksum }}</p>
+                            <p class="mt-1.5 bg-[#F7F8F7] border border-[#EFEBE2] rounded-lg px-3.5 py-2.5 text-[11.5px] font-mono text-[#3B382F] break-all">{{ $checksum }}</p>
                         </div>
                     </section>
 
                     {{-- Logs of this backup --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                        <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr?'Logs de cette sauvegarde':'Logs of this backup' }}</h2>
-                        <div class="mt-3 overflow-x-auto">
-                            <table class="w-full min-w-[640px]">
-                                <thead><tr class="text-left border-b border-[#F0F1F0]">
-                                    <th class="pb-2.5 pr-3 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">{{ $isFr?'Heure':'Time' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">{{ $isFr?'Niveau':'Level' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">{{ $isFr?'Événement':'Event' }}</th>
-                                    <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">Description</th>
-                                    <th class="pb-2.5 pl-2 text-right text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">{{ $isFr?'Durée':'Duration' }}</th>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Logs de cette sauvegarde':'Logs of this backup' }}</h2>
+                        <div class="ui-table-wrap mt-3">
+                            <table class="ui-table min-w-[640px]">
+                                <thead><tr class="border-b border-[#EFEBE2]">
+                                    <th>{{ $isFr?'Heure':'Time' }}</th>
+                                    <th>{{ $isFr?'Niveau':'Level' }}</th>
+                                    <th>{{ $isFr?'Événement':'Event' }}</th>
+                                    <th>Description</th>
+                                    <th class="text-right">{{ $isFr?'Durée':'Duration' }}</th>
                                 </tr></thead>
-                                <tbody class="divide-y divide-[#F4F5F4]">
+                                <tbody>
                                     @foreach($bkLogs as [$lTime, $lLevel, $lEvent, $lDesc, $lDur])
                                     <tr>
-                                        <td class="py-3 pr-3 text-[11.5px] text-[#3B382F] whitespace-nowrap">{{ $created->format('d M Y') }}, {{ $lTime }}</td>
-                                        <td class="py-3 px-2"><span class="inline-block rounded-md px-2 py-0.5 text-[10.5px] font-bold {{ $lLevel === 'success' ? 'bg-[#E2F3E8] text-[#157A43]' : 'bg-[#E8EFFB] text-[#3565DE]' }}">{{ strtoupper($lLevel) }}</span></td>
-                                        <td class="py-3 px-2 text-[12px] font-medium text-[#1B1B18]">{{ $lEvent }}</td>
-                                        <td class="py-3 px-2 text-[12px] text-[#3B382F]">{{ $lDesc }}</td>
-                                        <td class="py-3 pl-2 text-right text-[11.5px] text-[#6F6B60] whitespace-nowrap">{{ $lDur }}</td>
+                                        <td class="whitespace-nowrap">{{ $created->format('d M Y') }}, {{ $lTime }}</td>
+                                        <td><span class="inline-block rounded-md px-2 py-0.5 text-[10.5px] font-bold {{ $lLevel === 'success' ? 'bg-[#E2F3E8] text-[#157A43]' : 'bg-[#E8EFFB] text-[#3565DE]' }}">{{ strtoupper($lLevel) }}</span></td>
+                                        <td class="font-medium text-[#1B1B18]">{{ $lEvent }}</td>
+                                        <td>{{ $lDesc }}</td>
+                                        <td class="text-right whitespace-nowrap">{{ $lDur }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -152,8 +152,8 @@
 
                 {{-- Right rail --}}
                 <aside class="space-y-4">
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Aperçu de la sauvegarde':'Backup overview' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Aperçu de la sauvegarde':'Backup overview' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
                             <span class="relative w-[92px] h-[92px] rounded-full shrink-0 bg-[#157A43]"><span class="absolute inset-[14px] rounded-full bg-white flex flex-col items-center justify-center"><span class="text-[15px] font-bold text-[#1B1B18] leading-none">{{ $sizeGb }}</span><span class="text-[9px] text-[#8A857A]">GB</span></span></span>
                             <div class="flex-1 space-y-1.5">
@@ -163,13 +163,13 @@
                             </div>
                         </div>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Emplacement de stockage':'Storage location' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Emplacement de stockage':'Storage location' }}</h2>
                         <dl class="mt-3 space-y-2.5 text-[12px]">@foreach($storLoc as [$l,$v])<div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">{{ $l }} :</dt><dd class="font-semibold text-[#1B1B18] text-right truncate">{{ $v }}</dd></div>@endforeach</dl>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Actions rapides':'Quick actions' }}</h2>
-                        <div class="mt-2 divide-y divide-[#F4F5F4]">
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Actions rapides':'Quick actions' }}</h2>
+                        <div class="mt-2 divide-y divide-[#F5F1E8]">
                             <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="download" class="w-[16px] h-[16px] text-[#157A43]"></i><span class="text-[12.5px] text-[#3B382F] group-hover:text-[#14652F]">{{ $isFr?'Télécharger cette sauvegarde':'Download this backup' }}</span></a>
                             <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="rotate-ccw" class="w-[16px] h-[16px] text-[#157A43]"></i><span class="text-[12.5px] text-[#3B382F] group-hover:text-[#14652F]">{{ $isFr?'Restaurer cette sauvegarde':'Restore this backup' }}</span></a>
                             <a href="{{ route('admin.backups', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="copy" class="w-[16px] h-[16px] text-[#157A43]"></i><span class="text-[12.5px] text-[#3B382F] group-hover:text-[#14652F]">{{ $isFr?'Cloner cette sauvegarde':'Clone this backup' }}</span></a>
@@ -178,8 +178,8 @@
                             </form>
                         </div>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Informations système':'System information' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Informations système':'System information' }}</h2>
                         <dl class="mt-3 space-y-2.5 text-[12px]">@foreach($sysInfo as [$l,$v])<div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">{{ $l }} :</dt><dd class="font-semibold text-[#1B1B18] text-right">{{ $v }}</dd></div>@endforeach</dl>
                     </section>
                 </aside>

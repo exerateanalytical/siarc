@@ -65,15 +65,15 @@
             <div class="flex flex-wrap items-end justify-between gap-3">
                 <div></div>
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <a href="{{ route('news.index') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                    <a href="{{ route('news.index') }}" class="ui-btn ui-btn-primary">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Créer une actualité' : 'Create a news item' }}
                     </a>
-                    <a href="{{ route('admin.industries') }}" class="inline-flex items-center gap-2 bg-white border border-[#CFE3D5] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#14652F] transition-colors">
+                    <a href="{{ route('admin.industries') }}" class="ui-btn ui-btn-secondary">
                         <i data-lucide="layout-grid" class="w-4 h-4"></i>
                         {{ $isFr ? 'Catégories' : 'Categories' }}
                     </a>
-                    <a href="{{ route('admin.reports') }}" class="inline-flex items-center gap-2 bg-white border border-[#CFE3D5] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#14652F] transition-colors">
+                    <a href="{{ route('admin.reports') }}" class="ui-btn ui-btn-secondary">
                         <i data-lucide="download" class="w-4 h-4"></i>
                         {{ $isFr ? 'Exporter' : 'Export' }}
                     </a>
@@ -94,7 +94,7 @@
             @endphp
             <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
                 @foreach($chips as [$cIcon, $cColor, $cBg, $cLabel, $cValue])
-                <div class="bg-white border border-[#EFEBE2] rounded-2xl px-4 py-3.5 flex items-start gap-3">
+                <div class="ui-card flex items-start gap-3">
                     <span class="shrink-0 w-[38px] h-[38px] rounded-xl flex items-center justify-center" style="background: {{ $cBg }}">
                         <i data-lucide="{{ $cIcon }}" class="w-[18px] h-[18px]" style="color: {{ $cColor }}"></i>
                     </span>
@@ -108,63 +108,63 @@
 
             <div class="mt-4 grid grid-cols-1 2xl:grid-cols-[1fr_340px] gap-4 items-start">
                 {{-- LEFT: filters + table + pagination --}}
-                <section class="bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden min-w-0">
+                <section class="ui-card ui-card--flush min-w-0">
                     <form method="GET" class="flex flex-wrap items-center gap-2.5 px-4 pt-4 pb-3">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="flex items-center gap-2.5 bg-[#FBF9F4] border border-[#E9E4D8] rounded-lg px-3.5 h-[38px] w-full sm:w-[230px]">
+                        <div class="ui-field-group w-full sm:w-[230px]">
                             <i data-lucide="search" class="w-[15px] h-[15px] shrink-0 text-[#8A857A]"></i>
-                            <input type="text" name="q" value="{{ $curQ }}" placeholder="{{ $isFr ? 'Rechercher une actualité...' : 'Search a news item...' }}" class="flex-1 min-w-0 bg-transparent text-[12px] focus:outline-none placeholder-[#8A857A]">
+                            <input type="text" name="q" value="{{ $curQ }}" placeholder="{{ $isFr ? 'Rechercher une actualité...' : 'Search a news item...' }}" class="ui-field-bare flex-1 min-w-0">
                         </div>
-                        <select name="statut" onchange="this.form.submit()" class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="statut" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                             <option value="published" @selected($curStatut === 'published')>{{ $isFr ? 'Publié' : 'Published' }}</option>
                             <option value="scheduled" @selected($curStatut === 'scheduled')>{{ $isFr ? 'Planifiée' : 'Scheduled' }}</option>
                             <option value="draft" @selected($curStatut === 'draft')>{{ $isFr ? 'Brouillon' : 'Draft' }}</option>
                         </select>
-                        <select name="categorie" onchange="this.form.submit()" class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="categorie" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Catégorie' : 'Category' }}</option>
                             @foreach($newsCategories as $cat)
                             <option value="{{ $cat }}" @selected($curCat === $cat)>{{ $cat }}</option>
                             @endforeach
                         </select>
-                        <select class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12px] text-[#3B382F] focus:outline-none" disabled>
+                        <select class="ui-field ui-select" disabled>
                             <option>Type</option>
                         </select>
-                        <select class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12px] text-[#3B382F] focus:outline-none" disabled>
+                        <select class="ui-field ui-select" disabled>
                             <option>Date</option>
                         </select>
-                        <select class="h-[38px] bg-white border border-[#E9E4D8] rounded-lg px-3 text-[12px] text-[#3B382F] focus:outline-none" disabled>
+                        <select class="ui-field ui-select" disabled>
                             <option>{{ $isFr ? 'Auteur' : 'Author' }}</option>
                         </select>
-                        <button type="submit" class="inline-flex items-center gap-2 h-[38px] bg-[#FBF9F4] border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-3.5 text-[12px] font-semibold text-[#3B382F] transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-secondary">
                             <i data-lucide="sliders-horizontal" class="w-[15px] h-[15px]"></i>
                             {{ $isFr ? 'Filtres' : 'Filters' }}
                         </button>
                         <span class="ml-auto hidden lg:flex items-center gap-1.5">
-                            <span class="w-[34px] h-[34px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
+                            <span class="w-[34px] h-[34px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
                             <span class="w-[34px] h-[34px] rounded-lg bg-[#0F4824] flex items-center justify-center text-white"><i data-lucide="list" class="w-4 h-4"></i></span>
                         </span>
                     </form>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[900px]">
+                    <div class="ui-table-wrap">
+                        <table class="ui-table min-w-[900px]">
                             <thead>
-                                <tr class="bg-[#F8F4EC] text-left">
-                                    <th class="pl-4 pr-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Actualité' : 'News item' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Catégorie' : 'Category' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Type</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Auteur' : 'Author' }}</th>
-                                    <th class="px-2 py-3 text-center text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                    <th class="px-2 py-3 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Vues' : 'Views' }}</th>
-                                    <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase whitespace-nowrap">{{ $isFr ? 'Date de publication' : 'Publication date' }}</th>
-                                    <th class="px-2 pr-4 py-3 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                                <tr>
+                                    <th>{{ $isFr ? 'Actualité' : 'News item' }}</th>
+                                    <th>{{ $isFr ? 'Catégorie' : 'Category' }}</th>
+                                    <th>Type</th>
+                                    <th>{{ $isFr ? 'Auteur' : 'Author' }}</th>
+                                    <th class="text-center">{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                    <th class="text-right">{{ $isFr ? 'Vues' : 'Views' }}</th>
+                                    <th class="whitespace-nowrap">{{ $isFr ? 'Date de publication' : 'Publication date' }}</th>
+                                    <th class="text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#F5F1E8]">
+                            <tbody>
                                 @forelse($announcements as $a)
                                 @php [$stCls, $stLabel] = $statusPill[$a->status] ?? ['bg-[#EFEFED] text-[#55524A]', $a->status]; @endphp
                                 <tr>
-                                    <td class="pl-4 pr-2 py-3">
+                                    <td>
                                         <div class="flex items-center gap-3 min-w-[240px] max-w-[300px]">
                                             @if($a->cover_image)
                                             <img src="{{ asset($a->cover_image) }}" alt="" class="shrink-0 w-[52px] h-[44px] rounded-lg object-cover">
@@ -177,29 +177,29 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-2 py-3">
+                                    <td>
                                         <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $newsCatPill[$a->category] ?? 'bg-[#EFEFED] text-[#55524A]' }}">{{ $a->category ?? '—' }}</span>
                                     </td>
-                                    <td class="px-2 py-3">
+                                    <td>
                                         <span class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] whitespace-nowrap">
                                             <i data-lucide="{{ $newsTypeIcon[$a->type] ?? 'file' }}" class="w-[14px] h-[14px] text-[#8A857A]"></i>
                                             {{ $isFr ? ($a->type ?? '—') : ($newsTypeEn[$a->type] ?? ($a->type ?? '—')) }}
                                         </span>
                                     </td>
-                                    <td class="px-2 py-3 text-[11.5px] text-[#3B382F] whitespace-nowrap">{{ $a->author_name ?? '—' }}</td>
-                                    <td class="px-2 py-3 text-center">
+                                    <td class="whitespace-nowrap">{{ $a->author_name ?? '—' }}</td>
+                                    <td class="text-center">
                                         <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $stCls }}">{{ $stLabel }}</span>
                                     </td>
-                                    <td class="px-2 py-3 text-right text-[11.5px] text-[#3B382F]">{{ $a->status === 'published' ? number_format($a->views_count) : '-' }}</td>
-                                    <td class="px-2 py-3 text-[11.5px] text-[#3B382F] whitespace-nowrap">{{ $a->status === 'draft' ? '-' : $newsDate($a->published_at, $a->status === 'scheduled') }}</td>
-                                    <td class="px-2 pr-4 py-3 text-right whitespace-nowrap">
-                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-md border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43] transition-colors align-middle"><i data-lucide="eye" class="w-[14px] h-[14px]"></i></a>
-                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16] transition-colors align-middle"><i data-lucide="pencil" class="w-[14px] h-[14px]"></i></a>
-                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="Plus" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18] transition-colors align-middle"><i data-lucide="more-vertical" class="w-[14px] h-[14px]"></i></a>
+                                    <td class="text-right">{{ $a->status === 'published' ? number_format($a->views_count) : '-' }}</td>
+                                    <td class="whitespace-nowrap">{{ $a->status === 'draft' ? '-' : $newsDate($a->published_at, $a->status === 'scheduled') }}</td>
+                                    <td class="text-right whitespace-nowrap">
+                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43] transition-colors align-middle"><i data-lucide="eye" class="w-[14px] h-[14px]"></i></a>
+                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16] transition-colors align-middle"><i data-lucide="pencil" class="w-[14px] h-[14px]"></i></a>
+                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="Plus" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18] transition-colors align-middle"><i data-lucide="more-vertical" class="w-[14px] h-[14px]"></i></a>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="8" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune publication trouvée.' : 'No publications found.' }}</td></tr>
+                                <tr><td colspan="8" class="ui-empty">{{ $isFr ? 'Aucune publication trouvée.' : 'No publications found.' }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -214,37 +214,37 @@
                         </p>
                         <div class="flex items-center gap-1.5">
                             @if($announcements->onFirstPage())
-                            <span class="w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C4B8]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                            <span class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C4B8]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                             @else
-                            <a href="{{ $announcements->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#55524A] hover:border-[#14652F]"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                            <a href="{{ $announcements->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A] hover:border-[#14652F]"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                             @endif
                             @for($p = 1; $p <= min($announcements->lastPage(), 5); $p++)
                                 @if($p === $announcements->currentPage())
                                 <span class="w-[30px] h-[30px] rounded-lg bg-[#0F4824] text-white text-[12px] font-bold flex items-center justify-center">{{ $p }}</span>
                                 @else
-                                <a href="{{ $announcements->url($p) }}" class="w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] text-[12px] text-[#55524A] flex items-center justify-center hover:border-[#14652F]">{{ $p }}</a>
+                                <a href="{{ $announcements->url($p) }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[12px] text-[#55524A] flex items-center justify-center hover:border-[#14652F]">{{ $p }}</a>
                                 @endif
                             @endfor
                             @if($announcements->lastPage() > 5)
                             <span class="px-1 text-[12px] text-[#8A857A]">…</span>
-                            <a href="{{ $announcements->url($announcements->lastPage()) }}" class="w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] text-[12px] text-[#55524A] flex items-center justify-center hover:border-[#14652F]">{{ $announcements->lastPage() }}</a>
+                            <a href="{{ $announcements->url($announcements->lastPage()) }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[12px] text-[#55524A] flex items-center justify-center hover:border-[#14652F]">{{ $announcements->lastPage() }}</a>
                             @endif
                             @if($announcements->hasMorePages())
-                            <a href="{{ $announcements->nextPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#55524A] hover:border-[#14652F]"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                            <a href="{{ $announcements->nextPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A] hover:border-[#14652F]"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                             @else
-                            <span class="w-[30px] h-[30px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C4B8]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                            <span class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C4B8]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                             @endif
                         </div>
-                        <span class="hidden md:inline-flex items-center gap-1.5 h-[30px] rounded-lg border border-[#E9E4D8] px-2.5 text-[11.5px] text-[#55524A]">10 / page <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i></span>
+                        <span class="hidden md:inline-flex items-center gap-1.5 h-[30px] rounded-lg border border-[#EAE5D8] px-2.5 text-[11.5px] text-[#55524A]">10 / page <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i></span>
                     </div>
                 </section>
 
                 {{-- RIGHT: side panels --}}
                 <aside class="space-y-4 min-w-0">
                     {{-- Répartition par catégorie --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-[12px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Répartition par catégorie' : 'Breakdown by category' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Répartition par catégorie' : 'Breakdown by category' }}</h2>
                             <a href="{{ route('admin.reports') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <div class="mt-4 flex items-center gap-4">
@@ -267,9 +267,9 @@
                     </section>
 
                     {{-- Top articles par vues --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-[12px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Top articles par vues' : 'Top articles by views' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Top articles par vues' : 'Top articles by views' }}</h2>
                             <a href="{{ route('news.index') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <ul class="mt-3 divide-y divide-[#F5F1E8]">
@@ -303,9 +303,9 @@
                             return [$icon, $color, $bg, $label, $title, \Illuminate\Support\Carbon::parse($a->updated_at)->diffForHumans(null, true, false, 1)];
                         });
                     @endphp
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between">
-                            <h2 class="text-[12px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
                             <a href="{{ route('admin.audit-log') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <ul class="mt-3 space-y-3">
@@ -329,7 +329,7 @@
             </div>
 
             {{-- Footer strip --}}
-            <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAE4D6] pt-4">
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAE5D8] pt-4">
                 <p class="text-[11px] text-[#6F6B60]">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
                 <div class="flex items-center gap-5">
                     <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>

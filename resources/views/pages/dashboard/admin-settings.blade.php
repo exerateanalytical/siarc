@@ -55,7 +55,7 @@ $sysGroupsFor = [
 ];
 
 $labelize = fn ($key) => ucfirst(str_replace('_', ' ', $key));
-$inputCls = 'w-full px-3.5 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400';
+$inputCls = 'ui-field';
 $p = fn (string $key, string $default = '') => old('settings.' . $key, $platform[$key] ?? $default);
 
 $logoVal    = $platform['logo_path']    ?? $platform['branding_logo']    ?? null;
@@ -104,42 +104,42 @@ $legalRows = [
     ['Cookies Policy',                                                    route('admin.cms', array_filter(['lang' => request()->query('lang')]))],
 ];
 
-$cardCls  = 'bg-white border border-gray-200 rounded-xl p-5';
-$labelCls = 'block text-xs font-semibold text-gray-700 mb-1.5';
-$greenBtn = 'inline-flex items-center gap-2 bg-[#0A5A2A] hover:bg-[#0d6b33] text-white font-semibold px-4 py-2.5 rounded-lg text-[13px] transition-colors';
-$tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-semibold hover:bg-[#d7ebde] transition-colors whitespace-nowrap';
+$cardCls  = 'ui-card';
+$labelCls = 'ui-label';
+$greenBtn = 'ui-btn ui-btn-primary';
+$tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
 @endphp
 
 @section('content')
 
 {{-- Breadcrumb : Accueil / Paramètres --}}
-<nav class="flex items-center gap-1.5 text-xs text-gray-500 -mt-2 mb-5" aria-label="Breadcrumb">
-    <a href="{{ route('dashboard.admin') }}" class="hover:text-forest-600">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-    <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400"></i>
-    <span class="text-gray-700">{{ $isFr ? 'Paramètres' : 'Settings' }}</span>
+<nav class="flex items-center gap-1.5 text-xs text-[#8A857A] -mt-2 mb-5" aria-label="Breadcrumb">
+    <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+    <i data-lucide="chevron-right" class="w-3 h-3 text-[#B8B2A4]"></i>
+    <span class="text-[#3B382F]">{{ $isFr ? 'Paramètres' : 'Settings' }}</span>
 </nav>
 
 @if(session('success'))
-    <div class="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800 mb-5">
+    <div class="ui-alert ui-alert-ok mb-5">
         <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
         {{ session('success') }}
     </div>
 @endif
 
 @if($errors->any())
-    <div class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-800 mb-5">
+    <div class="ui-alert ui-alert-danger mb-5">
         <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
         {{ $errors->first() }}
     </div>
 @endif
 
 {{-- ── Top tabs ─────────────────────────────────────────────────────────── --}}
-<div class="border-b border-gray-200 mb-6 overflow-x-auto">
+<div class="border-b border-[#EFEBE2] mb-6 overflow-x-auto">
     <nav class="flex items-center gap-7 min-w-max">
         @foreach($tabs as $key => $tab)
         <a href="{{ route('admin.settings', array_filter(['section' => $key === 'general' ? null : $key, 'lang' => request()->query('lang')])) }}"
-           class="flex items-center gap-2 pb-3 pt-1 text-[13px] font-semibold border-b-2 -mb-px transition-colors {{ $section === $key ? 'border-[#0A5A2A] text-[#0A5A2A]' : 'border-transparent text-gray-600 hover:text-gray-900' }}">
-            <i data-lucide="{{ $tab['icon'] }}" class="w-4 h-4 {{ $section === $key ? 'text-[#0A5A2A]' : 'text-gray-500' }}"></i>
+           class="flex items-center gap-2 pb-3 pt-1 text-[13px] font-semibold border-b-2 -mb-px transition-colors {{ $section === $key ? 'border-[#0A5A2A] text-[#0A5A2A]' : 'border-transparent text-[#55524A] hover:text-[#1B1B18]' }}">
+            <i data-lucide="{{ $tab['icon'] }}" class="w-4 h-4 {{ $section === $key ? 'text-[#0A5A2A]' : 'text-[#8A857A]' }}"></i>
             {{ $isFr ? $tab['fr'] : $tab['en'] }}
         </a>
         @endforeach
@@ -153,7 +153,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
     {{-- 1. Informations Générales --}}
     <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-4">
         @csrf
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Informations Générales' : 'General Information' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Informations Générales' : 'General Information' }}</h2>
 
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Nom de la plateforme' : 'Platform name' }}</label>
@@ -172,20 +172,20 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Téléphone principal' : 'Main phone number' }}</label>
-            <div class="flex items-center gap-2 px-3.5 py-2 border border-gray-300 rounded-lg focus-within:border-forest-400 focus-within:ring-1 focus-within:ring-forest-400">
+            <div class="ui-field-group">
                 <svg viewBox="0 0 30 20" class="w-5 h-3.5 shrink-0 rounded-[2px]" aria-hidden="true">
                     <rect width="10" height="20" fill="#007A5E"/><rect x="10" width="10" height="20" fill="#CE1126"/><rect x="20" width="10" height="20" fill="#FCD116"/>
                     <path d="M15 6l1 2.6h2.7l-2.2 1.7.9 2.7-2.4-1.7-2.4 1.7.9-2.7-2.2-1.7H14z" fill="#FCD116"/>
                 </svg>
-                <i data-lucide="chevron-down" class="w-3 h-3 text-gray-400 shrink-0"></i>
-                <input type="tel" name="settings[contact_phone]" class="flex-1 min-w-0 text-sm focus:outline-none"
+                <i data-lucide="chevron-down" class="w-3 h-3 text-[#B8B2A4] shrink-0"></i>
+                <input type="tel" name="settings[contact_phone]" class="ui-field-bare flex-1 min-w-0"
                        value="{{ $p('contact_phone', '+237 6 70 41 62 38') }}">
             </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Pays' : 'Country' }}</label>
-                <select name="settings[country]" class="{{ $inputCls }} bg-white">
+                <select name="settings[country]" class="{{ $inputCls }} ui-select">
                     @foreach(['Cameroun' => $isFr ? 'Cameroun' : 'Cameroon', 'Nigeria' => 'Nigeria', 'Tchad' => $isFr ? 'Tchad' : 'Chad', 'Gabon' => 'Gabon'] as $c => $cLabel)
                     <option value="{{ $c }}" @selected($p('country', 'Cameroun') === $c)>{{ $cLabel }}</option>
                     @endforeach
@@ -193,7 +193,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
             </div>
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Devise par défaut' : 'Default currency' }}</label>
-                <select name="settings[currency]" class="{{ $inputCls }} bg-white">
+                <select name="settings[currency]" class="{{ $inputCls }} ui-select">
                     @foreach(['XAF' => $isFr ? 'Franc CFA (XAF)' : 'CFA Franc (XAF)', 'EUR' => 'Euro (EUR)', 'USD' => $isFr ? 'Dollar US (USD)' : 'US Dollar (USD)'] as $cur => $curLabel)
                     <option value="{{ $cur }}" @selected($p('currency', 'XAF') === $cur)>{{ $curLabel }}</option>
                     @endforeach
@@ -203,7 +203,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         <div class="grid grid-cols-2 gap-3">
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Fuseau horaire' : 'Timezone' }}</label>
-                <select name="settings[timezone]" class="{{ $inputCls }} bg-white">
+                <select name="settings[timezone]" class="{{ $inputCls }} ui-select">
                     @foreach([
                         'Africa/Douala'    => $isFr ? '(UTC+01:00) Douala, Yaoundé' : '(UTC+01:00) Douala, Yaounde',
                         'UTC'              => '(UTC+00:00) UTC',
@@ -216,7 +216,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
             </div>
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Langue par défaut' : 'Default language' }}</label>
-                <select name="settings[default_language]" class="{{ $inputCls }} bg-white">
+                <select name="settings[default_language]" class="{{ $inputCls }} ui-select">
                     <option value="fr" @selected($p('default_language', 'fr') === 'fr')>{{ $isFr ? 'Français' : 'French' }}</option>
                     <option value="en" @selected($p('default_language', 'fr') === 'en')>{{ $isFr ? 'Anglais' : 'English' }}</option>
                 </select>
@@ -224,11 +224,11 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Page d\'accueil' : 'Landing page' }}</label>
-            <select name="settings[landing_page]" class="{{ $inputCls }} bg-white">
+            <select name="settings[landing_page]" class="{{ $inputCls }} ui-select">
                 <option value="home" @selected($p('landing_page', 'directory') === 'home')>{{ $isFr ? 'Accueil (hero, mise en avant)' : 'Home (hero, spotlight)' }}</option>
                 <option value="directory" @selected($p('landing_page', 'directory') === 'directory')>{{ $isFr ? 'Annuaire des artisans' : 'Artisan directory' }}</option>
             </select>
-            <p class="mt-1 text-[11.5px] text-gray-500">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
+            <p class="mt-1 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
         </div>
         <button type="submit" class="{{ $greenBtn }}">
             <i data-lucide="check" class="w-4 h-4"></i>
@@ -238,16 +238,16 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
 
     {{-- 2. Logo & Identité Visuelle --}}
     <div class="{{ $cardCls }} space-y-4">
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Logo & Identité Visuelle' : 'Logo & Visual Identity' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Logo & Identité Visuelle' : 'Logo & Visual Identity' }}</h2>
 
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Logo actuel' : 'Current logo' }}</label>
             <div class="flex items-start gap-4">
-                <img src="{{ $logoUrl }}" alt="Logo" class="w-[88px] h-[88px] rounded-full object-cover border border-gray-200 bg-gray-50 shrink-0">
+                <img src="{{ $logoUrl }}" alt="Logo" class="w-[88px] h-[88px] rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
                 <div class="space-y-2 min-w-0">
                     <form method="POST" action="{{ route('admin.settings.general') }}" enctype="multipart/form-data">
                         @csrf
-                        <label class="inline-flex items-center gap-2 px-3.5 py-2 border border-gray-300 text-gray-700 rounded-lg text-xs font-semibold cursor-pointer hover:bg-gray-50 transition-colors">
+                        <label class="ui-btn ui-btn-secondary">
                             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                             {{ $isFr ? 'Changer le logo' : 'Change logo' }}
                             <input type="file" name="logo" accept=".png,.jpg,.jpeg,.svg" class="hidden" onchange="this.form.submit()">
@@ -256,7 +256,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
                     <form method="POST" action="{{ route('admin.settings.general') }}">
                         @csrf
                         <input type="hidden" name="settings[logo_path]" value="">
-                        <button type="submit" class="inline-flex items-center gap-2 px-3.5 py-2 border border-red-200 text-red-500 rounded-lg text-xs font-semibold hover:bg-red-50 transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-danger">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             {{ $isFr ? 'Supprimer' : 'Delete' }}
                         </button>
@@ -268,10 +268,10 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         <div>
             <label class="{{ $labelCls }}">Favicon</label>
             <div class="flex items-center gap-3">
-                <img src="{{ $faviconUrl }}" alt="Favicon" class="w-9 h-9 rounded-full object-cover border border-gray-200 bg-gray-50 shrink-0">
+                <img src="{{ $faviconUrl }}" alt="Favicon" class="w-9 h-9 rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
                 <form method="POST" action="{{ route('admin.settings.general') }}" enctype="multipart/form-data">
                     @csrf
-                    <label class="inline-flex items-center gap-2 px-3.5 py-2 border border-gray-300 text-gray-700 rounded-lg text-xs font-semibold cursor-pointer hover:bg-gray-50 transition-colors">
+                    <label class="ui-btn ui-btn-secondary">
                         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                         {{ $isFr ? 'Changer le favicon' : 'Change favicon' }}
                         <input type="file" name="favicon" accept=".png,.ico,.svg" class="hidden" onchange="this.form.submit()">
@@ -284,18 +284,18 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
             @csrf
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Couleur principale' : 'Primary colour' }}</label>
-                <div class="flex items-center gap-2 px-2.5 py-2 border border-gray-300 rounded-lg">
-                    <span class="w-6 h-6 rounded-md shrink-0 border border-gray-200" style="background: {{ $p('primary_color', '#0A5A2A') }}"></span>
+                <div class="ui-field-group">
+                    <span class="w-6 h-6 rounded-md shrink-0 border border-[#EFEBE2]" style="background: {{ $p('primary_color', '#0A5A2A') }}"></span>
                     <input type="text" name="settings[primary_color]" value="{{ $p('primary_color', '#0A5A2A') }}"
-                           onchange="this.form.submit()" class="flex-1 min-w-0 text-sm font-medium focus:outline-none">
+                           onchange="this.form.submit()" class="ui-field-bare flex-1 min-w-0">
                 </div>
             </div>
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Couleur secondaire' : 'Secondary colour' }}</label>
-                <div class="flex items-center gap-2 px-2.5 py-2 border border-gray-300 rounded-lg">
-                    <span class="w-6 h-6 rounded-md shrink-0 border border-gray-200" style="background: {{ $p('secondary_color', '#F3B700') }}"></span>
+                <div class="ui-field-group">
+                    <span class="w-6 h-6 rounded-md shrink-0 border border-[#EFEBE2]" style="background: {{ $p('secondary_color', '#F3B700') }}"></span>
                     <input type="text" name="settings[secondary_color]" value="{{ $p('secondary_color', '#F3B700') }}"
-                           onchange="this.form.submit()" class="flex-1 min-w-0 text-sm font-medium focus:outline-none">
+                           onchange="this.form.submit()" class="ui-field-bare flex-1 min-w-0">
                 </div>
             </div>
         </form>
@@ -304,21 +304,21 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
     {{-- 3. Paramètres du Site --}}
     <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-5">
         @csrf
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Paramètres du Site' : 'Site Settings' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Paramètres du Site' : 'Site Settings' }}</h2>
 
         @foreach($siteToggles as $key => [$default, $frTexts, $enTexts])
         @php $on = $p($key, $default ? 'true' : 'false') === 'true'; @endphp
-        <label class="flex items-start gap-3 cursor-pointer">
+        <label class="ui-check-row items-start cursor-pointer">
             <input type="hidden" name="settings[{{ $key }}]" value="false">
             <span class="relative inline-flex shrink-0 mt-0.5">
                 <input type="checkbox" name="settings[{{ $key }}]" value="true" class="sr-only peer" @checked($on)>
-                <span class="w-10 h-[22px] bg-gray-200 rounded-full transition-colors peer-checked:bg-[#0A9B4A]
+                <span class="w-10 h-[22px] bg-[#EAE5D8] rounded-full transition-colors peer-checked:bg-[#0A9B4A]
                              after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:w-4 after:h-4
                              after:bg-white after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-[18px]"></span>
             </span>
             <span class="min-w-0">
-                <span class="block text-[13px] font-semibold text-gray-900">{{ $isFr ? $frTexts[0] : $enTexts[0] }}</span>
-                <span class="block text-xs text-gray-500 mt-0.5">{{ $isFr ? $frTexts[1] : $enTexts[1] }}</span>
+                <span class="block text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? $frTexts[0] : $enTexts[0] }}</span>
+                <span class="block text-xs text-[#8A857A] mt-0.5">{{ $isFr ? $frTexts[1] : $enTexts[1] }}</span>
             </span>
         </label>
         @endforeach
@@ -332,7 +332,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
     {{-- 4. Paramètres de Contenu --}}
     <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-4">
         @csrf
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Paramètres de Contenu' : 'Content Settings' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Paramètres de Contenu' : 'Content Settings' }}</h2>
 
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Éléments par page' : 'Items per page' }}</label>
@@ -348,23 +348,23 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Formats d\'images autorisés' : 'Allowed image formats' }}</label>
-            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-gray-300 rounded-lg min-h-[40px]"
+            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-[#EAE5D8] rounded-lg min-h-[40px]"
                  data-chips="image_formats">
                 @foreach(array_filter(array_map('trim', explode(',', $p('image_formats', 'JPG,PNG,WEBP')))) as $chip)
-                <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
+                <span class="inline-flex items-center gap-1 bg-[#F1EDE3] text-[#3B382F] text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
                     {{ $chip }}
-                    <button type="button" class="text-gray-400 hover:text-gray-600" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
+                    <button type="button" class="text-[#B8B2A4] hover:text-[#55524A]" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
                 </span>
                 @endforeach
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 ml-auto"></i>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B8B2A4] ml-auto"></i>
                 <input type="hidden" name="settings[image_formats]" value="{{ $p('image_formats', 'JPG,PNG,WEBP') }}">
             </div>
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Qualité d\'image par défaut' : 'Default image quality' }}</label>
-            <select name="settings[image_quality]" class="{{ $inputCls }} bg-white">
+            <select name="settings[image_quality]" class="{{ $inputCls }} ui-select">
                 @foreach([
                     'high'   => $isFr ? 'Haute (80%)'   : 'High (80%)',
                     'medium' => $isFr ? 'Moyenne (60%)' : 'Medium (60%)',
@@ -376,17 +376,17 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Langues activées' : 'Enabled languages' }}</label>
-            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-gray-300 rounded-lg min-h-[40px]"
+            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-[#EAE5D8] rounded-lg min-h-[40px]"
                  data-chips="enabled_languages">
                 @foreach(array_filter(array_map('trim', explode(',', $p('enabled_languages', 'Français,English')))) as $chip)
-                <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
+                <span class="inline-flex items-center gap-1 bg-[#F1EDE3] text-[#3B382F] text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
                     {{ $chip }}
-                    <button type="button" class="text-gray-400 hover:text-gray-600" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
+                    <button type="button" class="text-[#B8B2A4] hover:text-[#55524A]" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
                 </span>
                 @endforeach
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 ml-auto"></i>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B8B2A4] ml-auto"></i>
                 <input type="hidden" name="settings[enabled_languages]" value="{{ $p('enabled_languages', 'Français,English') }}">
             </div>
         </div>
@@ -400,7 +400,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
     {{-- 5. À Propos de la Plateforme --}}
     <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-4">
         @csrf
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'À Propos de la Plateforme' : 'About the Platform' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'À Propos de la Plateforme' : 'About the Platform' }}</h2>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Titre' : 'Title' }}</label>
             <input type="text" name="settings[about_title]" class="{{ $inputCls }}"
@@ -408,7 +408,7 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Description' : 'Description' }}</label>
-            <textarea name="settings[about_description]" rows="6" class="{{ $inputCls }}">{{ $p('about_description', $isFr
+            <textarea name="settings[about_description]" rows="6" class="{{ $inputCls }} ui-textarea">{{ $p('about_description', $isFr
                 ? 'Artisan Hub 237 est une plateforme digitale privée qui valorise, promeut et connecte les artisans, leurs œuvres et le patrimoine culturel camerounais au monde entier.'
                 : 'Artisan Hub 237 is a private digital platform that showcases, promotes and connects artisans, their works and Cameroonian cultural heritage to the whole world.') }}</textarea>
         </div>
@@ -420,16 +420,16 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
     {{-- 6. Réseaux Sociaux --}}
     <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-4">
         @csrf
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Réseaux Sociaux' : 'Social Networks' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Réseaux Sociaux' : 'Social Networks' }}</h2>
 
         @foreach($socialRows as $key => [$label, $color, $placeholder, $svgPath])
         <div class="flex items-center gap-2.5">
             <span class="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style="background: {{ $color }}1a">
                 <svg viewBox="0 0 24 24" class="w-4 h-4" fill="{{ $color }}" aria-hidden="true">{!! $svgPath !!}</svg>
             </span>
-            <span class="text-xs font-semibold text-gray-700 w-[74px] shrink-0">{{ $label }}</span>
+            <span class="text-xs font-semibold text-[#3B382F] w-[74px] shrink-0">{{ $label }}</span>
             <input type="text" name="settings[{{ $key }}]" placeholder="{{ $placeholder }}"
-                   class="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400"
+                   class="ui-field flex-1 min-w-0"
                    value="{{ $p($key, $placeholder) }}">
         </div>
         @endforeach
@@ -442,11 +442,11 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
 
     {{-- 7. Mentions Légales --}}
     <div class="{{ $cardCls }}">
-        <h2 class="text-[15px] font-bold text-gray-900 mb-2">{{ $isFr ? 'Mentions Légales' : 'Legal Notices' }}</h2>
-        <div class="divide-y divide-gray-100">
+        <h2 class="ui-card-title mb-2">{{ $isFr ? 'Mentions Légales' : 'Legal Notices' }}</h2>
+        <div class="divide-y divide-[#F5F1E8]">
             @foreach($legalRows as [$label, $href])
             <div class="flex items-center justify-between gap-3 py-3">
-                <span class="text-[13px] font-medium text-gray-800">{{ $label }}</span>
+                <span class="text-[13px] font-medium text-[#1B1B18]">{{ $label }}</span>
                 <a href="{{ $href }}" class="inline-flex items-center gap-1 text-xs font-semibold text-[#0A5A2A] hover:underline whitespace-nowrap">
                     {{ $isFr ? 'Voir / Modifier' : 'View / Edit' }}
                     <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
@@ -462,12 +462,12 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
 
     {{-- 8. Sauvegarde & Maintenance --}}
     <div class="{{ $cardCls }} space-y-4">
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Sauvegarde & Maintenance' : 'Backup & Maintenance' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Sauvegarde & Maintenance' : 'Backup & Maintenance' }}</h2>
 
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-gray-900">{{ $isFr ? 'Dernière sauvegarde' : 'Last backup' }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">{{ $p('backup_last_run', $isFr ? '05 Mai 2025 à 02:30' : '05 May 2025 at 02:30') }}</p>
+                <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Dernière sauvegarde' : 'Last backup' }}</p>
+                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('backup_last_run', $isFr ? '05 Mai 2025 à 02:30' : '05 May 2025 at 02:30') }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf
@@ -478,14 +478,14 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
         </div>
 
         <div class="flex items-start justify-between gap-3">
-            <p class="text-[13px] font-semibold text-gray-900">{{ $isFr ? 'Sauvegarde automatique' : 'Automatic backup' }}</p>
+            <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Sauvegarde automatique' : 'Automatic backup' }}</p>
             <span class="text-xs font-semibold text-[#0A9B4A] whitespace-nowrap">{{ $isFr ? 'Activée (quotidienne)' : 'Enabled (daily)' }}</span>
         </div>
 
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-gray-900">{{ $isFr ? 'Nettoyage du cache' : 'Cache cleanup' }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">{{ $p('cache_size_mb', '125') }} {{ $isFr ? 'Mo' : 'MB' }}</p>
+                <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Nettoyage du cache' : 'Cache cleanup' }}</p>
+                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('cache_size_mb', '125') }} {{ $isFr ? 'Mo' : 'MB' }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf
@@ -496,8 +496,8 @@ $tinyBtn  = 'px-3 py-1.5 rounded-lg bg-[#E8F3EC] text-[#0A5A2A] text-xs font-sem
 
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-gray-900">{{ $isFr ? 'Optimisation de la base de données' : 'Database optimisation' }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">{{ $p('db_optimization_status', 'OK') }}</p>
+                <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Optimisation de la base de données' : 'Database optimisation' }}</p>
+                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('db_optimization_status', 'OK') }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf
@@ -530,7 +530,7 @@ function removeChip(btn) {
 <div class="max-w-2xl">
 <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-4">
     @csrf
-    <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'SEO & Métadonnées' : 'SEO & Metadata' }}</h2>
+    <h2 class="ui-card-title">{{ $isFr ? 'SEO & Métadonnées' : 'SEO & Metadata' }}</h2>
     <div>
         <label class="{{ $labelCls }}">{{ $isFr ? 'Titre méta (balise <title>)' : 'Meta title (<title> tag)' }}</label>
         <input type="text" name="settings[seo_meta_title]" class="{{ $inputCls }}"
@@ -538,7 +538,7 @@ function removeChip(btn) {
     </div>
     <div>
         <label class="{{ $labelCls }}">{{ $isFr ? 'Description méta' : 'Meta description' }}</label>
-        <textarea name="settings[seo_meta_description]" rows="3" class="{{ $inputCls }}">{{ $p('seo_meta_description', $isFr ? 'Découvrez et achetez les produits de l\'artisanat camerounais auprès d\'artisans et de coopératives vérifiés.' : 'Discover and buy Cameroonian craft products from verified artisans and cooperatives.') }}</textarea>
+        <textarea name="settings[seo_meta_description]" rows="3" class="{{ $inputCls }} ui-textarea">{{ $p('seo_meta_description', $isFr ? 'Découvrez et achetez les produits de l\'artisanat camerounais auprès d\'artisans et de coopératives vérifiés.' : 'Discover and buy Cameroonian craft products from verified artisans and cooperatives.') }}</textarea>
     </div>
     <div>
         <label class="{{ $labelCls }}">{{ $isFr ? 'Mots-clés (séparés par des virgules)' : 'Keywords (comma separated)' }}</label>
@@ -555,15 +555,15 @@ function removeChip(btn) {
 
 {{-- ══════════════════════ Notifications (Twilio — preserved) ══════════════════════ --}}
 @if($section === 'notifications')
-<div class="max-w-3xl bg-white border border-gray-200 rounded-xl overflow-hidden">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+<div class="ui-card ui-card--flush max-w-3xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[#F5F1E8]">
         <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                <i data-lucide="message-circle" class="w-4 h-4 text-forest-600"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
+                <i data-lucide="message-circle" class="w-4 h-4 text-[#157A43]"></i>
             </div>
             <div>
-                <h3 class="text-sm font-semibold text-gray-900">Twilio — WhatsApp OTP</h3>
-                <p class="text-xs text-gray-400">{{ $isFr ? 'Envoi des codes de connexion via WhatsApp' : 'Delivers login codes over WhatsApp' }}</p>
+                <h3 class="ui-card-title">Twilio — WhatsApp OTP</h3>
+                <p class="ui-dt">{{ $isFr ? 'Envoi des codes de connexion via WhatsApp' : 'Delivers login codes over WhatsApp' }}</p>
             </div>
         </div>
         @if(($twilio['configured'] ?? false))
@@ -579,28 +579,28 @@ function removeChip(btn) {
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.settings.twilio') }}" class="p-5 space-y-4 border-b border-gray-100">
+    <form method="POST" action="{{ route('admin.settings.twilio') }}" class="p-5 space-y-4 border-b border-[#F5F1E8]">
         @csrf
         <div class="grid sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1.5">Account SID</label>
+                <label class="ui-label">Account SID</label>
                 <input type="text" name="sid" autocomplete="off"
                     placeholder="{{ $twilio['sid_masked'] ?? 'ACxxxxxxxxxxxxxxxx' }}"
                     class="{{ $inputCls }} font-mono">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1.5">Auth Token</label>
+                <label class="ui-label">Auth Token</label>
                 <input type="password" name="token" autocomplete="new-password"
                     placeholder="{{ $twilio['token_masked'] ?? '••••••••••••••••' }}"
                     class="{{ $inputCls }} font-mono">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1.5">{{ $isFr ? 'Numéro expéditeur WhatsApp' : 'WhatsApp sender number' }}</label>
+                <label class="ui-label">{{ $isFr ? 'Numéro expéditeur WhatsApp' : 'WhatsApp sender number' }}</label>
                 <input type="tel" name="whatsapp_from" value="{{ $twilio['from'] ?? '' }}" placeholder="+14155238886"
                     class="{{ $inputCls }} font-mono">
             </div>
         </div>
-        <p class="text-xs text-gray-400">
+        <p class="ui-dt">
             {{ $isFr
                 ? 'Les champs laissés vides conservent leur valeur actuelle. Les identifiants sont chiffrés en base et affichés masqués. Les valeurs saisies ici priment sur le fichier .env.'
                 : 'Blank fields keep their current value. Credentials are encrypted at rest and shown masked. Values saved here override the .env file.' }}
@@ -614,11 +614,11 @@ function removeChip(btn) {
     <form method="POST" action="{{ route('admin.settings.twilio.test') }}" class="p-5 flex items-end gap-3">
         @csrf
         <div class="flex-1">
-            <label class="block text-xs font-medium text-gray-500 mb-1.5">{{ $isFr ? 'Tester la connexion — envoyer un message WhatsApp à' : 'Test connection — send a WhatsApp message to' }}</label>
+            <label class="ui-label">{{ $isFr ? 'Tester la connexion — envoyer un message WhatsApp à' : 'Test connection — send a WhatsApp message to' }}</label>
             <input type="tel" name="test_phone" required placeholder="+2376XXXXXXXX"
                 class="{{ $inputCls }} font-mono">
         </div>
-        <button type="submit" class="px-3.5 py-2 rounded-lg bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200 transition-colors whitespace-nowrap">
+        <button type="submit" class="ui-btn ui-btn-secondary ui-btn-sm">
             {{ $isFr ? 'Envoyer le test' : 'Send test' }}
         </button>
     </form>
@@ -632,42 +632,42 @@ function removeChip(btn) {
     @csrf
 
     <div>
-        <h3 class="text-sm font-semibold text-gray-900 mb-3">{{ $isFr ? 'Logo de la plateforme' : 'Platform logo' }}</h3>
+        <h3 class="ui-card-title mb-3">{{ $isFr ? 'Logo de la plateforme' : 'Platform logo' }}</h3>
         <div class="flex items-center gap-5">
-            <img src="{{ $logoUrl }}" alt="Logo" class="w-24 h-24 rounded-full object-cover border border-gray-200 bg-gray-50 shrink-0">
+            <img src="{{ $logoUrl }}" alt="Logo" class="w-24 h-24 rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
             <div class="min-w-0">
-                <label class="inline-flex items-center gap-2 px-3.5 py-2 border border-forest-300 text-forest-700 rounded-lg text-xs font-semibold cursor-pointer hover:bg-forest-50 transition-colors">
+                <label class="ui-btn ui-btn-secondary">
                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Changer le logo' : 'Change logo' }}
                     <input type="file" name="logo" accept=".png,.jpg,.jpeg,.svg" class="hidden"
                            onchange="document.getElementById('branding-logo-name').textContent = this.files.length ? this.files[0].name : ''">
                 </label>
-                <p class="text-xs text-gray-400 mt-2">{{ $isFr ? 'PNG, JPG ou SVG. Taille recommandée : 512x512px' : 'PNG, JPG or SVG. Recommended size: 512x512px' }}</p>
-                <p id="branding-logo-name" class="text-xs text-forest-600 mt-1 truncate"></p>
+                <p class="text-xs text-[#B8B2A4] mt-2">{{ $isFr ? 'PNG, JPG ou SVG. Taille recommandée : 512x512px' : 'PNG, JPG or SVG. Recommended size: 512x512px' }}</p>
+                <p id="branding-logo-name" class="text-xs text-[#157A43] mt-1 truncate"></p>
             </div>
         </div>
     </div>
 
-    <div class="pt-5 border-t border-gray-100">
-        <h3 class="text-sm font-semibold text-gray-900 mb-3">{{ $isFr ? 'Logo favicon' : 'Favicon logo' }}</h3>
+    <div class="pt-5 border-t border-[#F5F1E8]">
+        <h3 class="ui-card-title mb-3">{{ $isFr ? 'Logo favicon' : 'Favicon logo' }}</h3>
         <div class="flex items-center gap-5">
-            <img src="{{ $faviconUrl }}" alt="Favicon" class="w-10 h-10 rounded-full object-cover border border-gray-200 bg-gray-50 shrink-0">
+            <img src="{{ $faviconUrl }}" alt="Favicon" class="w-10 h-10 rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
             <div class="min-w-0">
-                <label class="inline-flex items-center gap-2 px-3.5 py-2 border border-forest-300 text-forest-700 rounded-lg text-xs font-semibold cursor-pointer hover:bg-forest-50 transition-colors">
+                <label class="ui-btn ui-btn-secondary">
                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Changer le favicon' : 'Change favicon' }}
                     <input type="file" name="favicon" accept=".png,.ico,.svg" class="hidden"
                            onchange="document.getElementById('branding-favicon-name').textContent = this.files.length ? this.files[0].name : ''">
                 </label>
-                <p class="text-xs text-gray-400 mt-2">{{ $isFr ? 'PNG, ICO ou SVG. Taille recommandée : 32x32px' : 'PNG, ICO or SVG. Recommended size: 32x32px' }}</p>
-                <p id="branding-favicon-name" class="text-xs text-forest-600 mt-1 truncate"></p>
+                <p class="text-xs text-[#B8B2A4] mt-2">{{ $isFr ? 'PNG, ICO ou SVG. Taille recommandée : 32x32px' : 'PNG, ICO or SVG. Recommended size: 32x32px' }}</p>
+                <p id="branding-favicon-name" class="text-xs text-[#157A43] mt-1 truncate"></p>
             </div>
         </div>
     </div>
 
-    <div class="flex items-center justify-end gap-3 pt-5 border-t border-gray-100">
+    <div class="flex items-center justify-end gap-3 pt-5 border-t border-[#F5F1E8]">
         <a href="{{ route('admin.settings', array_filter(['section' => 'branding', 'lang' => request()->query('lang')])) }}"
-           class="px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition-colors">
+           class="px-4 py-2.5 rounded-lg bg-[#F1EDE3] text-[#3B382F] text-sm font-semibold hover:bg-[#EAE5D8] transition-colors">
             {{ $isFr ? 'Annuler' : 'Cancel' }}
         </a>
         <button type="submit" class="{{ $greenBtn }}">
@@ -683,8 +683,8 @@ function removeChip(btn) {
 <div class="max-w-2xl">
 <form method="POST" action="{{ route('admin.settings.general') }}" class="{{ $cardCls }} space-y-4">
     @csrf
-    <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Intégrations & Services Tiers' : 'Integrations & Third-party Services' }}</h2>
-    <p class="text-xs text-gray-500">
+    <h2 class="ui-card-title">{{ $isFr ? 'Intégrations & Services Tiers' : 'Integrations & Third-party Services' }}</h2>
+    <p class="ui-dt">
         {{ $isFr
             ? 'Identifiants des services externes connectés à la plateforme. Les identifiants Twilio (WhatsApp OTP) se gèrent dans l\'onglet Notifications.'
             : 'Credentials for external services connected to the platform. Twilio credentials (WhatsApp OTP) are managed under the Notifications tab.' }}
@@ -719,14 +719,14 @@ function removeChip(btn) {
     {{-- Langue par défaut (legacy admin.settings.update — preserved) --}}
     <form method="POST" action="{{ route('admin.settings.update') }}" class="{{ $cardCls }} space-y-4">
         @csrf
-        <h2 class="text-[15px] font-bold text-gray-900">{{ $isFr ? 'Langues' : 'Languages' }}</h2>
+        <h2 class="ui-card-title">{{ $isFr ? 'Langues' : 'Languages' }}</h2>
         <div class="max-w-sm">
             <label class="{{ $labelCls }}">{{ $isFr ? 'Langue par défaut' : 'Default language' }}</label>
-            <select name="settings[default_locale]" class="{{ $inputCls }} bg-white">
+            <select name="settings[default_locale]" class="{{ $inputCls }} ui-select">
                 <option value="fr" @selected($defaultLocale === 'fr')>{{ $isFr ? 'Français' : 'French' }}</option>
                 <option value="en" @selected($defaultLocale === 'en')>{{ $isFr ? 'Anglais' : 'English' }}</option>
             </select>
-            <p class="text-xs text-gray-400 mt-2">
+            <p class="text-xs text-[#B8B2A4] mt-2">
                 {{ $isFr
                     ? 'La plateforme est bilingue : chaque visiteur peut basculer entre français et anglais à tout moment.'
                     : 'The platform is bilingual: every visitor can switch between French and English at any time.' }}
@@ -740,12 +740,12 @@ function removeChip(btn) {
     {{-- Sauvegardes / audit (preserved) --}}
     <div class="{{ $cardCls }} space-y-4">
         <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                <i data-lucide="database-backup" class="w-4 h-4 text-forest-600"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
+                <i data-lucide="database-backup" class="w-4 h-4 text-[#157A43]"></i>
             </div>
-            <h3 class="text-sm font-semibold text-gray-900">{{ $isFr ? 'Sauvegardes de la base de données' : 'Database backups' }}</h3>
+            <h3 class="ui-card-title">{{ $isFr ? 'Sauvegardes de la base de données' : 'Database backups' }}</h3>
         </div>
-        <p class="text-sm text-gray-600">
+        <p class="text-[12.5px] text-[#3B382F]">
             {{ $isFr
                 ? 'Les sauvegardes de la base de données sont gérées au niveau de l\'infrastructure (sauvegarde quotidienne automatique du serveur). Toutes les actions d\'administration sont tracées dans le journal d\'audit et peuvent être consultées à tout moment.'
                 : 'Database backups are handled at the infrastructure level (automatic daily server backup). Every admin action is recorded in the audit log and can be reviewed at any time.' }}
@@ -770,20 +770,20 @@ function removeChip(btn) {
     @endphp
     @if($rows->isNotEmpty())
     <form method="POST" action="{{ route('admin.settings.update') }}"
-          class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          class="ui-card ui-card--flush">
         @csrf
-        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-gray-100">
-            <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                <i data-lucide="{{ $groupMeta[$g]['icon'] ?? 'settings-2' }}" class="w-4 h-4 text-forest-600"></i>
+        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F5F1E8]">
+            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
+                <i data-lucide="{{ $groupMeta[$g]['icon'] ?? 'settings-2' }}" class="w-4 h-4 text-[#157A43]"></i>
             </div>
-            <h3 class="text-sm font-semibold text-gray-900">{{ $groupMeta[$g][$isFr ? 'fr' : 'en'] ?? ucfirst($g) }}</h3>
+            <h3 class="ui-card-title">{{ $groupMeta[$g][$isFr ? 'fr' : 'en'] ?? ucfirst($g) }}</h3>
         </div>
         <div class="p-5 grid sm:grid-cols-2 gap-4">
             @foreach($rows as $setting)
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1.5">{{ $labelize($setting['key']) }}</label>
+                <label class="ui-label">{{ $labelize($setting['key']) }}</label>
                 @if($setting['type'] === 'boolean')
-                    <select name="settings[{{ $setting['key'] }}]" class="{{ $inputCls }} bg-white">
+                    <select name="settings[{{ $setting['key'] }}]" class="{{ $inputCls }} ui-select">
                         <option value="true"  @selected($setting['value'])>{{ $isFr ? 'Activé' : 'Enabled' }}</option>
                         <option value="false" @selected(! $setting['value'])>{{ $isFr ? 'Désactivé' : 'Disabled' }}</option>
                     </select>
@@ -808,14 +808,14 @@ function removeChip(btn) {
 @endif
 
 {{-- ── Footer (design) ─────────────────────────────────────────────────── --}}
-<div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-200 mt-8 pt-5 text-xs text-gray-500">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#EFEBE2] mt-8 pt-5 text-xs text-[#8A857A]">
     <p>© 2025 Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
     <div class="flex items-center gap-6">
-        <a href="{{ route('admin.support', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-gray-700">
+        <a href="{{ route('admin.support', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-[#3B382F]">
             <i data-lucide="circle-help" class="w-4 h-4"></i>
             {{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}
         </a>
-        <a href="{{ route('contact', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-gray-700">
+        <a href="{{ route('contact', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-[#3B382F]">
             <i data-lucide="mail" class="w-4 h-4"></i>
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>

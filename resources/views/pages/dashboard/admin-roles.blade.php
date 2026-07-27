@@ -35,20 +35,20 @@
 @section('content')
 
             @if(session('success'))
-            <div class="mt-1 mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+            <div class="ui-alert ui-alert-ok mt-1 mb-4">
                 <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}
             </div>
             @endif
 
             {{-- Header --}}
             <div class="flex flex-wrap items-start justify-between gap-3">
-                <div class="bg-white border border-[#EFF0EF] rounded-xl px-4 py-2.5 flex items-center gap-2 text-[12px] text-[#6F6B60]">
+                <div class="bg-white border border-[#EFEBE2] rounded-xl px-4 py-2.5 flex items-center gap-2 text-[12px] text-[#6F6B60]">
                     <i data-lucide="info" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Gérez les rôles d\'utilisateur et attribuez des permissions' : 'Manage user roles and assign permissions' }}
                 </div>
             </div>
 
             {{-- Tabs --}}
-            <div class="mt-4 flex items-center gap-6 border-b border-[#EAE7DE]">
+            <div class="mt-4 flex items-center gap-6 border-b border-[#EFEBE2]">
                 @foreach($roleTabs as [$tKey, $tIcon, $tLabel, $tUrl, $tActive])
                 <a href="{{ $tUrl }}" class="flex items-center gap-2 pb-3 text-[13px] font-semibold {{ $tActive ? 'text-[#14652F] border-b-2 border-[#14652F]' : 'text-[#8A857A] hover:text-[#3B382F]' }}">
                     <i data-lucide="{{ $tIcon }}" class="w-4 h-4"></i>{{ $tLabel }}
@@ -59,7 +59,7 @@
             {{-- Stat cards --}}
             <section class="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 @foreach($statCards as [$sIcon, $sColor, $sTile, $sValue, $sLabel, $sSub])
-                <div class="bg-white border border-[#EFF0EF] rounded-2xl px-4 py-4">
+                <div class="ui-card">
                     <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center" style="background-color: {{ $sTile }}">
                         <i data-lucide="{{ $sIcon }}" class="w-[20px] h-[20px]" style="color: {{ $sColor }};stroke-width:1.8"></i>
                     </span>
@@ -72,17 +72,17 @@
 
             <div class="mt-5 grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-5 items-start">
                 {{-- Role list --}}
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+                <section class="ui-card">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Liste des Rôles' : 'Roles List' }}</h2>
-                        <a href="{{ route('admin.users', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-3 py-2 text-[11.5px] font-semibold text-white transition-colors">
+                        <h2 class="ui-card-title">{{ $isFr ? 'Liste des Rôles' : 'Roles List' }}</h2>
+                        <a href="{{ route('admin.users', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Ajouter un rôle' : 'Add a role' }}
                         </a>
                     </div>
                     <div class="mt-4 space-y-2.5">
                         @foreach($roles as $r)
                         @php $active = $selected && $r->id === $selected->id; @endphp
-                        <a href="{{ route('admin.roles', ['lang' => $lang, 'role' => $r->name]) }}" class="flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors {{ $active ? 'border-[#14652F] bg-[#F3F9F4] relative' : 'border-[#EFF0EF] hover:bg-[#FAFAF8]' }}">
+                        <a href="{{ route('admin.roles', ['lang' => $lang, 'role' => $r->name]) }}" class="flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors {{ $active ? 'border-[#14652F] bg-[#F3F9F4] relative' : 'border-[#EFEBE2] hover:bg-[#FAFAF8]' }}">
                             @if($active)<span class="absolute left-0 top-3 bottom-3 w-[3px] rounded-full bg-[#14652F]"></span>@endif
                             <span class="w-[38px] h-[38px] rounded-lg bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="{{ $r->icon }}" class="w-[18px] h-[18px] text-[#14652F]"></i></span>
                             <span class="min-w-0 flex-1">
@@ -97,31 +97,31 @@
                 </section>
 
                 {{-- Permission matrix --}}
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+                <section class="ui-card">
                     <form method="POST" action="{{ route('admin.roles.update', ['id' => $selected->id]) }}">
                         @csrf
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <div class="flex flex-wrap items-center justify-between gap-3">
-                            <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Permissions du rôle' : 'Role permissions' }} : {{ $isFr ? $selected->fr : $selected->en }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Permissions du rôle' : 'Role permissions' }} : {{ $isFr ? $selected->fr : $selected->en }}</h2>
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('admin.roles', ['lang' => $lang, 'role' => $selected->name]) }}" class="inline-flex items-center gap-1.5 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-3 py-2 text-[11.5px] font-semibold text-[#3B382F]"><i data-lucide="copy" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Dupliquer le rôle' : 'Duplicate role' }}</a>
+                                <a href="{{ route('admin.roles', ['lang' => $lang, 'role' => $selected->name]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="copy" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Dupliquer le rôle' : 'Duplicate role' }}</a>
                             </div>
                         </div>
 
-                        <div class="mt-4 overflow-x-auto">
-                            <table class="w-full min-w-[720px]">
+                        <div class="ui-table-wrap mt-4">
+                            <table class="ui-table min-w-[720px]">
                                 <thead>
-                                    <tr class="text-left border-b border-[#F0F1F0]">
-                                        <th class="pb-3 pr-3 text-[11px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">Module / Permission</th>
+                                    <tr class="border-b border-[#EFEBE2]">
+                                        <th>Module / Permission</th>
                                         @foreach($actions as $act)
-                                        <th class="pb-3 px-2 text-center text-[11px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">{{ $actionLabels[$act][0] }}</th>
+                                        <th class="text-center">{{ $actionLabels[$act][0] }}</th>
                                         @endforeach
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[#F4F5F4]">
+                                <tbody>
                                     @foreach($modules as $modKey => [$modFr, $modEn])
                                     <tr>
-                                        <td class="py-3.5 pr-3">
+                                        <td>
                                             <div class="flex items-start gap-2.5">
                                                 <i data-lucide="folder" class="w-4 h-4 mt-0.5 text-[#C9942E] shrink-0"></i>
                                                 <span>
@@ -131,8 +131,8 @@
                                         </td>
                                         @foreach($actions as $act)
                                         @php $pname = $modKey . '.' . $act; $checked = $selectedPerms->has($pname); @endphp
-                                        <td class="py-3.5 px-2 text-center">
-                                            <input type="checkbox" name="perms[]" value="{{ $pname }}" @checked($checked) class="w-4 h-4 rounded border-[#CFC9BF] text-[#14652F] focus:ring-[#14652F]/40 cursor-pointer">
+                                        <td class="text-center">
+                                            <input type="checkbox" name="perms[]" value="{{ $pname }}" @checked($checked) class="ui-check">
                                         </td>
                                         @endforeach
                                     </tr>
@@ -141,12 +141,12 @@
                             </table>
                         </div>
 
-                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#F0F1F0] pt-4">
+                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#EFEBE2] pt-4">
                             <div class="flex flex-wrap items-center gap-4 text-[11.5px] text-[#6F6B60]">
                                 <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-[#14652F]"></span>{{ $isFr ? 'Autorisé' : 'Allowed' }}</span>
-                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm border border-[#CFC9BF]"></span>{{ $isFr ? 'Non autorisé' : 'Not allowed' }}</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm border border-[#EAE5D8]"></span>{{ $isFr ? 'Non autorisé' : 'Not allowed' }}</span>
                             </div>
-                            <button type="submit" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-5 py-2.5 text-[12.5px] font-semibold text-white transition-colors">
+                            <button type="submit" class="ui-btn ui-btn-primary">
                                 <i data-lucide="check" class="w-4 h-4"></i>{{ $isFr ? 'Enregistrer les modifications' : 'Save changes' }}
                             </button>
                         </div>

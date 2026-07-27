@@ -65,7 +65,7 @@
 @section('content')
 
             @if(session('success'))
-            <div class="bg-[#E2F3E8] border border-[#CFE0D4] text-[#157A43] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
+            <div class="ui-alert ui-alert-ok mb-4">
                 <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
             </div>
             @endif
@@ -73,7 +73,7 @@
             {{-- 5 KPI stat cards --}}
             <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 @foreach($partnerCards as [$pcIcon, $pcColor, $pcTile, $pcValue, $pcLabel, $pcSub, $pcSpark])
-                <div class="bg-white border border-[#EFF0EF] rounded-2xl px-4 py-4 flex flex-col">
+                <div class="ui-card flex flex-col">
                     <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center" style="background-color: {{ $pcTile }}">
                         <i data-lucide="{{ $pcIcon }}" class="w-[22px] h-[22px]" style="color: {{ $pcColor }};stroke-width:1.8"></i>
                     </span>
@@ -89,58 +89,58 @@
 
             <div class="mt-5 grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-5 items-start">
                 {{-- Main: list + filters + table --}}
-                <div class="bg-white border border-[#EFF0EF] rounded-2xl overflow-hidden">
-                    <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#F1F1EF]">
-                        <h2 class="text-[15px] font-bold text-[#1B1B18] tracking-wide">{{ $isFr ? 'LISTE DES PARTENAIRES' : 'PARTNERS LIST' }}</h2>
+                <div class="ui-card ui-card--flush">
+                    <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#EFEBE2]">
+                        <h2 class="ui-card-title">{{ $isFr ? 'LISTE DES PARTENAIRES' : 'PARTNERS LIST' }}</h2>
                     </div>
 
-                    <form method="GET" class="px-5 py-3.5 flex flex-wrap items-center gap-2.5 border-b border-[#F1F1EF]">
+                    <form method="GET" class="px-5 py-3.5 flex flex-wrap items-center gap-2.5 border-b border-[#EFEBE2]">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="flex items-center gap-2 bg-[#F8F8F6] border border-[#E7E7E5] rounded-lg px-3 h-[38px] flex-1 min-w-[180px]">
-                            <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un partenaire...' : 'Search a partner...' }}" class="flex-1 min-w-0 bg-transparent text-[12.5px] focus:outline-none">
+                        <div class="ui-field-group flex-1 min-w-[180px]">
+                            <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un partenaire...' : 'Search a partner...' }}" class="ui-field-bare flex-1 min-w-0">
                             <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i></button>
                         </div>
-                        <select name="status" onchange="this.form.submit()" class="h-[38px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+                        <select name="status" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Tous les statuts' : 'All statuses' }}</option>
                             <option value="active" @selected($status==='active')>{{ $isFr ? 'Actif' : 'Active' }}</option>
                             <option value="pending" @selected($status==='pending')>{{ $isFr ? 'En attente' : 'Pending' }}</option>
                         </select>
-                        <select name="type" onchange="this.form.submit()" class="h-[38px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+                        <select name="type" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
                             @foreach($partnerTypes as $pt)
                             <option value="{{ $pt }}" @selected($type===$pt)>{{ $pt }}</option>
                             @endforeach
                         </select>
-                        <select name="country" onchange="this.form.submit()" class="h-[38px] text-[12.5px] border border-[#E7E7E5] rounded-lg px-2.5 bg-white">
+                        <select name="country" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Tous les pays' : 'All countries' }}</option>
                             @foreach($partnerCountries as $pc)
                             <option value="{{ $pc }}" @selected($country===$pc)>{{ $pc }}</option>
                             @endforeach
                         </select>
-                        <a href="#add-partner" class="h-[38px] inline-flex items-center gap-1.5 bg-[#0F4824] hover:bg-[#14652F] text-white text-[12.5px] font-semibold px-4 rounded-lg">
+                        <a href="#add-partner" class="ui-btn ui-btn-primary">
                             <i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Ajouter un partenaire' : 'Add a partner' }}
                         </a>
                     </form>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                    <div class="ui-table-wrap">
+                        <table class="ui-table">
                             <thead>
-                                <tr class="text-[10.5px] font-bold text-[#8A857A] tracking-wide">
-                                    <th class="px-5 py-2.5">{{ $isFr ? 'PARTENAIRE' : 'PARTNER' }}</th>
-                                    <th class="px-3 py-2.5">{{ $isFr ? 'TYPE' : 'TYPE' }}</th>
-                                    <th class="px-3 py-2.5">{{ $isFr ? 'PAYS' : 'COUNTRY' }}</th>
-                                    <th class="px-3 py-2.5">{{ $isFr ? 'SECTEUR' : 'SECTOR' }}</th>
-                                    <th class="px-3 py-2.5">{{ $isFr ? 'STATUT' : 'STATUS' }}</th>
-                                    <th class="px-3 py-2.5">{{ $isFr ? 'DATE DE PARTENARIAT' : 'PARTNERSHIP DATE' }}</th>
-                                    <th class="px-5 py-2.5 text-right">{{ $isFr ? 'ACTIONS' : 'ACTIONS' }}</th>
+                                <tr>
+                                    <th>{{ $isFr ? 'PARTENAIRE' : 'PARTNER' }}</th>
+                                    <th>{{ $isFr ? 'TYPE' : 'TYPE' }}</th>
+                                    <th>{{ $isFr ? 'PAYS' : 'COUNTRY' }}</th>
+                                    <th>{{ $isFr ? 'SECTEUR' : 'SECTOR' }}</th>
+                                    <th>{{ $isFr ? 'STATUT' : 'STATUS' }}</th>
+                                    <th>{{ $isFr ? 'DATE DE PARTENARIAT' : 'PARTNERSHIP DATE' }}</th>
+                                    <th class="text-right">{{ $isFr ? 'ACTIONS' : 'ACTIONS' }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($partners as $partner)
-                                <tr class="border-t border-[#F1F1EF] hover:bg-[#FAFAF8]">
-                                    <td class="px-5 py-3">
+                                <tr class="border-t border-[#EFEBE2] hover:bg-[#FAFAF8]">
+                                    <td>
                                         <div class="flex items-center gap-2.5">
-                                            <div class="w-9 h-9 rounded-lg bg-[#F8F8F6] border border-[#EFEFED] flex items-center justify-center shrink-0 overflow-hidden">
+                                            <div class="w-9 h-9 rounded-lg bg-[#F8F8F6] border border-[#EFEBE2] flex items-center justify-center shrink-0 overflow-hidden">
                                                 @if($logoFor($partner))
                                                 <img src="{{ asset('images/landing/' . $logoFor($partner)) }}" alt="" class="w-full h-full object-contain">
                                                 @elseif($partner->logo)
@@ -155,15 +155,15 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-3 py-3"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] text-[#6F6B60]' }}">{{ $partner->partner_type }}</span></td>
-                                    <td class="px-3 py-3 text-[12.5px] text-[#3B382F]"><span class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A]"></i>{{ $partner->country }}</span></td>
-                                    <td class="px-3 py-3 text-[12.5px] text-[#3B382F]">{{ $partner->sector_fr }}</td>
-                                    <td class="px-3 py-3">
+                                    <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] text-[#6F6B60]' }}">{{ $partner->partner_type }}</span></td>
+                                    <td><span class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A]"></i>{{ $partner->country }}</span></td>
+                                    <td>{{ $partner->sector_fr }}</td>
+                                    <td>
                                         @php [$sCls, $sLabel] = $statusCls[$partner->status] ?? ['bg-[#EEECE6] text-[#6F6B60]', $partner->status]; @endphp
                                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $sCls }}">{{ $sLabel }}</span>
                                     </td>
-                                    <td class="px-3 py-3 text-[12px] text-[#6F6B60]">{{ $fmtDate($partner->start_date) }}</td>
-                                    <td class="px-5 py-3">
+                                    <td>{{ $fmtDate($partner->start_date) }}</td>
+                                    <td>
                                         <div class="flex items-center justify-end gap-1">
                                             <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}" class="p-1.5 rounded-lg hover:bg-[#E2F3E8] text-[#157A43]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
                                             <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}#edit" class="p-1.5 rounded-lg hover:bg-[#E8EFFB] text-[#3565DE]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
@@ -175,14 +175,14 @@
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="7" class="text-center py-10 text-[13px] text-[#8A857A]">{{ $isFr ? 'Aucun partenaire trouvé.' : 'No partners found.' }}</td></tr>
+                                <tr><td colspan="7" class="ui-empty">{{ $isFr ? 'Aucun partenaire trouvé.' : 'No partners found.' }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
 
                     @if($partners->total() > 0)
-                    <div class="px-5 py-3.5 border-t border-[#F1F1EF] flex flex-wrap items-center justify-between gap-3">
+                    <div class="px-5 py-3.5 border-t border-[#EFEBE2] flex flex-wrap items-center justify-between gap-3">
                         <p class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $partners->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $partners->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $partners->total() }} {{ $isFr ? 'partenaires' : 'partners' }}</p>
                         <div class="flex items-center gap-1">
                             {{ $partners->onEachSide(1)->links() }}
@@ -193,8 +193,8 @@
 
                 {{-- Right rail: analytics --}}
                 <div class="space-y-5">
-                    <div class="bg-white border border-[#EFF0EF] rounded-2xl p-5">
-                        <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide mb-4">{{ $isFr ? 'RÉPARTITION PAR TYPE' : 'BREAKDOWN BY TYPE' }}</h3>
+                    <div class="ui-card">
+                        <h3 class="ui-card-title mb-4">{{ $isFr ? 'RÉPARTITION PAR TYPE' : 'BREAKDOWN BY TYPE' }}</h3>
                         <div class="flex items-center gap-4">
                             <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $typeConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] m-[22px]"></span></span>
                             <ul class="space-y-1.5 min-w-0">
@@ -209,8 +209,8 @@
                         </div>
                     </div>
 
-                    <div class="bg-white border border-[#EFF0EF] rounded-2xl p-5">
-                        <h3 class="text-[13px] font-bold text-[#1B1B18] tracking-wide mb-4">{{ $isFr ? 'RÉPARTITION PAR SECTEUR' : 'BREAKDOWN BY SECTOR' }}</h3>
+                    <div class="ui-card">
+                        <h3 class="ui-card-title mb-4">{{ $isFr ? 'RÉPARTITION PAR SECTEUR' : 'BREAKDOWN BY SECTOR' }}</h3>
                         <div class="space-y-3">
                             @foreach($bySectorPct as $secName => $pct)
                             <div>
@@ -241,9 +241,9 @@
             </div>
 
             {{-- Bottom CTA band --}}
-            <div class="mt-5 bg-white border border-[#EFF0EF] rounded-2xl p-6 flex flex-wrap items-center gap-6 justify-between">
+            <div class="ui-card mt-5 flex flex-wrap items-center gap-6 justify-between">
                 <div class="max-w-[520px]">
-                    <h3 class="text-[15px] font-bold text-[#1B1B18] mb-1.5">{{ $isFr ? 'DEVENIR PARTENAIRE' : 'BECOME A PARTNER' }}</h3>
+                    <h3 class="ui-card-title mb-1.5">{{ $isFr ? 'DEVENIR PARTENAIRE' : 'BECOME A PARTNER' }}</h3>
                     <p class="text-[12.5px] text-[#6F6B60] leading-relaxed">{{ $isFr ? 'Rejoignez notre réseau de partenaires et contribuez à la valorisation de l\'artisanat camerounais et africain.' : 'Join our partner network and contribute to promoting Cameroonian and African craftsmanship.' }}</p>
                     <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
                         @foreach(($isFr ? ['handshake'=>'Visibilité accrue','heart'=>'Impact durable','users'=>'Réseau influent','layers'=>'Projets collaboratifs'] : ['handshake'=>'Increased visibility','heart'=>'Lasting impact','users'=>'Influential network','layers'=>'Collaborative projects']) as $icon => $label)
@@ -255,29 +255,29 @@
             </div>
 
             {{-- Add-partner form (project adaptation: PNG's CTA links here since the design has no separate creation screen) --}}
-            <div id="add-partner" class="mt-5 bg-white border border-[#EFF0EF] rounded-2xl p-5">
-                <h2 class="text-[13px] font-bold text-[#1B1B18] tracking-wide mb-4">{{ $isFr ? 'AJOUTER UN PARTENAIRE' : 'ADD A PARTNER' }}</h2>
+            <div id="add-partner" class="ui-card mt-5">
+                <h2 class="ui-card-title mb-4">{{ $isFr ? 'AJOUTER UN PARTENAIRE' : 'ADD A PARTNER' }}</h2>
                 <form method="POST" action="{{ route('admin.partners.store') }}" enctype="multipart/form-data" class="space-y-3">
                     @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input name="name_fr" required placeholder="{{ $isFr ? 'Nom (français)' : 'Name (French)' }}" class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#14652F]">
-                        <input name="name_en" placeholder="{{ $isFr ? 'Nom (anglais)' : 'Name (English)' }}" class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#14652F]">
+                        <input name="name_fr" required placeholder="{{ $isFr ? 'Nom (français)' : 'Name (French)' }}" class="ui-field">
+                        <input name="name_en" placeholder="{{ $isFr ? 'Nom (anglais)' : 'Name (English)' }}" class="ui-field">
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <select name="tier" required class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#14652F]">
+                        <select name="tier" required class="ui-field ui-select">
                             @foreach($tierLabels as $val => $label)
                             <option value="{{ $val }}">{{ $label }}</option>
                             @endforeach
                         </select>
-                        <input type="url" name="website" placeholder="https://" class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#14652F]">
+                        <input type="url" name="website" placeholder="https://" class="ui-field">
                     </div>
-                    <textarea name="description_fr" rows="2" placeholder="{{ $isFr ? 'Description courte (français)' : 'Short description (French)' }}" class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#14652F] resize-none"></textarea>
+                    <textarea name="description_fr" rows="2" placeholder="{{ $isFr ? 'Description courte (français)' : 'Short description (French)' }}" class="ui-field ui-textarea w-full"></textarea>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">{{ $isFr ? 'Logo' : 'Logo' }}</label>
-                        <input type="file" name="logo" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#E2F3E8] file:text-[#157A43] file:text-xs">
+                        <label class="ui-label">{{ $isFr ? 'Logo' : 'Logo' }}</label>
+                        <input type="file" name="logo" accept="image/*" class="w-full text-xs text-[#8A857A] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#E2F3E8] file:text-[#157A43] file:text-xs">
                     </div>
-                    <label class="flex items-center gap-2 text-sm text-gray-700">
-                        <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-[#14652F]">
+                    <label class="ui-check-row items-center">
+                        <input type="checkbox" name="is_active" value="1" checked class="ui-check">
                         {{ $isFr ? 'Actif (visible publiquement)' : 'Active (publicly visible)' }}
                     </label>
                     <button type="submit" class="bg-[#0F4824] hover:bg-[#14652F] text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2">

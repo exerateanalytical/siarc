@@ -97,10 +97,10 @@
             </nav>
         </div>
         <div class="flex items-center gap-2.5">
-            <button type="button" class="h-[42px] inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 text-[13px] font-semibold text-white transition-colors">
+            <button type="button" class="ui-btn ui-btn-primary ui-btn-lg">
                 <i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Nouveau paiement' : 'New payment' }}
             </button>
-            <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="h-[42px] inline-flex items-center gap-2 bg-white border border-[#E5E7E5] hover:border-[#14652F] rounded-lg px-4 text-[13px] font-semibold text-[#3B382F] transition-colors">
+            <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-lg">
                 <i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}
             </a>
         </div>
@@ -109,7 +109,7 @@
     {{-- KPI stat cards --}}
     <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         @foreach($payCards as [$pcIcon, $pcColor, $pcTile, $pcValue, $pcLabel, $pcSub])
-        <div class="bg-white border border-[#EFF0EF] rounded-2xl px-4 py-4 flex flex-col">
+        <div class="ui-card flex flex-col">
             <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center" style="background-color: {{ $pcTile }}">
                 <i data-lucide="{{ $pcIcon }}" class="w-5 h-5" style="color: {{ $pcColor }};stroke-width:1.8"></i>
             </span>
@@ -123,52 +123,52 @@
     <div class="mt-5 grid grid-cols-1 2xl:grid-cols-[1fr_340px] gap-5 items-start">
 
         {{-- ── Left: filter bar + transactions table ── --}}
-        <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+        <section class="ui-card">
 
             {{-- Filter / tab bar --}}
             <form method="GET" class="flex flex-wrap items-center gap-2.5">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <div class="flex-1 min-w-[180px] flex items-center gap-2 h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3.5">
+                <div class="ui-field-group flex-1 min-w-[180px]">
                     <i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un paiement...' : 'Search a payment...' }}" class="flex-1 min-w-0 text-[12.5px] focus:outline-none placeholder-[#8A857A]">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un paiement...' : 'Search a payment...' }}" class="ui-field-bare flex-1 min-w-0">
                 </div>
-                <select name="type" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
+                <select name="type" class="ui-field ui-select">
                     <option value="">Type</option>
                     <option value="paiement">{{ $isFr ? 'Paiement' : 'Payment' }}</option>
                     <option value="retrait">{{ $isFr ? 'Retrait' : 'Withdrawal' }}</option>
                 </select>
-                <select name="statut" onchange="this.form.submit()" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
+                <select name="statut" onchange="this.form.submit()" class="ui-field ui-select">
                     <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                     @foreach($payStatusMeta as $sv => [$sl, , ])
                     <option value="{{ $sv }}" @selected(request('statut') === $sv)>{{ $sl }}</option>
                     @endforeach
                 </select>
-                <input type="date" name="date_debut" value="{{ request('date_debut') }}" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
-                <input type="date" name="date_fin" value="{{ request('date_fin') }}" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
-                <select name="methode" class="h-[40px] bg-white border border-[#E5E7E5] rounded-lg px-3 text-[12.5px] text-[#3B382F] cursor-pointer">
+                <input type="date" name="date_debut" value="{{ request('date_debut') }}" class="ui-field">
+                <input type="date" name="date_fin" value="{{ request('date_fin') }}" class="ui-field">
+                <select name="methode" class="ui-field ui-select">
                     <option value="">{{ $isFr ? 'Méthode' : 'Method' }}</option>
                 </select>
-                <button type="submit" class="h-[40px] inline-flex items-center gap-2 bg-[#FBF6EA] border border-[#EAD9AC] hover:border-[#C9942E] rounded-lg px-4 text-[12.5px] font-semibold text-[#7A5A12] transition-colors">
+                <button type="submit" class="ui-btn ui-btn-secondary">
                     <i data-lucide="filter" class="w-4 h-4"></i>{{ $isFr ? 'Filtres' : 'Filters' }}
                 </button>
             </form>
 
             {{-- Transactions table --}}
-            <div class="mt-4 overflow-x-auto">
-                <table class="w-full min-w-[760px]">
+            <div class="ui-table-wrap mt-4">
+                <table class="ui-table min-w-[760px]">
                     <thead>
-                        <tr class="text-left border-b border-[#F0F1F0]">
-                            <th class="pb-2.5 pr-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Référence' : 'Reference' }}</th>
-                            <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Type</th>
-                            <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Utilisateur' : 'User' }}</th>
-                            <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Montant' : 'Amount' }}</th>
-                            <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Méthode' : 'Method' }}</th>
-                            <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                            <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Date</th>
-                            <th class="pb-2.5 pl-2 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">Actions</th>
+                        <tr class="border-b border-[#EFEBE2]">
+                            <th>{{ $isFr ? 'Référence' : 'Reference' }}</th>
+                            <th>Type</th>
+                            <th>{{ $isFr ? 'Utilisateur' : 'User' }}</th>
+                            <th>{{ $isFr ? 'Montant' : 'Amount' }}</th>
+                            <th>{{ $isFr ? 'Méthode' : 'Method' }}</th>
+                            <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
+                            <th>Date</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-[#F4F5F4]">
+                    <tbody>
                         @forelse($subPayments as $tx)
                         @php
                             [$stLabel, $stCls, $stDot] = $payStatusMeta[$tx->status] ?? [$tx->status, 'bg-[#EEECE6] text-[#6F6B60]', '#8A857A'];
@@ -177,7 +177,7 @@
                             $curr = $tx->plan_currency ?? 'FCFA';
                         @endphp
                         <tr>
-                            <td class="py-3.5 pr-3">
+                            <td>
                                 <div class="flex items-center gap-3">
                                     <span class="w-9 h-9 rounded-lg bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-[18px] h-[18px] text-[#14652F]"></i></span>
                                     <span class="min-w-0">
@@ -186,24 +186,24 @@
                                     </span>
                                 </div>
                             </td>
-                            <td class="py-3.5 px-2"><span class="inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold bg-[#E2F3E8] text-[#157A43]">{{ $isFr ? 'Paiement' : 'Payment' }}</span></td>
-                            <td class="py-3.5 px-2">
+                            <td><span class="ui-pill ui-pill-ok">{{ $isFr ? 'Paiement' : 'Payment' }}</span></td>
+                            <td>
                                 <span class="block text-[12.5px] font-semibold text-[#1B1B18] truncate max-w-[180px]">{{ $tx->biz_name ?? '—' }}</span>
                                 <span class="block text-[11px] text-[#8A857A]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
                             </td>
-                            <td class="py-3.5 px-2 text-[12.5px] font-semibold text-[#1B1B18] whitespace-nowrap">{{ number_format((float) $tx->amount, 0, ',', ' ') }} {{ $curr }}</td>
-                            <td class="py-3.5 px-2">
+                            <td class="font-semibold text-[#1B1B18] whitespace-nowrap">{{ number_format((float) $tx->amount, 0, ',', ' ') }} {{ $curr }}</td>
+                            <td>
                                 <span class="flex items-center gap-2">
                                     <span class="w-7 h-7 rounded-md bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-[15px] h-[15px] text-[#55524A]"></i></span>
                                     <span class="text-[12px] text-[#3B382F]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
                                 </span>
                             </td>
-                            <td class="py-3.5 px-2"><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
-                            <td class="py-3.5 px-2 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $dDate }}<br><span class="text-[11px] text-[#8A857A]">{{ $dTime }}</span></td>
-                            <td class="py-3.5 pl-2">
+                            <td><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
+                            <td class="whitespace-nowrap">{{ $dDate }}<br><span class="text-[11px] text-[#8A857A]">{{ $dTime }}</span></td>
+                            <td>
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#E5E7E5] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#E5E7E5] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
+                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -232,9 +232,9 @@
         <aside class="space-y-4">
 
             {{-- Répartition par statut (donut + legend, real) --}}
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="ui-card">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Répartition par statut' : 'Breakdown by status' }}</h2>
+                    <h2 class="ui-card-title">{{ $isFr ? 'Répartition par statut' : 'Breakdown by status' }}</h2>
                     <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                 </div>
 
@@ -273,21 +273,21 @@
             </section>
 
             {{-- Volumes par mois — no per-month source → neutral empty-state --}}
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="ui-card">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Volumes par mois (FCFA)' : 'Volumes by month (FCFA)' }}</h2>
+                    <h2 class="ui-card-title">{{ $isFr ? 'Volumes par mois (FCFA)' : 'Volumes by month (FCFA)' }}</h2>
                     <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                 </div>
-                <div class="mt-4 h-[120px] flex flex-col items-center justify-center rounded-xl bg-[#FAF8F2] border border-dashed border-[#EDE7D8]">
+                <div class="mt-4 h-[120px] flex flex-col items-center justify-center rounded-xl bg-[#FAF8F2] border border-dashed border-[#EAE5D8]">
                     <i data-lucide="bar-chart-3" class="w-6 h-6 text-[#C9C4B8]"></i>
                     <p class="mt-1.5 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée mensuelle' : 'No monthly data' }}</p>
                 </div>
             </section>
 
             {{-- Méthodes de paiement — no source → placeholder --}}
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="ui-card">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Méthodes de paiement' : 'Payment methods' }}</h2>
+                    <h2 class="ui-card-title">{{ $isFr ? 'Méthodes de paiement' : 'Payment methods' }}</h2>
                     <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                 </div>
                 <div class="mt-3.5 flex items-center gap-3 py-2">
@@ -303,8 +303,8 @@
             </section>
 
             {{-- Actions rapides --}}
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+            <section class="ui-card">
+                <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                 <div class="mt-3.5 grid grid-cols-2 gap-2.5">
                     @foreach($quickActions as [$qaIcon, $qaLabel, $qaCls])
                     <button type="button" class="h-[62px] rounded-xl flex flex-col items-center justify-center gap-1.5 text-[11.5px] font-semibold transition-colors {{ $qaCls }}">
@@ -319,7 +319,7 @@
     {{-- Bottom secondary stat row --}}
     <section class="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
         @foreach($bottomStats as [$bsIcon, $bsColor, $bsTile, $bsValue, $bsLabel, $bsSub])
-        <div class="bg-white border border-[#EFF0EF] rounded-2xl px-4 py-4 flex flex-col">
+        <div class="ui-card flex flex-col">
             <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center" style="background-color: {{ $bsTile }}">
                 <i data-lucide="{{ $bsIcon }}" class="w-5 h-5" style="color: {{ $bsColor }};stroke-width:1.8"></i>
             </span>

@@ -2566,9 +2566,17 @@ Route::get('/tableau-de-bord/admin/paiements', function (Request $request) {
         'invoices_due' => DB::table('invoices')->where('status', '!=', 'paid')->count(),
         'pos'          => DB::table('purchase_orders')->count(),
     ];
+    // Rows come back as stdClass; the view indexes them as arrays ($row['c'],
+    // $row['total']), which threw "Cannot use object of type stdClass as array"
+    // and 500'd the whole page. Hand it plain arrays.
     $payByStatus = DB::table('business_subscriptions')
         ->select('status', DB::raw('count(*) as c'), DB::raw('sum(amount) as total'))
-        ->groupBy('status')->get()->keyBy('status');
+        ->groupBy('status')->get()
+        ->mapWithKeys(fn ($row) => [$row->status => [
+            'status' => $row->status,
+            'c'      => (int) $row->c,
+            'total'  => (float) $row->total,
+        ]]);
 
     return view('pages.dashboard.admin-payments', compact('lang', 'siacUser', 'subPayments', 'payKpis', 'payByStatus'));
 })->name('admin.payments');

@@ -45,11 +45,11 @@
             {{-- Title / breadcrumb / actions --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5 shrink-0 ml-auto">
-                    <a href="{{ route('products.web-create') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                    <a href="{{ route('products.web-create') }}" class="ui-btn ui-btn-primary">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Ajouter un média' : 'Add a media' }}
                     </a>
-                    <button type="button" class="inline-flex items-center gap-2 bg-white border border-[#DED9CC] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#14652F] transition-colors">
+                    <button type="button" class="ui-btn ui-btn-secondary">
                         <i data-lucide="folder-plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Nouveau dossier' : 'New folder' }}
                     </button>
@@ -91,7 +91,7 @@
                 </a>
                 @endforeach
                 {{-- Espace utilisé — real sizes summed for the CURRENT PAGE of files --}}
-                <div class="bg-white border border-[#EFEBE2] rounded-2xl p-4 flex items-start gap-3">
+                <div class="ui-card flex items-start gap-3">
                     <span class="shrink-0 w-[42px] h-[42px] rounded-xl bg-[#E8F3EC] flex items-center justify-center">
                         <i data-lucide="chart-pie" class="w-[21px] h-[21px] text-[#14652F]"></i>
                     </span>
@@ -107,36 +107,36 @@
                 {{-- ═══════════ Left column ═══════════ --}}
                 <div class="flex-1 min-w-0 w-full">
                     {{-- Filter bar --}}
-                    <form method="GET" action="{{ route('admin.media') }}" class="bg-white border border-[#EFEBE2] rounded-2xl p-3 flex flex-wrap items-center gap-2.5">
+                    <form method="GET" action="{{ route('admin.media') }}" class="ui-card flex flex-wrap items-center gap-2.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="flex items-center gap-2 bg-[#F8F4EC] border border-[#EFEBE2] rounded-lg px-3 h-[36px] flex-1 min-w-[180px]">
+                        <div class="ui-field-group flex-1 min-w-[180px]">
                             <i data-lucide="search" class="w-[15px] h-[15px] text-[#8A857A] shrink-0"></i>
-                            <input type="text" name="q" value="{{ $mediaQ }}" placeholder="{{ $isFr ? 'Rechercher un fichier...' : 'Search a file...' }}" class="flex-1 min-w-0 bg-transparent text-[12px] focus:outline-none placeholder-[#8A857A]">
+                            <input type="text" name="q" value="{{ $mediaQ }}" placeholder="{{ $isFr ? 'Rechercher un fichier...' : 'Search a file...' }}" class="ui-field-bare flex-1 min-w-0">
                         </div>
-                        <select name="type" onchange="this.form.submit()" class="h-[36px] bg-white border border-[#E2DDD0] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="type" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="all" {{ $mediaType === 'all' ? 'selected' : '' }}>{{ $isFr ? 'Type de média' : 'Media type' }}</option>
                             @foreach($mediaKinds as $k => $meta)
                             <option value="{{ $k }}" {{ $mediaType === $k ? 'selected' : '' }}>{{ $meta['label'] }}</option>
                             @endforeach
                         </select>
-                        <select name="folder" onchange="this.form.submit()" class="h-[36px] bg-white border border-[#E2DDD0] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                        <select name="folder" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Dossier' : 'Folder' }}</option>
                             @foreach($mediaFolders as $f)
                             <option value="{{ $f->folder }}" {{ $mediaFolder === $f->folder ? 'selected' : '' }}>{{ $folderNames[$f->folder] ?? ucfirst($f->folder) }}</option>
                             @endforeach
                         </select>
-                        <select class="h-[36px] bg-white border border-[#E2DDD0] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none" disabled>
+                        <select class="ui-field ui-select" disabled>
                             <option>{{ $isFr ? 'Téléversé par' : 'Uploaded by' }}</option>
                         </select>
-                        <select class="h-[36px] bg-white border border-[#E2DDD0] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none" disabled>
+                        <select class="ui-field ui-select" disabled>
                             <option>Date</option>
                         </select>
-                        <button type="submit" class="inline-flex items-center gap-1.5 h-[36px] bg-[#E8F3EC] hover:bg-[#DCEEE3] border border-[#CBE3D4] rounded-lg px-3.5 text-[12px] font-semibold text-[#14652F] transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-secondary">
                             <i data-lucide="funnel" class="w-[14px] h-[14px]"></i>
                             {{ $isFr ? 'Filtres' : 'Filters' }}
                         </button>
                         <span class="ml-auto flex items-center gap-1.5">
-                            <span class="w-[34px] h-[34px] rounded-lg border border-[#E2DDD0] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-[15px] h-[15px]"></i></span>
+                            <span class="w-[34px] h-[34px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-[15px] h-[15px]"></i></span>
                             <span class="w-[34px] h-[34px] rounded-lg bg-[#0F4824] flex items-center justify-center text-white"><i data-lucide="list" class="w-[15px] h-[15px]"></i></span>
                         </span>
                     </form>
@@ -146,7 +146,7 @@
                     @if($mediaItems->count())
                     <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
                         @foreach($mediaItems as $m)
-                        <div class="bg-white border border-[#EFEBE2] rounded-xl overflow-hidden">
+                        <div class="ui-card ui-card--flush">
                             <div class="relative h-[110px] bg-[#F3EFE5]">
                                 @if($m->kind === 'image' && $m->path)
                                 <img src="{{ asset('storage/' . $m->path) }}" alt="{{ $m->name }}" class="w-full h-full object-cover" loading="lazy">
@@ -178,7 +178,7 @@
                         @endforeach
                     </div>
                     @else
-                    <div class="bg-white border border-[#EFEBE2] rounded-2xl px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucun fichier ne correspond à ces filtres.' : 'No files match these filters.' }}</div>
+                    <div class="ui-card ui-empty">{{ $isFr ? 'Aucun fichier ne correspond à ces filtres.' : 'No files match these filters.' }}</div>
                     @endif
 
                     {{-- Pagination --}}
@@ -189,22 +189,22 @@
                                 : 'Showing ' . number_format($mediaItems->count() ? $mediaItems->firstItem() : 0) . ' to ' . number_format($mediaItems->count() ? $mediaItems->lastItem() : 0) . ' of ' . number_format($mediaItems->total()) . ' files' }}
                         </p>
                         <div class="flex items-center gap-1.5">
-                            <a href="{{ $mediaItems->onFirstPage() ? '#' : $mediaItems->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#E2DDD0] bg-white flex items-center justify-center {{ $mediaItems->onFirstPage() ? 'text-[#CFC9BA] pointer-events-none' : 'text-[#3B382F] hover:border-[#14652F]' }}"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></a>
+                            <a href="{{ $mediaItems->onFirstPage() ? '#' : $mediaItems->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] bg-white flex items-center justify-center {{ $mediaItems->onFirstPage() ? 'text-[#CFC9BA] pointer-events-none' : 'text-[#3B382F] hover:border-[#14652F]' }}"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></a>
                             @for($p = 1; $p <= $mediaItems->lastPage(); $p++)
                                 @if($mediaItems->lastPage() > 9 && $p > 5 && $p < $mediaItems->lastPage())
                                     @if($p === 6)<span class="px-1 text-[11.5px] text-[#8A857A]">…</span>@endif
                                     @continue
                                 @endif
-                                <a href="{{ $mediaItems->url($p) }}" class="min-w-[30px] h-[30px] px-1.5 rounded-lg flex items-center justify-center text-[11.5px] font-semibold {{ $p === $mediaItems->currentPage() ? 'bg-[#0F4824] text-white' : 'border border-[#E2DDD0] bg-white text-[#3B382F] hover:border-[#14652F]' }}">{{ number_format($p) }}</a>
+                                <a href="{{ $mediaItems->url($p) }}" class="min-w-[30px] h-[30px] px-1.5 rounded-lg flex items-center justify-center text-[11.5px] font-semibold {{ $p === $mediaItems->currentPage() ? 'bg-[#0F4824] text-white' : 'border border-[#EAE5D8] bg-white text-[#3B382F] hover:border-[#14652F]' }}">{{ number_format($p) }}</a>
                             @endfor
-                            <a href="{{ $mediaItems->hasMorePages() ? $mediaItems->nextPageUrl() : '#' }}" class="w-[30px] h-[30px] rounded-lg border border-[#E2DDD0] bg-white flex items-center justify-center {{ $mediaItems->hasMorePages() ? 'text-[#3B382F] hover:border-[#14652F]' : 'text-[#CFC9BA] pointer-events-none' }}"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
+                            <a href="{{ $mediaItems->hasMorePages() ? $mediaItems->nextPageUrl() : '#' }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] bg-white flex items-center justify-center {{ $mediaItems->hasMorePages() ? 'text-[#3B382F] hover:border-[#14652F]' : 'text-[#CFC9BA] pointer-events-none' }}"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
                         </div>
                         <form method="GET" action="{{ route('admin.media') }}">
                             <input type="hidden" name="lang" value="{{ $lang }}">
                             @if($mediaType !== 'all')<input type="hidden" name="type" value="{{ $mediaType }}">@endif
                             @if($mediaFolder !== '')<input type="hidden" name="folder" value="{{ $mediaFolder }}">@endif
                             @if($mediaQ !== '')<input type="hidden" name="q" value="{{ $mediaQ }}">@endif
-                            <select name="per_page" onchange="this.form.submit()" class="h-[32px] bg-white border border-[#E2DDD0] rounded-lg px-2 text-[11.5px] text-[#3B382F] focus:outline-none">
+                            <select name="per_page" onchange="this.form.submit()" class="ui-field ui-select ui-field--sm">
                                 @foreach([10, 20, 50] as $pp)
                                 <option value="{{ $pp }}" {{ $perPage === $pp ? 'selected' : '' }}>{{ $pp }} / page</option>
                                 @endforeach
@@ -215,7 +215,7 @@
                     {{-- Bottom panels --}}
                     <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                         {{-- Activités récentes — latest REAL uploads --}}
-                        <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                        <section class="ui-card">
                             <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] uppercase">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
                             <div class="mt-3 divide-y divide-[#F5F1E8]">
                                 @forelse($mediaRecent as $r)
@@ -236,7 +236,7 @@
                         </section>
 
                         {{-- Téléversements par mois — real 6-month counts --}}
-                        <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                        <section class="ui-card">
                             <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] uppercase">{{ $isFr ? 'Téléversements par mois' : 'Uploads per month' }}</h2>
                             <div class="mt-3 flex gap-2">
                                 <div class="flex flex-col justify-between items-end text-[9.5px] text-[#8A857A] h-[130px] pb-[18px]">
@@ -256,7 +256,7 @@
                         </section>
 
                         {{-- Types de fichiers les plus téléversés --}}
-                        <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4 md:col-span-2 xl:col-span-1">
+                        <section class="ui-card md:col-span-2 xl:col-span-1">
                             <div class="flex items-center justify-between gap-2">
                                 <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] uppercase">{{ $isFr ? 'Types de fichiers les plus téléversés' : 'Most uploaded file types' }}</h2>
                                 <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] hover:text-[#14652F]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
@@ -286,7 +286,7 @@
                 {{-- ═══════════ Right column ═══════════ --}}
                 <aside class="w-full xl:w-[320px] shrink-0 space-y-4">
                     {{-- Répartition par type — real donut --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-2">
                             <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] uppercase">{{ $isFr ? 'Répartition par type' : 'Breakdown by type' }}</h2>
                             <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] hover:text-[#14652F]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
@@ -316,7 +316,7 @@
                     </section>
 
                     {{-- Espace de stockage — real sizes for the current page --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-2">
                             <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] uppercase">{{ $isFr ? 'Espace de stockage' : 'Storage space' }}</h2>
                             <a href="{{ route('admin.audit-log') }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] hover:text-[#14652F]">{{ $isFr ? 'Voir détails' : 'View details' }} →</a>
@@ -332,7 +332,7 @@
                     </section>
 
                     {{-- Dossiers principaux — real storage folders --}}
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-2">
                             <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] uppercase">{{ $isFr ? 'Dossiers principaux' : 'Main folders' }}</h2>
                             <a href="{{ route('admin.media', ['lang' => $lang]) }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] hover:text-[#14652F]">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
@@ -352,11 +352,11 @@
 
                     {{-- Conseils --}}
                     <section class="bg-[#FBF6E8] border border-[#F0E6C8] rounded-2xl p-4">
-                        <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Conseils' : 'Tips' }}</h2>
+                        <h2 class="ui-eyebrow">{{ $isFr ? 'Conseils' : 'Tips' }}</h2>
                         <div class="mt-2 flex items-start gap-3">
                             <div class="flex-1 min-w-0">
                                 <p class="text-[11.5px] text-[#55524A] leading-relaxed">{{ $isFr ? 'Organisez vos fichiers par dossiers pour un meilleur accès et une meilleure gestion.' : 'Organise your files into folders for better access and easier management.' }}</p>
-                                <button type="button" class="mt-3 inline-flex items-center bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-3.5 h-[32px] text-[11.5px] font-semibold text-white transition-colors">{{ $isFr ? 'En savoir plus' : 'Learn more' }}</button>
+                                <button type="button" class="ui-btn ui-btn-primary ui-btn-sm mt-3">{{ $isFr ? 'En savoir plus' : 'Learn more' }}</button>
                             </div>
                             <span class="shrink-0 w-[52px] h-[52px] rounded-xl bg-[#F3E7C6] flex items-center justify-center"><i data-lucide="folder-open" class="w-6 h-6 text-[#C9902E]"></i></span>
                         </div>
@@ -365,7 +365,7 @@
             </div>
 
             {{-- Footer strip --}}
-            <div class="mt-8 pt-4 border-t border-[#EBE6DA] flex flex-wrap items-center justify-between gap-3">
+            <div class="mt-8 pt-4 border-t border-[#EAE5D8] flex flex-wrap items-center justify-between gap-3">
                 <span class="hidden md:block w-[120px]"></span>
                 <p class="text-[11.5px] text-[#6F6B60] text-center flex-1">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
                 <span class="flex items-center gap-4 shrink-0">

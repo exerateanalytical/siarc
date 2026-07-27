@@ -33,11 +33,11 @@
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div></div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <a href="{{ route('products.web-create') }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                    <a href="{{ route('products.web-create') }}" class="ui-btn ui-btn-primary">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Ajouter un produit' : 'Add a product' }}
                     </a>
-                    <a href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] hover:text-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#3B382F] transition-colors">
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'csv']) }}" class="ui-btn ui-btn-secondary">
                         <i data-lucide="download" class="w-4 h-4"></i>
                         {{ $isFr ? 'Exporter' : 'Export' }}
                     </a>
@@ -46,7 +46,7 @@
 
             {{-- STATISTIQUES PRODUITS chip row --}}
             <section class="mt-5">
-                <p class="text-[11px] font-bold tracking-[0.08em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statistiques produits' : 'Product statistics' }}</p>
+                <p class="ui-eyebrow">{{ $isFr ? 'Statistiques produits' : 'Product statistics' }}</p>
                 <div class="mt-2 grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-2.5">
                     @foreach([
                         ['icon' => 'package',      'tone' => 'text-[#14652F] bg-[#E2F3E8]', 'value' => $prodStats['total'],        'fr' => 'Total produits',   'en' => 'Total products'],
@@ -58,7 +58,7 @@
                         ['icon' => 'alert-triangle','tone' => 'text-[#B45309] bg-[#FEF3C7]','value' => $prodStats['out_of_stock'], 'fr' => 'En rupture',       'en' => 'Out of stock'],
                         ['icon' => 'eye',          'tone' => 'text-[#6D28D9] bg-[#EDE9FE]', 'value' => $prodStats['views'],        'fr' => 'Total vues',       'en' => 'Total views'],
                     ] as $chip)
-                    <div class="bg-white border border-[#EFEBE2] rounded-xl px-3 py-2.5 flex items-center gap-2.5">
+                    <div class="ui-card flex items-center gap-2.5">
                         <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ $chip['tone'] }}">
                             <i data-lucide="{{ $chip['icon'] }}" class="w-4 h-4"></i>
                         </span>
@@ -72,7 +72,7 @@
             </section>
 
             {{-- Status tabs --}}
-            <div class="mt-5 flex flex-wrap items-center gap-1.5 border-b border-[#E9E4D8]">
+            <div class="mt-5 flex flex-wrap items-center gap-1.5 border-b border-[#EAE5D8]">
                 @foreach($tabs as $val => $tab)
                 <a href="{{ route('admin.products', array_filter(['lang' => $lang, 'statut' => $val, 'q' => request('q'), 'categorie' => request('categorie'), 'entreprise' => request('entreprise')], fn ($v) => $v !== null && $v !== '')) }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2 -mb-px border-b-2 text-[12.5px] font-semibold transition-colors {{ $currentStatut === $val ? 'border-[#14652F] text-[#14652F]' : 'border-transparent text-[#6F6B60] hover:text-[#1B1B18]' }}">
@@ -85,55 +85,55 @@
             {{-- Filters --}}
             <form method="GET" action="{{ route('admin.products') }}" class="mt-4 flex flex-wrap items-center gap-2">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <div class="flex items-center gap-2 bg-white border border-[#E9E4D8] rounded-lg px-3 h-[38px] flex-1 min-w-[190px] max-w-[320px]">
+                <div class="ui-field-group flex-1 min-w-[190px] max-w-[320px]">
                     <i data-lucide="search" class="w-4 h-4 shrink-0 text-[#8A857A]"></i>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un produit...' : 'Search a product...' }}" class="flex-1 min-w-0 bg-transparent text-[12.5px] focus:outline-none placeholder-[#8A857A]">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un produit...' : 'Search a product...' }}" class="ui-field-bare flex-1 min-w-0">
                 </div>
-                <select name="categorie" class="bg-white border border-[#E9E4D8] rounded-lg px-3 h-[38px] text-[12.5px] text-[#3B382F] focus:outline-none">
+                <select name="categorie" class="ui-field ui-select">
                     <option value="">{{ $isFr ? 'Catégorie' : 'Category' }}</option>
                     @foreach($industriesList as $ind)
                     <option value="{{ $ind->slug }}" {{ request('categorie') === $ind->slug ? 'selected' : '' }}>{{ $isFr ? $ind->name_fr : ($ind->name_en ?? $ind->name_fr) }}</option>
                     @endforeach
                 </select>
-                <select name="entreprise" class="bg-white border border-[#E9E4D8] rounded-lg px-3 h-[38px] text-[12.5px] text-[#3B382F] focus:outline-none max-w-[220px]">
+                <select name="entreprise" class="ui-field ui-select max-w-[220px]">
                     <option value="">{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}</option>
                     @foreach($businessOptions as $b)
                     <option value="{{ $b->slug }}" {{ request('entreprise') === $b->slug ? 'selected' : '' }}>{{ $isFr ? $b->name_fr : ($b->name_en ?? $b->name_fr) }}</option>
                     @endforeach
                 </select>
-                <select name="statut" class="bg-white border border-[#E9E4D8] rounded-lg px-3 h-[38px] text-[12.5px] text-[#3B382F] focus:outline-none">
+                <select name="statut" class="ui-field ui-select">
                     <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                     @foreach($statusMeta as $val => $meta)
                     <option value="{{ $val }}" {{ $currentStatut === $val ? 'selected' : '' }}>{{ $isFr ? $meta['fr'] : $meta['en'] }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                <button type="submit" class="ui-btn ui-btn-primary">
                     <i data-lucide="filter" class="w-4 h-4"></i>
                     {{ $isFr ? 'Filtrer' : 'Filter' }}
                 </button>
             </form>
 
             {{-- Products table --}}
-            <section class="mt-4 bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[980px]">
+            <section class="ui-card ui-card--flush mt-4">
+                <div class="ui-table-wrap">
+                    <table class="ui-table min-w-[980px]">
                         <thead>
-                            <tr class="bg-[#F8F4EC] text-left">
-                                <th class="pl-5 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Produit' : 'Product' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Catégorie' : 'Category' }}</th>
-                                <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Prix (FCFA)' : 'Price (FCFA)' }}</th>
-                                <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                <th class="px-2 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Stock</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Créé le' : 'Created' }}</th>
-                                <th class="px-2 pr-5 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                            <tr>
+                                <th>{{ $isFr ? 'Produit' : 'Product' }}</th>
+                                <th>{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}</th>
+                                <th>{{ $isFr ? 'Catégorie' : 'Category' }}</th>
+                                <th class="text-right">{{ $isFr ? 'Prix (FCFA)' : 'Price (FCFA)' }}</th>
+                                <th class="text-center">{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                <th class="text-right">Stock</th>
+                                <th>{{ $isFr ? 'Créé le' : 'Created' }}</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#F5F1E8]">
+                        <tbody>
                             @forelse($adminProducts as $p)
                             @php $meta = $statusMeta[$p->status] ?? null; @endphp
                             <tr>
-                                <td class="pl-5 pr-2 py-3">
+                                <td>
                                     <div class="flex items-center gap-3">
                                         @if($p->thumb_path)
                                         <img src="{{ asset('storage/' . $p->thumb_path) }}" alt="{{ $p->name_fr }}" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-[#EFEBE2]">
@@ -148,20 +148,20 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-2 py-3">
+                                <td>
                                     <p class="text-[12px] font-medium text-[#3B382F]">{{ $p->business_name_fr ? ($isFr ? $p->business_name_fr : ($p->business_name_en ?? $p->business_name_fr)) : '—' }}</p>
                                     @if($p->vendor_type && isset($vendorMeta[$p->vendor_type]))
                                     <p class="text-[11px] text-[#8A857A]">{{ $isFr ? $vendorMeta[$p->vendor_type]['fr'] : $vendorMeta[$p->vendor_type]['en'] }}</p>
                                     @endif
                                 </td>
-                                <td class="px-2 py-3 text-[12px] text-[#3B382F]">{{ $p->industry_fr ? ($isFr ? $p->industry_fr : ($p->industry_en ?? $p->industry_fr)) : '—' }}</td>
-                                <td class="px-2 py-3 text-right text-[12px] font-semibold text-[#1B1B18]">{{ $p->price_amount !== null ? number_format($p->price_amount, 0) : '—' }}</td>
-                                <td class="px-2 py-3 text-center">
+                                <td>{{ $p->industry_fr ? ($isFr ? $p->industry_fr : ($p->industry_en ?? $p->industry_fr)) : '—' }}</td>
+                                <td class="text-right font-semibold text-[#1B1B18]">{{ $p->price_amount !== null ? number_format($p->price_amount, 0) : '—' }}</td>
+                                <td class="text-center">
                                     <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $meta['pill'] ?? 'bg-[#F3F1EA] text-[#6F6B60]' }}">{{ $meta ? ($isFr ? $meta['fr'] : $meta['en']) : $p->status }}</span>
                                 </td>
-                                <td class="px-2 py-3 text-right text-[12px] text-[#3B382F]">{{ $p->quantity_available !== null ? number_format($p->quantity_available) : '—' }}</td>
-                                <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($p->created_at)->locale($isFr ? 'fr' : 'en')->translatedFormat('d M Y') }}</td>
-                                <td class="px-2 pr-5 py-3 text-right whitespace-nowrap">
+                                <td class="text-right">{{ $p->quantity_available !== null ? number_format($p->quantity_available) : '—' }}</td>
+                                <td class="whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($p->created_at)->locale($isFr ? 'fr' : 'en')->translatedFormat('d M Y') }}</td>
+                                <td class="text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1">
                                         <a href="{{ route('products.show', ['slug' => $p->slug, 'lang' => $lang]) }}" class="p-2 rounded-lg hover:bg-[#E2F3E8] text-[#157A43]" title="{{ $isFr ? 'Voir' : 'View' }}">
                                             <i data-lucide="eye" class="w-4 h-4"></i>
@@ -191,7 +191,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="8" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucun produit trouvé.' : 'No products found.' }}</td></tr>
+                            <tr><td colspan="8" class="ui-empty">{{ $isFr ? 'Aucun produit trouvé.' : 'No products found.' }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -212,21 +212,21 @@
                         $to = min($last, $cur + 2);
                     @endphp
                     <nav class="flex items-center gap-1">
-                        <a @if($adminProducts->onFirstPage()) aria-disabled="true" @else href="{{ $adminProducts->previousPageUrl() }}" @endif class="w-8 h-8 rounded-lg border border-[#E9E4D8] flex items-center justify-center {{ $adminProducts->onFirstPage() ? 'text-[#C9C3B4] cursor-default' : 'text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]' }}">
+                        <a @if($adminProducts->onFirstPage()) aria-disabled="true" @else href="{{ $adminProducts->previousPageUrl() }}" @endif class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center {{ $adminProducts->onFirstPage() ? 'text-[#C9C3B4] cursor-default' : 'text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]' }}">
                             <i data-lucide="chevron-left" class="w-4 h-4"></i>
                         </a>
                         @if($from > 1)
-                        <a href="{{ $adminProducts->url(1) }}" class="w-8 h-8 rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[12px] font-semibold text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]">1</a>
+                        <a href="{{ $adminProducts->url(1) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[12px] font-semibold text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]">1</a>
                         @if($from > 2)<span class="px-1 text-[12px] text-[#8A857A]">…</span>@endif
                         @endif
                         @foreach($adminProducts->getUrlRange($from, $to) as $page => $url)
-                        <a href="{{ $url }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-semibold {{ $page === $cur ? 'bg-[#0F4824] text-white' : 'border border-[#E9E4D8] text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]' }}">{{ $page }}</a>
+                        <a href="{{ $url }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-semibold {{ $page === $cur ? 'bg-[#0F4824] text-white' : 'border border-[#EAE5D8] text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]' }}">{{ $page }}</a>
                         @endforeach
                         @if($to < $last)
                         @if($to < $last - 1)<span class="px-1 text-[12px] text-[#8A857A]">…</span>@endif
-                        <a href="{{ $adminProducts->url($last) }}" class="w-8 h-8 rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[12px] font-semibold text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]">{{ number_format($last) }}</a>
+                        <a href="{{ $adminProducts->url($last) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[12px] font-semibold text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]">{{ number_format($last) }}</a>
                         @endif
-                        <a @if(!$adminProducts->hasMorePages()) aria-disabled="true" @else href="{{ $adminProducts->nextPageUrl() }}" @endif class="w-8 h-8 rounded-lg border border-[#E9E4D8] flex items-center justify-center {{ $adminProducts->hasMorePages() ? 'text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]' : 'text-[#C9C3B4] cursor-default' }}">
+                        <a @if(!$adminProducts->hasMorePages()) aria-disabled="true" @else href="{{ $adminProducts->nextPageUrl() }}" @endif class="w-8 h-8 rounded-lg border border-[#EAE5D8] flex items-center justify-center {{ $adminProducts->hasMorePages() ? 'text-[#3B382F] hover:border-[#14652F] hover:text-[#14652F]' : 'text-[#C9C3B4] cursor-default' }}">
                             <i data-lucide="chevron-right" class="w-4 h-4"></i>
                         </a>
                     </nav>
@@ -238,9 +238,9 @@
             {{-- Bottom cards --}}
             <div class="mt-5 grid lg:grid-cols-2 gap-4">
                 {{-- Produits par catégorie (Top 5) --}}
-                <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                <section class="ui-card">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Produits par catégorie (Top 5)' : 'Products by category (Top 5)' }}</h2>
+                        <h2 class="ui-card-title">{{ $isFr ? 'Produits par catégorie (Top 5)' : 'Products by category (Top 5)' }}</h2>
                         <a href="{{ route('admin.industries', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#14652F] hover:underline">{{ $isFr ? 'Voir tout →' : 'View all →' }}</a>
                     </div>
                     @php
@@ -286,8 +286,8 @@
                 </section>
 
                 {{-- Gamme de prix --}}
-                <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
-                    <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Gamme de prix' : 'Price range' }}</h2>
+                <section class="ui-card">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Gamme de prix' : 'Price range' }}</h2>
                     @php $pricedTotal = collect($priceRanges)->sum('cnt'); @endphp
                     @if($pricedTotal === 0)
                     <p class="mt-4 text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucun produit avec un prix renseigné.' : 'No products with a price set.' }}</p>

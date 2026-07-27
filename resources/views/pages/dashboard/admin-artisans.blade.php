@@ -62,11 +62,11 @@
 @section('content')
 
             <!-- Status tabs -->
-            <div class="mt-4 flex flex-wrap items-center gap-1.5 border-b border-[#E9E4D8]">
+            <div class="mt-4 flex flex-wrap items-center gap-1.5 border-b border-[#EAE5D8]">
                 @foreach($tabs as [$tabKey, $tabLabel, $tabCount])
                 @php $tabActive = $curStatut === $tabKey; @endphp
                 <a href="{{ route('admin.artisans', array_filter(['lang' => $lang, 'statut' => $tabKey])) }}"
-                   class="inline-flex items-center gap-1.5 rounded-t-lg px-3.5 py-2 text-[12.5px] border border-b-0 {{ $tabActive ? 'bg-white border-[#E9E4D8] font-bold text-[#0F4824]' : 'bg-transparent border-transparent text-[#6F6B60] hover:text-[#1B1B18]' }}">
+                   class="inline-flex items-center gap-1.5 rounded-t-lg px-3.5 py-2 text-[12.5px] border border-b-0 {{ $tabActive ? 'bg-white border-[#EAE5D8] font-bold text-[#0F4824]' : 'bg-transparent border-transparent text-[#6F6B60] hover:text-[#1B1B18]' }}">
                     {{ $tabLabel }}
                     <span class="text-[11px] {{ $tabActive ? 'text-[#157A43]' : 'text-[#8A857A]' }}">({{ $fmtNum($tabCount) }})</span>
                 </a>
@@ -78,56 +78,56 @@
                 <form method="GET" action="{{ route('admin.artisans') }}" class="flex flex-wrap items-center gap-2 px-4 pt-4 pb-3">
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     @if($curStatut)<input type="hidden" name="statut" value="{{ $curStatut }}">@endif
-                    <div class="flex items-center gap-2 flex-1 min-w-[190px] max-w-[280px] bg-white border border-[#E9E4D8] rounded-lg px-3 h-[36px]">
+                    <div class="ui-field-group flex-1 min-w-[190px] max-w-[280px]">
                         <i data-lucide="search" class="w-[14px] h-[14px] shrink-0 text-[#8A857A]"></i>
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un artisan...' : 'Search an artisan...' }}" class="flex-1 min-w-0 bg-transparent text-[12px] focus:outline-none placeholder-[#8A857A]">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un artisan...' : 'Search an artisan...' }}" class="ui-field-bare flex-1 min-w-0">
                     </div>
-                    <select name="region" class="h-[36px] border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] bg-white focus:outline-none">
+                    <select name="region" class="ui-field ui-select">
                         <option value="">{{ $isFr ? 'Région' : 'Region' }}</option>
                         @foreach($artisanRegions as $r)
                         <option value="{{ $r->code }}" {{ request('region') === $r->code ? 'selected' : '' }}>{{ $isFr ? $r->name_fr : $r->name_en }}</option>
                         @endforeach
                     </select>
-                    <select name="metier" class="h-[36px] border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] bg-white focus:outline-none">
+                    <select name="metier" class="ui-field ui-select">
                         <option value="">{{ $isFr ? 'Métier' : 'Craft' }}</option>
                         @foreach($artisanMetiers as $m)
                         <option value="{{ $m->slug }}" {{ request('metier') === $m->slug ? 'selected' : '' }}>{{ $isFr ? $m->name_fr : $m->name_en }}</option>
                         @endforeach
                     </select>
-                    <select name="statut" class="h-[36px] border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] bg-white focus:outline-none">
+                    <select name="statut" class="ui-field ui-select">
                         <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                         <option value="approuves" {{ $curStatut === 'approuves' ? 'selected' : '' }}>{{ $isFr ? 'Approuvés' : 'Approved' }}</option>
                         <option value="en-attente" {{ $curStatut === 'en-attente' ? 'selected' : '' }}>{{ $isFr ? 'En attente' : 'Pending' }}</option>
                         <option value="suspendus" {{ $curStatut === 'suspendus' ? 'selected' : '' }}>{{ $isFr ? 'Suspendus' : 'Suspended' }}</option>
                         <option value="rejetes" {{ $curStatut === 'rejetes' ? 'selected' : '' }}>{{ $isFr ? 'Rejetés' : 'Rejected' }}</option>
                     </select>
-                    <select name="kyc" class="h-[36px] border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] bg-white focus:outline-none">
+                    <select name="kyc" class="ui-field ui-select">
                         <option value="">{{ $isFr ? 'Vérification KYC' : 'KYC Verification' }}</option>
                         <option value="verifie" {{ request('kyc') === 'verifie' ? 'selected' : '' }}>{{ $isFr ? 'Vérifié' : 'Verified' }}</option>
                         <option value="en-cours" {{ request('kyc') === 'en-cours' ? 'selected' : '' }}>{{ $isFr ? 'En cours' : 'In progress' }}</option>
                         <option value="en-attente" {{ request('kyc') === 'en-attente' ? 'selected' : '' }}>{{ $isFr ? 'En attente' : 'Pending' }}</option>
                     </select>
-                    <button type="submit" class="ml-auto inline-flex items-center gap-2 border border-[#0F4824] text-[#0F4824] hover:bg-[#0F4824] hover:text-white rounded-lg px-3.5 h-[36px] text-[12px] font-semibold transition-colors">
+                    <button type="submit" class="ui-btn ui-btn-secondary ml-auto">
                         <i data-lucide="filter" class="w-[14px] h-[14px]"></i>
                         {{ $isFr ? 'Filtrer' : 'Filter' }}
                     </button>
                 </form>
 
                 <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[860px]">
+                <div class="ui-table-wrap">
+                    <table class="ui-table min-w-[860px]">
                         <thead>
-                            <tr class="bg-[#F8F4EC] text-left">
-                                <th class="pl-5 pr-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Artisan' : 'Artisan' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Région' : 'Region' }}</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Métier' : 'Craft' }}</th>
-                                <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                <th class="px-2 py-3 text-center text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">KYC</th>
-                                <th class="px-2 py-3 text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Inscrit le' : 'Registered on' }}</th>
-                                <th class="px-2 pr-5 py-3 text-right text-[11px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                            <tr>
+                                <th>{{ $isFr ? 'Artisan' : 'Artisan' }}</th>
+                                <th>{{ $isFr ? 'Région' : 'Region' }}</th>
+                                <th>{{ $isFr ? 'Métier' : 'Craft' }}</th>
+                                <th class="text-center">{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                <th class="text-center">KYC</th>
+                                <th>{{ $isFr ? 'Inscrit le' : 'Registered on' }}</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#F5F1E8]">
+                        <tbody>
                             @forelse($artisans as $a)
                             @php
                                 $st = $statusMeta[$a->status] ?? $statusMeta['draft'];
@@ -136,7 +136,7 @@
                                 $hue = $avatarHues[$a->business_id % count($avatarHues)];
                             @endphp
                             <tr>
-                                <td class="pl-5 pr-2 py-3">
+                                <td>
                                     <div class="flex items-center gap-3">
                                         @if($a->logo)
                                         <img src="{{ asset('storage/' . $a->logo) }}" alt="" class="w-9 h-9 rounded-full object-cover shrink-0">
@@ -151,23 +151,23 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-2 py-3 text-[12px] text-[#3B382F]">{{ $isFr ? ($a->region_fr ?? '—') : ($a->region_en ?? $a->region_fr ?? '—') }}</td>
-                                <td class="px-2 py-3 text-[12px] text-[#3B382F]">{{ $isFr ? ($a->metier_fr ?? '—') : ($a->metier_en ?? $a->metier_fr ?? '—') }}</td>
-                                <td class="px-2 py-3 text-center">
+                                <td>{{ $isFr ? ($a->region_fr ?? '—') : ($a->region_en ?? $a->region_fr ?? '—') }}</td>
+                                <td>{{ $isFr ? ($a->metier_fr ?? '—') : ($a->metier_en ?? $a->metier_fr ?? '—') }}</td>
+                                <td class="text-center">
                                     <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $st['pill'] }}">{{ $st['label'] }}</span>
                                 </td>
-                                <td class="px-2 py-3 text-center">
+                                <td class="text-center">
                                     <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $ky['pill'] }}">{{ $ky['label'] }}</span>
                                 </td>
-                                <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $fmtDate($a->created_at) }}</td>
-                                <td class="px-2 pr-5 py-3 text-right whitespace-nowrap">
+                                <td class="whitespace-nowrap">{{ $fmtDate($a->created_at) }}</td>
+                                <td class="text-right whitespace-nowrap">
                                     <a href="{{ route('admin.businesses.detail', ['id' => $a->business_id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex p-1.5 rounded-md text-[#157A43] hover:bg-[#E2F3E8]"><i data-lucide="eye" class="w-4 h-4"></i></a>
                                     <a href="{{ route('admin.businesses.detail', ['id' => $a->business_id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="inline-flex p-1.5 rounded-md text-[#C97A16] hover:bg-[#FDF0DC]"><i data-lucide="pencil" class="w-4 h-4"></i></a>
                                     <a href="{{ route('admin.businesses.detail', ['id' => $a->business_id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Plus d\'options' : 'More options' }}" class="inline-flex p-1.5 rounded-md text-[#8A857A] hover:bg-[#F5F1E8]"><i data-lucide="more-horizontal" class="w-4 h-4"></i></a>
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="7" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucun artisan ne correspond à ces critères.' : 'No artisan matches these criteria.' }}</td></tr>
+                            <tr><td colspan="7" class="ui-empty">{{ $isFr ? 'Aucun artisan ne correspond à ces critères.' : 'No artisan matches these criteria.' }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -225,8 +225,8 @@
             </section>
 
             <!-- STATISTIQUES ARTISANS -->
-            <section class="mt-5 bg-white border border-[#EFEBE2] rounded-2xl p-4">
-                <p class="text-[11px] font-bold tracking-[0.08em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statistiques artisans' : 'Artisan statistics' }}</p>
+            <section class="ui-card mt-5">
+                <p class="ui-eyebrow">{{ $isFr ? 'Statistiques artisans' : 'Artisan statistics' }}</p>
                 <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                     @foreach($statChips as [$chipIcon, $chipNum, $chipLabel, $chipHue])
                     <div class="flex items-center gap-3 border border-[#EFEBE2] rounded-xl px-3.5 py-3">
@@ -245,8 +245,8 @@
             <!-- Bottom cards -->
             <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <!-- Nouveaux artisans par mois -->
-                <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
-                    <p class="text-[11px] font-bold tracking-[0.08em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Nouveaux artisans par mois' : 'New artisans per month' }}</p>
+                <section class="ui-card">
+                    <p class="ui-eyebrow">{{ $isFr ? 'Nouveaux artisans par mois' : 'New artisans per month' }}</p>
                     <div class="mt-4 flex items-end gap-1.5 h-[150px]">
                         @foreach($artisansPerMonth as $mo)
                         <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end" title="{{ $mo['label'] }} : {{ $fmtNum($mo['count']) }}">
@@ -262,9 +262,9 @@
                 </section>
 
                 <!-- Artisans par métier -->
-                <section class="bg-white border border-[#EFEBE2] rounded-2xl p-4">
+                <section class="ui-card">
                     <div class="flex items-center justify-between">
-                        <p class="text-[11px] font-bold tracking-[0.08em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Artisans par métier' : 'Artisans by craft' }}</p>
+                        <p class="ui-eyebrow">{{ $isFr ? 'Artisans par métier' : 'Artisans by craft' }}</p>
                         <a href="{{ route('admin.industries', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
                     </div>
                     <div class="mt-3 divide-y divide-[#F5F1E8]">
@@ -275,7 +275,7 @@
                             <p class="text-[12px] font-semibold text-[#3B382F]">{{ $fmtNum($tm->artisan_count) }} <span class="font-normal text-[#8A857A]">({{ number_format($tm->artisan_count / $topMetierTotal * 100, 1, $isFr ? ',' : '.', '') }}%)</span></p>
                         </div>
                         @empty
-                        <p class="py-6 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>
+                        <p class="ui-empty">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>
                         @endforelse
                     </div>
                 </section>

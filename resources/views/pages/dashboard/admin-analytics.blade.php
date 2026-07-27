@@ -67,12 +67,12 @@
             </nav>
         </div>
         <div class="flex flex-wrap items-center gap-2.5">
-            <div class="h-[40px] inline-flex items-center gap-3 bg-white border border-[#E5E7E5] rounded-lg px-4 text-[12.5px] text-[#3B382F]">
+            <div class="h-[40px] inline-flex items-center gap-3 bg-white border border-[#EAE5D8] rounded-lg px-4 text-[12.5px] text-[#3B382F]">
                 <i data-lucide="calendar" class="w-4 h-4 text-[#8A857A]"></i>
                 <span class="text-[#8A857A]">{{ $isFr ? 'Période sélectionnée' : 'Selected period' }}</span>
                 <span class="text-[#B9B4A9]">—</span>
             </div>
-            <button type="button" class="h-[40px] inline-flex items-center gap-2 bg-[#0B4D2C] hover:bg-[#14652F] rounded-lg px-4 text-[12.5px] font-semibold text-white transition-colors">
+            <button type="button" class="ui-btn ui-btn-primary">
                 <i data-lucide="refresh-cw" class="w-4 h-4"></i>{{ $isFr ? 'Actualiser' : 'Refresh' }}
             </button>
         </div>
@@ -81,7 +81,7 @@
     {{-- KPI cards --}}
     <section class="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         @foreach($anKpiCards as [$kIcon, $kColor, $kTile, $kLabel, $kValue, $kMoney, $kSpark, $kFill])
-        <div class="bg-white border border-gray-200 rounded-xl px-4 py-4 flex flex-col">
+        <div class="ui-card flex flex-col">
             <div class="flex items-center justify-between">
                 <span class="w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="background-color: {{ $kTile }}">
                     <i data-lucide="{{ $kIcon }}" class="w-[20px] h-[20px]" style="color: {{ $kColor }};stroke-width:1.8"></i>
@@ -104,7 +104,7 @@
 
     {{-- Second KPI strip: Abonnements actifs (from $anKpis) --}}
     <section class="mt-4 grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div class="bg-white border border-gray-200 rounded-xl px-5 py-4 flex items-center gap-4">
+        <div class="ui-card flex items-center gap-4">
             <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center bg-[#FBF3DE]">
                 <i data-lucide="credit-card" class="w-[22px] h-[22px] text-[#C9942E]" style="stroke-width:1.8"></i>
             </span>
@@ -113,7 +113,7 @@
                 <p class="mt-0.5 text-[22px] font-bold text-[#1B1B18] leading-none">{{ is_numeric($an['subs_active'] ?? null) ? number_format((float) $an['subs_active']) : '—' }}</p>
             </div>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl px-5 py-4 flex items-center gap-4">
+        <div class="ui-card flex items-center gap-4">
             <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center bg-[#E8F2EC]">
                 <i data-lucide="wallet" class="w-[22px] h-[22px] text-[#157A43]" style="stroke-width:1.8"></i>
             </span>
@@ -122,7 +122,7 @@
                 <p class="mt-0.5 text-[22px] font-bold text-[#1B1B18] leading-none">{{ is_numeric($anRevenue) ? number_format((float) $anRevenue) . ' FCFA' : '—' }}</p>
             </div>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl px-5 py-4 flex items-center gap-4">
+        <div class="ui-card flex items-center gap-4">
             <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center bg-[#E7EEFD]">
                 <i data-lucide="trending-up" class="w-[22px] h-[22px] text-[#2563EB]" style="stroke-width:1.8"></i>
             </span>
@@ -137,13 +137,13 @@
     <div class="mt-5 grid grid-cols-1 xl:grid-cols-[1.5fr_1fr] gap-5 items-start">
 
         {{-- Growth chart --}}
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-start justify-between gap-3">
                 <div>
-                    <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Évolution des Entreprises' : 'Business Growth' }}</h2>
+                    <h2 class="ui-card-title">{{ $isFr ? 'Évolution des Entreprises' : 'Business Growth' }}</h2>
                     <p class="mt-0.5 text-[12px] text-[#8A857A]">{{ $isFr ? 'Nouvelles entreprises par mois' : 'New businesses per month' }}</p>
                 </div>
-                <span class="h-[34px] inline-flex items-center gap-2 bg-[#F6F7F6] border border-[#EDEEED] rounded-lg px-3 text-[12px] font-medium text-[#3B382F]">
+                <span class="h-[34px] inline-flex items-center gap-2 bg-[#F6F7F6] border border-[#EFEBE2] rounded-lg px-3 text-[12px] font-medium text-[#3B382F]">
                     {{ $isFr ? '6 derniers mois' : 'Last 6 months' }}
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
                 </span>
@@ -178,7 +178,7 @@
                 </svg>
 
                 @if($anLastPoint)
-                <div class="absolute top-2 right-3 bg-white border border-[#E5E7E5] rounded-lg px-3 py-2 shadow-sm">
+                <div class="absolute top-2 right-3 bg-white border border-[#EAE5D8] rounded-lg px-3 py-2 shadow-sm">
                     <p class="text-[11px] text-[#8A857A]">{{ $anLastPoint['label'] }}</p>
                     <p class="text-[14px] font-bold text-[#0B4D2C] leading-tight">{{ number_format($anLastPoint['value']) }}</p>
                     <p class="text-[10.5px] text-[#8A857A]">{{ $isFr ? 'nouvelles entreprises' : 'new businesses' }}</p>
@@ -188,10 +188,10 @@
         </section>
 
         {{-- Répartition par catégorie (real top categories, ranked bar list) --}}
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-center justify-between">
-                <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Répartition par Catégorie' : 'By Category' }}</h2>
-                <span class="h-[34px] inline-flex items-center gap-2 bg-[#F6F7F6] border border-[#EDEEED] rounded-lg px-3 text-[12px] font-medium text-[#3B382F]">
+                <h2 class="ui-card-title">{{ $isFr ? 'Répartition par Catégorie' : 'By Category' }}</h2>
+                <span class="h-[34px] inline-flex items-center gap-2 bg-[#F6F7F6] border border-[#EFEBE2] rounded-lg px-3 text-[12px] font-medium text-[#3B382F]">
                     {{ $isFr ? 'Ce mois' : 'This month' }}
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
                 </span>
@@ -217,7 +217,7 @@
                     </div>
                 </div>
                 @empty
-                <p class="py-8 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée de catégorie disponible.' : 'No category data available.' }}</p>
+                <p class="ui-empty">{{ $isFr ? 'Aucune donnée de catégorie disponible.' : 'No category data available.' }}</p>
                 @endforelse
             </div>
         </section>
@@ -226,9 +226,9 @@
     {{-- Secondary analytics panels (no data source → neutral empty-states) --}}
     <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-center justify-between">
-                <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Visites par Source' : 'Visits by Source' }}</h2>
+                <h2 class="ui-card-title">{{ $isFr ? 'Visites par Source' : 'Visits by Source' }}</h2>
                 <span class="text-[12px] text-[#B9B4A9]">—</span>
             </div>
             <div class="mt-8 flex flex-col items-center justify-center text-center py-4">
@@ -239,9 +239,9 @@
             </div>
         </section>
 
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-center justify-between">
-                <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Visites par Appareil' : 'Visits by Device' }}</h2>
+                <h2 class="ui-card-title">{{ $isFr ? 'Visites par Appareil' : 'Visits by Device' }}</h2>
                 <span class="text-[12px] text-[#B9B4A9]">—</span>
             </div>
             <div class="mt-5 space-y-4">
@@ -257,9 +257,9 @@
             </div>
         </section>
 
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-center justify-between">
-                <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Répartition Géographique' : 'Geographic Distribution' }}</h2>
+                <h2 class="ui-card-title">{{ $isFr ? 'Répartition Géographique' : 'Geographic Distribution' }}</h2>
                 <span class="text-[12px] text-[#B9B4A9]">—</span>
             </div>
             <div class="mt-8 flex flex-col items-center justify-center text-center py-4">
@@ -273,9 +273,9 @@
 
     {{-- Bottom panels: recent activity + alerts (no data source → empty-state) --}}
     <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-center justify-between">
-                <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité Récente' : 'Recent Activity' }}</h2>
+                <h2 class="ui-card-title">{{ $isFr ? 'Activité Récente' : 'Recent Activity' }}</h2>
                 <span class="text-[12px] text-[#B9B4A9]">—</span>
             </div>
             <div class="mt-6 flex flex-col items-center justify-center text-center py-6">
@@ -286,9 +286,9 @@
             </div>
         </section>
 
-        <section class="bg-white border border-gray-200 rounded-xl px-5 py-5">
+        <section class="ui-card">
             <div class="flex items-center justify-between">
-                <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Alertes & Notifications' : 'Alerts & Notifications' }}</h2>
+                <h2 class="ui-card-title">{{ $isFr ? 'Alertes & Notifications' : 'Alerts & Notifications' }}</h2>
                 <span class="text-[12px] text-[#B9B4A9]">—</span>
             </div>
             <div class="mt-6 flex flex-col items-center justify-center text-center py-6">

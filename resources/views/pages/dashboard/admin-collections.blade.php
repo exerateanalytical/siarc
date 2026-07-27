@@ -60,11 +60,11 @@
             {{-- Title / breadcrumb + actions --}}
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5 shrink-0">
-                    <a href="{{ route('admin.collections.create', ['lang' => $lang]) }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-white transition-colors">
+                    <a href="{{ route('admin.collections.create', ['lang' => $lang]) }}" class="ui-btn ui-btn-primary">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Ajouter une collection' : 'Add a collection' }}
                     </a>
-                    <a href="{{ route('admin.cms') }}" class="inline-flex items-center gap-2 bg-white border border-[#DCD6C8] hover:border-[#157A43] rounded-lg px-4 h-[38px] text-[12.5px] font-semibold text-[#157A43] transition-colors">
+                    <a href="{{ route('admin.cms') }}" class="ui-btn ui-btn-secondary">
                         <i data-lucide="download" class="w-4 h-4"></i>
                         {{ $isFr ? 'Importer' : 'Import' }}
                     </a>
@@ -84,7 +84,7 @@
             @endphp
             <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
                 @foreach($hcChips as [$hcIcon, $hcIconColor, $hcTile, $hcLabel, $hcValue])
-                <div class="bg-white border border-[#EFEBE2] rounded-2xl px-4 py-3.5 flex items-start gap-3">
+                <div class="ui-card flex items-start gap-3">
                     <span class="shrink-0 w-[38px] h-[38px] rounded-full flex items-center justify-center" style="background: {{ $hcTile }}">
                         <i data-lucide="{{ $hcIcon }}" class="w-[18px] h-[18px]" style="color: {{ $hcIconColor }}"></i>
                     </span>
@@ -99,73 +99,73 @@
             <div class="mt-4 grid grid-cols-1 xl:grid-cols-[1fr_355px] gap-4 items-start">
                 {{-- LEFT: filters + table + pagination + performance/activity --}}
                 <div class="min-w-0">
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl overflow-hidden">
+                    <section class="ui-card ui-card--flush">
                         {{-- Filter bar --}}
                         <form method="GET" action="{{ route('admin.collections') }}" class="p-4 flex flex-wrap items-center gap-2.5 border-b border-[#F5F1E8]">
                             <input type="hidden" name="lang" value="{{ $lang }}">
-                            <div class="flex items-center gap-2 bg-[#FBF9F4] border border-[#E9E4D8] rounded-lg px-3 h-[36px] flex-1 min-w-[180px]">
+                            <div class="ui-field-group flex-1 min-w-[180px]">
                                 <i data-lucide="search" class="w-[15px] h-[15px] text-[#8A857A] shrink-0"></i>
-                                <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher une collection...' : 'Search a collection...' }}" class="flex-1 min-w-0 bg-transparent text-[12px] focus:outline-none placeholder-[#8A857A]">
+                                <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher une collection...' : 'Search a collection...' }}" class="ui-field-bare flex-1 min-w-0">
                             </div>
-                            <select name="region" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                            <select name="region" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Région' : 'Region' }}</option>
                                 @foreach($hcRegions as $hcRegion)
                                 <option value="{{ $hcRegion }}" @selected($filters['region'] === $hcRegion)>{{ $hcRegion }}</option>
                                 @endforeach
                             </select>
-                            <select name="categorie" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                            <select name="categorie" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Catégorie' : 'Category' }}</option>
                                 @foreach($hcCategories as $hcCategory)
                                 <option value="{{ $hcCategory }}" @selected($filters['categorie'] === $hcCategory)>{{ $hcCategory }}</option>
                                 @endforeach
                             </select>
-                            <select name="statut" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                            <select name="statut" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Statut' : 'Status' }}</option>
                                 @foreach($hcStatusMeta as $hcKey => [$hcLabel2])
                                 <option value="{{ $hcKey }}" @selected($filters['statut'] === $hcKey)>{{ $hcLabel2 }}</option>
                                 @endforeach
                             </select>
-                            <select name="visibilite" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                            <select name="visibilite" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Visibilité' : 'Visibility' }}</option>
                                 <option value="public" @selected($filters['visibilite'] === 'public')>{{ $isFr ? 'Publique' : 'Public' }}</option>
                                 <option value="private" @selected($filters['visibilite'] === 'private')>{{ $isFr ? 'Privée' : 'Private' }}</option>
                             </select>
-                            <select name="date" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
+                            <select name="date" class="ui-field ui-select">
                                 <option value="">{{ $isFr ? 'Date de création' : 'Creation date' }}</option>
                                 <option value="recent" @selected($filters['date'] === 'recent')>{{ $isFr ? 'Plus récentes' : 'Most recent' }}</option>
                                 <option value="ancienne" @selected($filters['date'] === 'ancienne')>{{ $isFr ? 'Plus anciennes' : 'Oldest' }}</option>
                             </select>
-                            <button type="submit" class="inline-flex items-center gap-1.5 h-[36px] bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-3.5 text-[12px] font-semibold text-white transition-colors">
+                            <button type="submit" class="ui-btn ui-btn-primary">
                                 <i data-lucide="filter" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Filtrer' : 'Filter' }}
                             </button>
                             <span class="hidden lg:flex items-center gap-1 ml-auto">
-                                <span class="w-[32px] h-[32px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
+                                <span class="w-[32px] h-[32px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
                                 <span class="w-[32px] h-[32px] rounded-lg bg-[#0F4824] flex items-center justify-center text-white"><i data-lucide="list" class="w-4 h-4"></i></span>
                             </span>
                         </form>
 
                         {{-- Collections table --}}
-                        <div class="overflow-x-auto">
-                            <table class="w-full min-w-[900px]">
+                        <div class="ui-table-wrap">
+                            <table class="ui-table min-w-[900px]">
                                 <thead>
-                                    <tr class="bg-[#F8F4EC] text-left">
-                                        <th class="pl-5 pr-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Collection</th>
-                                        <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Région' : 'Region' }}</th>
-                                        <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Catégorie' : 'Category' }}</th>
-                                        <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Artisans</th>
-                                        <th class="px-2 py-3 text-center text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Produits' : 'Products' }}</th>
-                                        <th class="px-2 py-3 text-center text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Statut' : 'Status' }}</th>
-                                        <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Visibilité' : 'Visibility' }}</th>
-                                        <th class="px-2 py-3 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">{{ $isFr ? 'Visites' : 'Visits' }}</th>
-                                        <th class="px-2 py-3 text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase whitespace-nowrap">{{ $isFr ? 'Créé le' : 'Created' }}</th>
-                                        <th class="px-2 pr-5 py-3 text-right text-[10.5px] font-bold tracking-[0.05em] text-[#8A6D1F] uppercase">Actions</th>
+                                    <tr>
+                                        <th>Collection</th>
+                                        <th>{{ $isFr ? 'Région' : 'Region' }}</th>
+                                        <th>{{ $isFr ? 'Catégorie' : 'Category' }}</th>
+                                        <th>Artisans</th>
+                                        <th class="text-center">{{ $isFr ? 'Produits' : 'Products' }}</th>
+                                        <th class="text-center">{{ $isFr ? 'Statut' : 'Status' }}</th>
+                                        <th>{{ $isFr ? 'Visibilité' : 'Visibility' }}</th>
+                                        <th class="text-right">{{ $isFr ? 'Visites' : 'Visits' }}</th>
+                                        <th class="whitespace-nowrap">{{ $isFr ? 'Créé le' : 'Created' }}</th>
+                                        <th class="text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-[#F5F1E8]">
+                                <tbody>
                                     @forelse($collections as $c)
                                     @php [$hcStatusLabel, $hcStatusCls] = $hcStatusMeta[$c->status] ?? [$c->status, 'bg-[#EEECE6] text-[#6F6B60]']; @endphp
                                     <tr>
-                                        <td class="pl-5 pr-2 py-3">
+                                        <td>
                                             <div class="flex items-center gap-3 min-w-[210px]">
                                                 @if($c->cover_image)
                                                 <img src="{{ asset('storage/' . $c->cover_image) }}" alt="" class="w-[34px] h-[34px] rounded-lg object-cover shrink-0">
@@ -180,12 +180,12 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-2 py-3">
+                                        <td>
                                             <p class="text-[12px] font-semibold text-[#3B382F]">{{ $isFr ? $c->region_fr : ($c->region_en ?? $c->region_fr) }}</p>
                                             <p class="text-[11px] text-[#8A857A]">{{ $c->city }}</p>
                                         </td>
-                                        <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $isFr ? $c->category_fr : ($c->category_en ?? $c->category_fr) }}</td>
-                                        <td class="px-2 py-3">
+                                        <td class="whitespace-nowrap">{{ $isFr ? $c->category_fr : ($c->category_en ?? $c->category_fr) }}</td>
+                                        <td>
                                             <div class="flex items-center">
                                                 @foreach(['#C9DCCF', '#E9C25A', '#D8A47F'] as $hcJ => $hcTone)
                                                 <span class="w-[22px] h-[22px] rounded-full border-2 border-white flex items-center justify-center {{ $hcJ > 0 ? '-ml-2' : '' }}" style="background: {{ $hcTone }}"><i data-lucide="user" class="w-[11px] h-[11px] text-[#0B3B20]"></i></span>
@@ -193,24 +193,24 @@
                                                 <span class="-ml-1.5 min-w-[26px] h-[22px] px-1 rounded-full bg-[#F1EDE2] border-2 border-white text-[10px] font-bold text-[#55524A] flex items-center justify-center">+{{ $c->artisans_count }}</span>
                                             </div>
                                         </td>
-                                        <td class="px-2 py-3 text-center text-[12.5px] font-semibold text-[#1B1B18]">{{ $c->products_count }}</td>
-                                        <td class="px-2 py-3 text-center"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $hcStatusCls }}">{{ $hcStatusLabel }}</span></td>
-                                        <td class="px-2 py-3">
+                                        <td class="text-center font-semibold text-[#1B1B18]">{{ $c->products_count }}</td>
+                                        <td class="text-center"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $hcStatusCls }}">{{ $hcStatusLabel }}</span></td>
+                                        <td>
                                             <span class="inline-flex items-center gap-1.5 text-[12px] text-[#3B382F] whitespace-nowrap">
                                                 <i data-lucide="{{ $c->visibility === 'public' ? 'globe' : 'lock' }}" class="w-3.5 h-3.5 text-[#8A857A]"></i>
                                                 {{ $c->visibility === 'public' ? ($isFr ? 'Publique' : 'Public') : ($isFr ? 'Privée' : 'Private') }}
                                             </span>
                                         </td>
-                                        <td class="px-2 py-3 text-right text-[12px] text-[#3B382F]">{{ number_format($c->visits_count) }}</td>
-                                        <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $hcDate($c->created_at) }}</td>
-                                        <td class="px-2 pr-5 py-3 text-right whitespace-nowrap">
-                                            <a href="{{ route('products.index', ['region' => $c->region_fr, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43]"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
-                                            <a href="{{ route('admin.cms') }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
-                                            <a href="{{ route('admin.products') }}" title="{{ $isFr ? 'Plus d\'options' : 'More options' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18]"><i data-lucide="more-vertical" class="w-3.5 h-3.5"></i></a>
+                                        <td class="text-right">{{ number_format($c->visits_count) }}</td>
+                                        <td class="whitespace-nowrap">{{ $hcDate($c->created_at) }}</td>
+                                        <td class="text-right whitespace-nowrap">
+                                            <a href="{{ route('products.index', ['region' => $c->region_fr, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43]"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
+                                            <a href="{{ route('admin.cms') }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
+                                            <a href="{{ route('admin.products') }}" title="{{ $isFr ? 'Plus d\'options' : 'More options' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18]"><i data-lucide="more-vertical" class="w-3.5 h-3.5"></i></a>
                                         </td>
                                     </tr>
                                     @empty
-                                    <tr><td colspan="10" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune collection.' : 'No collections.' }}</td></tr>
+                                    <tr><td colspan="10" class="ui-empty">{{ $isFr ? 'Aucune collection.' : 'No collections.' }}</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
@@ -224,19 +224,19 @@
                                     : 'Showing 1 to ' . count($collections) . ' of ' . $hcTotal . ' collections' }}
                             </p>
                             <div class="flex items-center gap-1.5">
-                                <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
+                                <span class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
                                 <span class="w-[28px] h-[28px] rounded-lg bg-[#0F4824] text-white text-[11.5px] font-bold flex items-center justify-center">1</span>
-                                <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
-                                <span class="ml-2 h-[28px] rounded-lg border border-[#E9E4D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center">10 / page</span>
+                                <span class="w-[28px] h-[28px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                                <span class="ml-2 h-[28px] rounded-lg border border-[#EAE5D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center">10 / page</span>
                             </div>
                         </div>
                     </section>
 
                     {{-- Bottom row: performances + recent activity --}}
                     <div class="mt-4 grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-4 items-start">
-                        <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                        <section class="ui-card">
                             <div class="flex items-center justify-between gap-3">
-                                <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Performances des collections' : 'Collection performance' }}</h2>
+                                <h2 class="ui-card-title">{{ $isFr ? 'Performances des collections' : 'Collection performance' }}</h2>
                                 <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                             </div>
                             <div class="mt-4 grid grid-cols-2 xl:grid-cols-4 gap-4">
@@ -270,9 +270,9 @@
                             </div>
                         </section>
 
-                        <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                        <section class="ui-card">
                             <div class="flex items-center justify-between gap-3">
-                                <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
+                                <h2 class="ui-card-title">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
                                 <a href="{{ route('admin.audit-log') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir toutes' : 'See all' }} →</a>
                             </div>
                             @php
@@ -304,9 +304,9 @@
 
                 {{-- RIGHT rail: donut + map + featured artisan --}}
                 <div class="space-y-4">
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Répartition par catégorie' : 'Breakdown by category' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Répartition par catégorie' : 'Breakdown by category' }}</h2>
                             <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <div class="mt-4 flex items-center gap-4">
@@ -328,17 +328,17 @@
                         </div>
                     </section>
 
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Collections par région' : 'Collections by region' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Collections par région' : 'Collections by region' }}</h2>
                             <a href="{{ route('admin.regions') }}" class="shrink-0 text-[11px] font-semibold text-[#157A43]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <img src="{{ asset('images/landing/hc-map.png') }}" alt="{{ $isFr ? 'Carte des collections par région' : 'Map of collections by region' }}" class="mt-3 w-full object-contain">
                     </section>
 
-                    <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
+                    <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Artisan à l\'honneur' : 'Featured artisan' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Artisan à l\'honneur' : 'Featured artisan' }}</h2>
                             @if($hcFeatured)<a href="{{ route('admin.businesses.detail', ['id' => $hcFeatured->id, 'lang' => $lang]) }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le profil' : 'View profile' }} →</a>@endif
                         </div>
                         {{-- The design named an artisan and gave him invented collection/product/visit

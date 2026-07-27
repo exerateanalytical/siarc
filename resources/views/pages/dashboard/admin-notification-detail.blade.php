@@ -23,7 +23,7 @@
 @endphp
 
 @section('content')
-            <a href="{{ route('admin.notifications', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-4 h-[38px] text-[12px] font-semibold text-[#3B382F]"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour':'Back' }}</a>
+            <a href="{{ route('admin.notifications', ['lang'=>$lang]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour':'Back' }}</a>
 
             <div class="mt-4 grid grid-cols-1 2xl:grid-cols-[1fr_320px] gap-5 items-start">
                 <div class="space-y-5">
@@ -41,22 +41,22 @@
                     </section>
 
                     {{-- Content --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                        <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr?'Contenu de la notification':'Notification content' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Contenu de la notification':'Notification content' }}</h2>
                         <dl class="mt-4 space-y-3 text-[12.5px]">
                             <div class="flex gap-4"><dt class="w-28 shrink-0 text-[#6F6B60]">{{ $isFr?'Titre':'Title' }} :</dt><dd class="font-semibold text-[#1B1B18]">{{ $notification->title }}</dd></div>
                             <div class="flex gap-4"><dt class="w-28 shrink-0 text-[#6F6B60]">Message :</dt><dd class="text-[#3B382F]">{{ $notification->body }}</dd></div>
                             @if($notification->link)
-                            <div class="flex gap-4"><dt class="w-28 shrink-0 text-[#6F6B60]">{{ $isFr?'Bouton d\'action':'Action button' }} :</dt><dd><a href="{{ $notification->link }}" class="inline-flex items-center gap-1.5 bg-[#0F4824] text-white rounded-lg px-3.5 py-1.5 text-[12px] font-semibold">{{ $isFr?'Voir':'View' }}</a></dd></div>
+                            <div class="flex gap-4"><dt class="w-28 shrink-0 text-[#6F6B60]">{{ $isFr?'Bouton d\'action':'Action button' }} :</dt><dd><a href="{{ $notification->link }}" class="ui-btn ui-btn-primary ui-btn-sm">{{ $isFr?'Voir':'View' }}</a></dd></div>
                             <div class="flex gap-4"><dt class="w-28 shrink-0 text-[#6F6B60]">{{ $isFr?'Lien':'Link' }} :</dt><dd><a href="{{ $notification->link }}" class="text-[12px] text-[#3565DE] underline break-all">{{ url($notification->link) }}</a></dd></div>
                             @endif
                         </dl>
                     </section>
 
                     {{-- Email preview --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                        <h2 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr?'Aperçu de l\'email':'Email preview' }}</h2>
-                        <div class="mt-4 border border-[#EFF0EF] rounded-xl overflow-hidden">
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Aperçu de l\'email':'Email preview' }}</h2>
+                        <div class="mt-4 border border-[#EFEBE2] rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-[#0E3D22] to-[#12522C] px-6 py-4 flex items-center gap-3"><img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-9 h-10 object-contain"><div><p class="text-[11px] font-bold text-white uppercase leading-tight">Artisan Hub 237<br>de l'Artisanat du Cameroun</p></div></div>
                             <div class="px-6 py-5"><p class="text-[13px] text-[#1B1B18]">{{ $isFr?'Bonjour,':'Hello,' }}</p><p class="mt-2 text-[12.5px] text-[#3B382F]">{{ $notification->body }}</p><div class="mt-4 flex items-center justify-between bg-[#F7F8F7] rounded-lg px-4 py-3"><span class="text-[11.5px] text-[#6F6B60]">{{ $notification->title }}</span>@if($notification->link)<a href="{{ $notification->link }}" class="bg-[#0F4824] text-white rounded-lg px-3.5 py-1.5 text-[11.5px] font-semibold">{{ $isFr?'Voir':'View' }}</a>@endif</div><p class="mt-4 text-[12px] text-[#3B382F]">{{ $isFr?'Merci,':'Thank you,' }}<br>{{ $isFr?'Équipe Support – Artisan Hub 237':'Support Team – Artisan Hub 237' }}</p></div>
                         </div>
@@ -64,20 +64,20 @@
                 </div>
 
                 <aside class="space-y-4">
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Statistiques d\'envoi':'Delivery stats' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Statistiques d\'envoi':'Delivery stats' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
                             <span class="relative w-[86px] h-[86px] rounded-full shrink-0" style="background:conic-gradient(#157A43 0deg 360deg)"><span class="absolute inset-[13px] rounded-full bg-white flex flex-col items-center justify-center"><span class="text-[16px] font-bold text-[#1B1B18] leading-none">1</span><span class="text-[8.5px] text-[#8A857A]">{{ $isFr?'Destinataire':'Recipient' }}</span></span></span>
                             <div class="flex-1 space-y-1.5 text-[11.5px]"><div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full bg-[#157A43]"></span>{{ $isFr?'Envoyés':'Sent' }}</span><span class="font-semibold">1 (100%)</span></div><div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full bg-[#C9942E]"></span>{{ $isFr?'En attente':'Pending' }}</span><span class="font-semibold">0 (0%)</span></div><div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full bg-[#DC2626]"></span>{{ $isFr?'Échecs':'Failed' }}</span><span class="font-semibold">0 (0%)</span></div></div>
                         </div>
                         <div class="mt-3"><div class="flex items-center justify-between text-[11.5px]"><span class="text-[#6F6B60]">{{ $isFr?'Taux de livraison':'Delivery rate' }}</span><span class="font-semibold text-[#157A43]">100%</span></div><div class="mt-1 h-2 rounded-full bg-[#F0EFEA] overflow-hidden"><span class="block h-full rounded-full bg-[#157A43]" style="width:100%"></span></div></div>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Informations de la notification':'Notification information' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Informations de la notification':'Notification information' }}</h2>
                         <dl class="mt-3 space-y-2.5 text-[12px]">@foreach($infos as [$l,$v])<div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">{{ $l }}</dt><dd class="font-semibold text-[#1B1B18] text-right">{{ $v }}</dd></div>@endforeach</dl>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">Audit</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">Audit</h2>
                         <div class="mt-3 space-y-3">@foreach($audit as [$aE,$aW,$aB])<div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-3.5 h-3.5 text-[#14652F]"></i></span><div><p class="text-[12px] font-semibold text-[#1B1B18]">{{ $aE }}</p><p class="text-[10.5px] text-[#8A857A]">{{ $aW }} · {{ $isFr?'par':'by' }} {{ $aB }}</p></div></div>@endforeach</div>
                     </section>
                 </aside>

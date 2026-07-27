@@ -24,12 +24,12 @@
 @endphp
 
 @section('content')
-            @if(session('success'))<div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}</div>@endif
+            @if(session('success'))<div class="ui-alert ui-alert-ok mb-4"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>{{ session('success') }}</div>@endif
 
             <div class="grid grid-cols-1 2xl:grid-cols-[1fr_320px] gap-5 items-start">
                 <div class="space-y-5">
                     {{-- Ticket header --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
+                    <section class="ui-card">
                         <div class="flex flex-wrap items-start justify-between gap-4">
                             <div class="flex items-start gap-4">
                                 <span class="w-[54px] h-[54px] rounded-xl bg-[#E8F2EC] flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-6 h-6 text-[#157A43]"></i></span>
@@ -41,18 +41,18 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2.5">
-                                <a href="{{ route('admin.support', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white border border-[#E9E4D8] hover:border-[#14652F] rounded-lg px-3.5 h-[38px] text-[12px] font-semibold text-[#3B382F]"><i data-lucide="settings" class="w-4 h-4"></i>Actions</a>
-                                <a href="#reply" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[38px] text-[12px] font-semibold text-white"><i data-lucide="reply" class="w-4 h-4"></i>{{ $isFr?'Répondre':'Reply' }}</a>
+                                <a href="{{ route('admin.support', ['lang'=>$lang]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="settings" class="w-4 h-4"></i>Actions</a>
+                                <a href="#reply" class="ui-btn ui-btn-primary"><i data-lucide="reply" class="w-4 h-4"></i>{{ $isFr?'Répondre':'Reply' }}</a>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 border-t border-[#F0F1F0] pt-4">
+                        <div class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 border-t border-[#EFEBE2] pt-4">
                             @foreach($metaRow as [$mI,$mL,$mV])<div class="flex items-start gap-2"><i data-lucide="{{ $mI }}" class="w-4 h-4 mt-0.5 text-[#C9942E] shrink-0"></i><div><p class="text-[10px] text-[#8A857A]">{{ $mL }}</p><p class="text-[12px] font-semibold text-[#1B1B18]">{{ $mV }}</p></div></div>@endforeach
                         </div>
                     </section>
 
                     {{-- Conversation --}}
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-6 py-5">
-                        <div class="flex items-center gap-6 border-b border-[#EAE7DE]"><span class="pb-3 text-[13px] font-semibold text-[#14652F] border-b-2 border-[#14652F]">Conversation</span><span class="pb-3 text-[13px] font-semibold text-[#8A857A]">{{ $isFr?'Activité':'Activity' }}</span></div>
+                    <section class="ui-card">
+                        <div class="flex items-center gap-6 border-b border-[#EFEBE2]"><span class="pb-3 text-[13px] font-semibold text-[#14652F] border-b-2 border-[#14652F]">Conversation</span><span class="pb-3 text-[13px] font-semibold text-[#8A857A]">{{ $isFr?'Activité':'Activity' }}</span></div>
                         <div class="mt-4 space-y-5">
                             @foreach($replies as $r)
                             @php $staff = (bool)$r->is_staff; @endphp
@@ -67,23 +67,25 @@
                         </div>
 
                         {{-- Reply form --}}
-                        <form method="POST" action="{{ route('admin.support.reply', ['id'=>$ticket->id]) }}" id="reply" class="mt-6 border-t border-[#F0F1F0] pt-4">
+                        <form method="POST" action="{{ route('admin.support.reply', ['id'=>$ticket->id]) }}" id="reply" class="mt-6 border-t border-[#EFEBE2] pt-4">
                             @csrf<input type="hidden" name="lang" value="{{ $lang }}">
                             <div class="flex items-center gap-6 mb-3"><span class="text-[13px] font-semibold text-[#14652F] border-b-2 border-[#14652F] pb-1">{{ $isFr?'Réponse':'Reply' }}</span><span class="text-[13px] font-semibold text-[#8A857A]">{{ $isFr?'Note interne':'Internal note' }}</span></div>
                             @error('body')<p class="mb-2 text-[12px] text-[#B42025]">{{ $message }}</p>@enderror
-                            <div class="border border-[#E5E3E0] rounded-lg overflow-hidden">
-                                <div class="flex items-center gap-1 border-b border-[#F0EFEA] px-2 py-1.5 text-[#8A857A]">@foreach(['bold','italic','underline','list','link','image'] as $tb)<span class="w-7 h-7 rounded flex items-center justify-center"><i data-lucide="{{ $tb }}" class="w-3.5 h-3.5"></i></span>@endforeach</div>
-                                <textarea name="body" rows="4" required placeholder="{{ $isFr?'Écrire votre réponse...':'Write your reply...' }}" class="w-full px-3.5 py-3 text-[13px] focus:outline-none resize-y"></textarea>
+                            {{-- The toolbar sits above the field rather than inside a second border,
+                                 so the editor keeps the same box as every other field. --}}
+                            <div>
+                                <div class="flex items-center gap-1 mb-1.5 text-[#8A857A]">@foreach(['bold','italic','underline','list','link','image'] as $tb)<span class="w-7 h-7 rounded flex items-center justify-center"><i data-lucide="{{ $tb }}" class="w-3.5 h-3.5"></i></span>@endforeach</div>
+                                <textarea name="body" rows="4" required placeholder="{{ $isFr?'Écrire votre réponse...':'Write your reply...' }}" class="ui-field ui-textarea"></textarea>
                             </div>
-                            <div class="mt-3 flex items-center justify-end"><button type="submit" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-5 h-[40px] text-[12.5px] font-semibold text-white"><i data-lucide="reply" class="w-4 h-4"></i>{{ $isFr?'Envoyer la réponse':'Send reply' }}</button></div>
+                            <div class="mt-3 flex items-center justify-end"><button type="submit" class="ui-btn ui-btn-primary"><i data-lucide="reply" class="w-4 h-4"></i>{{ $isFr?'Envoyer la réponse':'Send reply' }}</button></div>
                         </form>
                     </section>
                 </div>
 
                 {{-- Right rail --}}
                 <aside class="space-y-4">
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Informations du ticket':'Ticket information' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Informations du ticket':'Ticket information' }}</h2>
                         <dl class="mt-3 space-y-2.5 text-[12px]">
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">ID Ticket</dt><dd class="font-semibold text-[#1B1B18]">{{ $ref }}</dd></div>
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr?'Créé le':'Created' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $dtf($ticket->created_at) }}</dd></div>
@@ -93,15 +95,15 @@
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">Canal</dt><dd class="font-semibold text-[#1B1B18]">Email</dd></div>
                         </dl>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Informations du demandeur':'Requester information' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Informations du demandeur':'Requester information' }}</h2>
                         <div class="mt-3 flex items-center gap-3"><span class="w-10 h-10 rounded-full bg-[#14652F] text-white text-[13px] font-bold flex items-center justify-center">{{ mb_strtoupper(mb_substr($ticket->user_name ?? 'U',0,2)) }}</span><p class="text-[13px] font-bold text-[#1B1B18]">{{ $ticket->user_name ?? 'Client' }}</p></div>
                         <dl class="mt-3 space-y-2 text-[12px] text-[#3B382F]">
                             <p class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-[#8A857A]"></i>{{ $ticket->user_email ?? '—' }}</p>
                             <p class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-[#8A857A]"></i>{{ $ticket->user_phone ?? '—' }}</p>
                             <p class="flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-[#8A857A]"></i>{{ $isFr?'Membre depuis':'Member since' }} {{ $ticket->user_since ? \Carbon\Carbon::parse($ticket->user_since)->format('d M Y') : '—' }}</p>
                         </dl>
-                        <a href="{{ route('admin.users', ['lang'=>$lang]) }}" class="mt-3 block text-center border border-[#E5E7E5] hover:border-[#14652F] rounded-lg py-2 text-[12px] font-semibold text-[#3B382F]">{{ $isFr?'Voir le profil':'View profile' }}</a>
+                        <a href="{{ route('admin.users', ['lang'=>$lang]) }}" class="mt-3 block text-center border border-[#EAE5D8] hover:border-[#14652F] rounded-lg py-2 text-[12px] font-semibold text-[#3B382F]">{{ $isFr?'Voir le profil':'View profile' }}</a>
                     </section>
                 </aside>
             </div>

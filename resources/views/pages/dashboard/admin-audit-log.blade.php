@@ -26,30 +26,30 @@ $actionLabels = [
 <div class="max-w-3xl">
 
     <form method="GET" class="flex gap-2 mb-4">
-        <input name="action" value="{{ request('action') }}" placeholder="{{ $lang === 'fr' ? 'Filtrer par action (ex: verification)...' : 'Filter by action (e.g. verification)...' }}" class="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400">
-        <button type="submit" class="bg-forest-600 hover:bg-forest-700 text-white text-sm font-medium px-4 py-2 rounded-lg">{{ $lang === 'fr' ? 'Filtrer' : 'Filter' }}</button>
+        <input name="action" value="{{ request('action') }}" placeholder="{{ $lang === 'fr' ? 'Filtrer par action (ex: verification)...' : 'Filter by action (e.g. verification)...' }}" class="ui-field flex-1">
+        <button type="submit" class="ui-btn ui-btn-primary">{{ $lang === 'fr' ? 'Filtrer' : 'Filter' }}</button>
     </form>
 
-    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    <div class="ui-card ui-card--flush">
         @forelse($logs as $log)
         @php $meta = $actionIcons[$log->action] ?? ['icon' => 'activity', 'color' => 'gray']; @endphp
-        <div class="flex items-start gap-3 px-4 py-3.5 border-b border-gray-50 last:border-0">
+        <div class="flex items-start gap-3 px-4 py-3.5 border-b border-[#F5F1E8] last:border-0">
             <div class="w-8 h-8 rounded-lg bg-{{ $meta['color'] }}-50 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="{{ $meta['icon'] }}" class="w-4 h-4 text-{{ $meta['color'] }}-600"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900">{{ $actionLabels[$log->action] ?? $log->action }}</p>
-                <p class="text-xs text-gray-400">
+                <p class="text-sm font-medium text-[#1B1B18]">{{ $actionLabels[$log->action] ?? $log->action }}</p>
+                <p class="ui-dt">
                     {{ $log->user?->name ?? ($lang === 'fr' ? 'Système' : 'System') }}
                     @if($log->new_values)
                         — {{ collect($log->new_values)->map(fn($v, $k) => "$k: $v")->implode(', ') }}
                     @endif
                 </p>
             </div>
-            <span class="text-xs text-gray-400 shrink-0">{{ $log->created_at->diffForHumans() }}</span>
+            <span class="text-xs text-[#B8B2A4] shrink-0">{{ $log->created_at->diffForHumans() }}</span>
         </div>
         @empty
-        <div class="text-center py-10 text-sm text-gray-400">{{ $lang === 'fr' ? 'Aucune activité enregistrée.' : 'No activity recorded.' }}</div>
+        <div class="ui-empty">{{ $lang === 'fr' ? 'Aucune activité enregistrée.' : 'No activity recorded.' }}</div>
         @endforelse
     </div>
 

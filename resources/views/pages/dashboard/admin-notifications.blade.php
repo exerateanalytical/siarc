@@ -30,7 +30,7 @@
             {{-- Stat cards --}}
             <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 @foreach($cards as [$cI,$cC,$cT,$cV,$cL,$cS])
-                <div class="bg-white border border-[#EFF0EF] rounded-2xl px-4 py-4 text-center">
+                <div class="ui-card text-center">
                     <span class="w-[46px] h-[46px] mx-auto rounded-full flex items-center justify-center" style="background-color:{{ $cT }}"><i data-lucide="{{ $cI }}" class="w-[22px] h-[22px]" style="color:{{ $cC }}"></i></span>
                     <p class="mt-2 text-[11px] text-[#6F6B60]">{{ $cL }}</p>
                     <p class="text-[22px] font-bold text-[#1B1B18] leading-none">{{ $cV }}</p>
@@ -40,29 +40,29 @@
             </section>
 
             <div class="mt-5 grid grid-cols-1 2xl:grid-cols-[1fr_300px] gap-5 items-start">
-                <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#EAE7DE] pb-3">
+                <section class="ui-card">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#EFEBE2] pb-3">
                         <div class="flex items-center gap-5 overflow-x-auto">@foreach($tabs as [$tL,$tA])<span class="whitespace-nowrap text-[13px] font-semibold {{ $tA?'text-[#14652F] border-b-2 border-[#14652F] pb-3 -mb-3':'text-[#8A857A]' }}">{{ $tL }}</span>@endforeach</div>
-                        <a href="{{ route('admin.cms', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-[#0F4824] hover:bg-[#14652F] rounded-lg px-4 h-[36px] text-[12px] font-semibold text-white"><i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr?'Nouvelle notification':'New notification' }}</a>
+                        <a href="{{ route('admin.cms', ['lang'=>$lang]) }}" class="ui-btn ui-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr?'Nouvelle notification':'New notification' }}</a>
                     </div>
-                    <div class="mt-4 overflow-x-auto">
-                        <table class="w-full min-w-[720px]">
-                            <thead><tr class="text-left border-b border-[#F0F1F0]">
-                                <th class="pb-2.5 pr-3 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">{{ $isFr?'Titre / Message':'Title / Message' }}</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">Canal</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">Statut</th>
-                                <th class="pb-2.5 px-2 text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase">Date</th>
-                                <th class="pb-2.5 pl-2 text-right text-[10.5px] font-bold tracking-[0.04em] text-[#8A857A] uppercase"></th>
+                    <div class="ui-table-wrap mt-4">
+                        <table class="ui-table min-w-[720px]">
+                            <thead><tr class="border-b border-[#EFEBE2]">
+                                <th>{{ $isFr?'Titre / Message':'Title / Message' }}</th>
+                                <th>Canal</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th class="text-right"></th>
                             </tr></thead>
-                            <tbody class="divide-y divide-[#F4F5F4]">
+                            <tbody>
                                 @foreach($notifications as $n)
                                 @php [$nI,$nC,$nT] = $typeMeta[$n->type] ?? ['bell','#157A43','#E8F2EC']; @endphp
                                 <tr>
-                                    <td class="py-3.5 pr-3"><div class="flex items-start gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style="background-color:{{ $nT }}"><i data-lucide="{{ $nI }}" class="w-[18px] h-[18px]" style="color:{{ $nC }}"></i></span><span class="min-w-0"><a href="{{ route('notifications.show', ['id'=>$n->id, 'lang'=>$lang]) }}" class="block text-[12.5px] font-semibold text-[#1B1B18] hover:text-[#157A43]">{{ $n->title }}</a><span class="block text-[11px] text-[#8A857A] line-clamp-1">{{ $n->body }}</span></span></div></td>
-                                    <td class="py-3.5 px-2 text-[12px] text-[#3B382F]">Email</td>
-                                    <td class="py-3.5 px-2"><span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold {{ $n->read_at ? 'bg-[#EEECE6] text-[#6F6B60]' : 'bg-[#E2F3E8] text-[#157A43]' }}">{{ $n->read_at ? ($isFr?'Lue':'Read') : ($isFr?'Envoyée':'Sent') }}</span></td>
-                                    <td class="py-3.5 px-2 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $dtf($n->created_at) }}</td>
-                                    <td class="py-3.5 pl-2 text-right"><a href="{{ route('notifications.show', ['id'=>$n->id, 'lang'=>$lang]) }}" class="inline-flex w-8 h-8 rounded-lg border border-[#E5E7E5] hover:border-[#14652F] items-center justify-center text-[#55524A]"><i data-lucide="more-horizontal" class="w-4 h-4"></i></a></td>
+                                    <td><div class="flex items-start gap-3"><span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style="background-color:{{ $nT }}"><i data-lucide="{{ $nI }}" class="w-[18px] h-[18px]" style="color:{{ $nC }}"></i></span><span class="min-w-0"><a href="{{ route('notifications.show', ['id'=>$n->id, 'lang'=>$lang]) }}" class="block text-[12.5px] font-semibold text-[#1B1B18] hover:text-[#157A43]">{{ $n->title }}</a><span class="block text-[11px] text-[#8A857A] line-clamp-1">{{ $n->body }}</span></span></div></td>
+                                    <td>Email</td>
+                                    <td><span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold {{ $n->read_at ? 'bg-[#EEECE6] text-[#6F6B60]' : 'bg-[#E2F3E8] text-[#157A43]' }}">{{ $n->read_at ? ($isFr?'Lue':'Read') : ($isFr?'Envoyée':'Sent') }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $dtf($n->created_at) }}</td>
+                                    <td class="text-right"><a href="{{ route('notifications.show', ['id'=>$n->id, 'lang'=>$lang]) }}" class="inline-flex w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] items-center justify-center text-[#55524A]"><i data-lucide="more-horizontal" class="w-4 h-4"></i></a></td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -81,13 +81,13 @@
                 </section>
 
                 <aside class="space-y-4">
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Résumé par type':'By type' }}</h2>
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Résumé par type':'By type' }}</h2>
                         <div class="mt-3.5 space-y-3">@forelse($canaux as [$cnL,$cnN,$cnP,$cnC,$cnI])<div><div class="flex items-center justify-between text-[12px]"><span class="flex items-center gap-2 text-[#3B382F]"><i data-lucide="{{ $cnI }}" class="w-3.5 h-3.5" style="color:{{ $cnC }}"></i>{{ $cnL }}</span><span class="font-semibold text-[#1B1B18]">{{ $cnN }} ({{ $cnP }})</span></div><div class="mt-1 h-1.5 rounded-full bg-[#F0EFEA] overflow-hidden"><span class="block h-full rounded-full" style="width:{{ $cnP }};background-color:{{ $cnC }}"></span></div></div>@empty<p class="text-[12px] text-[#8A857A]">{{ $isFr?'Aucune notification.':'No notifications.' }}</p>@endforelse</div>
                     </section>
-                    <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
-                        <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Paramètres rapides':'Quick settings' }}</h2>
-                        <div class="mt-2 divide-y divide-[#F4F5F4]">
+                    <section class="ui-card">
+                        <h2 class="ui-card-title">{{ $isFr?'Paramètres rapides':'Quick settings' }}</h2>
+                        <div class="mt-2 divide-y divide-[#F5F1E8]">
                             @foreach([['sliders-horizontal', $isFr?'Préférences de notification':'Notification preferences'],['layout-template', $isFr?'Modèles de notification':'Notification templates'],['users', $isFr?'Groupes de notification':'Notification groups']] as [$qI,$qL])
                             <a href="{{ route('admin.settings', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="{{ $qI }}" class="w-[16px] h-[16px] text-[#157A43]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] group-hover:text-[#14652F]">{{ $qL }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i></a>
                             @endforeach

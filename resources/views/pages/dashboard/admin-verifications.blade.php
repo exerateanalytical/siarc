@@ -16,50 +16,50 @@ $docTypeLabels = [
 <div class="max-w-3xl">
 
     <div class="flex items-center gap-2 mb-6">
-        <h2 class="text-base font-semibold text-gray-900">{{ $lang === 'fr' ? 'File d\'attente' : 'Queue' }}</h2>
+        <h2 class="ui-card-title">{{ $lang === 'fr' ? 'File d\'attente' : 'Queue' }}</h2>
         <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-1 rounded-full">{{ $applications->total() }}</span>
     </div>
 
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
+    <div class="ui-alert ui-alert-ok mb-4">
         <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
     </div>
     @endif
     @if($errors->any())
-    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3.5 mb-4">
+    <div class="ui-alert ui-alert-danger mb-4">
         @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
     </div>
     @endif
 
     <div class="space-y-4">
         @forelse($applications as $app)
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="ui-card">
             <div class="flex items-start justify-between mb-3">
                 <div>
-                    <p class="text-sm font-semibold text-gray-900">{{ $app->business->name_fr }}</p>
-                    <p class="text-xs text-gray-400">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-medium text-gray-600">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
+                    <p class="text-sm font-semibold text-[#1B1B18]">{{ $app->business->name_fr }}</p>
+                    <p class="ui-dt">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-medium text-[#55524A]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
                 </div>
-                <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $app->business->slug]) }}" target="_blank" class="text-xs text-forest-600 hover:underline flex items-center gap-1 shrink-0">
+                <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $app->business->slug]) }}" target="_blank" class="text-xs text-[#157A43] hover:underline flex items-center gap-1 shrink-0">
                     <i data-lucide="external-link" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Voir profil' : 'View profile' }}
                 </a>
             </div>
 
             <div class="flex flex-wrap gap-2 mb-4">
                 @foreach($app->documents as $doc)
-                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs bg-gray-50 border border-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-gray-100">
-                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-gray-400"></i>
+                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs bg-[#F8F4EC] border border-[#EFEBE2] px-2.5 py-1.5 rounded-lg hover:bg-[#F1EDE3]">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#B8B2A4]"></i>
                     {{ $docTypeLabels[$doc->type] ?? $doc->type }}
                 </a>
                 @endforeach
             </div>
 
-            <a href="{{ route('admin.verifications.detail', ['id' => $app->id, 'lang' => $lang]) }}" class="mt-2 mb-1 flex items-center justify-center gap-1.5 w-full border border-[#CFE0D4] text-[#157A43] text-sm font-medium py-2 rounded-lg hover:bg-[#E2F3E8]">
+            <a href="{{ route('admin.verifications.detail', ['id' => $app->id, 'lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-block mt-2 mb-1">
                 <i data-lucide="eye" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Voir le détail de vérification' : 'View verification detail' }}
             </a>
             <div class="flex items-center gap-2">
                 <form method="POST" action="{{ route('admin.verifications.approve', ['id' => $app->id]) }}" class="flex-1">
                     @csrf
-                    <button type="submit" class="w-full bg-forest-600 hover:bg-forest-700 text-white text-sm font-medium py-2 rounded-lg flex items-center justify-center gap-1.5">
+                    <button type="submit" class="ui-btn ui-btn-primary ui-btn-block">
                         <i data-lucide="check" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Approuver' : 'Approve' }}
                     </button>
                 </form>
@@ -68,18 +68,18 @@ $docTypeLabels = [
                 </button>
             </div>
 
-            <div id="reject-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+            <div id="reject-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-[#F5F1E8]">
                 <form method="POST" action="{{ route('admin.verifications.reject', ['id' => $app->id]) }}">
                     @csrf
-                    <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 mb-2 resize-none"></textarea>
+                    <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="ui-field ui-textarea w-full mb-2"></textarea>
                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg">{{ $lang === 'fr' ? 'Confirmer le rejet' : 'Confirm rejection' }}</button>
                 </form>
             </div>
         </div>
         @empty
-        <div class="bg-white border border-gray-200 rounded-xl text-center py-12">
-            <i data-lucide="inbox" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i>
-            <p class="text-sm text-gray-400">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
+        <div class="ui-card text-center">
+            <i data-lucide="inbox" class="w-10 h-10 text-[#DCD5C6] mx-auto mb-3"></i>
+            <p class="ui-card-sub">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
         </div>
         @endforelse
     </div>
