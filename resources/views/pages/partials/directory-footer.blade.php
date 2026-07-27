@@ -54,9 +54,13 @@
     <img src="{{ asset('images/landing/product-kente-right.png') }}" alt="" class="absolute inset-y-0 right-0 w-[64px] h-full object-cover hidden md:block pointer-events-none select-none" aria-hidden="true">
 
     <div class="relative max-w-[1340px] mx-auto px-5 lg:px-8 pt-8 pb-5">
-        <div class="grid grid-cols-1 md:grid-cols-2 {{ $dfShowHelp ? 'lg:grid-cols-[1.25fr_0.65fr_0.85fr_0.65fr_0.95fr_1fr_1.05fr]' : 'lg:grid-cols-[1.3fr_0.7fr_0.95fr_0.7fr_1.05fr_1.1fr]' }} gap-7 items-start">
+        {{-- Two columns on phones: the link lists are short enough to sit side by
+             side, and one-per-row pushed the newsletter several screens down.
+             The brand block and the newsletter keep the full width — the first
+             carries the logo lockup and social row, the second an input. --}}
+        <div class="grid grid-cols-2 {{ $dfShowHelp ? 'lg:grid-cols-[1.25fr_0.65fr_0.85fr_0.65fr_0.95fr_1fr_1.05fr]' : 'lg:grid-cols-[1.3fr_0.7fr_0.95fr_0.7fr_1.05fr_1.1fr]' }} gap-x-5 gap-y-7 lg:gap-7 items-start">
             <!-- Brand -->
-            <div>
+            <div class="col-span-2 lg:col-span-1">
                 <div class="flex items-center gap-3">
                     <img src="{{ asset('images/landing/logo.png') }}" alt="" class="w-10 h-11 object-contain">
                     <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
@@ -134,7 +138,7 @@
             @endif
 
             <!-- Newsletter -->
-            <div>
+            <div class="col-span-2 lg:col-span-1">
                 <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">Newsletter</h4>
                 <p class="text-[12px] text-[#B9C4BC] leading-relaxed">
                     {{ $dfNewsletterText }}
