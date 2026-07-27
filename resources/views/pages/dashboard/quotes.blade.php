@@ -170,11 +170,11 @@
         $expired = $d->expires_at && \Illuminate\Support\Carbon::parse($d->expires_at)->isPast();
         $expiringSoon = $d->expires_at && !$expired && \Illuminate\Support\Carbon::parse($d->expires_at)->diffInDays(now()) <= 30;
         $pill = $expired ? ($isFr ? 'Expiré' : 'Expired') : ($expiringSoon ? ($isFr ? 'Expire bientôt' : 'Expiring soon') : ($isFr ? 'Valide' : 'Valid'));
-        [$pillColor, $pillBg] = $expired || $expiringSoon ? ['#EE7A1C', '#FDEFE0'] : ['#157A43', '#E4F1E8'];
+        $variant = $expired || $expiringSoon ? 'ui-pill-warn' : 'ui-pill-ok';
         $sub = $d->expires_at
             ? ($isFr ? "Valide jusqu'au " : 'Valid until ') . \Illuminate\Support\Carbon::parse($d->expires_at)->translatedFormat('d M Y')
             : ($isFr ? 'Aucune date d\'expiration' : 'No expiry date');
-        return ['file-text', $isFr ? $d->name_fr : ($d->name_en ?? $d->name_fr), $sub, $pill, $pillColor, $pillBg];
+        return ['file-text', $isFr ? $d->name_fr : ($d->name_en ?? $d->name_fr), $sub, $pill, $variant];
     })->all();
 
     // [icon, title, sub]
@@ -211,6 +211,7 @@
         html, body { overflow-x: clip; }
         {{-- Sidebar slide-over CSS now lives in pages.partials.dashboard-sidebar --}}
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 
@@ -283,7 +284,7 @@
     <main class="flex-1 min-w-0 px-3 lg:px-1 pt-4">
 
         @if(session('success'))
-        <div class="mb-4 bg-[#E2F3E8] border border-[#BFDCC8] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px] text-[#14532D]">
+        <div class="ui-alert ui-alert-ok mb-4">
             <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
             {{ session('success') }}
         </div>
@@ -301,7 +302,7 @@
                     <p class="text-[14px] font-bold text-[#14532D]">{{ $isFr ? 'Compte vérifié' : 'Verified account' }}</p>
                     <p class="mt-0.5 text-[12px] text-[#3B382F]">{{ $isFr ? 'Votre profil est complet à 85%' : 'Your profile is 85% complete' }}</p>
                 </div>
-                <a href="{{ route('profile.show', ['lang' => $lang]) }}" class="shrink-0 inline-flex items-center gap-2.5 bg-white border border-[#DCE7DF] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#14532D] transition-colors">
+                <a href="{{ route('profile.show', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary shrink-0">
                     {{ $isFr ? 'Voir mon profil' : 'View my profile' }}
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
@@ -309,7 +310,7 @@
         </div>
 
         <!-- Aperçu rapide -->
-        <section class="mt-4 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+        <section class="mt-4 ui-card px-5 py-5">
             <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu rapide' : 'Quick overview' }}</h2>
             <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
                 @foreach($kpis as [$kIcon, $kColor, $kBg, $kLabel, $kValue, $kDelta, $kDeltaColor])
@@ -331,7 +332,7 @@
 
         <!-- Pipeline + Demandes récentes -->
         <div class="mt-3 flex flex-col xl:flex-row gap-3 items-stretch">
-            <section class="flex-[1.18] min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="flex-[1.18] min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Pipeline des demandes de devis' : 'Quote request pipeline' }}</h2>
                     <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
@@ -365,7 +366,7 @@
                 </div>
             </section>
 
-            <section class="flex-1 min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">
                         {{ $isFr ? 'Demandes de devis' : 'Quote requests' }}
@@ -378,10 +379,7 @@
                 <div class="mt-3 flex flex-wrap items-center gap-1.5">
                     @foreach(['' => $isFr ? 'Toutes' : 'All', 'pending' => $isFr ? 'Nouvelles' : 'New', 'quoted' => $isFr ? 'Devis envoyés' : 'Quoted', 'negotiation' => $isFr ? 'Négociation' : 'Negotiating', 'accepted' => $isFr ? 'Acceptées' : 'Accepted', 'refused' => $isFr ? 'Refusées' : 'Refused'] as $rfVal => $rfLabel)
                     <a href="{{ route('dashboard.quotes', array_filter(['lang' => $lang, 'rfq_status' => $rfVal ?: null])) }}"
-                       class="px-2.5 py-1 rounded-lg text-[11.5px] font-semibold border transition-colors
-                              {{ (string) ($rfqStatus ?? '') === $rfVal
-                                 ? 'bg-[#14532D] border-[#14532D] text-white'
-                                 : 'bg-white border-[#ECECEA] text-[#55524A] hover:border-[#14652F] hover:text-[#14652F]' }}">{{ $rfLabel }}</a>
+                       class="ui-btn ui-btn-sm {{ (string) ($rfqStatus ?? '') === $rfVal ? 'ui-btn-primary' : 'ui-btn-secondary' }}">{{ $rfLabel }}</a>
                     @endforeach
                 </div>
                 @endif
@@ -401,7 +399,7 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 shrink-0 text-[#157A43] group-hover:translate-x-0.5"></i>
                     </a>
                     @empty
-                    <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune demande de devis pour le moment.' : 'No quote requests yet.' }}</p>
+                    <p class="ui-empty">{{ $isFr ? 'Aucune demande de devis pour le moment.' : 'No quote requests yet.' }}</p>
                     @endforelse
                 </div>
                 @if($rfqPage && $rfqPage->hasPages())
@@ -412,7 +410,7 @@
 
         <!-- Activité + Performance -->
         <div class="mt-3 flex flex-col xl:flex-row gap-3 items-stretch">
-            <section class="flex-1 min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité récente' : 'Recent activity' }}</h2>
                     <a href="{{ route('notifications.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
@@ -437,12 +435,12 @@
                         </div>
                     </div>
                     @empty
-                    <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</p>
+                    <p class="ui-empty">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</p>
                     @endforelse
                 </div>
             </section>
 
-            <section class="flex-1 min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Performance des produits' : 'Product performance' }}</h2>
                     <a href="{{ $storeUrl }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
@@ -459,7 +457,7 @@
                         </div>
                     </div>
                     @empty
-                    <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucun produit publié pour le moment.' : 'No published products yet.' }}</p>
+                    <p class="ui-empty">{{ $isFr ? 'Aucun produit publié pour le moment.' : 'No published products yet.' }}</p>
                     @endforelse
                 </div>
             </section>
@@ -467,7 +465,7 @@
 
         <!-- Santé + Documents + Portefeuille -->
         <div class="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="ui-card px-5 py-5">
                 <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Santé de votre boutique' : 'Your shop health' }}</h2>
                 <div class="mt-4 flex items-center gap-5">
                     <div class="shrink-0 text-center">
@@ -491,18 +489,18 @@
                         @endforeach
                     </ul>
                 </div>
-                <a href="{{ $bizEditUrl }}" class="mt-5 block text-center border border-[#DCE7DF] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#14532D] transition-colors">
+                <a href="{{ $bizEditUrl }}" class="ui-btn ui-btn-secondary ui-btn-block mt-5">
                     {{ $isFr ? 'Améliorer ma boutique' : 'Improve my shop' }}
                 </a>
             </section>
 
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Documents & Certifications' : 'Documents & Certifications' }}</h2>
                     <a href="{{ route('verification.show', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
                 <div class="mt-2 divide-y divide-[#F1F2F1]">
-                    @foreach($docRows as [$dcIcon, $dcTitle, $dcSub, $dcPill, $dcColor, $dcBg])
+                    @foreach($docRows as [$dcIcon, $dcTitle, $dcSub, $dcPill, $dcVariant])
                     <div class="flex items-center gap-3.5 py-3">
                         <span class="w-[40px] h-[40px] shrink-0 rounded-xl bg-[#E4F1E8] flex items-center justify-center">
                             <i data-lucide="{{ $dcIcon }}" class="w-[19px] h-[19px] text-[#14652F]" style="stroke-width:1.8"></i>
@@ -511,13 +509,13 @@
                             <p class="text-[12.5px] font-bold text-[#1B1B18] leading-snug">{{ $dcTitle }}</p>
                             <p class="mt-0.5 text-[11.5px] text-[#6F6B60]">{{ $dcSub }}</p>
                         </div>
-                        <span class="shrink-0 rounded-lg px-3 py-1.5 text-[11.5px] font-semibold" style="color:{{ $dcColor }};background:{{ $dcBg }}">{{ $dcPill }}</span>
+                        <span class="ui-pill {{ $dcVariant }} shrink-0">{{ $dcPill }}</span>
                     </div>
                     @endforeach
                 </div>
             </section>
 
-            <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5 flex flex-col">
+            <section class="ui-card px-5 py-5 flex flex-col">
                 <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Portefeuille' : 'Wallet' }}</h2>
                 <div class="mt-auto flex flex-col items-center text-center py-6">
                     <span class="w-11 h-11 rounded-full bg-[#F2F5F2] flex items-center justify-center mb-3">
@@ -525,13 +523,13 @@
                     </span>
                     <p class="text-[12.5px] text-[#6F6B60] max-w-[220px]">{{ $isFr ? 'Le portefeuille et les paiements en ligne arrivent bientôt.' : 'Wallet and online payouts are coming soon.' }}</p>
                 </div>
-                <a href="{{ route('contact', ['lang' => $lang]) }}" class="mt-auto text-center border border-[#DCE7DF] hover:border-[#14532D] rounded-lg px-4 py-2.5 text-[13px] font-semibold text-[#14532D] transition-colors">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
+                <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-block mt-auto">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
             </section>
         </div>
 
         <!-- Événements + Conseils -->
         <div class="mt-3 flex flex-col xl:flex-row gap-3 items-stretch">
-            <section class="flex-1 min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
+            <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Événements & Opportunités' : 'Events & Opportunities' }}</h2>
                     <a href="{{ route('events.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
@@ -547,7 +545,7 @@
                                 <p class="mt-1 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $isFr ? 'Douala, Cameroun' : 'Douala, Cameroon' }}</p>
                             </div>
                         </div>
-                        <a href="{{ $siacUrl }}" class="mt-3.5 inline-block bg-qddeep hover:bg-[#14652F] rounded-lg px-5 py-2 text-[12.5px] font-semibold text-white transition-colors">{{ $isFr ? 'S\'inscrire' : 'Register' }}</a>
+                        <a href="{{ $siacUrl }}" class="ui-btn ui-btn-primary ui-btn-sm mt-3.5">{{ $isFr ? 'S\'inscrire' : 'Register' }}</a>
                     </div>
                     <div class="flex-1 bg-[#EFECFA] rounded-xl p-4 flex flex-col">
                         <i data-lucide="megaphone" class="w-[38px] h-[38px] text-[#5B4FD8] -scale-x-100" style="stroke-width:1.4"></i>
@@ -561,7 +559,7 @@
                 </div>
             </section>
 
-            <section class="flex-1 min-w-0 bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5 relative overflow-hidden">
+            <section class="flex-1 min-w-0 ui-card px-5 py-5 relative overflow-hidden">
                 <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Conseils pour booster votre activité' : 'Tips to boost your activity' }}</h2>
                 <img src="{{ asset('images/landing/qd-rocket.png') }}" alt="" class="absolute right-4 top-9 w-[110px] hidden sm:block" aria-hidden="true">
                 <div class="mt-4 space-y-4 sm:pr-[130px]">
@@ -578,7 +576,7 @@
                     @endforeach
                 </div>
                 <div class="mt-5 flex justify-end">
-                    <a href="{{ route('support.index', ['lang' => $lang]) }}" class="inline-block border border-[#DCE7DF] hover:border-[#14532D] rounded-lg px-5 py-2.5 text-[13px] font-semibold text-[#14532D] transition-colors">{{ $isFr ? 'Voir tous les conseils' : 'See all the tips' }}</a>
+                    <a href="{{ route('support.index', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary">{{ $isFr ? 'Voir tous les conseils' : 'See all the tips' }}</a>
                 </div>
             </section>
         </div>
@@ -592,7 +590,7 @@
                 <span class="font-bold text-[#1B1B18]">{{ $isFr ? 'Votre profil est vérifié et visible par des acheteurs du monde entier.' : 'Your profile is verified and visible to buyers around the world.' }}</span><br>
                 {{ $isFr ? 'Continuez à offrir des produits de qualité et à répondre aux demandes.' : 'Keep offering quality products and responding to requests.' }}
             </p>
-            <a href="{{ $storeUrl }}" class="shrink-0 inline-flex items-center gap-2.5 bg-qddeep hover:bg-[#14652F] rounded-lg px-5 py-3 text-[13.5px] font-semibold text-white transition-colors">
+            <a href="{{ $storeUrl }}" class="ui-btn ui-btn-primary ui-btn-lg shrink-0">
                 {{ $isFr ? 'Voir ma boutique publique' : 'View my public shop' }}
                 <i data-lucide="external-link" class="w-4 h-4"></i>
             </a>

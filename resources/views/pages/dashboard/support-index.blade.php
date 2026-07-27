@@ -15,12 +15,12 @@ $statusLabels = [
 <div class="max-w-2xl">
 
     @if(session('success'))
-    <div class="bg-[#E2F3E8] border border-[#BFDCC8] text-[#14532D] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
-        <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
+    <div class="ui-alert ui-alert-ok mb-4">
+        <i data-lucide="check-circle-2" class="w-4 h-4"></i>{{ session('success') }}
     </div>
     @endif
 
-    <div class="bg-white border border-[#EFEBE2] rounded-xl overflow-hidden mb-6">
+    <div class="ui-card ui-card--flush mb-6">
         @forelse($tickets as $ticket)
         <a href="{{ route('support.show', ['id' => $ticket->id]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-[#FBF9F4] last:border-0 hover:bg-[#FBF9F4] transition-colors">
             <div class="w-9 h-9 rounded-lg bg-[#FBF9F4] flex items-center justify-center shrink-0">
@@ -31,32 +31,32 @@ $statusLabels = [
                 <p class="text-xs text-[#A8A296]">{{ $ticket->created_at->diffForHumans() }}</p>
             </div>
             <span @class([
-                'text-xs font-medium px-2 py-1 rounded-full shrink-0',
-                'bg-[#F6E4BE] text-[#8A6D1F]' => in_array($ticket->status, ['open', 'in_progress']),
-                'bg-[#CFE5D6] text-[#14532D]' => $ticket->status === 'resolved',
-                'bg-[#F1EDE4] text-[#8A857A]' => $ticket->status === 'closed',
+                'ui-pill shrink-0',
+                'ui-pill-warn'    => in_array($ticket->status, ['open', 'in_progress']),
+                'ui-pill-ok'      => $ticket->status === 'resolved',
+                'ui-pill-neutral' => $ticket->status === 'closed',
             ])>{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
         </a>
         @empty
-        <div class="text-center py-10 text-sm text-[#A8A296]">{{ $lang === 'fr' ? 'Aucun ticket pour l\'instant.' : 'No tickets yet.' }}</div>
+        <div class="ui-empty">{{ $lang === 'fr' ? 'Aucun ticket pour l\'instant.' : 'No tickets yet.' }}</div>
         @endforelse
     </div>
 
-    <div class="bg-white border border-[#EFEBE2] rounded-xl p-5">
-        <h2 class="text-sm font-semibold text-[#1B1B18] mb-4">{{ $lang === 'fr' ? 'Nouveau ticket' : 'New ticket' }}</h2>
+    <div class="ui-card">
+        <h2 class="ui-card-title mb-4">{{ $lang === 'fr' ? 'Nouveau ticket' : 'New ticket' }}</h2>
         <form method="POST" action="{{ route('support.store') }}" class="space-y-3">
             @csrf
             @if($categories->isNotEmpty())
-            <select name="category_id" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+            <select name="category_id" class="ui-field ui-select">
                 <option value="">{{ $lang === 'fr' ? 'Catégorie (optionnel)' : 'Category (optional)' }}</option>
                 @foreach($categories as $cat)
                 <option value="{{ $cat->id }}">{{ $lang === 'fr' ? $cat->name_fr : ($cat->name_en ?? $cat->name_fr) }}</option>
                 @endforeach
             </select>
             @endif
-            <input name="subject" required maxlength="255" placeholder="{{ $lang === 'fr' ? 'Sujet' : 'Subject' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
-            <textarea name="body" required rows="4" maxlength="3000" placeholder="{{ $lang === 'fr' ? 'Décrivez votre problème...' : 'Describe your issue...' }}" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none"></textarea>
-            <button type="submit" class="bg-forest-600 hover:bg-forest-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2">
+            <input name="subject" required maxlength="255" placeholder="{{ $lang === 'fr' ? 'Sujet' : 'Subject' }}" class="ui-field">
+            <textarea name="body" required rows="4" maxlength="3000" placeholder="{{ $lang === 'fr' ? 'Décrivez votre problème...' : 'Describe your issue...' }}" class="ui-field ui-textarea"></textarea>
+            <button type="submit" class="ui-btn ui-btn-primary">
                 <i data-lucide="send" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Envoyer' : 'Submit' }}
             </button>

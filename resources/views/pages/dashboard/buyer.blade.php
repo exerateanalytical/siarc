@@ -23,13 +23,15 @@
         ['bm-kpi-4.png', $fmt($buyerStats['saved']),    null,   $isFr ? 'Favoris' : 'Saved items',           'bg-[#FDF4F4] border-[#F5E0E0]'],
     ];
 
+    // Second element is the kit pill variant. "Shipped" had a bespoke blue with
+    // no kit equivalent, so it reads as neutral until delivery turns it green.
     $bmStatus = [
-        'delivered'     => [$isFr ? 'Livrée' : 'Delivered',         'bg-[#E9F6EE] text-[#157A43]'],
-        'shipped'       => [$isFr ? 'Expédiée' : 'Shipped',         'bg-[#EBF1FD] text-[#2E5FD0]'],
-        'in_production' => [$isFr ? 'En production' : 'In production', 'bg-[#FDF7E3] text-[#B07C10]'],
-        'confirmed'     => [$isFr ? 'Confirmée' : 'Confirmed',      'bg-[#E9F6EE] text-[#157A43]'],
-        'created'       => [$isFr ? 'Créée' : 'Created',            'bg-[#F2F5F2] text-[#55524A]'],
-        'cancelled'     => [$isFr ? 'Annulée' : 'Cancelled',        'bg-[#FDE8E8] text-[#B42025]'],
+        'delivered'     => [$isFr ? 'Livrée' : 'Delivered',            'ui-pill-ok'],
+        'shipped'       => [$isFr ? 'Expédiée' : 'Shipped',            'ui-pill-neutral'],
+        'in_production' => [$isFr ? 'En production' : 'In production', 'ui-pill-warn'],
+        'confirmed'     => [$isFr ? 'Confirmée' : 'Confirmed',         'ui-pill-ok'],
+        'created'       => [$isFr ? 'Créée' : 'Created',               'ui-pill-neutral'],
+        'cancelled'     => [$isFr ? 'Annulée' : 'Cancelled',           'ui-pill-danger'],
     ];
 
     $bmActions = [
@@ -76,6 +78,7 @@
         #buyer-menu { transform: translateX(-100%); }
         #buyer-menu.open { transform: translateX(0); }
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F5F5F3] text-[#1B1B18] antialiased">
 
@@ -173,7 +176,7 @@
         </section>
 
         <!-- Aperçu de votre activité -->
-        <section id="apercu" class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+        <section id="apercu" class="ui-card p-4">
             <div class="flex items-center justify-between gap-2">
                 <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu de votre activité' : 'Your activity overview' }}</h2>
                 <span class="flex items-center gap-1 text-[11px] text-[#55524A] whitespace-nowrap">
@@ -196,16 +199,16 @@
         </section>
 
         <!-- Commandes récentes -->
-        <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+        <section class="ui-card p-4">
             <div class="flex items-center justify-between">
                 <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Commandes récentes' : 'Recent orders' }}</h2>
                 <a href="{{ route('orders.index') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir toutes' : 'View all' }}</a>
             </div>
             @if($buyerOrders->isEmpty())
-            <div class="mt-2 text-center py-8">
+            <div class="ui-empty py-8">
                 <i data-lucide="clipboard-list" class="w-7 h-7 text-[#DCE7DF] mx-auto mb-2"></i>
-                <p class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Aucune commande pour le moment.' : 'No orders yet.' }}</p>
-                <a href="{{ route('products.index', ['lang' => $lang]) }}" class="inline-block mt-2 text-[12px] font-semibold text-[#157A43]">{{ $isFr ? 'Explorer la galerie' : 'Browse the gallery' }}</a>
+                <p>{{ $isFr ? 'Aucune commande pour le moment.' : 'No orders yet.' }}</p>
+                <a href="{{ route('products.index', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-2">{{ $isFr ? 'Explorer la galerie' : 'Browse the gallery' }}</a>
             </div>
             @else
             <div class="mt-1 divide-y divide-[#F4F4F2]">
@@ -220,7 +223,7 @@
                         <p class="mt-0.5 text-[11px] text-[#8A857A] truncate">{{ $o->reference }} · {{ $o->proposal?->request?->business?->name_fr }}</p>
                     </div>
                     <div class="shrink-0 text-left w-[86px]">
-                        <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md {{ $oMeta[1] }}">{{ $oMeta[0] }}</span>
+                        <span class="ui-pill {{ $oMeta[1] }}">{{ $oMeta[0] }}</span>
                         <p class="mt-1 text-[10.5px] text-[#8A857A]">{{ $o->created_at?->translatedFormat('d M Y') }}</p>
                     </div>
                     <p class="text-[12.5px] font-bold text-[#1B1B18] shrink-0 whitespace-nowrap">{{ number_format((int) $o->total, 0, ',', ' ') }} FCFA</p>
@@ -232,7 +235,7 @@
         </section>
 
         <!-- Actions rapides -->
-        <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+        <section class="ui-card p-4">
             <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
             <div class="mt-3 grid grid-cols-4 gap-2">
                 @foreach($bmActions as [$qIcon, $qLabel, $qHref, $qBadge])
@@ -248,14 +251,14 @@
         </section>
 
         <!-- Promo -->
-        <section class="relative bg-white border border-[#F0F0EE] rounded-2xl overflow-hidden lg:col-span-2">
+        <section class="ui-card ui-card--flush relative lg:col-span-2">
             <img src="{{ asset('images/landing/bm-promo-art.png') }}" alt="" class="absolute right-0 bottom-0 h-full pointer-events-none select-none" aria-hidden="true">
             <div class="relative p-4 pr-[84px]">
                 <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Vous êtes artisan ?' : 'Are you an artisan?' }}</h2>
                 <p class="mt-1 text-[11.5px] text-[#55524A] leading-relaxed max-w-[240px]">
                     {{ $isFr ? 'Créez votre boutique, publiez vos produits et recevez des demandes de devis.' : 'Create your shop, publish your products and start receiving quote requests.' }}
                 </p>
-                <a href="{{ route('business.create') }}" class="mt-3 inline-block bg-[#033016] text-white text-[11.5px] font-bold px-4 py-2.5 rounded-lg">
+                <a href="{{ route('business.create') }}" class="ui-btn ui-btn-primary ui-btn-sm mt-3">
                     {{ $isFr ? 'Créer ma boutique' : 'Create my shop' }}
                 </a>
             </div>

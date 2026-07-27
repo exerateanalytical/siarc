@@ -23,27 +23,30 @@ $docTypeLabels = [
     'other' => $lang === 'fr' ? 'Autre' : 'Other',
 ];
 $pendingApplication = $applications->whereIn('status', ['submitted', 'under_review'])->first();
+
+$fileCls = 'ui-file';
 @endphp
 
 @section('content')
 <div class="max-w-2xl">
 
     @if(session('success'))
-    <div class="bg-[#E2F3E8] border border-[#BFDCC8] text-[#14532D] text-sm rounded-xl p-3.5 mb-4 flex items-start gap-2">
-        <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
+    <div class="ui-alert ui-alert-ok mb-4">
+        <i data-lucide="check-circle-2" class="w-4 h-4"></i>{{ session('success') }}
     </div>
     @endif
 
     @if($errors->any())
-    <div class="bg-[#FDE8E8] border border-[#F5C9C9] text-[#B42025] text-sm rounded-xl p-3.5 mb-4">
-        @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
+    <div class="ui-alert ui-alert-danger mb-4">
+        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+        <div>@foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach</div>
     </div>
     @endif
 
     <!-- Current tier -->
-    <div class="bg-white border border-[#EFEBE2] rounded-xl p-5 mb-5">
-        <p class="text-xs text-[#A8A296] mb-1">{{ $lang === 'fr' ? 'Niveau actuel' : 'Current tier' }}</p>
-        <p class="text-lg font-bold text-[#1B1B18] flex items-center gap-2">
+    <div class="ui-card mb-5">
+        <p class="ui-dt">{{ $lang === 'fr' ? 'Niveau actuel' : 'Current tier' }}</p>
+        <p class="text-lg font-bold text-[#1B1B18] flex items-center gap-2 mt-1">
             <i data-lucide="shield" class="w-5 h-5 text-forest-600"></i>
             {{ $tierLabels[$business->verification_tier] ?? $business->verification_tier }}
         </p>
@@ -51,8 +54,8 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
 
     <!-- Application history -->
     @if($applications->isNotEmpty())
-    <div class="bg-white border border-[#EFEBE2] rounded-xl p-5 mb-5">
-        <h2 class="text-sm font-semibold text-[#1B1B18] mb-3">{{ $lang === 'fr' ? 'Historique des demandes' : 'Application history' }}</h2>
+    <div class="ui-card mb-5">
+        <h2 class="ui-card-title mb-3">{{ $lang === 'fr' ? 'Historique des demandes' : 'Application history' }}</h2>
         <div class="space-y-2">
             @foreach($applications->sortByDesc('submitted_at') as $app)
             <div class="flex items-center justify-between p-3 bg-[#FBF9F4] rounded-lg">
@@ -61,11 +64,11 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
                     <p class="text-xs text-[#A8A296]">{{ $app->submitted_at?->format('d/m/Y') }} — {{ $app->documents->count() }} {{ $lang === 'fr' ? 'document(s)' : 'document(s)' }}</p>
                 </div>
                 <span @class([
-                    'text-xs font-medium px-2 py-1 rounded-full',
-                    'bg-[#F6E4BE] text-[#8A6D1F]' => in_array($app->status, ['submitted', 'under_review']),
-                    'bg-[#CFE5D6] text-[#14532D]' => $app->status === 'approved',
-                    'bg-[#F5C9C9] text-[#B42025]' => $app->status === 'rejected',
-                    'bg-[#F1EDE4] text-[#8A857A]' => $app->status === 'draft',
+                    'ui-pill',
+                    'ui-pill-warn'    => in_array($app->status, ['submitted', 'under_review']),
+                    'ui-pill-ok'      => $app->status === 'approved',
+                    'ui-pill-danger'  => $app->status === 'rejected',
+                    'ui-pill-neutral' => $app->status === 'draft',
                 ])>{{ $statusLabels[$app->status] ?? $app->status }}</span>
             </div>
             @endforeach
@@ -74,33 +77,33 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
     @endif
 
     @if($pendingApplication)
-    <div class="bg-[#FBF1DD] border border-[#EFD08A] rounded-xl p-4 text-sm text-[#8A6D1F] flex items-start gap-2">
-        <i data-lucide="clock" class="w-4 h-4 shrink-0 mt-0.5"></i>
+    <div class="ui-alert ui-alert-warn">
+        <i data-lucide="clock" class="w-4 h-4"></i>
         {{ $lang === 'fr' ? 'Une demande est déjà en attente d\'examen.' : 'An application is already pending review.' }}
     </div>
     @endif
 
     <!-- Application form -->
-    <form method="POST" action="{{ route('verification.apply') }}" enctype="multipart/form-data" class="bg-white border border-[#EFEBE2] rounded-xl p-5 mt-5 space-y-4">
+    <form method="POST" action="{{ route('verification.apply') }}" enctype="multipart/form-data" class="ui-card mt-5 space-y-4">
         @csrf
-        <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Nouvelle demande' : 'New application' }}</h2>
+        <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Nouvelle demande' : 'New application' }}</h2>
 
         <div>
-            <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Niveau demandé' : 'Requested tier' }}</label>
-            <select name="tier_requested" required class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+            <label class="ui-label">{{ $lang === 'fr' ? 'Niveau demandé' : 'Requested tier' }}</label>
+            <select name="tier_requested" required class="ui-field ui-select">
                 <option value="basic">{{ $tierLabels['basic'] }}</option>
                 <option value="verified">{{ $tierLabels['verified'] }}</option>
                 <option value="certified">{{ $tierLabels['certified'] }}</option>
             </select>
         </div>
 
-        <p class="text-xs text-[#A8A296]">{{ $lang === 'fr' ? 'Téléversez au moins un document justificatif (formats PDF, JPG, PNG).' : 'Upload at least one supporting document (PDF, JPG, PNG).' }}</p>
+        <p class="ui-hint">{{ $lang === 'fr' ? 'Téléversez au moins un document justificatif (formats PDF, JPG, PNG).' : 'Upload at least one supporting document (PDF, JPG, PNG).' }}</p>
 
         @for($i = 0; $i < 3; $i++)
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[#FBF9F4] rounded-lg">
             <div>
-                <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Type de document' : 'Document type' }}</label>
-                <select name="documents[{{ $i }}][type]" class="w-full text-sm border border-[#EFEBE2] rounded-lg px-3 py-2 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400">
+                <label class="ui-label">{{ $lang === 'fr' ? 'Type de document' : 'Document type' }}</label>
+                <select name="documents[{{ $i }}][type]" class="ui-field ui-select">
                     <option value="">{{ $lang === 'fr' ? 'Aucun' : 'None' }}</option>
                     @foreach($docTypeLabels as $val => $label)
                     <option value="{{ $val }}">{{ $label }}</option>
@@ -108,13 +111,13 @@ $pendingApplication = $applications->whereIn('status', ['submitted', 'under_revi
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-medium text-[#6F6B60] mb-1">{{ $lang === 'fr' ? 'Fichier' : 'File' }}</label>
-                <input type="file" name="documents[{{ $i }}][file]" accept=".pdf,image/*" class="w-full text-xs text-[#8A857A] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-white file:border file:border-[#EFEBE2] file:text-xs">
+                <label class="ui-label">{{ $lang === 'fr' ? 'Fichier' : 'File' }}</label>
+                <input type="file" name="documents[{{ $i }}][file]" accept=".pdf,image/*" class="{{ $fileCls }}">
             </div>
         </div>
         @endfor
 
-        <button type="submit" class="w-full bg-forest-600 hover:bg-forest-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+        <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg ui-btn-block">
             <i data-lucide="send" class="w-4 h-4"></i>
             {{ $lang === 'fr' ? 'Soumettre la demande' : 'Submit application' }}
         </button>

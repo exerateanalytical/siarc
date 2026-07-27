@@ -7,13 +7,15 @@ $pageTitle = $isFr ? ($isSeller ? 'Commandes reçues' : 'Mes commandes') : ($isS
 // Lifecycle, in order. The seller advances an order one step at a time; the
 // buyer only reads it. Kept in sync with QuoteWebController::ORDER_STATUSES.
 $flow = ['confirmed', 'in_production', 'shipped', 'delivered'];
+// Second element is the kit pill variant. "Shipped" had a bespoke blue with no
+// kit equivalent, so it reads as neutral until delivery turns it green.
 $statusMeta = [
-    'confirmed'     => [$isFr ? 'Confirmée' : 'Confirmed',         'bg-[#E2F3E8] text-[#157A43]'],
-    'in_production' => [$isFr ? 'En production' : 'In production', 'bg-[#FBF1DD] text-[#8A6D1F]'],
-    'shipped'       => [$isFr ? 'Expédiée' : 'Shipped',            'bg-[#E4EDF7] text-[#2C5C8F]'],
-    'delivered'     => [$isFr ? 'Livrée' : 'Delivered',            'bg-[#E2F3E8] text-[#14532D]'],
-    'cancelled'     => [$isFr ? 'Annulée' : 'Cancelled',           'bg-[#FDE8E8] text-[#B42025]'],
-    'created'       => [$isFr ? 'Créée' : 'Created',               'bg-[#F2F5F2] text-[#55524A]'],
+    'confirmed'     => [$isFr ? 'Confirmée' : 'Confirmed',         'ui-pill-ok'],
+    'in_production' => [$isFr ? 'En production' : 'In production', 'ui-pill-warn'],
+    'shipped'       => [$isFr ? 'Expédiée' : 'Shipped',            'ui-pill-neutral'],
+    'delivered'     => [$isFr ? 'Livrée' : 'Delivered',            'ui-pill-ok'],
+    'cancelled'     => [$isFr ? 'Annulée' : 'Cancelled',           'ui-pill-danger'],
+    'created'       => [$isFr ? 'Créée' : 'Created',               'ui-pill-neutral'],
 ];
 $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) => [$s => $statusMeta[$s][0]])->all();
 @endphp
@@ -22,8 +24,8 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
 <div class="max-w-5xl space-y-5">
 
     @if(session('success'))
-        <div class="flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
-            <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+        <div class="ui-alert ui-alert-ok">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
             {{ session('success') }}
         </div>
     @endif
@@ -31,32 +33,29 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
     <div class="flex flex-wrap items-center gap-1.5">
         @foreach($tabs as $val => $label)
         <a href="{{ route('orders.index', array_filter(['status' => $val ?: null])) }}"
-           class="px-3 py-1.5 rounded-lg text-[12.5px] font-semibold border transition-colors
-                  {{ (string) ($status ?? '') === $val
-                     ? 'bg-[#14532D] border-[#14532D] text-white'
-                     : 'bg-white border-[#ECECEA] text-[#55524A] hover:border-[#14652F] hover:text-[#14652F]' }}">
+           class="ui-btn ui-btn-sm {{ (string) ($status ?? '') === $val ? 'ui-btn-primary' : 'ui-btn-secondary' }}">
             {{ $label }}
         </a>
         @endforeach
     </div>
 
     @if($orders->isEmpty())
-    <div class="bg-white border border-[#ECECEA] rounded-xl text-center py-14 px-4">
+    <div class="ui-card text-center py-14 px-4">
         <i data-lucide="clipboard-list" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="text-sm text-[#8A857A]">
+        <p class="text-[12.5px] text-[#8A857A]">
             {{ $isSeller
                ? ($isFr ? 'Aucune commande pour le moment. Les commandes apparaissent ici quand un acheteur accepte une de vos propositions.'
                         : 'No orders yet. Orders appear here when a buyer accepts one of your proposals.')
                : ($isFr ? 'Aucune commande pour le moment. Acceptez une proposition de devis pour en créer une.'
                         : 'No orders yet. Accept a quote proposal to create one.') }}
         </p>
-        <a href="{{ route('dashboard.quotes') }}" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-[#14652F] hover:text-[#14532D]">
+        <a href="{{ route('dashboard.quotes') }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-4">
             <i data-lucide="file-text" class="w-4 h-4"></i>
             {{ $isFr ? 'Voir les devis' : 'View quotes' }}
         </a>
     </div>
     @else
-    <div class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
+    <div class="ui-card ui-card--flush">
         @foreach($orders as $o)
         @php
             $req   = $o->proposal?->request;
@@ -73,9 +72,9 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
                         <a href="{{ route('quotes.po', ['po' => $o->id]) }}" class="text-[13.5px] font-semibold text-[#1B1B18] hover:text-[#14652F]">
                             {{ $o->reference }}
                         </a>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold {{ $meta[1] }}">{{ $meta[0] }}</span>
+                        <span class="ui-pill {{ $meta[1] }}">{{ $meta[0] }}</span>
                         @if($o->invoice)
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-bold {{ $paid ? 'bg-[#E2F3E8] text-[#157A43]' : 'bg-[#FDE8E8] text-[#B42025]' }}">
+                        <span class="ui-pill {{ $paid ? 'ui-pill-ok' : 'ui-pill-danger' }}">
                             {{ $paid ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}
                         </span>
                         @endif
@@ -98,14 +97,12 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
             </div>
 
             <div class="flex flex-wrap items-center gap-2 mt-3">
-                <a href="{{ route('quotes.po', ['po' => $o->id]) }}"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#ECECEA] text-[12px] font-semibold text-[#55524A] hover:border-[#14652F] hover:text-[#14652F] transition-colors">
+                <a href="{{ route('quotes.po', ['po' => $o->id]) }}" class="ui-btn ui-btn-secondary ui-btn-sm">
                     <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Bon de commande' : 'Purchase order' }}
                 </a>
                 @if($o->invoice)
-                <a href="{{ route('quotes.invoice', ['invoice' => $o->invoice->id]) }}"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#ECECEA] text-[12px] font-semibold text-[#55524A] hover:border-[#14652F] hover:text-[#14652F] transition-colors">
+                <a href="{{ route('quotes.invoice', ['invoice' => $o->invoice->id]) }}" class="ui-btn ui-btn-secondary ui-btn-sm">
                     <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Facture' : 'Invoice' }}
                 </a>
@@ -115,7 +112,7 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
                 <form method="POST" action="{{ route('orders.update-status', ['order' => $o->id]) }}">
                     @csrf
                     <input type="hidden" name="status" value="{{ $next }}">
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#14652F] hover:bg-[#14532D] text-white text-[12px] font-semibold transition-colors">
+                    <button type="submit" class="ui-btn ui-btn-primary ui-btn-sm">
                         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         {{ $isFr ? 'Passer à' : 'Move to' }} « {{ $statusMeta[$next][0] }} »
                     </button>
@@ -126,7 +123,7 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
                       onsubmit="return confirm('{{ $isFr ? 'Annuler cette commande ?' : 'Cancel this order?' }}')">
                     @csrf
                     <input type="hidden" name="status" value="cancelled">
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#ECECEA] text-[12px] font-semibold text-[#B42025] hover:border-[#B42025] hover:bg-[#FDE8E8] transition-colors">
+                    <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm">
                         {{ $isFr ? 'Annuler' : 'Cancel' }}
                     </button>
                 </form>

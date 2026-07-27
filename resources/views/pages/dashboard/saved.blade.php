@@ -8,8 +8,8 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
 <div class="max-w-3xl space-y-6">
 
     @if(session('success'))
-        <div class="flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
-            <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+        <div class="ui-alert ui-alert-ok">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
             {{ session('success') }}
         </div>
     @endif
@@ -18,15 +18,15 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
     <div>
         <div class="flex items-center gap-2 mb-3">
             <i data-lucide="package" class="w-4 h-4 text-[#14652F]"></i>
-            <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Produits sauvegardés' : 'Saved products' }}</h2>
-            <span class="text-xs text-[#8A857A]">({{ $savedProducts->count() }})</span>
+            <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Produits sauvegardés' : 'Saved products' }}</h2>
+            <span class="text-[11.5px] text-[#8A857A]">({{ $savedProducts->count() }})</span>
         </div>
 
         @if($savedProducts->isEmpty())
-        <div class="bg-white border border-[#ECECEA] rounded-xl text-center py-10 px-4">
+        <div class="ui-card text-center py-10 px-4">
             <i data-lucide="bookmark" class="w-8 h-8 text-[#DCE7DF] mx-auto mb-2"></i>
-            <p class="text-sm text-[#8A857A]">{{ $lang === 'fr' ? 'Aucun produit sauvegardé. Explorez la galerie pour en ajouter.' : 'No saved products yet. Browse the gallery to add some.' }}</p>
-            <a href="{{ route('gallery.search') }}" class="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-[#14652F] hover:text-[#14532D]">
+            <p class="text-[12.5px] text-[#8A857A]">{{ $lang === 'fr' ? 'Aucun produit sauvegardé. Explorez la galerie pour en ajouter.' : 'No saved products yet. Browse the gallery to add some.' }}</p>
+            <a href="{{ route('gallery.search') }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-3">
                 <i data-lucide="search" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Explorer les produits' : 'Browse products' }}
             </a>
@@ -34,7 +34,7 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
         @else
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             @foreach($savedProducts as $product)
-            <div class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden flex flex-col">
+            <div class="ui-card ui-card--flush flex flex-col">
                 <a href="{{ route('products.show', $product->slug) }}" class="block h-32 bg-[#F5F1E9] overflow-hidden">
                     @if($product->primaryImage)
                         <img src="{{ asset('storage/' . $product->primaryImage->file_path) }}" alt="" class="w-full h-full object-cover hover:scale-105 transition-transform">
@@ -56,7 +56,7 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
                     <form method="POST" action="{{ route('products.toggle-save', $product->slug) }}" class="mt-auto pt-2">
                         @csrf
                         <input type="hidden" name="return_to" value="{{ route('saved.index') }}">
-                        <button type="submit" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B42025] hover:text-[#E01E1E] transition-colors">
+                        <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm">
                             <i data-lucide="bookmark-x" class="w-3.5 h-3.5"></i>
                             {{ $lang === 'fr' ? 'Retirer' : 'Remove' }}
                         </button>
@@ -72,21 +72,21 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
     <div>
         <div class="flex items-center gap-2 mb-3">
             <i data-lucide="building-2" class="w-4 h-4 text-[#14652F]"></i>
-            <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Entreprises sauvegardées' : 'Saved businesses' }}</h2>
-            <span class="text-xs text-[#8A857A]">({{ $savedBusinesses->count() }})</span>
+            <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Entreprises sauvegardées' : 'Saved businesses' }}</h2>
+            <span class="text-[11.5px] text-[#8A857A]">({{ $savedBusinesses->count() }})</span>
         </div>
 
         @if($savedBusinesses->isEmpty())
-        <div class="bg-white border border-[#ECECEA] rounded-xl text-center py-10 px-4">
+        <div class="ui-card text-center py-10 px-4">
             <i data-lucide="bookmark" class="w-8 h-8 text-[#DCE7DF] mx-auto mb-2"></i>
-            <p class="text-sm text-[#8A857A]">{{ $lang === 'fr' ? 'Aucune entreprise sauvegardée.' : 'No saved businesses yet.' }}</p>
-            <a href="{{ route('businesses.index') }}" class="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold text-[#14652F] hover:text-[#14532D]">
+            <p class="text-[12.5px] text-[#8A857A]">{{ $lang === 'fr' ? 'Aucune entreprise sauvegardée.' : 'No saved businesses yet.' }}</p>
+            <a href="{{ route('businesses.index') }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-3">
                 <i data-lucide="search" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Explorer les entreprises' : 'Browse businesses' }}
             </a>
         </div>
         @else
-        <div class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
+        <div class="ui-card ui-card--flush">
             @foreach($savedBusinesses as $biz)
             <div class="flex items-center gap-3 px-4 py-3 border-b border-[#F0F1F0] last:border-0">
                 <div class="w-10 h-10 rounded-xl bg-[#F5F1E9] flex items-center justify-center shrink-0 overflow-hidden border border-[#F0F1F0]">
@@ -105,7 +105,7 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
                     </p>
                 </div>
                 @if(in_array($biz->verification_tier, ['verified', 'certified']))
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E2F3E8] text-[#157A43] text-[10px] font-semibold shrink-0">
+                <span class="ui-pill ui-pill-ok shrink-0">
                     <i data-lucide="badge-check" class="w-3 h-3"></i>
                     {{ $lang === 'fr' ? 'Vérifiée' : 'Verified' }}
                 </span>
@@ -113,7 +113,7 @@ $pageTitle = $lang === 'fr' ? 'Mes favoris' : 'Saved Items';
                 <form method="POST" action="{{ route('businesses.toggle-save', $biz->slug) }}" class="shrink-0">
                     @csrf
                     <input type="hidden" name="return_to" value="{{ route('saved.index') }}">
-                    <button type="submit" class="inline-flex items-center gap-1 text-xs font-semibold text-[#B42025] hover:text-[#E01E1E] transition-colors" title="{{ $lang === 'fr' ? 'Retirer' : 'Remove' }}">
+                    <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm" title="{{ $lang === 'fr' ? 'Retirer' : 'Remove' }}">
                         <i data-lucide="bookmark-x" class="w-3.5 h-3.5"></i>
                         {{ $lang === 'fr' ? 'Retirer' : 'Remove' }}
                     </button>

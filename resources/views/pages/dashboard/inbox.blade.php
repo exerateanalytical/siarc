@@ -6,7 +6,7 @@
 @section('content')
 <div class="max-w-3xl">
 
-    <div class="bg-white rounded-xl border border-[#EFEBE2] overflow-hidden">
+    <div class="ui-card ui-card--flush">
         @forelse($conversations as $conv)
             @php
                 $isBuyer = $conv->buyer_id === $userId;
@@ -39,9 +39,9 @@
                 </div>
             </a>
         @empty
-            <div class="text-center py-14 px-4">
+            <div class="ui-empty">
                 <i data-lucide="message-circle" class="w-10 h-10 text-[#EFEBE2] mx-auto mb-3"></i>
-                <p class="text-sm text-[#A8A296]">{{ $lang === 'fr' ? 'Aucun message pour l\'instant.' : 'No messages yet.' }}</p>
+                {{ $lang === 'fr' ? 'Aucun message pour l\'instant.' : 'No messages yet.' }}
             </div>
         @endforelse
     </div>

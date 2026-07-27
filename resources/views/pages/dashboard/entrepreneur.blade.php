@@ -26,11 +26,13 @@
     ];
 
     // Real purchase orders for this business
+    // Second element is the kit pill variant. "Confirmed" had a bespoke blue with
+    // no kit equivalent, so it reads as neutral until delivery turns it green.
     $orderStatus = [
-        'pending'   => ['✓ ' . ($isFr ? 'En cours' : 'In progress'), 'bg-[#FDF7E3] text-[#B07C10]'],
-        'confirmed' => ['✓ ' . ($isFr ? 'Confirmée' : 'Confirmed'), 'bg-[#EBF1FD] text-[#2E5FD0]'],
-        'delivered' => ['✓ ' . ($isFr ? 'Livrée' : 'Delivered'), 'bg-[#E9F6EE] text-[#157A43]'],
-        'cancelled' => ['✓ ' . ($isFr ? 'Annulée' : 'Cancelled'), 'bg-[#FDE8E8] text-[#DC2626]'],
+        'pending'   => ['✓ ' . ($isFr ? 'En cours' : 'In progress'), 'ui-pill-warn'],
+        'confirmed' => ['✓ ' . ($isFr ? 'Confirmée' : 'Confirmed'), 'ui-pill-neutral'],
+        'delivered' => ['✓ ' . ($isFr ? 'Livrée' : 'Delivered'), 'ui-pill-ok'],
+        'cancelled' => ['✓ ' . ($isFr ? 'Annulée' : 'Cancelled'), 'ui-pill-danger'],
     ];
     $realOrders = ($bizPurchaseOrders ?? collect())->take(4);
 
@@ -99,6 +101,7 @@
         html, body { overflow-x: clip; }
         {{-- Sidebar slide-over CSS now lives in pages.partials.dashboard-sidebar --}}
     </style>
+    @include('pages.partials.ui-kit')
 </head>
 <body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
 
@@ -127,18 +130,24 @@
         <!-- Header (desktop) -->
         <header class="hidden lg:block bg-white border-b border-[#F0F0EE]">
             <div class="flex items-center gap-3 xl:gap-5 px-4 xl:px-8 py-3.5">
-                <form action="{{ route('gallery.search') }}" method="GET" class="hidden md:flex items-stretch flex-1 max-w-[640px]">
+                {{-- Fused search|category|submit control. The two fields share one
+                     bordered box (ui-field-group) so they pick up the platform's
+                     border and focus ring while staying visually joined. --}}
+                <form action="{{ route('gallery.search') }}" method="GET" class="hidden md:flex items-center gap-2 flex-1 max-w-[640px]">
                     <input type="hidden" name="lang" value="{{ $lang }}">
-                    <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, un artisan, un événement...' : 'Search a product, an artisan, an event...' }}"
-                        class="flex-1 min-w-0 h-[46px] border border-[#E7E7E5] rounded-l-xl px-5 text-[13.5px] placeholder-[#9A968C] focus:outline-none focus:border-dashgold">
-                    <select name="categorie" class="hidden xl:block h-[46px] border-y border-[#E7E7E5] px-3 text-[13.5px] text-[#1B1B18] bg-white focus:outline-none cursor-pointer">
-                        <option value="">{{ $isFr ? 'Toutes catégories' : 'All categories' }}</option>
-                        @foreach(['arts-decoration' => $isFr ? 'Arts & Décoration' : 'Arts & Decoration', 'textile-mode' => $isFr ? 'Mode & Textile' : 'Fashion & Textile', 'bois-sculpture' => $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture', 'poterie-ceramique' => $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics', 'bijouterie-accessoires' => $isFr ? 'Bijouterie & Accessoires' : 'Jewelry & Accessories'] as $catVal => $catLabel)
-                        <option value="{{ $catVal }}">{{ $catLabel }}</option>
-                        @endforeach
-                    </select>
+                    <div class="ui-field-group ui-field--lg flex-1 gap-0 px-0 overflow-hidden">
+                        <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, un artisan, un événement...' : 'Search a product, an artisan, an event...' }}"
+                            class="ui-field-bare px-4">
+                        <span class="hidden xl:block h-[22px] w-px bg-[var(--ui-border-field)] shrink-0"></span>
+                        <select name="categorie" class="hidden xl:block ui-field-bare w-auto px-3 cursor-pointer">
+                            <option value="">{{ $isFr ? 'Toutes catégories' : 'All categories' }}</option>
+                            @foreach(['arts-decoration' => $isFr ? 'Arts & Décoration' : 'Arts & Decoration', 'textile-mode' => $isFr ? 'Mode & Textile' : 'Fashion & Textile', 'bois-sculpture' => $isFr ? 'Bois & Sculpture' : 'Wood & Sculpture', 'poterie-ceramique' => $isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics', 'bijouterie-accessoires' => $isFr ? 'Bijouterie & Accessoires' : 'Jewelry & Accessories'] as $catVal => $catLabel)
+                            <option value="{{ $catVal }}">{{ $catLabel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"
-                        class="w-[62px] h-[46px] bg-[#052912] hover:bg-leaf rounded-r-xl flex items-center justify-center text-white transition-colors">
+                        class="ui-btn ui-btn-primary ui-btn-lg w-[54px] px-0 shrink-0">
                         <i data-lucide="search" class="w-[18px] h-[18px]"></i>
                     </button>
                 </form>
@@ -304,7 +313,7 @@
                 </div>
 
                 <!-- Pipeline des devis -->
-                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                <section class="ui-card p-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Pipeline des devis' : 'Quote pipeline' }}</h2>
                         <a href="{{ route('dashboard.quotes') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
@@ -322,7 +331,7 @@
                 </section>
 
                 <!-- Activité récente -->
-                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                <section class="ui-card p-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité récente' : 'Recent activity' }}</h2>
                         <a href="{{ route('notifications.index') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
@@ -343,7 +352,7 @@
                 </section>
 
                 <!-- Actions rapides -->
-                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                <section class="ui-card p-4">
                     <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-3 grid grid-cols-6 gap-1.5">
                         @foreach($smActions as [$qIcon, $qLabel, $qHref, $qBadge])
@@ -361,7 +370,7 @@
                 </section>
 
                 <!-- Produits les plus performants -->
-                <section class="bg-white border border-[#F0F0EE] rounded-2xl p-4">
+                <section class="ui-card p-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Produits les plus performants' : 'Top performing products' }}</h2>
                         <a href="{{ route('products.web-index') }}" class="text-[11.5px] font-medium text-[#157A43] whitespace-nowrap ml-2">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
@@ -411,7 +420,7 @@
                         {{ $isFr ? 'Présentez vos produits à des acheteurs du monde entier. Gratuit, rapide, efficace.' : 'Showcase your products to buyers worldwide. Free, fast, effective.' }}
                     </p>
                     <a href="{{ route('business.create') }}"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#052912] text-white font-semibold rounded-xl text-[13px]">
+                        class="ui-btn ui-btn-primary">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         {{ $isFr ? 'Créer mon entreprise' : 'Create my business' }}
                     </a>
@@ -495,7 +504,7 @@
             <div class="mt-5 grid grid-cols-1 xl:grid-cols-[1.62fr_1.1fr_0.98fr] gap-4 items-start">
 
                 <!-- Commandes récentes -->
-                <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm">
+                <section class="ui-card ui-card--flush shadow-sm">
                     <div class="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#F4F4F2]">
                         <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Commandes récentes' : 'Recent orders' }}</h2>
                         <a href="{{ route('messages.inbox') }}" class="flex items-center gap-1.5 text-[12.5px] font-medium text-[#55524A] hover:text-leaf">
@@ -515,7 +524,7 @@
                             </div>
                             <div class="ml-auto text-right shrink-0 hidden sm:block">
                                 @if(isset($orderStatus[$ord->status]))
-                                <span class="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full {{ $orderStatus[$ord->status][1] }}">{{ $orderStatus[$ord->status][0] }}</span>
+                                <span class="ui-pill {{ $orderStatus[$ord->status][1] }}">{{ $orderStatus[$ord->status][0] }}</span>
                                 @endif
                                 <p class="mt-1 text-[11.5px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($ord->created_at)->format('d M Y') }}</p>
                             </div>
@@ -525,13 +534,13 @@
                             </a>
                         </div>
                         @empty
-                        <p class="px-5 py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune commande pour le moment.' : 'No orders yet.' }}</p>
+                        <p class="ui-empty">{{ $isFr ? 'Aucune commande pour le moment.' : 'No orders yet.' }}</p>
                         @endforelse
                     </div>
                 </section>
 
                 <!-- Activité en temps réel -->
-                <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-3">
+                <section class="ui-card shadow-sm px-5 pt-4 pb-3">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité en temps réel' : 'Real-time activity' }}</h2>
                     <div class="mt-4 space-y-0">
                         @forelse($activity as $actIdx => [$actIcon, $actColor, $actTime, $actText])
@@ -546,7 +555,7 @@
                             </div>
                         </div>
                         @empty
-                        <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</p>
+                        <p class="ui-empty">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</p>
                         @endforelse
                     </div>
                     <a href="{{ route('notifications.index') }}" class="flex items-center justify-center gap-2 py-2.5 border-t border-[#F4F4F2] text-[12.5px] font-semibold text-[#1B1B18] hover:text-leaf">
@@ -583,7 +592,7 @@
             <div class="mt-5 grid grid-cols-1 xl:grid-cols-[1.62fr_1.1fr_0.98fr] gap-4 items-start">
 
                 <!-- Aperçu des performances -->
-                <section id="performances" class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-4">
+                <section id="performances" class="ui-card shadow-sm px-5 pt-4 pb-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu des performances' : 'Performance overview' }}</h2>
                         <span class="flex items-center gap-2 border border-[#E7E7E5] rounded-lg px-3 py-1.5 text-[12px] text-[#55524A]">
@@ -610,7 +619,7 @@
                 </section>
 
                 <!-- Produits les plus populaires -->
-                <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-2">
+                <section class="ui-card shadow-sm px-5 pt-4 pb-2">
                     <div class="flex items-center justify-between">
                         <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Produits les plus populaires' : 'Most popular products' }}</h2>
                         <a href="{{ $ownStoreUrl }}" class="flex items-center gap-1.5 text-[12.5px] font-medium text-[#55524A] hover:text-leaf whitespace-nowrap">
@@ -628,13 +637,13 @@
                             </div>
                         </a>
                         @empty
-                        <p class="py-6 text-center text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Aucun produit publié pour le moment.' : 'No published products yet.' }}</p>
+                        <p class="ui-empty">{{ $isFr ? 'Aucun produit publié pour le moment.' : 'No published products yet.' }}</p>
                         @endforelse
                     </div>
                 </section>
 
                 <!-- Statistiques par région -->
-                <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-4">
+                <section class="ui-card shadow-sm px-5 pt-4 pb-4">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Statistiques par région' : 'Statistics by region' }}</h2>
                     <div class="mt-6 flex flex-col items-center text-center py-4">
                         <i data-lucide="map" class="w-7 h-7 text-[#B9B4A9] mb-2"></i>
@@ -647,7 +656,7 @@
             <div class="mt-5 grid grid-cols-1 xl:grid-cols-[2.85fr_1fr] gap-4 items-stretch">
 
                 <!-- Actions rapides -->
-                <section class="bg-white rounded-2xl border border-[#F0F0EE] shadow-sm px-5 pt-4 pb-5">
+                <section class="ui-card shadow-sm px-5 pt-4 pb-5">
                     <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                     <div class="mt-3.5 grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2.5">
                         @foreach($quickActions as [$qaIcon, $qaLabel, $qaHref, $qaBadge])
@@ -690,7 +699,7 @@
                     {{ $isFr ? 'Présentez vos produits à des acheteurs du monde entier. Gratuit, rapide, efficace.' : 'Showcase your products to buyers worldwide. Free, fast, effective.' }}
                 </p>
                 <a href="{{ route('business.create') }}"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#052912] text-white font-semibold rounded-xl hover:bg-leaf transition-colors text-[14px]">
+                    class="ui-btn ui-btn-primary ui-btn-lg">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     {{ $isFr ? 'Créer mon entreprise' : 'Create my business' }}
                 </a>

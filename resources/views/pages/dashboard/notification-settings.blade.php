@@ -18,25 +18,25 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
 <div class="max-w-2xl">
 
     @if(session('success'))
-        <div class="mb-4 flex items-start gap-2 bg-[#E2F3E8] border border-[#BFDCC8] rounded-lg px-4 py-3 text-sm text-[#14532D]">
-            <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+        <div class="ui-alert ui-alert-ok mb-4">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
             {{ session('success') }}
         </div>
     @endif
 
     <form method="POST" action="{{ route('notifications.settings.save') }}">
         @csrf
-        <div class="bg-white border border-[#EFEBE2] rounded-xl overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-[#F1EDE4]">
+        <div class="ui-card ui-card--flush">
+            <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4]">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
                         <i data-lucide="bell-ring" class="w-4 h-4 text-forest-600"></i>
                     </div>
-                    <h2 class="text-sm font-semibold text-[#1B1B18]">{{ $lang === 'fr' ? 'Canaux par type de notification' : 'Channels per notification type' }}</h2>
+                    <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Canaux par type de notification' : 'Channels per notification type' }}</h2>
                 </div>
                 <div class="hidden sm:flex items-center gap-6 pr-1">
                     @foreach($channels as $key => $label)
-                    <span class="text-[10px] font-semibold text-[#A8A296] uppercase tracking-wide w-10 text-center">{{ $label }}</span>
+                    <span class="ui-eyebrow w-10 text-center">{{ $label }}</span>
                     @endforeach
                 </div>
             </div>
@@ -58,7 +58,7 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
                         <span class="sm:hidden text-[9px] font-semibold text-[#A8A296] uppercase">{{ $chLabel }}</span>
                         <input type="checkbox" name="prefs[{{ $catKey }}][{{ $chKey }}]" value="1"
                             {{ $isOn($catKey, $chKey) ? 'checked' : '' }}
-                            class="w-4 h-4 rounded border-[#EFEBE2] text-forest-500 focus:ring-forest-400">
+                            class="ui-check">
                     </label>
                     @endforeach
                 </div>
@@ -67,7 +67,7 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
         </div>
 
         <div class="mt-4">
-            <button type="submit" class="inline-flex items-center gap-2 bg-forest-500 hover:bg-forest-600 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors">
+            <button type="submit" class="ui-btn ui-btn-primary">
                 <i data-lucide="save" class="w-4 h-4"></i>
                 {{ $lang === 'fr' ? 'Enregistrer' : 'Save preferences' }}
             </button>

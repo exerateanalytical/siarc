@@ -20,21 +20,21 @@ $isAdmin = ! empty($siacUser['is_admin']);
             <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A]"></i>
         </a>
         <span @class([
-            'text-xs font-medium px-2 py-1 rounded-full',
-            'bg-[#F6E4BE] text-[#8A6D1F]' => in_array($ticket->status, ['open', 'in_progress']),
-            'bg-[#CFE5D6] text-[#14532D]' => $ticket->status === 'resolved',
-            'bg-[#F1EDE4] text-[#8A857A]' => $ticket->status === 'closed',
+            'ui-pill',
+            'ui-pill-warn'    => in_array($ticket->status, ['open', 'in_progress']),
+            'ui-pill-ok'      => $ticket->status === 'resolved',
+            'ui-pill-neutral' => $ticket->status === 'closed',
         ])>{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
 
         @if($isAdmin && $ticket->status !== 'closed')
         <form method="POST" action="{{ route('admin.support.close', ['id' => $ticket->id]) }}" class="ml-auto">
             @csrf
-            <button type="submit" class="text-xs text-[#B42025] hover:underline font-medium">{{ $lang === 'fr' ? 'Fermer le ticket' : 'Close ticket' }}</button>
+            <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm">{{ $lang === 'fr' ? 'Fermer le ticket' : 'Close ticket' }}</button>
         </form>
         @endif
     </div>
 
-    <div class="bg-white border border-[#EFEBE2] rounded-xl p-4 mb-4 space-y-3 max-h-[55vh] overflow-y-auto">
+    <div class="ui-card p-4 mb-4 space-y-3 max-h-[55vh] overflow-y-auto">
         @foreach($ticket->replies as $reply)
         <div class="flex {{ $reply->is_staff ? 'justify-end' : 'justify-start' }}">
             <div class="max-w-[80%] {{ $reply->is_staff ? 'bg-forest-600 text-white' : 'bg-[#F1EDE4] text-[#262521]' }} rounded-2xl px-3.5 py-2.5">
@@ -53,14 +53,14 @@ $isAdmin = ! empty($siacUser['is_admin']);
         @csrf
         <textarea name="body" rows="2" required maxlength="3000"
             placeholder="{{ $lang === 'fr' ? 'Écrire une réponse...' : 'Write a reply...' }}"
-            class="flex-1 text-sm border border-[#EFEBE2] rounded-lg px-3 py-2.5 focus:outline-none focus:border-forest-400 focus:ring-1 focus:ring-forest-400 resize-none"></textarea>
-        <button type="submit" class="shrink-0 bg-forest-600 hover:bg-forest-700 text-white p-2.5 rounded-lg transition-colors">
+            class="ui-field ui-textarea flex-1 min-h-[64px] resize-none"></textarea>
+        <button type="submit" class="ui-btn ui-btn-primary shrink-0 px-3">
             <i data-lucide="send" class="w-4 h-4"></i>
         </button>
     </form>
-    @error('body')<p class="text-xs text-[#B42025] mt-1.5">{{ $message }}</p>@enderror
+    @error('body')<p class="ui-error">{{ $message }}</p>@enderror
     @else
-    <p class="text-center text-sm text-[#A8A296]">{{ $lang === 'fr' ? 'Ce ticket est fermé.' : 'This ticket is closed.' }}</p>
+    <p class="ui-empty">{{ $lang === 'fr' ? 'Ce ticket est fermé.' : 'This ticket is closed.' }}</p>
     @endif
 </div>
 @endsection
