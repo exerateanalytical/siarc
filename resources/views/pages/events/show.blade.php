@@ -13,7 +13,7 @@
     $monthAbbr = ($isFr ? $frMonths : $enMonths)[(int) $event->starts_at->format('n')];
     $year = $event->starts_at->format('Y');
     $timeFrom = $event->starts_at->format('H:i');
-    $timeTo = $event->ends_at?->format('H:i') ?? '18:00';
+    $timeTo = $event->ends_at?->format('H:i');
     $dateLong = $isFr
         ? $day . ' ' . ucfirst(mb_strtolower($frMonthsFull[(int) $event->starts_at->format('n')])) . ' ' . $year
         : $event->starts_at->format('d F Y');
@@ -201,7 +201,7 @@
                     <p class="md:mt-1.5 text-[15px] font-bold tracking-[0.1em] text-white">{{ $monthAbbr }}</p>
                     <p class="text-[14px] font-bold text-[#E5A82E]">{{ $year }}</p>
                     <p class="md:mt-4 text-[14px] font-semibold text-white">{{ $timeFrom }}</p>
-                    <p class="text-[12px] text-white/80">à {{ $timeTo }}</p>
+                    @if($timeTo)<p class="text-[12px] text-white/80">à {{ $timeTo }}</p>@endif
                     <p class="hidden md:flex items-start gap-1.5 mt-4 text-[11px] text-white/90 leading-snug">
                         <i data-lucide="map-pin" class="w-3 h-3 mt-0.5 shrink-0"></i>
                         <span>{{ $meta['city'] }}<br>{{ $meta['venue'] }}</span>
@@ -406,7 +406,7 @@
                         <i data-lucide="clock" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
                         <div>
                             <p class="font-semibold text-[#1D1B16]">{{ $isFr ? 'Heure' : 'Time' }}</p>
-                            <p class="mt-0.5 text-[#6F6B60]">{{ $timeFrom }} - {{ $timeTo }} (GMT+1)</p>
+                            <p class="mt-0.5 text-[#6F6B60]">{{ $timeTo ? $timeFrom . ' - ' . $timeTo : $timeFrom }} (GMT+1)</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
@@ -447,7 +447,9 @@
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </a>
                 <p class="mt-4 text-[11.5px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
-                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="phone" class="w-3 h-3"></i>+237 222 22 22 22</p>
+                @if(config('legal.company.phone'))
+                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="phone" class="w-3 h-3"></i>{{ config('legal.company.phone') }}</p>
+                @endif
                 <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="mail" class="w-3 h-3"></i>{{ config('legal.company.email') }}</p>
             </div>
 

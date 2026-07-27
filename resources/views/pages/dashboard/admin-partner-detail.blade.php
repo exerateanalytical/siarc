@@ -13,11 +13,18 @@
     $partnerTiles = ['MINCOMMERCE'=>'partner-mincommerce.png','MINAC'=>'partner-minac.png','UNESCO'=>'partner-unesco.png','ITC'=>'partner-itc.png','CEPII Cameroun'=>'partner-cepii.png','OAPI'=>'partner-oapi.png','Banque Africaine de Développement'=>'partner-bad.png','AFD'=>'partner-afd.png','Union Européenne'=>'partner-ue.png'];
     $logoFile = $partnerTiles[$partner->name_fr] ?? null;
 
+    $durationYears = ($partner->start_date && $partner->end_date)
+        ? max(1, (int) round(\Carbon\Carbon::parse($partner->start_date)->floatDiffInYears(\Carbon\Carbon::parse($partner->end_date))))
+        : null;
+
     $tabs = [[$isFr?'Aperçu':'Overview',true],['Informations',false],['Contacts',false],['Accords',false],[$isFr?'Activités & Projets':'Activities & Projects',false],[$isFr?'Statistiques':'Statistics',false],['Documents',false],['Historique',false]];
     $infosCles = [
-        [$isFr?'Type de partenariat':'Partnership type', $partner->partnership_type ?? 'Institutionnel', 'pill'],
-        [$isFr?'Niveau de partenariat':'Partnership level', $partner->partnership_level ?? 'Standard', 'level'],
-        [$isFr?'Durée du partenariat':'Duration', '3 ans', 'text'],
+        [$isFr?'Type de partenariat':'Partnership type', $partner->partnership_type ?: '—', 'pill'],
+        [$isFr?'Niveau de partenariat':'Partnership level', $partner->partnership_level ?: '—', 'level'],
+        // Duration is the span of the recorded agreement, not a fixed term.
+        [$isFr?'Durée du partenariat':'Duration', $durationYears !== null
+            ? ($isFr ? $durationYears.' an'.($durationYears > 1 ? 's' : '') : $durationYears.' year'.($durationYears > 1 ? 's' : ''))
+            : '—', 'text'],
         [$isFr?'Date de début':'Start date', $dt($partner->start_date), 'text'],
         [$isFr?'Date de fin':'End date', $dt($partner->end_date), 'text'],
         [$isFr?'Renouvellement auto.':'Auto-renewal', $partner->auto_renew ? ($isFr?'Oui':'Yes') : ($isFr?'Non':'No'), 'toggle'],
@@ -59,8 +66,10 @@
                     @else<span class="text-[32px] font-bold text-[#14652F]">{{ mb_strtoupper(mb_substr($pName,0,2)) }}</span>@endif
                 </div>
                 <div class="min-w-0">
-                    <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">{{ $pName }} <span class="ui-pill ui-pill-ok">{{ $isFr?'Actif':'Active' }}</span> <i data-lucide="award" class="w-5 h-5 text-[#C9942E]"></i></h1>
-                    <span class="ui-pill ui-pill-ok mt-2">{{ $partner->partnership_type ?? 'Institutionnel' }}</span>
+                    <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">{{ $pName }} <span class="ui-pill {{ $partner->is_active ? 'ui-pill-ok' : 'ui-pill-neutral' }}">{{ $partner->is_active ? ($isFr?'Actif':'Active') : ($isFr?'Inactif':'Inactive') }}</span> <i data-lucide="award" class="w-5 h-5 text-[#C9942E]"></i></h1>
+                    @if($partner->partnership_type)
+                    <span class="ui-pill ui-pill-ok mt-2">{{ $partner->partnership_type }}</span>
+                    @endif
                     <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1.5 text-[12.5px] text-[#3B382F]">
                         <p class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-[#8A857A]"></i>{{ $partner->contact_email }}</p>
                         <p class="flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4 text-[#8A857A]"></i>{{ $isFr?'Secteur':'Sector' }} : {{ $partner->sector_fr }}</p>
@@ -91,7 +100,8 @@
                     <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
                         <section class="ui-card">
                             <h2 class="ui-card-title">{{ $isFr?'À propos du partenaire':'About the partner' }}</h2>
-                            <p class="mt-3 text-[12.5px] text-[#55524A] leading-relaxed">{{ $isFr ? ($partner->description_fr ?? 'Institution partenaire de la plateforme.') : ($partner->description_en ?? $partner->description_fr ?? 'Platform partner institution.') }}</p>
+                            @php $pDesc = $isFr ? $partner->description_fr : ($partner->description_en ?: $partner->description_fr); @endphp
+                            <p class="mt-3 text-[12.5px] text-[#55524A] leading-relaxed">{{ $pDesc ?: '—' }}</p>
                             <div class="mt-4 bg-[#F7F9F7] border border-[#EAF0EB] rounded-xl px-4 py-3.5">
                                 <p class="flex items-center gap-2 text-[12px] font-bold text-[#157A43]"><i data-lucide="target" class="w-4 h-4"></i>{{ $isFr?'Objectif du partenariat':'Partnership objective' }}</p>
                                 <p class="mt-1.5 text-[11.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'Promouvoir l\'artisanat camerounais, soutenir les artisans locaux et préserver le patrimoine culturel à travers des initiatives conjointes.' : 'Promote Cameroonian craftsmanship, support local artisans and preserve cultural heritage through joint initiatives.' }}</p>

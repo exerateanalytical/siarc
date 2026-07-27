@@ -159,21 +159,21 @@
                                 <input type="checkbox" name="type[]" value="artisan" class="ui-check">
                                 <span class="text-[12px] text-[#3A3A35]">Artisan</span>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60]">(1,842)</span>
+                            <span class="text-[11.5px] text-[#6F6B60]">({{ $vendorTypeCounts['artisan'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center justify-between cursor-pointer">
                             <span class="flex items-center gap-2.5">
                                 <input type="checkbox" name="type[]" value="entreprise" class="ui-check">
                                 <span class="text-[12px] text-[#3A3A35]">{{ $isFr ? 'Entreprise' : 'Business' }}</span>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60]">(542)</span>
+                            <span class="text-[11.5px] text-[#6F6B60]">({{ $vendorTypeCounts['entreprise'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center justify-between cursor-pointer">
                             <span class="flex items-center gap-2.5">
                                 <input type="checkbox" name="type[]" value="cooperative" class="ui-check">
                                 <span class="text-[12px] text-[#3A3A35]">{{ $isFr ? 'Coopérative' : 'Cooperative' }}</span>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60]">(164)</span>
+                            <span class="text-[11.5px] text-[#6F6B60]">({{ $vendorTypeCounts['cooperative'] ?? 0 }})</span>
                         </label>
                     </div>
 

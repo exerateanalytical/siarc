@@ -30,14 +30,19 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
         <form method="POST" action="{{ route('register.quick.store') }}" class="mt-6 space-y-4">
             @csrf
             <input type="hidden" name="lang" value="{{ $lang }}">
+            {{-- One vocabulary, shared with the onboarding wizard via
+                 App\Support\AccountTypes. Signup used to offer two kinds here
+                 while the wizard offered four, so the same question had two
+                 different answers depending on which door you came through. --}}
             <div>
                 <label class="ui-label">{{ $isFr ? 'Je suis…' : 'I am…' }}</label>
-                <div class="grid grid-cols-2 gap-3">
-                    @foreach([['buyer','shopping-bag',$isFr ? 'Acheteur / Visiteur' : 'Buyer / Visitor'],['artisan','store',$isFr ? 'Artisan / Vendeur' : 'Artisan / Vendor']] as [$val,$ic,$lbl])
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    @foreach(\App\Support\AccountTypes::options($isFr) as [$val, $ic, $lbl])
                     <label class="cursor-pointer">
                         <input type="radio" name="account_type" value="{{ $val }}" class="peer sr-only" {{ old('account_type', 'buyer') === $val ? 'checked' : '' }}>
-                        <span class="flex items-center justify-center gap-2 rounded-xl border-2 border-[#E4E0D8] peer-checked:border-[#157A43] peer-checked:bg-[#EEF8F1] px-3 py-3 text-[13px] font-semibold text-[#26251F]">
-                            <i data-lucide="{{ $ic }}" class="w-4.5 h-4.5 text-[#157A43]"></i>{{ $lbl }}
+                        <span class="flex items-center gap-2.5 rounded-xl border-2 border-[#E4E0D8] peer-checked:border-[#157A43] peer-checked:bg-[#EEF8F1] px-3 py-3 text-[13px] font-semibold text-[#26251F]">
+                            <i data-lucide="{{ $ic }}" class="w-[18px] h-[18px] shrink-0 text-[#157A43]"></i>
+                            <span class="leading-tight">{{ $lbl }}</span>
                         </span>
                     </label>
                     @endforeach

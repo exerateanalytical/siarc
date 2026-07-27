@@ -230,8 +230,10 @@ class FrontendController extends Controller
             'regions'    => Business::where('status', 'published')->whereNotNull('region_id')->distinct()->count('region_id'),
         ];
 
+        $vendorTypeCounts = $this->vendorTypeCounts();
+
         return response(
-            view('pages.businesses.index', compact('lang', 'businesses', 'industries', 'regions', 'dirStats'))
+            view('pages.businesses.index', compact('lang', 'businesses', 'industries', 'regions', 'dirStats', 'vendorTypeCounts'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
@@ -298,6 +300,19 @@ class FrontendController extends Controller
                 'publishedProductsCount', 'ordersCount', 'satisfiedPct', 'tenureYears'
             ))
         )->cookie('lang', $lang, 60 * 24 * 30);
+    }
+
+    /**
+     * Published-business counts per vendor type, keyed by vendor_type. Backs the
+     * identical "type de profil / vendeur" facet on the directory and the product
+     * listing, so both read the same numbers.
+     */
+    private function vendorTypeCounts()
+    {
+        return Business::where('status', 'published')
+            ->groupBy('vendor_type')
+            ->selectRaw('vendor_type, count(*) as total')
+            ->pluck('total', 'vendor_type');
     }
 
     private function deviceType(Request $request): string
@@ -371,10 +386,7 @@ class FrontendController extends Controller
 
         $regions = DB::table('regions')->orderBy('name_fr')->get();
 
-        $vendorTypeCounts = Business::where('status', 'published')
-            ->groupBy('vendor_type')
-            ->selectRaw('vendor_type, count(*) as total')
-            ->pluck('total', 'vendor_type');
+        $vendorTypeCounts = $this->vendorTypeCounts();
 
         return response(
             view('pages.products.index', compact('lang', 'sort', 'categorie', 'region', 'q', 'liveCount', 'products', 'industries', 'sideCounts', 'regions', 'vendorTypeCounts', 'vendorTypes'))

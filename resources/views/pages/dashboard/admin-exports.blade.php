@@ -140,8 +140,11 @@
                     {{-- Filters --}}
                     <form method="GET" class="mt-5 flex flex-wrap items-center gap-2.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <div class="ui-field-group">ers['du'] !== '' ? $filters['<input type="text" name="du" value="{{ $filters['du'] !== '' ? $filters['du'] : ($isFr ? '01 Mai 2025' : '01 May 2025') }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Du' : 'From' }}">ext-[#B06E12] shrink-0"></i>
-                            <input type="text" name="au" value="{{ $filters['au'] !== '' ? $filters['au'] : ($isFr ? '12 Mai 2025' : '12 May 2025') }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Au' : 'To' }}">
+                        {{-- Blank until the operator picks a period; an unfiltered list is not
+                             "01 Mai 2025 – 12 Mai 2025". --}}
+                        <div class="ui-field-group">
+                            <input type="text" name="du" value="{{ $filters['du'] }}" placeholder="{{ $isFr ? 'Du' : 'From' }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Du' : 'From' }}">
+                            <input type="text" name="au" value="{{ $filters['au'] }}" placeholder="{{ $isFr ? 'Au' : 'To' }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Au' : 'To' }}">
                             <button type="submit" class="shrink-0 text-[#B06E12]" aria-label="{{ $isFr ? 'Filtrer par période' : 'Filter by period' }}"><i data-lucide="calendar-days" class="w-[16px] h-[16px]"></i></button>
                         </div>
                         <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-[142px]">

@@ -11,50 +11,20 @@
     $monthAbbr = ($isFr ? $frMonths : $enMonths)[(int) $event->starts_at->format('n')];
     $year = $event->starts_at->format('Y');
     $timeFrom = $event->starts_at->format('H:i');
-    $timeTo = $event->ends_at?->format('H:i') ?? '18:00';
+    $timeTo = $event->ends_at?->format('H:i');
 
-    $eventMeta = [
-        'journees-nationales-artisanat-camerounais-2025' => [
-            'city' => 'Yaoundé, Centre', 'venue' => 'Palais des Congrès de Yaoundé',
-            'badge' => $isFr ? 'Événement national' : 'National event', 'badgeColor' => '#C1272D',
-            'free' => true, 'price' => null,
-        ],
-        'festival-arts-traditions-bamoun' => [
-            'city' => 'Foumban, Ouest', 'venue' => 'Palais Royal de Foumban',
-            'badge' => $isFr ? 'Festival culturel' : 'Cultural festival', 'badgeColor' => '#E9A825',
-            'free' => false, 'price' => '2 000 FCFA',
-        ],
-        'atelier-poterie-traditionnelle' => [
-            'city' => 'Maroua, Extrême-Nord', 'venue' => 'Centre d\'Artisanat de Maroua',
-            'badge' => $isFr ? 'Atelier & Formation' : 'Workshop & Training', 'badgeColor' => '#0E5A2F',
-            'free' => false, 'price' => '5 000 FCFA',
-        ],
-        'marche-createurs-eco-responsables' => [
-            'city' => 'Douala, Littoral', 'venue' => 'Place des Fêtes de Douala',
-            'badge' => $isFr ? 'Marché & Foire' : 'Market & Fair', 'badgeColor' => '#E9A825',
-            'free' => true, 'price' => null,
-        ],
-        'conference-artisanat-developpement-durable' => [
-            'city' => 'Yaoundé, Centre', 'venue' => 'Institut Français du Cameroun',
-            'badge' => $isFr ? 'Conférence' : 'Conference', 'badgeColor' => '#C1272D',
-            'free' => false, 'price' => '3 000 FCFA',
-        ],
-        'prix-national-jeune-artisan-2025' => [
-            'city' => 'Yaoundé, Centre', 'venue' => 'Palais des Congrès de Yaoundé',
-            'badge' => $isFr ? 'Concours & Prix' : 'Competition & Award', 'badgeColor' => '#E9A825',
-            'free' => true, 'price' => null,
-        ],
-    ];
+    // Venue, city and price come from the event row only. The per-slug lookup that
+    // used to sit here invented all three, ticket prices included.
     $locParts = array_map('trim', explode(',', (string) $location));
-    $meta = $eventMeta[$event->slug] ?? [
-        'city' => count($locParts) > 1 ? end($locParts) : ($location ?: '—'),
+    $ticketPrice = ($isFr ? $event->price_fr : ($event->price_en ?? $event->price_fr)) ?: null;
+    $meta = [
+        'city' => $event->city_fr ?: (count($locParts) > 1 ? end($locParts) : ($location ?: '—')),
         'venue' => $locParts[0] ?? ($location ?: '—'),
         'badge' => $isFr ? 'Événement' : 'Event', 'badgeColor' => '#0E5A2F',
-        'free' => true, 'price' => null,
+        'free' => $ticketPrice === null, 'price' => $ticketPrice,
     ];
 
-    $ticketIds = ['journees-nationales-artisanat-camerounais-2025' => 'GVC-2025-00012345'];
-    $ticketId = $ticketIds[$event->slug] ?? ('GVC-' . $year . '-' . str_pad((string) ($event->id * 617), 8, '0', STR_PAD_LEFT));
+    $ticketId = 'GVC-' . $year . '-' . str_pad((string) ($event->id * 617), 8, '0', STR_PAD_LEFT);
 
     $chips = [
         ['ticket-chip-1.png', 'EXPOSITIONS'],
@@ -161,7 +131,7 @@
                             <i data-lucide="clock" class="w-4 h-4 text-[#E5A82E]"></i>
                             {{ $timeFrom }}
                         </p>
-                        <p class="text-[12px] text-white/85 sm:pl-6">à {{ $timeTo }}</p>
+                        @if($timeTo)<p class="text-[12px] text-white/85 sm:pl-6">à {{ $timeTo }}</p>@endif
                         <p class="mt-4 flex items-start justify-center sm:justify-start gap-2 text-[11.5px] font-bold text-white uppercase leading-snug">
                             <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#E5A82E] mt-px shrink-0"></i>
                             {{ $meta['city'] }}
@@ -211,7 +181,7 @@
             <div class="bg-[#06301A] px-6 py-3.5 flex flex-wrap items-center gap-x-8 gap-y-2">
                 <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="globe" class="w-4 h-4 text-[#E5A82E]"></i>{{ preg_replace('#^https?://#', '', config('app.url')) }}</span>
                 <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="mail" class="w-4 h-4 text-[#E5A82E]"></i>{{ config('legal.company.email') }}</span>
-                <span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="phone" class="w-4 h-4 text-[#E5A82E]"></i>+237 670 416 238</span>
+                @if(config('legal.company.phone'))<span class="flex items-center gap-2.5 text-[12px] text-white"><i data-lucide="phone" class="w-4 h-4 text-[#E5A82E]"></i>{{ config('legal.company.phone') }}</span>@endif
                 <span class="ml-auto flex items-center gap-2">
                     @foreach(['facebook' => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>', 'instagram' => '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>', 'linkedin' => '<path d="M4.98 3.5a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM3.5 8.5h3v8h-3zM9 8.5h2.8v1.1h.1c.4-.7 1.4-1.4 2.8-1.4 3 0 3.5 1.9 3.5 4.3v4h-3v-3.5c0-.8 0-1.9-1.2-1.9s-1.4.9-1.4 1.9v3.5H9z" transform="scale(0.83) translate(2,1)"/>', 'youtube' => '<path d="M18.2 6.3a2.1 2.1 0 0 0-1.5-1.5C15.4 4.4 10 4.4 10 4.4s-5.4 0-6.7.4A2.1 2.1 0 0 0 1.8 6.3 22 22 0 0 0 1.5 10a22 22 0 0 0 .3 3.7 2.1 2.1 0 0 0 1.5 1.5c1.3.4 6.7.4 6.7.4s5.4 0 6.7-.4a2.1 2.1 0 0 0 1.5-1.5A22 22 0 0 0 18.5 10a22 22 0 0 0-.3-3.7zM8.3 12.5v-5l4.4 2.5z"/>'] as $sKey => $sPath)
                     <span class="w-7 h-7 rounded-full border border-white/35 flex items-center justify-center text-white">
@@ -262,7 +232,7 @@
                         <i data-lucide="clock" class="w-4 h-4 text-[#0B3D26] mt-0.5 shrink-0"></i>
                         <div>
                             <p class="text-[10.5px] font-bold tracking-[0.06em] uppercase text-[#0B3D26]">{{ $isFr ? 'Heure' : 'Time' }}</p>
-                            <p class="text-[12.5px] text-[#1D1B16]">{{ $timeFrom }} - {{ $timeTo }} (GMT+1)</p>
+                            <p class="text-[12.5px] text-[#1D1B16]">{{ $timeTo ? $timeFrom . ' - ' . $timeTo : $timeFrom }} (GMT+1)</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">

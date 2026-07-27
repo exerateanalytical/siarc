@@ -22,7 +22,7 @@ class Business extends Model
         'logo', 'cover_image',
         'phone', 'whatsapp', 'email', 'website',
         'address_fr', 'address_en', 'gps_lat', 'gps_lng',
-        'year_established', 'employee_count', 'ownership_type',
+        'year_established', 'employee_count', 'ownership_type', 'vendor_type',
         'export_countries', 'languages_spoken',
         'is_featured', 'featured_until',
         'verification_tier', 'status',

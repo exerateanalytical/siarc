@@ -33,11 +33,6 @@
         [$isFr?'Renouvellement auto.':'Auto-renewal', $partner->auto_renew ? ($isFr?'Oui':'Yes') : ($isFr?'Non':'No'), $partner->auto_renew ? 'yes' : 'text'],
         [$isFr?'Statut légal':'Legal status', $partner->legal_verified ? ($isFr?'Vérifié':'Verified') : ($isFr?'Non vérifié':'Not verified'), $partner->legal_verified ? 'yes' : 'text'],
     ];
-    $programmes = [
-        ['event-1.png', $isFr?'Soutien aux Artisans':'Artisan Support', $isFr?'Appui technique et financier aux artisans locaux.':'Technical and financial support to local artisans.'],
-        ['event-2.png', $isFr?'Valorisation Culturelle':'Cultural Promotion', $isFr?'Promotion des arts et du patrimoine camerounais.':'Promotion of Cameroonian arts and heritage.'],
-        ['event-3.png', $isFr?'Foires & Expositions':'Fairs & Exhibitions', $isFr?'Organisation et participation aux foires artisanales.':'Organising and joining craft fairs.'],
-    ];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
@@ -106,11 +101,11 @@
         <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
             <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] uppercase">{{ $isFr?'À propos du partenaire':'About the partner' }}</h2>
             <p class="mt-3 text-[12.5px] text-[#55524A] leading-relaxed">{{ $isFr ? ($partner->description_fr ?? '') : ($partner->description_en ?? $partner->description_fr ?? '') }}</p>
-            <div class="mt-4 bg-[#F7F9F7] border border-[#EAF0EB] rounded-xl px-4 py-3.5">
-                <p class="flex items-center gap-2 text-[12px] font-bold text-[#157A43]"><i data-lucide="target" class="w-4 h-4"></i>{{ $isFr?'Objectif du partenariat':'Partnership objective' }}</p>
-                <p class="mt-1.5 text-[11.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'Promouvoir l\'artisanat camerounais, soutenir les artisans locaux et préserver le patrimoine culturel à travers des initiatives conjointes et des programmes de développement.' : 'Promote Cameroonian craftsmanship, support local artisans and preserve cultural heritage through joint initiatives and development programmes.' }}</p>
-                <a href="{{ $partner->website }}" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#157A43]">{{ $isFr?'En savoir plus':'Learn more' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
-            </div>
+            {{-- The "Objectif du partenariat" paragraph stated the same objective for
+                 every partner and has no per-partner column behind it — dropped. --}}
+            @if($partner->website)
+            <a href="{{ $partner->website }}" target="_blank" rel="noopener" class="mt-3 inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#157A43]">{{ $isFr?'En savoir plus':'Learn more' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            @endif
         </section>
         <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
             <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] uppercase">{{ $isFr?'Informations clés':'Key information' }}</h2>
@@ -127,16 +122,9 @@
     {{-- The design's "Indicateurs clés", "Activités récentes" and "Documents officiels"
          blocks were entirely invented (per-partner counts, a 2025 activity log and four
          PDFs with file sizes) with nothing behind them in the schema — removed. --}}
-    <div class="mt-6">
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-            <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] uppercase">{{ $isFr?'Programmes & Initiatives conjoints':'Joint programmes & initiatives' }}</h2>
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                @foreach($programmes as [$pImg, $pTitle, $pDesc])
-                <div class="border border-[#EDE6D6] rounded-xl overflow-hidden"><img src="{{ asset('images/landing/'.$pImg) }}" alt="" class="w-full h-[80px] object-cover"><div class="p-3"><p class="text-[12px] font-bold text-[#1D1B16]">{{ $pTitle }}</p><p class="mt-1 text-[10.5px] text-[#6F6B60] leading-snug">{{ $pDesc }}</p><a href="{{ route('events.index', ['lang'=>$lang]) }}" class="mt-1.5 inline-block text-[10.5px] font-semibold text-[#157A43]">{{ $isFr?'En savoir plus':'Learn more' }} →</a></div></div>
-                @endforeach
-            </div>
-        </section>
-    </div>
+    {{-- "Programmes & Initiatives conjoints" is gone too: the three programmes were
+         the same invented trio for every partner, UNESCO and AFD included, and the
+         partners table has no programmes relation to replace them with. --}}
 
     {{-- CTA --}}
     <section class="mt-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0E3D22] to-[#123D24] px-6 py-6 flex flex-wrap items-center justify-between gap-4">

@@ -7,30 +7,33 @@
     $submittedAt = now();
     $submittedAtLabel = $isFr ? $submittedAt->translatedFormat('d M Y \à H:i') : $submittedAt->format('d M Y \a\t H:i');
 
+    // Keys and labels come from App\Support\AccountTypes so this wizard and the
+    // quick signup form offer the same set; the artwork, blurb and perk list
+    // below are the wizard's own richer presentation of them.
     $accountTypes = [
         [
-            'ob-type-1.png', '#157A43',
+            'artisan', 'ob-type-1.png', '#157A43',
             $isFr ? 'Artisan Individuel' : 'Individual Artisan',
             $isFr ? 'Vous êtes un artisan travaillant à titre individuel et souhaitant promouvoir vos créations.' : 'You are an artisan working individually and wishing to promote your creations.',
             $isFr ? ['Vitrine personnelle', 'Gestion de vos produits', 'Accès aux demandes de devis', 'Participation aux événements']
                   : ['Personal showcase', 'Manage your products', 'Access to quote requests', 'Participation in events'],
         ],
         [
-            'ob-type-2.png', '#FEB530',
+            'cooperative', 'ob-type-2.png', '#FEB530',
             $isFr ? 'Coopérative / Groupement' : 'Cooperative / Group',
             $isFr ? "Vous représentez une coopérative ou un groupement d'artisans." : 'You represent a cooperative or a group of artisans.',
             $isFr ? ['Vitrine de la coopérative', 'Gestion des membres', 'Gestion collective des produits', "Accès aux marchés et appels d'offres"]
                   : ['Cooperative showcase', 'Member management', 'Collective product management', 'Access to markets and tenders'],
         ],
         [
-            'ob-type-3.png', '#9768D8',
+            'pme', 'ob-type-3.png', '#9768D8',
             $isFr ? 'PME / Entreprise' : 'SME / Business',
             $isFr ? "Vous dirigez une petite ou moyenne entreprise dans le secteur de l'artisanat." : 'You run a small or medium business in the craft sector.',
             $isFr ? ['Vitrine professionnelle', 'Catalogue illimité', 'Outils marketing avancés', 'Statistiques et analyses']
                   : ['Professional showcase', 'Unlimited catalogue', 'Advanced marketing tools', 'Statistics and analytics'],
         ],
         [
-            'ob-type-4.png', '#2E7CE8',
+            'grande_entreprise', 'ob-type-4.png', '#2E7CE8',
             $isFr ? 'Grande Entreprise' : 'Large Enterprise',
             $isFr ? 'Vous représentez une grande entreprise ou industrie artisanale.' : 'You represent a large company or craft industry.',
             $isFr ? ['Solutions sur mesure', 'Intégrations API', "Gestion d'équipe avancée", 'Support dédié']
@@ -100,7 +103,7 @@
     ];
 
     // @json() splits its argument on commas, so multi-entry arrays must live here as variables
-    $typeNames = array_map(fn ($t) => $t[2], $accountTypes);
+    $typeNames = collect($accountTypes)->mapWithKeys(fn ($t) => [$t[0] => $t[3]])->all();
     $sideSecureTitles = $isFr
         ? [1 => 'Sécurisé & Vérifié', 2 => 'Sécurisé & Confidentiel', 3 => 'Sécurisé & Confidentiel']
         : [1 => 'Secure & Verified', 2 => 'Secure & Confidential', 3 => 'Secure & Confidential'];
@@ -265,9 +268,9 @@
                 </div>
 
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($accountTypes as $atIdx => [$atIcon, $atColor, $atTitle, $atDesc, $atPerks])
+                    @foreach($accountTypes as $atIdx => [$atKey, $atIcon, $atColor, $atTitle, $atDesc, $atPerks])
                     <label class="cursor-pointer">
-                        <input type="radio" name="account_type" value="{{ $atIdx }}" class="sr-only peer" @checked($atIdx === 0)>
+                        <input type="radio" name="account_type" value="{{ $atKey }}" class="sr-only peer" @checked($atIdx === 0)>
                         <div class="relative h-full rounded-xl border border-[#E7E9E7] bg-white p-6 transition-all peer-checked:border-[#0F5132] peer-checked:shadow-[0_0_0_1px_#0F5132] hover:border-[#C9CFC9]">
                             <span class="absolute top-6 right-6 w-[24px] h-[24px] rounded-full border-2 border-[#C9CFC9] flex items-center justify-center at-radio">
                                 <span class="hidden w-[12px] h-[12px] rounded-full bg-[#0F5132] at-dot"></span>
@@ -535,7 +538,7 @@
                         <span class="relative z-10 w-[27px] h-[27px] shrink-0 rounded-full bg-[#14532D] flex items-center justify-center text-[12px] font-semibold text-white">{{ $wsIdx + 1 }}</span>
                         <span class="pt-0.5 min-w-0">
                             <span class="block text-[13px] font-bold text-[#1B1B18] leading-snug">{{ $wsIdx === 0 ? ($isFr ? 'Type de compte' : 'Account type') : $wsTitle }}</span>
-                            <span class="block mt-1 text-[12px] text-[#55524A] leading-snug {{ $wsIdx === 0 ? 'success-type-name' : '' }}">{{ $wsIdx === 0 ? $typeNames[0] : $wsSub }}</span>
+                            <span class="block mt-1 text-[12px] text-[#55524A] leading-snug {{ $wsIdx === 0 ? 'success-type-name' : '' }}">{{ $wsIdx === 0 ? reset($typeNames) : $wsSub }}</span>
                         </span>
                     </div>
                 </li>
@@ -591,7 +594,7 @@
                     </span>
                     <span class="min-w-0">
                         <span class="ui-dt block">{{ $isFr ? 'Type de compte' : 'Account type' }}</span>
-                        <span class="success-type-name ui-dd block">{{ $typeNames[0] }}</span>
+                        <span class="success-type-name ui-dd block">{{ reset($typeNames) }}</span>
                     </span>
                 </div>
             </section>
@@ -650,9 +653,9 @@
                     <span class="font-bold text-[#1B1B18]">{{ $isFr ? "Besoin d'aide ?" : 'Need help?' }}</span>
                     {{ $isFr ? 'Notre équipe est là pour vous accompagner.' : 'Our team is here to support you.' }}<br>
                     {{ $isFr ? 'Contactez-nous par email à' : 'Contact us by email at' }}
-                    <a href="mailto:{{ config('legal.company.email') }}" class="font-semibold text-[#14652F] break-all">{{ config('legal.company.email') }}</a>
+                    <a href="mailto:{{ config('legal.company.email') }}" class="font-semibold text-[#14652F] break-all">{{ config('legal.company.email') }}</a>@if(config('legal.company.phone'))
                     {{ $isFr ? 'ou par téléphone au' : 'or by phone on' }}
-                    <a href="tel:+237690123456" class="font-semibold text-[#14652F]">+237 690 123 456</a>.
+                    <a href="tel:{{ preg_replace('/\s+/', '', config('legal.company.phone')) }}" class="font-semibold text-[#14652F]">{{ config('legal.company.phone') }}</a>@endif.
                 </p>
             </section>
 
@@ -744,7 +747,7 @@
         const chosen = document.querySelector('input[name="account_type"]:checked');
         const name = (val('ob-first-name') + ' ' + val('ob-last-name')).trim();
         const phone = val('ob-phone');
-        document.getElementById('sum-type').textContent = chosen ? typeNames[parseInt(chosen.value, 10)] : notProvided;
+        document.getElementById('sum-type').textContent = chosen ? (typeNames[chosen.value] || notProvided) : notProvided;
         document.getElementById('sum-name').textContent = name || notProvided;
         document.getElementById('sum-email').textContent = val('ob-email') || notProvided;
         document.getElementById('sum-phone').textContent = phone ? ('+237 ' + phone) : notProvided;
@@ -789,7 +792,7 @@
         document.body.style.background = success ? '#FBFCFC' : '';
         if (success) {
             const chosenType = document.querySelector('input[name="account_type"]:checked');
-            if (chosenType) document.querySelectorAll('.success-type-name').forEach(el => el.textContent = typeNames[parseInt(chosenType.value, 10)]);
+            if (chosenType) document.querySelectorAll('.success-type-name').forEach(el => el.textContent = typeNames[chosenType.value] || '');
             document.getElementById('step1-extras').classList.add('hidden');
             document.getElementById('strip-help').classList.add('hidden');
             lucide.createIcons();
@@ -825,7 +828,7 @@
             circle.style.color = active ? '#014622' : '#FFFFFF';
             circle.style.borderColor = active ? '#FFFFFF' : 'rgba(255,255,255,0.4)';
             if (row) row.style.background = active ? '#01602D' : 'transparent';
-            if (s === 1 && sub) sub.textContent = (n > 1 && chosen) ? typeNames[parseInt(chosen.value, 10)] : defaultSub1;
+            if (s === 1 && sub) sub.textContent = (n > 1 && chosen) ? (typeNames[chosen.value] || defaultSub1) : defaultSub1;
             if (s === 1 && title) title.textContent = n > 1 ? doneTitle1 : defaultTitle1;
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -15,28 +15,32 @@
         return $isFr ? sprintf('%02d %s %d, %s', $d->day, $monthsFr[$d->month], $d->year, $d->format('H:i')) : $d->format('d M Y, H:i');
     };
 
-    $lastAt   = $stats['last_at'] ? \Carbon\Carbon::parse($stats['last_at']) : now();
-    $nextAt   = $lastAt->copy()->addDay();
-    $usedPct  = $stats['total_gb'] > 0 ? round($stats['used_gb'] / $stats['total_gb'] * 100) : 0;
-    $availGb  = $stats['total_gb'] - $stats['used_gb'];
+    $lastAt   = $stats['last_at'] ? \Carbon\Carbon::parse($stats['last_at']) : null;
+    $nextAt   = $lastAt?->copy()->addDay();
+    // Only real, operator-recorded quota figures; no quota means no storage tile.
+    $hasQuota = $stats['used_gb'] !== null && $stats['total_gb'] !== null && $stats['total_gb'] > 0;
+    $usedPct  = $hasQuota ? round($stats['used_gb'] / $stats['total_gb'] * 100) : 0;
+    $availGb  = $hasQuota ? $stats['total_gb'] - $stats['used_gb'] : null;
 
-    $statCards = [
-        ['calendar-check', '#157A43', '#E8F2EC', $isFr ? 'Dernier backup' : 'Last backup', $dt($stats['last_at']), $isFr ? 'Il y a '.$lastAt->diffForHumans(now(), true) : $lastAt->diffForHumans(), $isFr?'Réussi':'Success', 'bg-[#E2F3E8] text-[#157A43]'],
-        ['clock', '#3565DE', '#E8EFFB', $isFr ? 'Prochain backup' : 'Next backup', $dt($nextAt), $isFr ? 'Dans 18 heures' : 'In 18 hours', $isFr?'Planifié':'Scheduled', 'bg-[#E8EFFB] text-[#3565DE]'],
+    $statCards = array_values(array_filter([
+        $lastAt ? ['calendar-check', '#157A43', '#E8F2EC', $isFr ? 'Dernier backup' : 'Last backup', $dt($stats['last_at']), $lastAt->diffForHumans(), $isFr?'Réussi':'Success', 'bg-[#E2F3E8] text-[#157A43]'] : null,
+        $nextAt ? ['clock', '#3565DE', '#E8EFFB', $isFr ? 'Prochain backup' : 'Next backup', $dt($nextAt), $nextAt->diffForHumans(), $isFr?'Planifié':'Scheduled', 'bg-[#E8EFFB] text-[#3565DE]'] : null,
         ['database', '#C97A16', '#FDF3E0', $isFr ? 'Backups disponibles' : 'Available backups', $fmt($stats['total']), $isFr ? 'Total des sauvegardes' : 'Total backups', $isFr?'Sain':'Healthy', 'bg-[#E2F3E8] text-[#157A43]'],
-        ['pie-chart', '#7C4FE0', '#F0EAFB', $isFr ? 'Espace utilisé' : 'Storage used', $stats['used_gb'].' GB', $isFr ? 'sur '.$stats['total_gb'].' GB ('.$usedPct.'%)' : 'of '.$stats['total_gb'].' GB ('.$usedPct.'%)', 'Normal', 'bg-[#FDF3E0] text-[#C97A16]'],
-    ];
+        $hasQuota ? ['pie-chart', '#7C4FE0', '#F0EAFB', $isFr ? 'Espace utilisé' : 'Storage used', $stats['used_gb'].' GB', $isFr ? 'sur '.$stats['total_gb'].' GB ('.$usedPct.'%)' : 'of '.$stats['total_gb'].' GB ('.$usedPct.'%)', 'Normal', 'bg-[#FDF3E0] text-[#C97A16]'] : null,
+    ]));
 
     $tabs = [[$isFr?'Sauvegardes':'Backups', true], [$isFr?'Planification':'Scheduling', false], ['Restauration', false], [$isFr?'Logs système':'System logs', false], [$isFr?'Logs d\'activité':'Activity logs', false]];
 
-    $sysInfo = [
-        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'AH237-Server-01'],
-        [$isFr?'Système d\'exploitation':'OS', $settings['backup_os'] ?? 'Ubuntu 22.04 LTS'],
+    // Infrastructure facts are only shown when an operator has recorded them in
+    // platform_settings — the platform cannot know its own host otherwise.
+    $sysInfo = array_values(array_filter([
+        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? null],
+        [$isFr?'Système d\'exploitation':'OS', $settings['backup_os'] ?? null],
         ['PHP Version', PHP_VERSION],
-        [$isFr?'Base de données':'Database', $settings['backup_db'] ?? 'MySQL 8.0'],
-        [$isFr?'Chemin des sauvegardes':'Backup path', $settings['backup_path'] ?? '/backups/gvna'],
-        [$isFr?'Rétention des backups':'Retention', $settings['backup_retention'] ?? '30 jours'],
-    ];
+        [$isFr?'Base de données':'Database', $settings['backup_db'] ?? null],
+        [$isFr?'Chemin des sauvegardes':'Backup path', $settings['backup_path'] ?? null],
+        [$isFr?'Rétention des backups':'Retention', $settings['backup_retention'] ?? null],
+    ], fn ($row) => $row[1] !== null && $row[1] !== ''));
 @endphp
 
 @section('content')
@@ -157,6 +161,7 @@
 
                 {{-- Right rail --}}
                 <aside class="space-y-4">
+                    @if($hasQuota)
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Utilisation du stockage' : 'Storage usage' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
@@ -171,7 +176,9 @@
                         </div>
                         <div class="mt-3 bg-[#FBF6EA] border border-[#EAD9AC] rounded-xl px-3.5 py-2.5 flex items-start gap-2.5 text-[11px] text-[#7A5A12]"><i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i><span>{{ $isFr ? 'Nous vous recommandons de garder au moins 20% d\'espace libre pour de meilleures performances.' : 'We recommend keeping at least 20% free space for better performance.' }}</span></div>
                     </section>
+                    @endif
 
+                    @if($sysInfo)
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Informations du système' : 'System information' }}</h2>
                         <dl class="mt-3.5 space-y-2.5 text-[12px]">
@@ -181,6 +188,7 @@
                         </dl>
                         <a href="{{ route('admin.settings', ['lang'=>$lang]) }}" class="mt-4 block text-center bg-[#0F4824] hover:bg-[#14652F] rounded-lg py-2.5 text-[12.5px] font-semibold text-white transition-colors">{{ $isFr ? 'Modifier les paramètres' : 'Edit settings' }}</a>
                     </section>
+                    @endif
 
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>

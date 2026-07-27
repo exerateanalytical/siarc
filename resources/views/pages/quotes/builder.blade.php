@@ -17,12 +17,9 @@
     ];
 
     // [thumb, name, ref, spec, qty, price, discount, total]
-    $rows = [
-        ['qv-prod-1.png', $isFr ? 'Mobilier en bois massif pour hôtel' : 'Solid wood furniture for a hotel', 'RFQ-2024-000189', $isFr ? 'Bois massif (Ayous), finition vernie naturelle, style moderne.' : 'Solid wood (Ayous), natural varnished finish, modern style.', '10', '180,000', '5', '1,710,000'],
-        ['qv-prod-2.png', $isFr ? 'Masque traditionnel Bamiléké' : 'Traditional Bamileke mask',              'RFQ-2024-000189', $isFr ? 'Bois de fromager sculpté à la main, origine Ouest Cameroun.' : 'Hand-carved fromager wood, West Cameroon origin.', '20', '75,000', '0', '1,500,000'],
-        ['qv-prod-3.png', $isFr ? 'Table basse décorative en bois' : 'Decorative wooden coffee table',       'RFQ-2024-000188', $isFr ? 'Bois massif, motif traditionnel camerounais, vernis naturel.' : 'Solid wood, traditional Cameroonian pattern, natural varnish.', '5', '95,000', '3', '461,750'],
-        ['qv-prod-4.png', $isFr ? 'Chaise artisanale en bois' : 'Artisanal wooden chair',                    'RFQ-2024-000189', $isFr ? 'Bois durable, assise tressée à la main.' : 'Durable wood, hand-woven seat.', '15', '60,000', '0', '1,080,000'],
-    ];
+    // Line items only ever come from the RFQ being answered; with no RFQ in
+    // scope the table renders empty rather than inventing a proposal.
+    $rows = [];
 
     // Real mode: the builder answers an actual RFQ (single prefilled row)
     $isReal = isset($builderRfq) && $builderRfq;
@@ -243,7 +240,8 @@
                         <label class="{{ $panelLabel }} mt-3.5">{{ $isFr ? 'Cette proposition sera valable jusqu\'au' : 'This proposal will be valid until' }}</label>
                         <div class="flex items-end gap-3">
                             <div class="relative flex-1 min-w-0">
-                                <input type="text" value="25/06/2024" class="w-full {{ $inputCls }} pr-9">
+                                {{-- Validity is the seller's to set; blank rather than a made-up deadline. --}}
+                                <input type="text" value="" placeholder="{{ $isFr ? 'JJ/MM/AAAA' : 'DD/MM/YYYY' }}" class="w-full {{ $inputCls }} pr-9">
                                 <i data-lucide="calendar" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#55524A] pointer-events-none"></i>
                             </div>
                             <div class="w-[110px]">
@@ -300,16 +298,18 @@
             <aside class="w-full xl:w-[290px] shrink-0 space-y-4">
                 <section class="ui-card">
                     <h2 class="ui-card-title">{{ $isFr ? 'Résumé de la proposition' : 'Proposal summary' }}</h2>
+                    @if($isReal)
                     <div class="mt-3.5 border border-[#EDEEED] rounded-xl px-4 py-3 grid grid-cols-2 divide-x divide-[#EDEEED]">
                         <div class="pr-3">
                             <p class="ui-dt">{{ $isFr ? 'Référence de la demande' : 'Request reference' }}</p>
-                            <a href="{{ route('quotes.create', ['lang' => $lang]) }}" class="ui-dd inline-block text-[#14652F] underline underline-offset-2">RFQ-2024-000189</a>
+                            <a href="{{ route('quotes.create', ['lang' => $lang]) }}" class="ui-dd inline-block text-[#14652F] underline underline-offset-2">{{ $builderRfq->reference }}</a>
                         </div>
                         <div class="pl-3">
                             <p class="ui-dt">Date</p>
-                            <p class="ui-dd">25 {{ $isFr ? 'Mai' : 'May' }} 2024</p>
+                            <p class="ui-dd">{{ optional($builderRfq->created_at)->translatedFormat('d M Y') ?: '—' }}</p>
                         </div>
                     </div>
+                    @endif
                     <dl class="mt-4 space-y-3">
                         @foreach($financeRows as [$fnLabel, $fnId, $fnColor, $fnBold])
                         <div class="flex items-center justify-between gap-3">

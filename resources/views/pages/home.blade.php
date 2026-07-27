@@ -51,14 +51,15 @@
     ];
 
     // Hero stats: regions is live data; the marketing figures are admin-editable
-    // platform_settings (seeded with the official design numbers).
-    $statItems = [
+    // platform_settings. A figure the admin has not set has no source, so its tile
+    // is dropped rather than filled with a placeholder number.
+    $statItems = array_values(array_filter([
         ['icon' => 'map-pin',      'color' => '#114023', 'n' => (string) ($stats['regions'] ?? 10), 'label' => $isFr ? 'Régions' : 'Regions',        'cap' => $isFr ? 'Une diversité culturelle unique' : 'A unique cultural diversity'],
-        ['icon' => 'users',        'color' => '#A51717', 'n' => $heroStats['stat_communities'] ?? '250+', 'label' => $isFr ? 'Communautés' : 'Communities', 'cap' => $isFr ? 'Ethniques et culturelles' : 'Ethnic and cultural'],
-        ['icon' => 'palette',      'color' => '#D99B2E', 'n' => $heroStats['stat_artisans'] ?? '10 000+', 'label' => $isFr ? 'Artisans' : 'Artisans',    'cap' => $isFr ? 'Talents et savoir-faire d\'exception' : 'Exceptional talents and know-how'],
-        ['icon' => 'shopping-bag', 'color' => '#114023', 'n' => $heroStats['stat_products'] ?? '50 000+', 'label' => $isFr ? 'Produits' : 'Products',    'cap' => $isFr ? 'Créations authentiques et uniques' : 'Authentic and unique creations'],
+        ['icon' => 'users',        'color' => '#A51717', 'n' => $heroStats['stat_communities'] ?? null, 'label' => $isFr ? 'Communautés' : 'Communities', 'cap' => $isFr ? 'Ethniques et culturelles' : 'Ethnic and cultural'],
+        ['icon' => 'palette',      'color' => '#D99B2E', 'n' => $heroStats['stat_artisans'] ?? null, 'label' => $isFr ? 'Artisans' : 'Artisans',    'cap' => $isFr ? 'Talents et savoir-faire d\'exception' : 'Exceptional talents and know-how'],
+        ['icon' => 'shopping-bag', 'color' => '#114023', 'n' => $heroStats['stat_products'] ?? null, 'label' => $isFr ? 'Produits' : 'Products',    'cap' => $isFr ? 'Créations authentiques et uniques' : 'Authentic and unique creations'],
         ['icon' => 'globe',        'color' => '#A51717', 'n' => $isFr ? 'Ouvert' : 'Open',     'label' => $isFr ? 'au monde' : 'to the world','cap' => $isFr ? 'Un impact local, une portée globale' : 'Local impact, global reach'],
-    ];
+    ], fn ($s) => trim((string) $s['n']) !== ''));
 
     $missionItems = $isFr ? [
         ['medal',           'Valoriser',              'le savoir-faire local'],

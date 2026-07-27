@@ -4,25 +4,8 @@
         ? route('businesses.show', ['slug' => $quoteVendor->slug, 'lang' => $lang])
         : route('businesses.index', ['lang' => $lang]);
 
-    // Sidebar variant: procurement nav, Commandes group expanded, "Bons de cornmande" [sic] active
-    $qbNavOverride = [
-        ['house',          $isFr ? 'Tableau de bord' : 'Dashboard', route('dashboard.buyer', ['lang' => $lang]), false, null, null],
-        ['search',         $isFr ? 'Demandes (RFQ)' : 'Requests (RFQ)', route('quotes.index', ['lang' => $lang]), false, '5', 'green'],
-        ['square-pen',     'Propositions', route('quotes.index', ['lang' => $lang, 'tab' => 'propositions']), false, null, null],
-        ['message-circle', $isFr ? 'Commandes' : 'Orders', 'group', [
-            [$isFr ? 'Toutes les commandes' : 'All orders', route('messages.inbox', ['lang' => $lang]), false, null, null],
-            [$isFr ? 'Bons de cornmande' : 'Purchase orders', route('orders.index', ['lang' => $lang]),    true,  null, null],
-            [$isFr ? 'En production' : 'In production',     route('messages.inbox', ['lang' => $lang]), false, null, null],
-            [$isFr ? 'Expéditions' : 'Shipments',           route('support.index', ['lang' => $lang]),  false, null, null],
-            [$isFr ? 'Livraisons' : 'Deliveries',           route('support.index', ['lang' => $lang]),  false, null, null],
-        ]],
-        ['message-circle', 'Messages',                       route('messages.inbox', ['lang' => $lang]), false, '8', 'green'],
-        ['users',          $isFr ? 'Fournisseurs' : 'Suppliers', route('businesses.index', ['lang' => $lang]), false, null, null],
-        ['package',        $isFr ? 'Produits' : 'Products',  route('products.index', ['lang' => $lang]), false, null, null],
-        ['credit-card',    $isFr ? 'Paiements' : 'Payments', route('profile.show', ['lang' => $lang]), false, null, null],
-        ['file-text',      'Documents',                      route('membership.certificate', ['lang' => $lang]), false, null, null],
-        ['settings',       $isFr ? 'Paramètres' : 'Settings', route('profile.show', ['lang' => $lang]), false, null, null],
-    ];
+    // Navigation comes from the canonical dashboard sidebar (role-scoped, live
+    // counts). The design's standalone nav list with fixed badge numbers is gone.
 
     // Real purchase order threading (?po=ID, authorized in the route)
     $rpo   = $realPo;

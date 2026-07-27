@@ -8,18 +8,20 @@
     $pageSearchPlaceholder = $isFr?'Rechercher une notification...':'Search a notification...';
     $ref = '#NTF-' . \Carbon\Carbon::parse($notification->created_at)->format('Y') . '-' . str_pad((string)$notification->id, 5, '0', STR_PAD_LEFT);
     $dtf = fn($v)=> $v ? \Carbon\Carbon::parse($v)->format('d M Y, H:i') : '—';
+    // Only columns that exist on the row. There is no author column on
+    // user_notifications, so "created by" is not shown at all.
     $infos = [
         ['ID Notification', $ref],
-        ['Type', $isFr?'Alerte système':'System alert'],
-        [$isFr?'Créée par':'Created by', 'Admin Super'],
+        ['Type', $notification->type],
         [$isFr?'Date de création':'Created', $dtf($notification->created_at)],
         [$isFr?'Dernière mise à jour':'Last update', $dtf($notification->updated_at)],
     ];
-    $audit = [
-        [$isFr?'Créée':'Created', $dtf($notification->created_at), 'Admin Super'],
-        [$isFr?'Envoyée':'Sent', $dtf($notification->created_at), $isFr?'Système':'System'],
-        [$isFr?'Dernière mise à jour':'Last update', $dtf($notification->updated_at), 'Admin Super'],
-    ];
+    $audit = array_values(array_filter([
+        [$isFr?'Créée':'Created', $dtf($notification->created_at)],
+        $notification->read_at ? [$isFr?'Lue':'Read', $dtf($notification->read_at)] : null,
+        [$isFr?'Dernière mise à jour':'Last update', $dtf($notification->updated_at)],
+    ]));
+    $isRead = (bool) $notification->read_at;
 @endphp
 
 @section('content')
@@ -37,7 +39,7 @@
                                 <a href="{{ route('admin.cms', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 rounded-lg px-3.5 h-[36px] text-[12px] font-semibold text-white"><i data-lucide="send" class="w-4 h-4"></i>{{ $isFr?'Renvoyer':'Resend' }}</a>
                             </div>
                         </div>
-                        <p class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[11.5px] text-[#CFE3D5]"><span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>{{ $dtf($notification->created_at) }}</span><span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5"></i>{{ $isFr?'Envoyée par':'Sent by' }} : Admin Super</span><span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5"></i>Canal : Email</span><span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-3.5 h-3.5"></i>{{ $ref }}</span></p>
+                        <p class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[11.5px] text-[#CFE3D5]"><span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>{{ $dtf($notification->created_at) }}</span>@if($recipient)<span class="flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5"></i>{{ $isFr?'Destinataire':'Recipient' }} : {{ $recipient->name }}</span>@endif<span class="flex items-center gap-1.5"><i data-lucide="bell" class="w-3.5 h-3.5"></i>{{ $isFr?'Canal : Notification in-app':'Channel: in-app notification' }}</span><span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-3.5 h-3.5"></i>{{ $ref }}</span></p>
                     </section>
 
                     {{-- Content --}}
@@ -65,12 +67,23 @@
 
                 <aside class="space-y-4">
                     <section class="ui-card">
-                        <h2 class="ui-card-title">{{ $isFr?'Statistiques d\'envoi':'Delivery stats' }}</h2>
-                        <div class="mt-4 flex items-center gap-4">
-                            <span class="relative w-[86px] h-[86px] rounded-full shrink-0" style="background:conic-gradient(#157A43 0deg 360deg)"><span class="absolute inset-[13px] rounded-full bg-white flex flex-col items-center justify-center"><span class="text-[16px] font-bold text-[#1B1B18] leading-none">1</span><span class="text-[8.5px] text-[#8A857A]">{{ $isFr?'Destinataire':'Recipient' }}</span></span></span>
-                            <div class="flex-1 space-y-1.5 text-[11.5px]"><div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full bg-[#157A43]"></span>{{ $isFr?'Envoyés':'Sent' }}</span><span class="font-semibold">1 (100%)</span></div><div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full bg-[#C9942E]"></span>{{ $isFr?'En attente':'Pending' }}</span><span class="font-semibold">0 (0%)</span></div><div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full bg-[#DC2626]"></span>{{ $isFr?'Échecs':'Failed' }}</span><span class="font-semibold">0 (0%)</span></div></div>
-                        </div>
-                        <div class="mt-3"><div class="flex items-center justify-between text-[11.5px]"><span class="text-[#6F6B60]">{{ $isFr?'Taux de livraison':'Delivery rate' }}</span><span class="font-semibold text-[#157A43]">100%</span></div><div class="mt-1 h-2 rounded-full bg-[#F0EFEA] overflow-hidden"><span class="block h-full rounded-full bg-[#157A43]" style="width:100%"></span></div></div>
+                        {{-- The design's sent/pending/failed breakdown had no source: nothing
+                             links an in-app notification to a per-channel send log. What the row
+                             really records is who received it and whether they have read it. --}}
+                        <h2 class="ui-card-title">{{ $isFr?'Destinataire':'Recipient' }}</h2>
+                        <dl class="mt-3 space-y-2.5 text-[12px]">
+                            @if($recipient)
+                            <div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">{{ $isFr?'Utilisateur':'User' }}</dt><dd class="font-semibold text-[#1B1B18] text-right">{{ $recipient->name }}</dd></div>
+                            <div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">Email</dt><dd class="font-semibold text-[#1B1B18] text-right break-all">{{ $recipient->email }}</dd></div>
+                            @endif
+                            <div class="flex items-center justify-between gap-3">
+                                <dt class="text-[#6F6B60]">{{ $isFr?'Statut':'Status' }}</dt>
+                                <dd class="text-right"><span class="inline-block rounded-md px-2.5 py-0.5 text-[11px] font-semibold {{ $isRead ? 'bg-[#E4F1E8] text-[#157A43]' : 'bg-[#FBF1DD] text-[#C9942E]' }}">{{ $isRead ? ($isFr?'Lue':'Read') : ($isFr?'Non lue':'Unread') }}</span></dd>
+                            </div>
+                            @if($isRead)
+                            <div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">{{ $isFr?'Lue le':'Read on' }}</dt><dd class="font-semibold text-[#1B1B18] text-right">{{ $dtf($notification->read_at) }}</dd></div>
+                            @endif
+                        </dl>
                     </section>
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr?'Informations de la notification':'Notification information' }}</h2>
@@ -78,7 +91,7 @@
                     </section>
                     <section class="ui-card">
                         <h2 class="ui-card-title">Audit</h2>
-                        <div class="mt-3 space-y-3">@foreach($audit as [$aE,$aW,$aB])<div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-3.5 h-3.5 text-[#14652F]"></i></span><div><p class="text-[12px] font-semibold text-[#1B1B18]">{{ $aE }}</p><p class="text-[10.5px] text-[#8A857A]">{{ $aW }} · {{ $isFr?'par':'by' }} {{ $aB }}</p></div></div>@endforeach</div>
+                        <div class="mt-3 space-y-3">@foreach($audit as [$aE,$aW])<div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-3.5 h-3.5 text-[#14652F]"></i></span><div><p class="text-[12px] font-semibold text-[#1B1B18]">{{ $aE }}</p><p class="text-[10.5px] text-[#8A857A]">{{ $aW }}</p></div></div>@endforeach</div>
                     </section>
                 </aside>
             </div>

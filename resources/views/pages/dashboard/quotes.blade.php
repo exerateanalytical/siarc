@@ -535,22 +535,36 @@
                     <a href="{{ route('events.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
                 <div class="mt-4 flex flex-col sm:flex-row gap-3 items-stretch">
+                    {{-- Only the next real published event; no event, no tile. --}}
+                    @if($siacEvent)
+                    @php
+                        $evName = $isFr ? $siacEvent->name_fr : ($siacEvent->name_en ?: $siacEvent->name_fr);
+                        $evDesc = $isFr ? $siacEvent->description_fr : ($siacEvent->description_en ?: $siacEvent->description_fr);
+                        $evPlace = $isFr ? $siacEvent->location_fr : ($siacEvent->location_en ?: $siacEvent->location_fr);
+                        $evDates = $fmtDate($siacEvent->starts_at)
+                            . ($siacEvent->ends_at ? ' – ' . $fmtDate($siacEvent->ends_at) : '');
+                    @endphp
                     <div class="flex-[1.35] bg-[#EBF2FC] rounded-xl p-4">
                         <div class="flex items-start gap-3.5">
-                            <img src="{{ asset('images/landing/qd-siac.png') }}" alt="" class="w-[44px] h-[54px] shrink-0 rounded-md bg-white object-contain">
+                            <img src="{{ $siacEvent->cover_image ? asset('storage/' . $siacEvent->cover_image) : asset('images/landing/qd-siac.png') }}" alt="" class="w-[44px] h-[54px] shrink-0 rounded-md bg-white object-contain">
                             <div class="min-w-0">
-                                <p class="text-[14.5px] font-bold text-[#1B1B18]">Salon Cameroun 2024</p>
-                                <p class="mt-1 text-[11.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? "Participez au Salon International de l'Aquaculture et de l'Artisanat" : 'Take part in the International Aquaculture and Crafts Fair' }}</p>
-                                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-[#3565DE]"></i> 05 - 10 {{ $isFr ? 'Juin' : 'June' }} 2024</p>
-                                <p class="mt-1 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $isFr ? 'Douala, Cameroun' : 'Douala, Cameroon' }}</p>
+                                <p class="text-[14.5px] font-bold text-[#1B1B18]">{{ $evName }}</p>
+                                @if($evDesc)
+                                <p class="mt-1 text-[11.5px] text-[#3B382F] leading-relaxed">{{ \Illuminate\Support\Str::limit(strip_tags($evDesc), 110) }}</p>
+                                @endif
+                                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $evDates }}</p>
+                                @if($evPlace)
+                                <p class="mt-1 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $evPlace }}</p>
+                                @endif
                             </div>
                         </div>
                         <a href="{{ $siacUrl }}" class="ui-btn ui-btn-primary ui-btn-sm mt-3.5">{{ $isFr ? 'S\'inscrire' : 'Register' }}</a>
                     </div>
+                    @endif
                     <div class="flex-1 bg-[#EFECFA] rounded-xl p-4 flex flex-col">
                         <i data-lucide="megaphone" class="w-[38px] h-[38px] text-[#5B4FD8] -scale-x-100" style="stroke-width:1.4"></i>
                         <p class="mt-4 text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Appels à candidatures' : 'Calls for applications' }}</p>
-                        <p class="mt-1 text-[12px] text-[#3B382F]">{{ $isFr ? '3 opportunités disponibles' : '3 opportunities available' }}</p>
+                        <p class="mt-1 text-[12px] text-[#3B382F]">{{ $upcomingEventCount }} {{ $isFr ? ($upcomingEventCount === 1 ? 'opportunité disponible' : 'opportunités disponibles') : ($upcomingEventCount === 1 ? 'opportunity available' : 'opportunities available') }}</p>
                         <a href="{{ route('events.index', ['lang' => $lang]) }}" class="mt-auto pt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">
                             {{ $isFr ? 'Voir les opportunités' : 'See the opportunities' }}
                             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>

@@ -350,7 +350,7 @@
                     </div>
                     <div class="mt-5 border-t border-[#F0F1F0] pt-3.5 flex items-center justify-between">
                         <span class="text-[13px] font-bold text-[#1B1B18]">Total</span>
-                        <span class="text-[13px] font-bold text-[#1B1B18]">18</span>
+                        <span class="text-[13px] font-bold text-[#1B1B18]">{{ count($rows) }}</span>
                     </div>
                 </section>
 

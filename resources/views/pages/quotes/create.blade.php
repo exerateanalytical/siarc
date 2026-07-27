@@ -23,13 +23,6 @@
         ['5', 'Send',                  'Confirmation'],
     ];
 
-    // [icon crop, fileName, size]
-    $designFiles = [
-        ['qb-file-1.png', 'plan-chambres.pdf',      '2.4 MB'],
-        ['qb-file-2.png', 'image-reference-1.jpg',  '1.8 MB'],
-        ['qb-file-3.png', 'cahier-des-charges.pdf', '3.1 MB'],
-    ];
-
     $fieldCls = 'ui-field';
     $labelCls = 'ui-label';
 @endphp
@@ -152,7 +145,8 @@
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Référence de la demande' : 'Request reference' }} <span class="ui-req">*</span> <span class="font-normal text-[#8A857A]">({{ $isFr ? 'Auto-générée' : 'Auto-generated' }})</span></label>
-                            <input type="text" value="RFQ-2024-000189" readonly class="{{ $fieldCls }}">
+                            {{-- The reference is assigned on save; there is nothing to show yet. --}}
+                            <input type="text" value="" readonly placeholder="—" class="{{ $fieldCls }}">
                         </div>
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Titre de la demande' : 'Request title' }} <span class="ui-req">*</span></label>
@@ -190,14 +184,16 @@
                                     <input type="file" id="rfq-files" multiple class="hidden">
                                 </label>
                             </div>
-                            <div id="rfq-file-list" class="lg:w-[380px] shrink-0 space-y-2.5">
-                                @foreach($designFiles as [$dfIcon, $dfName, $dfSize])
+                            {{-- Empty until the buyer picks files; the change handler clones the
+                                 template below once per real attachment. --}}
+                            <div id="rfq-file-list" class="lg:w-[380px] shrink-0 space-y-2.5"></div>
+                            <template id="rfq-file-tpl">
                                 <div class="rfq-file flex items-center gap-3.5">
                                     <div class="flex-1 min-w-0 flex items-center gap-3.5 bg-white border border-[#EFF0EF] rounded-xl shadow-sm px-3.5 py-2.5">
-                                        <img src="{{ asset('images/landing/' . $dfIcon) }}" alt="" class="w-[30px] h-[30px] shrink-0" aria-hidden="true">
+                                        <img src="{{ asset('images/landing/qb-file-1.png') }}" alt="" class="w-[30px] h-[30px] shrink-0" aria-hidden="true">
                                         <span class="flex-1 min-w-0">
-                                            <span class="block text-[12.5px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ $dfName }}</span>
-                                            <span class="block text-[11.5px] text-[#6F6B60]">{{ $dfSize }}</span>
+                                            <span class="rfq-file-name block text-[12.5px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis"></span>
+                                            <span class="rfq-file-size block text-[11.5px] text-[#6F6B60]"></span>
                                         </span>
                                         <button type="button" class="rfq-file-del shrink-0 text-[#3B382F] hover:text-[#DC2626]"><i data-lucide="x" class="w-4 h-4"></i></button>
                                     </div>
@@ -205,8 +201,7 @@
                                         <i data-lucide="plus" class="w-4 h-4"></i>
                                     </button>
                                 </div>
-                                @endforeach
-                            </div>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -305,11 +300,11 @@
     bindDel();
     document.getElementById('rfq-files').addEventListener('change', function () {
         const list = document.getElementById('rfq-file-list');
+        const tpl = document.getElementById('rfq-file-tpl');
         Array.from(this.files).forEach(f => {
-            const row = list.querySelector('.rfq-file')?.cloneNode(true);
-            if (!row) return;
-            row.querySelector('.font-bold').textContent = f.name;
-            row.querySelector('.text-\\[11\\.5px\\]').textContent = (f.size / 1048576).toFixed(1) + ' MB';
+            const row = tpl.content.firstElementChild.cloneNode(true);
+            row.querySelector('.rfq-file-name').textContent = f.name;
+            row.querySelector('.rfq-file-size').textContent = (f.size / 1048576).toFixed(1) + ' MB';
             list.appendChild(row);
             bindDel(row);
             lucide.createIcons();

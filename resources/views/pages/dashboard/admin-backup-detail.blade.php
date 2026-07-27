@@ -11,60 +11,73 @@
     $sizeGb = number_format($backup->size_mb / 1024, 1);
     $octets = number_format($backup->size_mb * 1024 * 1024, 0, '', ',');
     $checksum = substr(hash('sha256', $backup->filename . $backup->created_at), 0, 60);
-    $usedGb = $settings['storage_used_gb'] ?? '256.8'; $totalGb = $settings['storage_total_gb'] ?? '500';
-    // Storage share/free space were hardcoded in the design — derive them from the settings above
-    $usedPct = (float) $totalGb > 0 ? round((float) $usedGb / (float) $totalGb * 100) : 0;
-    $freeGb  = number_format(max(0, (float) $totalGb - (float) $usedGb), 1);
+    // Disk quota is an operator-recorded fact, not something the app can measure:
+    // absent from platform_settings, every storage figure below is dropped.
+    $usedGb  = $settings['storage_used_gb'] ?? null;
+    $totalGb = $settings['storage_total_gb'] ?? null;
+    $hasQuota = $usedGb !== null && $totalGb !== null && (float) $totalGb > 0;
+    $usedPct = $hasQuota ? round((float) $usedGb / (float) $totalGb * 100) : 0;
+    $freeGb  = $hasQuota ? number_format(max(0, (float) $totalGb - (float) $usedGb), 1) : null;
+
+    // Facts the runtime genuinely knows about itself.
+    $dbName   = \Illuminate\Support\Facades\DB::connection()->getDatabaseName();
+    $dbDriver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+
+    // Rows whose value is null are dropped rather than filled with a plausible one.
+    $onlyKnown = fn (array $rows, int $i = 1) => array_values(array_filter(
+        $rows, fn ($r) => $r !== null && $r[$i] !== null && $r[$i] !== ''
+    ));
 
     $tabs = [[$isFr?'Informations générales':'General info', true], ['Contenu', false], ['Historique', false], [$isFr?'Logs associés':'Related logs', false]];
-    $metaRow = [
+    $metaRow = $onlyKnown([
         ['calendar', $dt($backup->created_at), $isFr?'Date & heure':'Date & time'],
-        ['server', $settings['backup_server'] ?? 'AH237-Server-01', $isFr?'Serveur':'Server'],
+        ['server', $settings['backup_server'] ?? null, $isFr?'Serveur':'Server'],
         ['tag', $backup->type === 'full' ? ($isFr?'Complet':'Full') : ($isFr?'Base de données':'Database'), $isFr?'Type de sauvegarde':'Backup type'],
-        ['database', $settings['backup_db'] ?? 'MySQL 8.0', $isFr?'Base de données':'Database'],
+        ['database', $settings['backup_db'] ?? null, $isFr?'Base de données':'Database'],
         ['user', $backup->mode === 'manual' ? ($isFr?'Manuel':'Manual') : ($isFr?'Système':'System'), $isFr?'Créé par':'Created by'],
-    ];
-    $infoLeft = [
+    ]);
+    $infoLeft = $onlyKnown([
         [$isFr?'Nom du fichier':'Filename', $backup->filename],
         ['Type', $backup->type === 'full' ? ($isFr?'Sauvegarde complète':'Full backup') : ($isFr?'Base de données':'Database')],
         [$isFr?'Taille':'Size', $sizeGb.' GB ('.$octets.' '.($isFr?'octets':'bytes').')'],
         ['Statut', $backup->status === 'success' ? ($isFr?'Réussi':'Success') : ucfirst($backup->status)],
-        [$isFr?'Méthode':'Method', $backup->contents ?? ($isFr?'Dump + Fichiers':'Dump + Files')],
-        [$isFr?'Chemin de stockage':'Storage path', ($settings['backup_path'] ?? '/backups/gvna').'/'.$created->format('Y/m/d').'/'],
-    ];
-    $infoRight = [
-        [$isFr?'Base de données':'Database', 'artisanhub237_production'],
-        [$isFr?'Version DB':'DB Version', $settings['backup_db'] ?? 'MySQL 8.0'],
-        [$isFr?'Encodage':'Encoding', 'UTF-8'],
-        ['Compression', $isFr?'ZIP (Déflation)':'ZIP (Deflate)'],
-        [$isFr?'Espace utilisé':'Storage used', $usedGb.' GB / '.$totalGb.' GB ('.$usedPct.'%)'],
-        [$isFr?'Rétention':'Retention', $settings['backup_retention'] ?? '30 jours'],
-        [$isFr?'Prochain backup':'Next backup', $dt($created->copy()->addDay())],
-    ];
+        [$isFr?'Méthode':'Method', $backup->contents],
+        isset($settings['backup_path'])
+            ? [$isFr?'Chemin de stockage':'Storage path', rtrim($settings['backup_path'], '/').'/'.$created->format('Y/m/d').'/']
+            : null,
+    ]);
+    $infoRight = $onlyKnown([
+        [$isFr?'Base de données':'Database', $dbName],
+        [$isFr?'Moteur':'Engine', $dbDriver],
+        [$isFr?'Version DB':'DB Version', $settings['backup_db'] ?? null],
+        [$isFr?'Encodage':'Encoding', config('database.connections.'.config('database.default').'.charset')],
+        $hasQuota ? [$isFr?'Espace utilisé':'Storage used', $usedGb.' GB / '.$totalGb.' GB ('.$usedPct.'%)'] : null,
+        [$isFr?'Rétention':'Retention', $settings['backup_retention'] ?? null],
+    ]);
     // Real system log entries (not backup-specific — backup_logs has no per-backup link)
     $bkLogs = ($logs ?? collect())->map(fn ($l) => [
         \Illuminate\Support\Carbon::parse($l->logged_at)->format('H:i:s'), $l->level, $l->event, $l->description, null,
     ]);
     // The design broke the archive down into DB / media / config / other GB figures;
     // backup_records stores only a total size, so the overview reports real facts instead.
-    $apercu = [
+    $apercu = $onlyKnown([
         [$isFr?'Taille totale':'Total size',  $sizeGb.' GB'],
-        [$isFr?'Contenu':'Contents',          $backup->contents ?? ($isFr?'Dump + Fichiers':'Dump + Files')],
+        [$isFr?'Contenu':'Contents',          $backup->contents],
         [$isFr?'Type':'Type',                 $backup->type === 'full' ? ($isFr?'Complet':'Full') : ($isFr?'Base de données':'Database')],
         [$isFr?'Déclenchement':'Trigger',     $backup->mode === 'manual' ? ($isFr?'Manuel':'Manual') : ($isFr?'Automatique':'Automatic')],
-    ];
-    $storLoc = [
-        [$isFr?'Stockage':'Storage', $isFr?'Serveur local':'Local server'],
-        [$isFr?'Chemin':'Path', ($settings['backup_path'] ?? '/backups/gvna').'/'.$created->format('Y/m/d').'/'],
-        [$isFr?'Disque':'Disk', '/dev/sda2 (SSD)'],
-        [$isFr?'Espace libre':'Free space', $freeGb.' GB ('.(100 - $usedPct).'%)'],
-    ];
-    $sysInfo = [
-        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'AH237-Server-01'],
-        [$isFr?'Système d\'exploitation':'OS', $settings['backup_os'] ?? 'Ubuntu 22.04 LTS'],
+    ]);
+    $storLoc = $onlyKnown([
+        isset($settings['backup_path'])
+            ? [$isFr?'Chemin':'Path', rtrim($settings['backup_path'], '/').'/'.$created->format('Y/m/d').'/']
+            : null,
+        $hasQuota ? [$isFr?'Espace libre':'Free space', $freeGb.' GB ('.(100 - $usedPct).'%)'] : null,
+    ]);
+    $sysInfo = $onlyKnown([
+        [$isFr?'Serveur':'Server', $settings['backup_server'] ?? null],
+        [$isFr?'Système d\'exploitation':'OS', $settings['backup_os'] ?? null],
         ['PHP Version', PHP_VERSION],
-        [$isFr?'Fuseau horaire':'Timezone', 'Africa/Douala (UTC+1)'],
-    ];
+        [$isFr?'Fuseau horaire':'Timezone', config('app.timezone')],
+    ]);
 @endphp
 
 @section('content')
@@ -163,10 +176,12 @@
                             </div>
                         </div>
                     </section>
+                    @if($storLoc)
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr?'Emplacement de stockage':'Storage location' }}</h2>
                         <dl class="mt-3 space-y-2.5 text-[12px]">@foreach($storLoc as [$l,$v])<div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60]">{{ $l }} :</dt><dd class="font-semibold text-[#1B1B18] text-right truncate">{{ $v }}</dd></div>@endforeach</dl>
                     </section>
+                    @endif
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr?'Actions rapides':'Quick actions' }}</h2>
                         <div class="mt-2 divide-y divide-[#F5F1E8]">

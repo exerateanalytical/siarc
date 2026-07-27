@@ -496,8 +496,10 @@ Route::get('/tableau-de-bord/admin/sauvegardes', function (Request $request) {
     $stats = [
         'total'     => (int) DB::table('backup_records')->count(),
         'last_at'   => $last?->created_at,
-        'used_gb'   => (float) ($settings['storage_used_gb'] ?? 256.8),
-        'total_gb'  => (float) ($settings['storage_total_gb'] ?? 500),
+        // Real disk quota only: null when the operator has not recorded one, so
+        // the storage tile hides instead of reporting an invented 256.8/500 GB.
+        'used_gb'   => isset($settings['storage_used_gb']) ? (float) $settings['storage_used_gb'] : null,
+        'total_gb'  => isset($settings['storage_total_gb']) ? (float) $settings['storage_total_gb'] : null,
     ];
 
     return view('pages.dashboard.admin-backups', compact('lang', 'siacUser', 'backups', 'logs', 'settings', 'stats'));
@@ -781,7 +783,13 @@ Route::get('/tableau-de-bord/admin/notifications/{id}', function (Request $reque
 
     $notification = DB::table('user_notifications')->where('id', $id)->first();
     if (!$notification) abort(404);
-    return view('pages.dashboard.admin-notification-detail', compact('lang', 'siacUser', 'notification'));
+
+    // A user_notifications row is one in-app delivery to one user. That user and
+    // the row's read state are the only delivery facts that exist — there is no
+    // per-notification send log to derive sent/pending/failed rates from.
+    $recipient = DB::table('users')->where('id', $notification->user_id)->first(['id', 'name', 'email']);
+
+    return view('pages.dashboard.admin-notification-detail', compact('lang', 'siacUser', 'notification', 'recipient'));
 })->name('notifications.show');
 
 // Data Export Centre (design: "Data Export Centre.png") — real export registry;
@@ -1453,7 +1461,7 @@ Route::post('/creer-mon-compte', function (Request $request) {
         'phone'                 => ['nullable', 'string', 'max:30'],
         'password'              => ['required', 'min:8', 'confirmed'],
         'password_confirmation' => ['required'],
-        'account_type'          => ['nullable', 'string', 'max:30'],
+        'account_type'          => ['nullable', 'in:' . implode(',', \App\Support\AccountTypes::keys())],
     ]);
 
     $email = strtolower(trim($data['email']));
@@ -1486,6 +1494,7 @@ Route::post('/creer-mon-compte', function (Request $request) {
             'phone'               => $phone,
             'password'            => Hash::make($data['password']),
             'status'              => 'active',
+            'account_type'        => $data['account_type'] ?? 'artisan',
             'language_preference' => $lang,
             'is_email_verified'   => 0,
             'is_phone_verified'   => 0,
@@ -1498,7 +1507,9 @@ Route::post('/creer-mon-compte', function (Request $request) {
     }
 
     // Wizard signups are artisan/business onboardings
-    $roleRecord = DB::table('roles')->where('name', 'business_owner')->where('guard_name', 'sanctum')->first();
+    $roleRecord = DB::table('roles')
+        ->where('name', \App\Support\AccountTypes::role($data['account_type'] ?? 'artisan'))
+        ->where('guard_name', 'sanctum')->first();
     if ($roleRecord) {
         DB::table('model_has_roles')->insert([
             'role_id'    => $roleRecord->id,
@@ -2767,7 +2778,18 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
         ->orWhere('business_id', $business->id ?? 0)
         ->count();
 
-    $siacEvent = null;
+    // Next published event, for the "Événements & Opportunités" tile. Null when
+    // nothing is scheduled — the tile hides rather than advertising a fair that
+    // does not exist.
+    $siacEvent = DB::table('events')
+        ->where('is_published', true)
+        ->where('starts_at', '>=', now())
+        ->orderBy('starts_at')
+        ->first();
+    $upcomingEventCount = DB::table('events')
+        ->where('is_published', true)
+        ->where('starts_at', '>=', now())
+        ->count();
 
     $topProductImages = $topProducts->isNotEmpty()
         ? DB::table('product_images')->whereIn('product_id', $topProducts->pluck('id'))
@@ -2838,7 +2860,7 @@ Route::get('/tableau-de-bord/devis', function (Request $request) {
     $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
     return view('pages.dashboard.quotes', compact(
-        'lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'realRfqs', 'rfqPage', 'rfqStatus',
+        'lang', 'siacUser', 'business', 'topProducts', 'topProductImages', 'messageCount', 'siacEvent', 'upcomingEventCount', 'realRfqs', 'rfqPage', 'rfqStatus',
         'rfqCountsByStatus', 'ordersCount', 'quotesSentCount', 'activeClientsCount', 'thisMonthRfqs',
         'businessDocuments', 'recentReviews', 'recentMessages', 'notificationCount', 'openProposalValue'
     ));
@@ -3324,7 +3346,15 @@ Route::post('/logout', function () {
 Route::get('/about', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
-    return response(view('about', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
+    // Same live counters the press room publishes — the page states no figure it
+    // cannot count.
+    $aboutStats = [
+        'regions'    => DB::table('regions')->count(),
+        'businesses' => DB::table('businesses')->whereNull('deleted_at')->where('status', 'published')->count(),
+        'products'   => DB::table('products')->whereNull('deleted_at')->where('status', 'published')->count(),
+        'partners'   => DB::table('partners')->where('is_active', true)->count(),
+    ];
+    return response(view('about', compact('lang', 'aboutStats')))->cookie('lang', $lang, 60 * 24 * 30);
 })->name('about');
 Route::get('/contact', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
@@ -3736,7 +3766,7 @@ Route::post('/inscription-rapide', function (Request $request) {
     $data = $request->validate([
         'email'        => ['required', 'email', 'max:255'],
         'password'     => ['required', 'min:8'],
-        'account_type' => ['required', 'in:buyer,artisan'],
+        'account_type' => ['required', 'in:' . implode(',', \App\Support\AccountTypes::keys())],
     ]);
     $email = strtolower(trim($data['email']));
     if (DB::table('users')->where('email', $email)->exists()) {
@@ -3749,10 +3779,11 @@ Route::post('/inscription-rapide', function (Request $request) {
         'email' => $email,
         'password' => Hash::make($data['password']),
         'status' => 'active', 'language_preference' => $lang,
+        'account_type' => $data['account_type'],
         'is_email_verified' => 0, 'is_phone_verified' => 0,
         'created_at' => now(), 'updated_at' => now(),
     ]);
-    $roleName = $data['account_type'] === 'artisan' ? 'business_owner' : 'buyer';
+    $roleName = \App\Support\AccountTypes::role($data['account_type']);
     $role = DB::table('roles')->where('name', $roleName)->first();
     if ($role) {
         DB::table('model_has_roles')->insert([

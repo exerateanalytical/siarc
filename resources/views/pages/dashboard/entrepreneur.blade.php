@@ -448,7 +448,9 @@
                 <a href="{{ route('messages.inbox') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
                     <span class="relative">
                         <i data-lucide="clipboard-list" class="w-[22px] h-[22px]"></i>
-                        <span class="absolute -top-1.5 -right-3 bg-[#D40C0F] text-white text-[8.5px] font-bold min-w-[17px] h-[15px] px-0.5 rounded-full flex items-center justify-center">28</span>
+                        @if($ordersCount)
+                        <span class="absolute -top-1.5 -right-3 bg-[#D40C0F] text-white text-[8.5px] font-bold min-w-[17px] h-[15px] px-0.5 rounded-full flex items-center justify-center">{{ $ordersCount }}</span>
+                        @endif
                     </span>
                     <span class="text-[10px]">{{ $isFr ? 'Commandes' : 'Orders' }}</span>
                 </a>

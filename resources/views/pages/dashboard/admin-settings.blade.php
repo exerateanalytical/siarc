@@ -179,7 +179,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
                 </svg>
                 <i data-lucide="chevron-down" class="w-3 h-3 text-[#B8B2A4] shrink-0"></i>
                 <input type="tel" name="settings[contact_phone]" class="ui-field-bare flex-1 min-w-0"
-                       value="{{ $p('contact_phone', '+237 6 70 41 62 38') }}">
+                       value="{{ $p('contact_phone', config('legal.company.phone')) }}">
             </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -467,7 +467,8 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
                 <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Dernière sauvegarde' : 'Last backup' }}</p>
-                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('backup_last_run', $isFr ? '05 Mai 2025 à 02:30' : '05 May 2025 at 02:30') }}</p>
+                {{-- No stored run means no backup has been taken through this screen. --}}
+                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('backup_last_run', '') ?: ($isFr ? 'Jamais' : 'Never') }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf

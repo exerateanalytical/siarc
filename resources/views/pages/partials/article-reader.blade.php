@@ -29,7 +29,9 @@
         <p class="mt-2 text-[#C9942E] text-[13px] tracking-[0.25em]">❈ ❈ ❈ ❈ ❈ ❈</p>
 
         <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-[#55524A]">
-            <span class="flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-[#14652F] text-white text-[11px] font-bold flex items-center justify-center">{{ mb_strtoupper(mb_substr($article->author_name ?? 'A',0,1)) }}</span>{{ $isFr?'Par':'By' }} <b class="text-[#1D1B16]">{{ $article->author_name ?? 'Admin' }}</b></span>
+            @if($article->author_name)
+            <span class="flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-[#14652F] text-white text-[11px] font-bold flex items-center justify-center">{{ mb_strtoupper(mb_substr($article->author_name,0,1)) }}</span>{{ $isFr?'Par':'By' }} <b class="text-[#1D1B16]">{{ $article->author_name }}</b></span>
+            @endif
             <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-[#C9942E]"></i>{{ $adate($article->published_at ?? $article->created_at) }}</span>
             <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4 text-[#C9942E]"></i>{{ \Carbon\Carbon::parse($article->published_at ?? $article->created_at)->format('H:i') }}</span>
             <span class="flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4 text-[#C9942E]"></i>{{ number_format($article->views_count ?? 0, 0, ',', ' ') }} {{ $isFr?'vues':'views' }}</span>

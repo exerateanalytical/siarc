@@ -38,18 +38,20 @@
         'X'         => $followIcons['X'],
     ];
 
-    $infoCards = [
+    // A card with no line left is dropped rather than shown empty — the phone card
+    // disappears entirely until a real number is configured.
+    $infoCards = array_values(array_filter([
         ['icon' => 'contact-info-1.png', 'title' => $isFr ? 'Adresse' : 'Address',
          'lines' => $isFr ? ['Artisan Hub 237', 'Douala, Littoral', 'Cameroun']
                           : ['Artisan Hub 237', 'Douala, Littoral', 'Cameroon']],
         ['icon' => 'contact-info-2.png', 'title' => $isFr ? 'Téléphone' : 'Phone',
-         'lines' => ['+237 222 22 22 22', '+237 677 00 11 22']],
+         'lines' => array_values(array_filter([config('legal.company.phone')]))],
         ['icon' => 'contact-info-3.png', 'title' => 'Email',
          'lines' => array_values(array_filter([config('legal.company.email')]))],
         ['icon' => 'contact-info-4.png', 'title' => $isFr ? "Heures d'ouverture" : 'Opening hours',
          'lines' => $isFr ? ['Lundi - Vendredi : 8h00 - 17h00', 'Samedi : 9h00 - 13h00']
                           : ['Monday - Friday: 8am - 5pm', 'Saturday: 9am - 1pm']],
-    ];
+    ], fn ($c) => $c['lines'] !== []));
 
     $helpCards = [
         ['contact-help-1.png', $isFr ? 'Partenariats' : 'Partnerships',

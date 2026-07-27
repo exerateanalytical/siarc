@@ -33,12 +33,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        $now = now();
-        DB::table('platform_settings')->insert([
-            ['key' => 'stat_communities', 'value' => '250+',    'created_at' => $now, 'updated_at' => $now],
-            ['key' => 'stat_artisans',    'value' => '10 000+', 'created_at' => $now, 'updated_at' => $now],
-            ['key' => 'stat_products',    'value' => '50 000+', 'created_at' => $now, 'updated_at' => $now],
-        ]);
+        // No seeded hero figures: the table ships empty so an install states no
+        // number an admin has not entered.
     }
 
     public function down(): void

@@ -4,20 +4,8 @@
         ? route('businesses.show', ['slug' => $quoteVendor->slug, 'lang' => $lang])
         : route('businesses.index', ['lang' => $lang]);
 
-    // Sidebar variant: procurement nav with Factures active
-    $qbNavOverride = [
-        ['house',          $isFr ? 'Tableau de bord' : 'Dashboard', route('dashboard.buyer', ['lang' => $lang]), false, null, null],
-        ['search',         $isFr ? 'Demandes (RFQ)' : 'Requests (RFQ)', route('quotes.index', ['lang' => $lang]), false, '5', 'green'],
-        ['square-pen',     'Propositions', route('quotes.index', ['lang' => $lang, 'tab' => 'propositions']), false, null, null],
-        ['message-circle', $isFr ? 'Commandes' : 'Orders', route('orders.index', ['lang' => $lang]), false, '7', 'green'],
-        ['message-circle', 'Messages',                     route('messages.inbox', ['lang' => $lang]), false, '8', 'green'],
-        ['package',        $isFr ? 'Produits' : 'Products', route('products.index', ['lang' => $lang]), false, null, null],
-        ['file-text',      'Factures',                     route('orders.index', ['lang' => $lang]), true, null, null],
-        ['credit-card',    $isFr ? 'Paiements' : 'Payments', route('profile.show', ['lang' => $lang]), false, null, null],
-        ['users',          $isFr ? 'Fournisseurs' : 'Suppliers', route('businesses.index', ['lang' => $lang]), false, null, null],
-        ['map-pin',        $isFr ? 'Adresses' : 'Addresses', route('profile.show', ['lang' => $lang]), false, null, null],
-        ['settings',       $isFr ? 'Paramètres' : 'Settings', route('profile.show', ['lang' => $lang]), false, null, null],
-    ];
+    // Navigation comes from the canonical dashboard sidebar (role-scoped, live
+    // counts). The design's standalone nav list with fixed badge numbers is gone.
 
     // Real invoice threading (?invoice=ID, authorized in the route)
     $rin   = $realInvoice;

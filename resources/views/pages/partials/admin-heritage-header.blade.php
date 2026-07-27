@@ -4,7 +4,9 @@
 @php
     $pageSubtitle = $pageSubtitle ?? '';
     $pageSearchPlaceholder = $pageSearchPlaceholder ?? ($isFr ? 'Rechercher...' : 'Search...');
-    $pageBellCount = $pageBellCount ?? 6;
+    // No caller-supplied count means no count to show — the badge hides rather
+    // than displaying a placeholder number of unread notifications.
+    $pageBellCount = $pageBellCount ?? 0;
 @endphp
 <header class="px-5 lg:px-7 pt-4">
     <div class="flex items-center gap-4">
@@ -52,14 +54,19 @@
 
             <a href="{{ route('notifications.index') }}" class="relative" title="Notifications">
                 <i data-lucide="bell" class="w-[21px] h-[21px] text-[#3B382F]" style="stroke-width:1.7"></i>
+                @if($pageBellCount)
                 <span class="absolute -top-2 -right-2 min-w-[18px] h-[17px] px-1 rounded-full bg-[#DC2626] text-white text-[10px] font-bold flex items-center justify-center">{{ $pageBellCount }}</span>
+                @endif
             </a>
 
             <div class="relative group">
                 <button class="flex items-center gap-2.5">
                     <img src="{{ asset('images/landing/ad-avatar.png') }}" alt="" class="w-[40px] h-[40px] rounded-full object-cover">
                     <span class="leading-tight text-left hidden md:block">
-                        <span class="block text-[13px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $siacUser['name'] ?? 'Admin Super' }}</span>
+                        {{-- Real operator name or nothing; never a placeholder identity. --}}
+                        @if(! empty($siacUser['name']))
+                        <span class="block text-[13px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $siacUser['name'] }}</span>
+                        @endif
                         <span class="block text-[11px] text-[#6F6B60] whitespace-nowrap">{{ $isFr ? 'Super Administrateur' : 'Super Administrator' }}</span>
                     </span>
                     <i data-lucide="chevron-down" class="w-4 h-4 text-[#8A857A] hidden md:block"></i>

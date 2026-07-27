@@ -22,6 +22,14 @@ class AdminPagesRenderTest extends TestCase
             'is_admin' => true,
         ]];
 
+        // The platform no longer ships a seeded backup history, so create the
+        // record this page is meant to describe rather than assuming id 1.
+        $backupId = \Illuminate\Support\Facades\DB::table('backup_records')->insertGetId([
+            'filename' => 'backup_test.zip', 'type' => 'full', 'mode' => 'manual',
+            'contents' => 'Base de données + Fichiers', 'size_mb' => 1024, 'status' => 'success',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
         foreach ([
             '/tableau-de-bord/admin/artisans',
             '/tableau-de-bord/admin/commandes',
@@ -30,7 +38,7 @@ class AdminPagesRenderTest extends TestCase
             '/tableau-de-bord/admin/abonnements',
             '/tableau-de-bord/admin/regions-centres',
             '/tableau-de-bord/admin/sauvegardes',
-            '/tableau-de-bord/admin/sauvegardes/1',
+            '/tableau-de-bord/admin/sauvegardes/' . $backupId,
             '/tableau-de-bord/admin/exports',
             '/tableau-de-bord/admin/collections',
             '/tableau-de-bord/admin/actualites',

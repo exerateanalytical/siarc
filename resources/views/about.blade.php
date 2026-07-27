@@ -21,18 +21,19 @@
         ['globe',  "Connecting Cameroon\nto the world through its\ncraftsmanship"],
     ];
 
-    $aboutStats = $isFr ? [
-        ['map-pin',      '10',      'Régions',      'aux cultures uniques'],
-        ['users',        '250+',    'Communautés',  'ethniques et culturelles'],
-        ['user-round',   '10 000+', 'Artisans',     'talentueux'],
-        ['shopping-bag', '50 000+', 'Produits',     'authentiques'],
-        ['globe',        '100+',    'Partenaires',  'locaux et internationaux'],
+    // Every figure is counted from the database. The design's "Communautés
+    // ethniques" tile has no such source and is therefore not shown.
+    $fmtNum = fn (int $n) => number_format($n, 0, ',', $isFr ? ' ' : ',');
+    $aboutTiles = $isFr ? [
+        ['map-pin',      $fmtNum($aboutStats['regions']),    'Régions',      'aux cultures uniques'],
+        ['user-round',   $fmtNum($aboutStats['businesses']), 'Artisans',     'talentueux'],
+        ['shopping-bag', $fmtNum($aboutStats['products']),   'Produits',     'authentiques'],
+        ['globe',        $fmtNum($aboutStats['partners']),   'Partenaires',  'locaux et internationaux'],
     ] : [
-        ['map-pin',      '10',      'Regions',      'with unique cultures'],
-        ['users',        '250+',    'Communities',  'ethnic and cultural'],
-        ['user-round',   '10,000+', 'Artisans',     'talented'],
-        ['shopping-bag', '50,000+', 'Products',     'authentic'],
-        ['globe',        '100+',    'Partners',     'local and international'],
+        ['map-pin',      $fmtNum($aboutStats['regions']),    'Regions',      'with unique cultures'],
+        ['user-round',   $fmtNum($aboutStats['businesses']), 'Artisans',     'talented'],
+        ['shopping-bag', $fmtNum($aboutStats['products']),   'Products',     'authentic'],
+        ['globe',        $fmtNum($aboutStats['partners']),   'Partners',     'local and international'],
     ];
 
     $values = $isFr ? [
@@ -228,8 +229,8 @@
 <section class="relative bg-pine overflow-hidden">
     <div class="absolute inset-0 opacity-60 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8">
-        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 sm:divide-x divide-gold/25 py-10">
-            @foreach($aboutStats as [$asIcon, $asNum, $asLabel, $asCap])
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 sm:divide-x divide-gold/25 py-10">
+            @foreach($aboutTiles as [$asIcon, $asNum, $asLabel, $asCap])
             <div class="flex items-start gap-3.5 px-2 lg:px-6 py-3 sm:py-0">
                 <i data-lucide="{{ $asIcon }}" class="w-7 h-7 text-gold shrink-0 mt-1" stroke-width="1.4"></i>
                 <div class="leading-tight">

@@ -17,6 +17,10 @@ class BusinessService
     {
         $business = Business::create([
             'user_id'          => $user->id,
+            // Carried over from what they chose at signup, so the directory's
+            // artisan / cooperative / business facets reflect the member's own
+            // answer instead of everyone defaulting to `artisan`.
+            'vendor_type'      => \App\Support\AccountTypes::vendorType($user->account_type) ?? 'artisan',
             'industry_id'      => $data['industry_id'],
             'region_id'        => $data['region_id'] ?? null,
             'city_id'          => $data['city_id'] ?? null,

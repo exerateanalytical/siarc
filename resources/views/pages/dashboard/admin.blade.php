@@ -90,13 +90,16 @@
             <!-- Welcome row -->
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr ? 'Bienvenue' : 'Welcome' }}, {{ $siacUser['name'] ?? 'Admin Super' }} 👋</h1>
+                    {{-- No operator name invented: greet without one when the session has none. --}}
+                    <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr ? 'Bienvenue' : 'Welcome' }}@if(! empty($siacUser['name'])), {{ $siacUser['name'] }}@endif 👋</h1>
                     <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Centre de Commandement du Patrimoine & de l\'Artisanat Camerounais' : 'Command Centre of Cameroonian Heritage & Craftsmanship' }}</p>
                 </div>
                 <div class="shrink-0 flex flex-wrap items-center gap-3">
                     <span class="inline-flex items-center gap-2.5 bg-white border border-[#E9E4D8] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#1B1B18]">
                         <i data-lucide="calendar-days" class="w-4 h-4 text-[#55524A]" style="stroke-width:1.7"></i>
-                        01 {{ $isFr ? 'Mai' : 'May' }} 2025 - 03 {{ $isFr ? 'Juin' : 'June' }} 2025
+                        {{-- The KPIs below are all-time platform totals, not a filtered range, so
+                             the badge states when they were read instead of a made-up period. --}}
+                        {{ $isFr ? 'Au' : 'As of' }} {{ now()->locale($lang)->translatedFormat('d F Y') }}
                     </span>
                     <a href="{{ route('admin.reports') }}" class="inline-flex items-center gap-2.5 bg-white border border-[#DCE7DF] hover:border-[#14652F] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#14652F] transition-colors">
                         <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
