@@ -196,3 +196,32 @@ if (! function_exists('ensureCertificate')) {
         return $business;
     }
 }
+
+if (! function_exists('brand_asset')) {
+    /**
+     * URL for a brand image, falling back to the legacy asset when the branded
+     * file has not been added yet.
+     *
+     * The logo is referenced from ~20 views. Pointing them straight at
+     * public/images/brand/ meant every one 404'd until those files existed —
+     * a broken image on every page of the platform. Resolving here means the
+     * site renders either way, and picks up the real logo the moment it lands
+     * with no code change.
+     *
+     * @param  string  $variant  'mark' (circular emblem) or 'full' (lockup)
+     */
+    function brand_asset(string $variant = 'mark'): string
+    {
+        $candidates = $variant === 'full'
+            ? ['images/brand/logo-full.png', 'images/brand/logo-mark.png', 'images/landing/logo.png']
+            : ['images/brand/logo-mark.png', 'images/landing/logo.png'];
+
+        foreach ($candidates as $path) {
+            if (is_file(public_path($path))) {
+                return asset($path);
+            }
+        }
+
+        return asset('images/landing/logo.png');
+    }
+}

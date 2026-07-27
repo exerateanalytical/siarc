@@ -97,7 +97,7 @@
     <div class="max-w-[1472px] mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between gap-4 xl:gap-6 py-3.5">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-                <img src="{{ asset('images/brand/logo-mark.png') }}" alt="" class="w-[44px] h-[48px] object-contain">
+                <img src="{{ brand_asset('mark') }}" alt="" class="w-[44px] h-[48px] object-contain">
                 <span class="leading-tight">
                     <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
                     <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>

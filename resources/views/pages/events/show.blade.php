@@ -436,7 +436,10 @@
             <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
                 <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Organisateur' : 'Organiser' }}</h2>
                 <div class="mt-4 flex items-start gap-3">
-                    <img src="{{ asset('images/landing/edetail-org-logo.png') }}" alt="" class="w-[38px] h-auto object-contain shrink-0">
+                    {{-- The organiser here IS the platform, so it uses the brand
+                         mark rather than the separate edetail-org-logo.png the
+                         design shipped for the same thing. --}}
+                    <img src="{{ brand_asset('mark') }}" alt="" class="w-[38px] h-auto object-contain shrink-0">
                     <div>
                         <p class="text-[12.5px] font-bold text-[#1D1B16]">Artisan Hub 237</p>
                         <p class="mt-1 text-[11px] text-[#6F6B60] leading-snug">{{ $isFr ? 'Plateforme privée dédiée à l\'artisanat camerounais' : 'Private platform dedicated to Cameroonian craftsmanship' }}</p>

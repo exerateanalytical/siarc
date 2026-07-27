@@ -28,7 +28,7 @@
     $realQuoRef    = $rpp->reference;
     $realPoRef     = $rin->purchaseOrder->reference;
     $realBizName   = $biz->name_fr ?? '—';
-    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/brand/logo-mark.png');
+    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : brand_asset('mark');
     $realBuyerName = $buyer->name ?? '—';
     $realInvDate   = $rin->created_at->format('d/m/Y');
     $realDueDate   = $rin->due_date?->format('d/m/Y');

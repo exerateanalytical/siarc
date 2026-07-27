@@ -60,8 +60,8 @@ $p = fn (string $key, string $default = '') => old('settings.' . $key, $platform
 
 $logoVal    = $platform['logo_path']    ?? $platform['branding_logo']    ?? null;
 $faviconVal = $platform['favicon_path'] ?? $platform['branding_favicon'] ?? null;
-$logoUrl    = filled($logoVal)    ? asset('storage/' . $logoVal)    : asset('images/brand/logo-mark.png');
-$faviconUrl = filled($faviconVal) ? asset('storage/' . $faviconVal) : asset('images/brand/logo-mark.png');
+$logoUrl    = filled($logoVal)    ? asset('storage/' . $logoVal)    : brand_asset('mark');
+$faviconUrl = filled($faviconVal) ? asset('storage/' . $faviconVal) : brand_asset('mark');
 
 $defaultLocale = optional($groups->get('app'))?->firstWhere('key', 'default_locale')['value'] ?? 'fr';
 

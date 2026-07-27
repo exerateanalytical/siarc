@@ -63,14 +63,16 @@ class BrandAssetTest extends TestCase
         ));
     }
 
-    public function test_no_view_references_the_retired_logo_path(): void
+    /**
+     * No view may hardcode a logo path.
+     *
+     * Pointing them straight at public/images/brand/ broke every logo on the
+     * platform the moment those files were not yet present — a 404 on each one.
+     * brand_asset() resolves to whatever actually exists.
+     */
+    public function test_no_view_hardcodes_a_logo_path(): void
     {
         $offenders = [];
-
-        foreach ($this->standalonePages() as $rel => $_) {
-            // checked below across all views, not just standalone ones
-        }
-
         $root = resource_path('views');
         $it   = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS));
 
@@ -78,16 +80,29 @@ class BrandAssetTest extends TestCase
             if (! $file->isFile() || ! str_ends_with($file->getFilename(), '.blade.php')) {
                 continue;
             }
-            if (str_contains(file_get_contents($file->getPathname()), 'images/landing/logo.png')) {
-                $offenders[] = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
+            $rel    = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
+            $source = file_get_contents($file->getPathname());
+
+            if (preg_match('/asset\(\s*[\'"][^\'"]*logo[^\'"]*[\'"]/i', $source)) {
+                $offenders[] = $rel;
             }
         }
 
         $this->assertSame([], $offenders, sprintf(
-            "These views still point at the old logo asset:\n  %s\nUse %s.",
-            implode("\n  ", $offenders),
-            self::MARK
+            "These views build a logo URL themselves instead of calling brand_asset():\n  %s",
+            implode("\n  ", $offenders)
         ));
+    }
+
+    /** The resolver must always return a file that is actually on disk. */
+    public function test_brand_asset_never_returns_a_missing_file(): void
+    {
+        foreach (['mark', 'full'] as $variant) {
+            $url  = brand_asset($variant);
+            $path = public_path(parse_url($url, PHP_URL_PATH));
+
+            $this->assertFileExists($path, "brand_asset('{$variant}') points at a file that does not exist, which renders as a broken image.");
+        }
     }
 
     public function test_the_logo_reaches_rendered_pages(): void
@@ -96,7 +111,7 @@ class BrandAssetTest extends TestCase
             $html = $this->get($url)->assertOk()->getContent();
 
             $this->assertStringContainsString('rel="icon"', $html, "No favicon declared on {$url}.");
-            $this->assertStringContainsString(self::MARK, $html, "The brand mark is missing from {$url}.");
+            $this->assertMatchesRegularExpression('/<img[^>]+src="[^"]*logo[^"]*"/i', $html, "No logo rendered on {$url}.");
         }
     }
 
@@ -107,9 +122,8 @@ class BrandAssetTest extends TestCase
     public function test_email_logo_is_an_absolute_url_with_a_text_fallback(): void
     {
         $html = (new VerificationCodeMail('482913', 'fr'))->render();
-        $site = rtrim(config('app.url'), '/');
 
-        $this->assertStringContainsString($site . '/' . self::FULL, $html);
+        $this->assertMatchesRegularExpression('/<img src="https?:\/\/[^"]+logo[^"]*"/', $html);
         // Clients block remote images by default, so the alt has to carry the brand.
         $this->assertStringContainsString('alt="Artisan Hub 237"', $html);
     }

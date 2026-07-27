@@ -27,12 +27,11 @@
 
     // Falls back to the legacy asset so the platform still renders if the brand
     // files have not been dropped in yet.
-    $bMark = file_exists(public_path('images/brand/logo-mark.png'))
-        ? asset('images/brand/logo-mark.png')
-        : asset('images/brand/logo-mark.png');
-    $bFull = file_exists(public_path('images/brand/logo-full.png'))
-        ? asset('images/brand/logo-full.png')
-        : $bMark;
+    // brand_asset() handles the fallback: it returns the branded file when it
+    // exists and the legacy asset otherwise, so nothing 404s while the brand
+    // images are still being added.
+    $bMark = brand_asset('mark');
+    $bFull = brand_asset('full');
 @endphp
 
 @if($bVariant === 'full')

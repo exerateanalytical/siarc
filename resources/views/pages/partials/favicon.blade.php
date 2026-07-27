@@ -12,11 +12,7 @@
         ->whereIn('key', ['favicon_path', 'branding_favicon'])
         ->value('value');
 
-    $favUrl = filled($favSetting)
-        ? asset('storage/' . $favSetting)
-        : (file_exists(public_path('images/brand/logo-mark.png'))
-            ? asset('images/brand/logo-mark.png')
-            : asset('images/brand/logo-mark.png'));
+    $favUrl = filled($favSetting) ? asset('storage/' . $favSetting) : brand_asset('mark');
 @endphp
 <link rel="icon" type="image/png" href="{{ $favUrl }}">
 <link rel="apple-touch-icon" href="{{ $favUrl }}">

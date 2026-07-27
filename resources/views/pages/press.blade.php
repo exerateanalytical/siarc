@@ -75,12 +75,12 @@
                 {{ $isFr ? 'Identité visuelle' : 'Brand assets' }}
             </h2>
             <div class="mt-3 flex items-center gap-4">
-                <img src="{{ asset('images/brand/logo-mark.png') }}" alt="Logo" class="w-[56px] h-[61px] object-contain">
+                <img src="{{ brand_asset('mark') }}" alt="Logo" class="w-[56px] h-[61px] object-contain">
                 <p class="text-[12.5px] text-[#55524A] leading-relaxed">
                     {{ $isFr ? 'Le logo de la plateforme. Merci de ne pas le modifier ni le déformer.' : 'The platform logo. Please do not alter or distort it.' }}
                 </p>
             </div>
-            <a href="{{ asset('images/brand/logo-mark.png') }}" download class="mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] hover:border-leaf hover:text-leaf text-[13px] font-semibold text-[#1D1B16] px-5 py-2.5 rounded-lg transition-colors">
+            <a href="{{ brand_asset('mark') }}" download class="mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] hover:border-leaf hover:text-leaf text-[13px] font-semibold text-[#1D1B16] px-5 py-2.5 rounded-lg transition-colors">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 {{ $isFr ? 'Télécharger le logo' : 'Download the logo' }}
             </a>

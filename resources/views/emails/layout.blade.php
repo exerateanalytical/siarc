@@ -78,7 +78,10 @@
                 <tr>
                     <td align="left" style="padding:26px 32px 0 32px;">
                         <a href="{{ $site }}" style="text-decoration:none;">
-                            <img src="{{ $site }}/images/brand/logo-full.png"
+                            {{-- asset() builds this from APP_URL, so it is already
+                                 absolute — which email needs, since a relative
+                                 path would resolve against the mail client. --}}
+                            <img src="{{ brand_asset('full') }}"
                                  alt="Artisan Hub 237"
                                  width="200" height="68"
                                  style="display:block; width:200px; max-width:200px; height:auto; border:0; outline:none; text-decoration:none; font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:bold; color:{{ $green }};">

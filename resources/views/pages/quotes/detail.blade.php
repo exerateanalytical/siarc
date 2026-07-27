@@ -30,7 +30,7 @@
 
     $realRef      = $rp->reference;
     $realBizName  = $biz->name_fr ?? '—';
-    $realBizLogo  = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/brand/logo-mark.png');
+    $realBizLogo  = $biz?->logo ? asset('storage/' . $biz->logo) : brand_asset('mark');
     $realSentAt   = $rp->created_at->format('d/m/Y H:i');
     $realValid    = $rp->valid_until?->format('d/m/Y');
     $realDaysLeft = $rp->valid_until ? (int) now()->startOfDay()->diffInDays($rp->valid_until, false) : null;

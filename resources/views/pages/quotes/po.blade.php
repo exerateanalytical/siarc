@@ -33,7 +33,7 @@
         ? max((int) now()->startOfDay()->diffInDays($rpo->expected_delivery_date, false), 0)
         : null;
     $realBizName   = $biz->name_fr ?? '—';
-    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : asset('images/brand/logo-mark.png');
+    $realBizLogo   = $biz?->logo ? asset('storage/' . $biz->logo) : brand_asset('mark');
     $realBuyerName = $buyer->name ?? '—';
     $realItemCount = $rpp->items->count();
     $realTotalQty  = $rpp->items->sum('quantity');
