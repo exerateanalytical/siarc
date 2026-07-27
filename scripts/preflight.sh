@@ -75,6 +75,41 @@ else
   else
     fail "missing PHP extensions:$MISSING" "Install them, then restart php-fpm / Apache."
   fi
+
+  # Publishing a product is the one thing the platform exists for, and a 2M
+  # default silently discards phone photos before Laravel ever sees them — the
+  # artisan is told the image field is required for a file they did attach.
+  # These ini values carry a unit suffix (2M, 1G, 512K). Stripping non-digits
+  # turns "2G" into 2, which reads as a failure on a perfectly fine server —
+  # so convert through the suffix rather than guessing.
+  ini_mb() {
+    "$PHP_BIN" -r '
+      $v = trim(ini_get($argv[1]));
+      $n = (float) $v;
+      $u = strtoupper(substr($v, -1));
+      if ($u === "G") $n *= 1024; elseif ($u === "K") $n /= 1024;
+      elseif (ctype_digit(substr($v, -1))) $n /= 1048576;  // plain bytes
+      echo (int) $n;
+    ' "$1" 2>/dev/null
+  }
+  UPLOAD_MB="$(ini_mb upload_max_filesize)"
+  POST_MB="$(ini_mb post_max_size)"
+
+  if [ "${UPLOAD_MB:-0}" -ge 16 ] 2>/dev/null; then
+    pass "upload_max_filesize ${UPLOAD_MB}M"
+  else
+    fail "upload_max_filesize is ${UPLOAD_MB:-?}M — phone photos will be rejected" \
+         "Set upload_max_filesize = 16M and post_max_size = 20M (see DEPLOY.md section 1)."
+  fi
+
+  # Equal is fine and common; only a smaller post_max_size is a real fault,
+  # because the file plus the rest of the form must fit inside it.
+  if [ "${POST_MB:-0}" -ge "${UPLOAD_MB:-0}" ] 2>/dev/null; then
+    pass "post_max_size ${POST_MB}M"
+  else
+    fail "post_max_size (${POST_MB:-?}M) is below upload_max_filesize (${UPLOAD_MB:-?}M)" \
+         "The file is sent with the rest of the form, so the whole request is dropped. Set post_max_size higher."
+  fi
 fi
 
 # -----------------------------------------------------------------------------

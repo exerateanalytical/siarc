@@ -12,12 +12,35 @@ For the longer reference (queues, caching, backups, security notes) see
 | | |
 |---|---|
 | PHP | **8.3+** with `pdo_mysql`, `mbstring`, `openssl`, `gd`, `fileinfo`, `zip`, `bcmath` |
+| PHP uploads | `upload_max_filesize` and `post_max_size` at **16M or more** — see below |
 | Database | **MySQL 8.0+** (or MariaDB 10.6+) — create an empty database and a user with full rights on it |
 | Web server | Apache or nginx, document root set to **`public/`** — not the project root |
 | Composer | 2.x (only needed if `vendor/` is not in the upload) |
 
 No Node build step. CSS and JS ship as vendored files under `public/vendor/`, so
 there is nothing to compile.
+
+### Upload limits — check this before launch
+
+Most artisans will photograph their work on an Android phone, and a 12MP photo
+is commonly 4–8 MB. Shared hosts frequently ship `upload_max_filesize = 2M`,
+which rejects those silently: PHP discards the file before Laravel sees it, so
+the artisan gets "the images field is required" for a photo they definitely
+attached, with nothing in the log to explain it. Publishing a product is the one
+thing the platform exists for, so this is worth two minutes.
+
+Set both, in `.htaccess`, `.user.ini`, or your host's PHP settings panel:
+
+```ini
+upload_max_filesize = 16M
+post_max_size = 20M          ; must exceed upload_max_filesize — the rest of the form rides along
+```
+
+The stored file is far smaller than the upload: images are downscaled to 1200px
+and re-encoded as WebP, so a 3000×2000 / 235 KB JPEG lands at about 23 KB.
+The generous limit is only about accepting what the phone produces.
+
+`scripts/preflight.sh` checks this for you.
 
 ---
 

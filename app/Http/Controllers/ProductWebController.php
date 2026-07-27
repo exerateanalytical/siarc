@@ -248,7 +248,12 @@ class ProductWebController extends Controller
             'is_custom_order'     => ['nullable', 'boolean'],
             'is_available'        => ['nullable', 'boolean'],
             'images'              => ['nullable', 'array', 'max:8'],
-            'images.*'            => ['nullable', 'image', 'max:4096'],
+            // 12MP Android photos routinely land between 4 and 8 MB, and most
+            // artisans here will shoot straight from a phone. Rejecting those
+            // costs us the listing; accepting them costs nothing, since
+            // ProductImageService downscales to 1200px and re-encodes as WebP
+            // (a 3000x2000 235KB JPEG came out at 23KB in testing).
+            'images.*'            => ['nullable', 'image', 'max:12288'],
         ]);
     }
 }

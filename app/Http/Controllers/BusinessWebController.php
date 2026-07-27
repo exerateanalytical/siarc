@@ -142,8 +142,10 @@ class BusinessWebController extends Controller
             'address_en'       => ['nullable', 'string', 'max:255'],
             'year_established' => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
             'employee_count'   => ['nullable', 'integer', 'min:0'],
-            'logo'             => ['nullable', 'image', 'max:4096'],
-            'cover_image'      => ['nullable', 'image', 'max:6144'],
+            // Same reasoning as product images: phone photos are large, and both
+            // of these are downscaled on the way in.
+            'logo'             => ['nullable', 'image', 'max:12288'],
+            'cover_image'      => ['nullable', 'image', 'max:12288'],
         ]);
     }
 }
