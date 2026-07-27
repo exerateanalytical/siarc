@@ -57,9 +57,9 @@ class ProductImageController extends Controller
 
         $product = $business->products()->withoutGlobalScopes()->findOrFail($productId);
 
-        foreach ($request->order as $position => $id) {
-            $product->images()->where('id', $id)->update(['sort_order' => $position + 1]);
-        }
+        // Through the service so the API and the seller dashboard normalise the
+        // sequence the same way.
+        $this->imageService->reorder($product, $request->order);
 
         return response()->json(['message' => 'Images reordered.']);
     }

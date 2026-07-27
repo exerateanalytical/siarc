@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Products\Models\Product;
 use App\Modules\Taxonomy\Models\Industry;
+use App\Support\SearchQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -177,12 +178,7 @@ class FrontendController extends Controller
             ->where('status', 'published');
 
         if ($q) {
-            $query->where(function ($qb) use ($q) {
-                $qb->where('name_fr', 'like', "%{$q}%")
-                   ->orWhere('name_en', 'like', "%{$q}%")
-                   ->orWhere('tagline_fr', 'like', "%{$q}%")
-                   ->orWhere('description_fr', 'like', "%{$q}%");
-            });
+            SearchQuery::apply($query, $q, SearchQuery::BUSINESS_COLUMNS, SearchQuery::BUSINESS_RELATIONS);
         }
 
         if ($industry) {
@@ -209,6 +205,12 @@ class FrontendController extends Controller
         }
 
         $query->withCount(['products' => fn ($qb) => $qb->where('status', 'published')]);
+
+        // Relevance leads when the user typed something; the chosen sort then
+        // breaks ties inside each relevance band.
+        if ($q) {
+            SearchQuery::orderByRelevance($query, $q, SearchQuery::BUSINESS_NAMES, SearchQuery::BUSINESS_SECONDARY);
+        }
 
         if ($request->query('sort') === 'name') {
             $query->orderBy('name_fr');
@@ -313,6 +315,7 @@ class FrontendController extends Controller
         $sort = in_array($request->query('sort'), ['recents', 'name']) ? $request->query('sort') : 'recents';
         $categorie = (string) $request->query('categorie', '');
         $region = (string) $request->query('region', '');
+        $q = trim((string) $request->query('q', ''));
 
         // Real, browsable products (published product + published business)
         $query = Product::with(['images', 'business.industry', 'business.region'])
@@ -334,6 +337,13 @@ class FrontendController extends Controller
 
         if ($request->boolean('dispo')) {
             $query->where('is_available', true);
+        }
+
+        // Same treatment as the directory so a q= link from anywhere on the
+        // platform lands on the same ranked result set.
+        if ($q !== '') {
+            SearchQuery::apply($query, $q, SearchQuery::PRODUCT_COLUMNS, SearchQuery::PRODUCT_RELATIONS);
+            SearchQuery::orderByRelevance($query, $q, SearchQuery::PRODUCT_NAMES, SearchQuery::PRODUCT_SECONDARY);
         }
 
         if ($sort === 'name') {
@@ -367,7 +377,7 @@ class FrontendController extends Controller
             ->pluck('total', 'vendor_type');
 
         return response(
-            view('pages.products.index', compact('lang', 'sort', 'categorie', 'region', 'liveCount', 'products', 'industries', 'sideCounts', 'regions', 'vendorTypeCounts', 'vendorTypes'))
+            view('pages.products.index', compact('lang', 'sort', 'categorie', 'region', 'q', 'liveCount', 'products', 'industries', 'sideCounts', 'regions', 'vendorTypeCounts', 'vendorTypes'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
@@ -528,26 +538,18 @@ class FrontendController extends Controller
         $products = collect();
 
         if (mb_strlen($q) >= 2) {
-            $like = "%{$q}%";
+            $businessQuery = Business::with(['industry', 'city', 'region'])
+                ->where('status', 'published');
+            SearchQuery::apply($businessQuery, $q, SearchQuery::BUSINESS_COLUMNS, SearchQuery::BUSINESS_RELATIONS);
+            SearchQuery::orderByRelevance($businessQuery, $q, SearchQuery::BUSINESS_NAMES, SearchQuery::BUSINESS_SECONDARY);
+            $businesses = $businessQuery->orderByDesc('is_featured')->limit(12)->get();
 
-            $businesses = Business::with(['industry', 'city', 'region'])
-                ->where('status', 'published')
-                ->where(fn ($qb) => $qb->where('name_fr', 'like', $like)
-                    ->orWhere('name_en', 'like', $like)
-                    ->orWhere('tagline_fr', 'like', $like)
-                    ->orWhere('description_fr', 'like', $like))
-                ->orderByDesc('is_featured')
-                ->limit(12)
-                ->get();
-
-            $products = Product::published()
+            $productQuery = Product::published()
                 ->with(['primaryImage', 'category', 'business'])
-                ->whereHas('business', fn ($qb) => $qb->where('status', 'published'))
-                ->where(fn ($qb) => $qb->where('name_fr', 'like', $like)
-                    ->orWhere('name_en', 'like', $like)
-                    ->orWhere('description_fr', 'like', $like))
-                ->limit(12)
-                ->get();
+                ->whereHas('business', fn ($qb) => $qb->where('status', 'published'));
+            SearchQuery::apply($productQuery, $q, SearchQuery::PRODUCT_COLUMNS, SearchQuery::PRODUCT_RELATIONS);
+            SearchQuery::orderByRelevance($productQuery, $q, SearchQuery::PRODUCT_NAMES, SearchQuery::PRODUCT_SECONDARY);
+            $products = $productQuery->limit(12)->get();
 
             DB::table('search_queries')->insert([
                 'query'         => $q,

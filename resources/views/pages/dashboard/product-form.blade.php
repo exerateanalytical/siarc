@@ -150,16 +150,60 @@ $fileCls = 'ui-file';
             <h2 class="ui-card-title mb-4">{{ $lang === 'fr' ? 'Photos' : 'Photos' }}</h2>
 
             @if($isEdit && $product->images->isNotEmpty())
-            <div class="grid grid-cols-4 gap-2 mb-4">
-                @foreach($product->images as $img)
-                <div class="relative aspect-square rounded-lg overflow-hidden border border-[#EFEBE2] group">
-                    <img src="{{ $img->url }}" alt="" class="w-full h-full object-cover">
-                    <form method="POST" action="{{ route('products.web-delete-image', ['slug' => $product->slug, 'imageId' => $img->id]) }}" class="absolute top-1 right-1">
-                        @csrf
-                        <button type="submit" class="w-6 h-6 bg-[#B42025] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i data-lucide="x" class="w-3 h-3"></i>
+            @php
+                // Mirrors Product::primaryImage(): an explicit cover wins, otherwise
+                // the first by sort_order — so the badge shows what buyers see.
+                $images  = $product->images;
+                $coverId = optional($images->firstWhere('is_cover', true) ?? $images->first())->id;
+                $lastIdx = $images->count() - 1;
+            @endphp
+            <p class="ui-card-sub mb-3">{{ $lang === 'fr' ? 'La photo principale est celle affichée dans l\'annuaire, la recherche et les fiches produits.' : 'The main photo is the one shown in the directory, in search and on product cards.' }}</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                @foreach($images as $idx => $img)
+                <div class="rounded-lg overflow-hidden border border-[#EFEBE2] bg-white">
+                    <div class="relative aspect-square">
+                        <img src="{{ $img->url }}" alt="" class="w-full h-full object-cover">
+                        @if($img->id === $coverId)
+                        <span class="ui-pill ui-pill-ok absolute top-1 left-1">
+                            <i data-lucide="star" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Principale' : 'Main' }}
+                        </span>
+                        @else
+                        <span class="ui-pill ui-pill-neutral absolute top-1 left-1">{{ $idx + 1 }}</span>
+                        @endif
+                    </div>
+
+                    {{-- Buttons rather than drag-and-drop: this has to work with a
+                         thumb on a mid-range Android browser, where dragging a
+                         thumbnail inside a scrolling page is unreliable.
+
+                         The buttons own no <form> of their own — a form nested
+                         inside the product form is dropped by the HTML parser,
+                         so they point at the forms rendered after </form> via
+                         the form= attribute. --}}
+                    <div class="flex flex-wrap items-center gap-1 p-1.5 border-t border-[#EFEBE2]">
+                        <button type="submit" form="pimg-up-{{ $img->id }}" class="ui-btn ui-btn-secondary ui-btn-sm px-2" @disabled($idx === 0)
+                                aria-label="{{ $lang === 'fr' ? 'Reculer la photo' : 'Move photo earlier' }}">
+                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                         </button>
-                    </form>
+
+                        <button type="submit" form="pimg-down-{{ $img->id }}" class="ui-btn ui-btn-secondary ui-btn-sm px-2" @disabled($idx === $lastIdx)
+                                aria-label="{{ $lang === 'fr' ? 'Avancer la photo' : 'Move photo later' }}">
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+
+                        @if($img->id !== $coverId)
+                        <button type="submit" form="pimg-cover-{{ $img->id }}" class="ui-btn ui-btn-secondary ui-btn-sm px-2"
+                                aria-label="{{ $lang === 'fr' ? 'Définir comme photo principale' : 'Set as main photo' }}">
+                            <i data-lucide="star" class="w-3.5 h-3.5"></i>
+                        </button>
+                        @endif
+
+                        <button type="submit" form="pimg-del-{{ $img->id }}" class="ui-btn ui-btn-danger ui-btn-sm px-2 ml-auto"
+                                aria-label="{{ $lang === 'fr' ? 'Supprimer la photo' : 'Delete photo' }}">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -174,5 +218,24 @@ $fileCls = 'ui-file';
             {{ $isEdit ? ($lang === 'fr' ? 'Enregistrer les modifications' : 'Save changes') : ($lang === 'fr' ? 'Créer et publier le produit' : 'Create and publish product') }}
         </button>
     </form>
+
+    @if($isEdit && $product->images->isNotEmpty())
+    {{-- Form owners for the per-photo buttons above; they must live outside the
+         product form, which is why they sit here instead of next to the tiles. --}}
+    @foreach($product->images as $img)
+    <form method="POST" id="pimg-up-{{ $img->id }}" action="{{ route('products.web-move-image', ['slug' => $product->slug, 'imageId' => $img->id]) }}" class="hidden">
+        @csrf<input type="hidden" name="direction" value="up">
+    </form>
+    <form method="POST" id="pimg-down-{{ $img->id }}" action="{{ route('products.web-move-image', ['slug' => $product->slug, 'imageId' => $img->id]) }}" class="hidden">
+        @csrf<input type="hidden" name="direction" value="down">
+    </form>
+    <form method="POST" id="pimg-cover-{{ $img->id }}" action="{{ route('products.web-set-cover-image', ['slug' => $product->slug, 'imageId' => $img->id]) }}" class="hidden">
+        @csrf
+    </form>
+    <form method="POST" id="pimg-del-{{ $img->id }}" action="{{ route('products.web-delete-image', ['slug' => $product->slug, 'imageId' => $img->id]) }}" class="hidden">
+        @csrf
+    </form>
+    @endforeach
+    @endif
 </div>
 @endsection
