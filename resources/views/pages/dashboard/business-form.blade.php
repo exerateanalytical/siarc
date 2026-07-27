@@ -77,13 +77,21 @@ $fileCls = 'ui-file';
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Secteur' : 'Industry' }} <span class="ui-req">*</span></label>
+                    <label class="ui-label">{{ $lang === 'fr' ? 'Votre métier' : 'Your trade' }} <span class="ui-req">*</span></label>
+                    {{-- Grouped by corps de métier. A flat list of all 424 taxonomy
+                         rows was unusable on the first required field a new artisan
+                         meets; optgroup is native, so it works on Android too. --}}
                     <select name="industry_id" required class="ui-field ui-select">
-                        <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
-                        @foreach($industries as $ind)
-                        <option value="{{ $ind->id }}" {{ $v('industry_id') == $ind->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $ind->name_fr : $ind->name_en }}</option>
+                        <option value="">{{ $lang === 'fr' ? 'Choisir votre métier...' : 'Choose your trade...' }}</option>
+                        @foreach($industries as $groupName => $trades)
+                        <optgroup label="{{ $groupName }}">
+                            @foreach($trades as $ind)
+                            <option value="{{ $ind->id }}" {{ $v('industry_id') == $ind->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $ind->name_fr : ($ind->name_en ?: $ind->name_fr) }}</option>
+                            @endforeach
+                        </optgroup>
                         @endforeach
                     </select>
+                    <p class="ui-hint">{{ $lang === 'fr' ? 'Nomenclature officielle des métiers de l\'artisanat.' : 'Official craft trade nomenclature.' }}</p>
                 </div>
                 <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Région' : 'Region' }}</label>

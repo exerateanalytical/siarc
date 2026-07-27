@@ -104,6 +104,7 @@
 
     // @json() splits its argument on commas, so multi-entry arrays must live here as variables
     $typeNames = collect($accountTypes)->mapWithKeys(fn ($t) => [$t[0] => $t[3]])->all();
+    $typeDescs = collect($accountTypes)->mapWithKeys(fn ($t) => [$t[0] => $t[4]])->all();
     $sideSecureTitles = $isFr
         ? [1 => 'Sécurisé & Vérifié', 2 => 'Sécurisé & Confidentiel', 3 => 'Sécurisé & Confidentiel']
         : [1 => 'Secure & Verified', 2 => 'Secure & Confidential', 3 => 'Secure & Confidential'];
@@ -268,7 +269,22 @@
                     </div>
                 </div>
 
-                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Phones get a native select. The four rich cards below carry a
+                     blurb and four perks each, so they run to nearly 2,000px —
+                     about two and a half screens to answer one question. The
+                     select and the cards write the same account_type field; only
+                     one is ever visible, and the JS keeps them in step. --}}
+                <div class="mt-6 md:hidden">
+                    <label class="ui-label" for="ob-type-select">{{ $isFr ? 'Type de compte' : 'Account type' }}<span class="ui-req">*</span></label>
+                    <select id="ob-type-select" class="ui-field ui-select">
+                        @foreach($accountTypes as $atIdx => [$atKey, $atIcon, $atColor, $atTitle, $atDesc, $atPerks])
+                        <option value="{{ $atKey }}" @selected($atIdx === 0)>{{ $atTitle }}</option>
+                        @endforeach
+                    </select>
+                    <p id="ob-type-blurb" class="ui-hint mt-2"></p>
+                </div>
+
+                <div class="mt-6 hidden md:grid grid-cols-1 md:grid-cols-2 gap-4">
                     @foreach($accountTypes as $atIdx => [$atKey, $atIcon, $atColor, $atTitle, $atDesc, $atPerks])
                     <label class="cursor-pointer">
                         <input type="radio" name="account_type" value="{{ $atKey }}" class="sr-only peer" @checked($atIdx === 0)>
@@ -668,8 +684,11 @@
         </div>
     </div>
 
-    <!-- Step-1 extras -->
-    <div id="step1-extras">
+    {{-- Step-1 extras: the platform's advantages and its security promises.
+         Desktop only. Together they add ~1,200px on a phone — a third of the
+         page — below a form the visitor has already decided to fill in. Someone
+         who reached this page is past being persuaded; they want the fields. --}}
+    <div id="step1-extras" class="hidden lg:block">
         <section class="mt-4 bg-white rounded-2xl shadow-sm px-6 py-7">
             <h2 class="text-center text-[17.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Les avantages de la plateforme' : 'The platform\'s advantages' }}</h2>
             <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-7">
@@ -716,6 +735,7 @@
     lucide.createIcons();
 
     const typeNames = @json($typeNames);
+    const typeDescs = @json($typeDescs);
     const stepCount = @json($stepCount);
     const stepSubTpl = @json($isFr ? 'Étape %N sur %T' : 'Step %N of %T');
     const sideSubDefault = @json($isFr ? 'Rejoignez la plus grande vitrine de l\'artisanat camerounais' : 'Join the largest showcase of Cameroonian craftsmanship');
@@ -741,6 +761,20 @@
     }
     document.querySelectorAll('input[name="account_type"]').forEach(r => r.addEventListener('change', refreshRadios));
     refreshRadios();
+
+    // The phone-sized select drives the same radios the wizard already reads,
+    // so the summary step and the submitted value need no special case.
+    const typeSelect = document.getElementById('ob-type-select');
+    const typeBlurb  = document.getElementById('ob-type-blurb');
+    if (typeSelect) {
+        const syncFromSelect = () => {
+            const radio = document.querySelector(`input[name="account_type"][value="${typeSelect.value}"]`);
+            if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change', { bubbles: true })); }
+            if (typeBlurb) typeBlurb.textContent = typeDescs[typeSelect.value] || '';
+        };
+        typeSelect.addEventListener('change', syncFromSelect);
+        syncFromSelect();
+    }
 
     // Step 3 summary — echoes back ONLY what the user typed in this wizard.
     function refreshSummary() {
@@ -805,7 +839,11 @@
             const p = document.getElementById('panel-' + i);
             if (p) p.classList.toggle('hidden', i !== n);
         }
-        document.getElementById('step1-extras').classList.toggle('hidden', n !== 1);
+        // The extras are step-1 only AND desktop only. Toggling `hidden` alone
+        // would strip the responsive class and put ~1,200px of marketing back on
+        // phones, so the desktop breakpoint is checked here too.
+        const extrasWanted = n === 1 && window.matchMedia('(min-width: 1024px)').matches;
+        document.getElementById('step1-extras').classList.toggle('hidden', !extrasWanted);
         document.getElementById('strip-help').classList.remove('hidden');
 
         if (n === stepCount) refreshSummary();

@@ -25,6 +25,37 @@ class BusinessWebController extends Controller
         return in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     }
 
+    /**
+     * The trades an artisan can pick, grouped by their corps de métier.
+     *
+     * This field used to render every active row — all 424, across four
+     * taxonomy levels — as one flat, unsorted list, so "Artisanat de
+     * Production" sat between individual trades with nothing to distinguish
+     * them. It is the first required field on the first form a new artisan
+     * meets, and it was unusable.
+     *
+     * Only the leaf métiers are offered, because that is what someone
+     * identifies as: "Céramiste (Potier)", not "Artisanat de Production". They
+     * are grouped under their corps de métier so the native select stays
+     * browsable — the browse pages roll counts up the tree, so a leaf choice
+     * still surfaces under its sector.
+     *
+     * @return \Illuminate\Support\Collection<string, \Illuminate\Support\Collection>
+     */
+    private function tradesGroupedByCorps()
+    {
+        $rows = Industry::where('is_active', true)
+            ->whereIn('level', [3, 4])
+            ->orderBy('sort_order')
+            ->get(['id', 'parent_id', 'level', 'name_fr', 'name_en']);
+
+        $corps = $rows->where('level', 3)->keyBy('id');
+
+        return $rows->where('level', 4)
+            ->groupBy(fn ($trade) => $corps[$trade->parent_id]->name_fr ?? '—')
+            ->sortKeys();
+    }
+
     private function requireUser(Request $request): array|RedirectResponse
     {
         $siacUser = session('siac_user');
@@ -45,7 +76,7 @@ class BusinessWebController extends Controller
             return redirect()->route('business.edit');
         }
 
-        $industries = Industry::where('is_active', true)->orderBy('sort_order')->get();
+        $industries = $this->tradesGroupedByCorps();
         $regions = Region::orderBy('name_fr')->get();
 
         return view('pages.dashboard.business-form', [
@@ -84,7 +115,7 @@ class BusinessWebController extends Controller
         if ($siacUser instanceof RedirectResponse) return $siacUser;
 
         $business = Business::where('user_id', $siacUser['id'])->firstOrFail();
-        $industries = Industry::where('is_active', true)->orderBy('sort_order')->get();
+        $industries = $this->tradesGroupedByCorps();
         $regions = Region::orderBy('name_fr')->get();
         $cities = $business->region_id ? City::where('region_id', $business->region_id)->orderBy('name_fr')->get() : collect();
 
