@@ -73,28 +73,24 @@
 
             {{-- Stat chips --}}
             @php
+                // Real counts. The design's "vs mois dernier" deltas had no prior-period source.
                 $hcChips = [
-                    ['users-round',  '#157A43', '#E8F2EC', $isFr ? 'Total collections' : 'Total collections',            number_format($hcTotal),            '+12.5%', true],
-                    ['badge-check',  '#157A43', '#E8F2EC', $isFr ? 'Collections publiées' : 'Published collections',    number_format($hcPublished),        '-9.8%',  false],
-                    ['file-pen',     '#C97A16', '#FDF0DC', $isFr ? 'Collections en brouillon' : 'Draft collections',    number_format($hcDraft),            '-4.3%',  false],
-                    ['eye',          '#157A43', '#E8F2EC', $isFr ? 'Visites totales' : 'Total visits',                  number_format($hcVisits),           '+21.6%', true],
-                    ['users',        '#157A43', '#E8F2EC', $isFr ? 'Artisans impliqués' : 'Artisans involved',          number_format($hcArtisans),         '+14.7%', true],
+                    ['users-round',  '#157A43', '#E8F2EC', $isFr ? 'Total collections' : 'Total collections',            number_format($hcTotal)],
+                    ['badge-check',  '#157A43', '#E8F2EC', $isFr ? 'Collections publiées' : 'Published collections',    number_format($hcPublished)],
+                    ['file-pen',     '#C97A16', '#FDF0DC', $isFr ? 'Collections en brouillon' : 'Draft collections',    number_format($hcDraft)],
+                    ['eye',          '#157A43', '#E8F2EC', $isFr ? 'Visites totales' : 'Total visits',                  number_format($hcVisits)],
+                    ['users',        '#157A43', '#E8F2EC', $isFr ? 'Artisans impliqués' : 'Artisans involved',          number_format($hcArtisans)],
                 ];
             @endphp
             <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
-                @foreach($hcChips as [$hcIcon, $hcIconColor, $hcTile, $hcLabel, $hcValue, $hcTrend, $hcUp])
+                @foreach($hcChips as [$hcIcon, $hcIconColor, $hcTile, $hcLabel, $hcValue])
                 <div class="bg-white border border-[#EFEBE2] rounded-2xl px-4 py-3.5 flex items-start gap-3">
                     <span class="shrink-0 w-[38px] h-[38px] rounded-full flex items-center justify-center" style="background: {{ $hcTile }}">
                         <i data-lucide="{{ $hcIcon }}" class="w-[18px] h-[18px]" style="color: {{ $hcIconColor }}"></i>
                     </span>
                     <div class="min-w-0">
                         <p class="text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase leading-snug">{{ $hcLabel }}</p>
-                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] leading-none">{{ $hcValue }}
-                            <span class="ml-1 text-[11px] font-semibold {{ $hcUp ? 'text-[#157A43]' : 'text-[#C0392B]' }}">
-                                <i data-lucide="{{ $hcUp ? 'arrow-up' : 'arrow-down' }}" class="inline w-3 h-3 -mt-0.5"></i>{{ ltrim($hcTrend, '+-') }}
-                            </span>
-                        </p>
-                        <p class="mt-1 text-[10.5px] text-[#8A857A]">{{ $isFr ? 'vs mois dernier' : 'vs last month' }}</p>
+                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] leading-none">{{ $hcValue }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -254,23 +250,22 @@
                                     <p class="mt-1 text-[12.5px] font-bold text-[#1B1B18]">—</p>
                                     @endif
                                 </div>
+                                {{-- The design's engagement rate, average visit time and conversion rate had
+                                     no analytics table behind them; these three tiles now read the collections table. --}}
                                 <div>
-                                    <span class="w-[38px] h-[38px] rounded-full bg-[#E8F2EC] flex items-center justify-center"><i data-lucide="target" class="w-[18px] h-[18px] text-[#157A43]"></i></span>
-                                    <p class="mt-2.5 text-[10px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Taux d\'engagement moyen' : 'Average engagement rate' }}</p>
-                                    <p class="mt-1 text-[17px] font-bold text-[#1B1B18]">68.4%</p>
-                                    <p class="mt-0.5 text-[11px] font-semibold text-[#157A43]"><i data-lucide="arrow-up" class="inline w-3 h-3 -mt-0.5"></i> 12.3%</p>
+                                    <span class="w-[38px] h-[38px] rounded-full bg-[#FDF0DC] flex items-center justify-center"><i data-lucide="eye" class="w-[18px] h-[18px] text-[#C97A16]"></i></span>
+                                    <p class="mt-2.5 text-[10px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Visites totales' : 'Total visits' }}</p>
+                                    <p class="mt-1 text-[17px] font-bold text-[#1B1B18]">{{ number_format($hcVisits) }}</p>
                                 </div>
                                 <div>
-                                    <span class="w-[38px] h-[38px] rounded-full bg-[#FDF0DC] flex items-center justify-center"><i data-lucide="clock" class="w-[18px] h-[18px] text-[#C97A16]"></i></span>
-                                    <p class="mt-2.5 text-[10px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Temps moyen de visite' : 'Average visit time' }}</p>
-                                    <p class="mt-1 text-[17px] font-bold text-[#1B1B18]">04m 32s</p>
-                                    <p class="mt-0.5 text-[11px] font-semibold text-[#157A43]"><i data-lucide="arrow-up" class="inline w-3 h-3 -mt-0.5"></i> 8.7%</p>
+                                    <span class="w-[38px] h-[38px] rounded-full bg-[#E8F2EC] flex items-center justify-center"><i data-lucide="users" class="w-[18px] h-[18px] text-[#157A43]"></i></span>
+                                    <p class="mt-2.5 text-[10px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Artisans mis en avant' : 'Featured artisans' }}</p>
+                                    <p class="mt-1 text-[17px] font-bold text-[#1B1B18]">{{ number_format($hcArtisans) }}</p>
                                 </div>
                                 <div>
-                                    <span class="w-[38px] h-[38px] rounded-full bg-[#E8F2EC] flex items-center justify-center"><i data-lucide="trending-up" class="w-[18px] h-[18px] text-[#157A43]"></i></span>
-                                    <p class="mt-2.5 text-[10px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Taux de conversion' : 'Conversion rate' }}</p>
-                                    <p class="mt-1 text-[17px] font-bold text-[#1B1B18]">12.6%</p>
-                                    <p class="mt-0.5 text-[11px] font-semibold text-[#157A43]"><i data-lucide="arrow-up" class="inline w-3 h-3 -mt-0.5"></i> 9.2%</p>
+                                    <span class="w-[38px] h-[38px] rounded-full bg-[#E8F2EC] flex items-center justify-center"><i data-lucide="badge-check" class="w-[18px] h-[18px] text-[#157A43]"></i></span>
+                                    <p class="mt-2.5 text-[10px] font-bold tracking-[0.05em] text-[#8A857A] uppercase">{{ $isFr ? 'Collections publiées' : 'Published collections' }}</p>
+                                    <p class="mt-1 text-[17px] font-bold text-[#1B1B18]">{{ number_format($hcPublished) }} / {{ number_format($hcTotal) }}</p>
                                 </div>
                             </div>
                         </section>
@@ -344,21 +339,27 @@
                     <section class="bg-white border border-[#EFEBE2] rounded-2xl p-5">
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-[12.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Artisan à l\'honneur' : 'Featured artisan' }}</h2>
-                            <a href="{{ route('admin.businesses') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le profil' : 'View profile' }} →</a>
+                            @if($hcFeatured)<a href="{{ route('admin.businesses.detail', ['id' => $hcFeatured->id, 'lang' => $lang]) }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le profil' : 'View profile' }} →</a>@endif
                         </div>
+                        {{-- The design named an artisan and gave him invented collection/product/visit
+                             counts; this now reads the most-viewed published vendor. --}}
+                        @if($hcFeatured)
                         <div class="mt-3.5 flex items-start gap-4">
-                            <img src="{{ asset('images/landing/hc-artisan.png') }}" alt="Emmanuel Tchana" class="w-[96px] h-[104px] rounded-xl object-cover shrink-0">
+                            <img src="{{ $hcFeatured->cover_image ? asset('storage/' . $hcFeatured->cover_image) : asset('images/landing/hc-artisan.png') }}" alt="" class="w-[96px] h-[104px] rounded-xl object-cover shrink-0">
                             <div class="min-w-0 flex-1">
-                                <p class="text-[14.5px] font-bold text-[#1B1B18]">Emmanuel Tchana</p>
-                                <p class="mt-0.5 text-[11.5px] font-semibold text-[#8A6D1F]">{{ $isFr ? 'Maître Sculpteur sur Bronze' : 'Master Bronze Sculptor' }}</p>
-                                <p class="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-[#6F6B60]"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Foumban, Ouest</p>
+                                <p class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? $hcFeatured->name_fr : ($hcFeatured->name_en ?? $hcFeatured->name_fr) }}</p>
+                                @if($hcFeatured->industry_fr)<p class="mt-0.5 text-[11.5px] font-semibold text-[#8A6D1F]">{{ $isFr ? $hcFeatured->industry_fr : ($hcFeatured->industry_en ?? $hcFeatured->industry_fr) }}</p>@endif
+                                @if($hcFeatured->region_fr)<p class="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-[#6F6B60]"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> {{ $isFr ? $hcFeatured->region_fr : ($hcFeatured->region_en ?? $hcFeatured->region_fr) }}</p>@endif
                                 <div class="mt-3 grid grid-cols-3 gap-2 text-center">
-                                    <div><p class="text-[10px] text-[#8A857A]">Collections</p><p class="text-[14px] font-bold text-[#1B1B18]">3</p></div>
-                                    <div><p class="text-[10px] text-[#8A857A]">{{ $isFr ? 'Produits' : 'Products' }}</p><p class="text-[14px] font-bold text-[#1B1B18]">28</p></div>
-                                    <div><p class="text-[10px] text-[#8A857A]">{{ $isFr ? 'Visites' : 'Visits' }}</p><p class="text-[14px] font-bold text-[#1B1B18]">12,450</p></div>
+                                    <div><p class="text-[10px] text-[#8A857A]">Collections</p><p class="text-[14px] font-bold text-[#1B1B18]">{{ number_format($hcFeaturedStats['collections']) }}</p></div>
+                                    <div><p class="text-[10px] text-[#8A857A]">{{ $isFr ? 'Produits' : 'Products' }}</p><p class="text-[14px] font-bold text-[#1B1B18]">{{ number_format($hcFeaturedStats['products']) }}</p></div>
+                                    <div><p class="text-[10px] text-[#8A857A]">{{ $isFr ? 'Visites' : 'Visits' }}</p><p class="text-[14px] font-bold text-[#1B1B18]">{{ number_format($hcFeaturedStats['views']) }}</p></div>
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <p class="mt-3.5 text-[12px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
+                        @endif
                         <p class="mt-3.5 bg-[#F2E8D5] rounded-xl px-4 py-2.5 text-center text-[11.5px] font-semibold text-[#55524A]">
                             {{ $isFr ? '“Préserver notre héritage, créer notre avenir”' : '“Preserving our heritage, creating our future”' }}
                         </p>

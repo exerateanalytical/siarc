@@ -29,41 +29,38 @@
         $d = \Carbon\Carbon::parse($value);
         return $isFr ? sprintf('%02d %s %d', $d->day, $monthsFr[$d->month], $d->year) : $d->format('d M Y');
     };
-    // Design rows carry their "Prochain paiement" second line verbatim (the design's
-    // relative months don't recompute from today's clock).
-    $designNextLine = [
-        1 => [$isFr ? 'Dans 11 mois' : 'In 11 months', false],
-        2 => [$isFr ? 'Dans 11 mois' : 'In 11 months', false],
-        3 => [$isFr ? 'Dans 11 mois' : 'In 11 months', false],
-        5 => [$isFr ? 'Expiré' : 'Expired', true],
-        7 => [$isFr ? 'Dans 9 mois' : 'In 9 months', false],
-    ];
-
-    // Stat cards — design-verbatim values (fidelity mandate); card 5 lives in the rail.
+    // Stat cards — real counts from $subStats; card 5 lives in the rail. The design's
+    // month-over-month deltas had no prior-period source, so they are not rendered.
     $cards = [
-        ['sub-kpi-1.png', '1,254',      $isFr ? 'Abonnements Actifs' : 'Active Subscriptions',       $isFr ? '+18 ce mois' : '+18 this month',     '#1E8A4D', 'sub-spark-1.png'],
-        ['sub-kpi-2.png', '248',        $isFr ? 'En Attente de Paiement' : 'Awaiting Payment',       $isFr ? '+6 ce mois' : '+6 this month',       '#1E8A4D', 'sub-spark-2.png'],
-        ['sub-kpi-3.png', '32',         $isFr ? 'Expirent ce Mois' : 'Expiring This Month',          $isFr ? '-8 ce mois' : '-8 this month',       '#CC3B2A', 'sub-spark-3.png'],
-        ['sub-kpi-4.png', '45,678,900', $isFr ? 'Revenus Totaux (FCFA)' : 'Total Revenue (FCFA)',    $isFr ? '+12.5% ce mois' : '+12.5% this month', '#1E8A4D', 'sub-spark-4.png'],
+        ['sub-kpi-1.png', number_format($subStats['active']),   $isFr ? 'Abonnements Actifs' : 'Active Subscriptions',    'sub-spark-1.png'],
+        ['sub-kpi-2.png', number_format($subStats['pending']),  $isFr ? 'En Attente de Paiement' : 'Awaiting Payment',    'sub-spark-2.png'],
+        ['sub-kpi-3.png', number_format($subStats['expiring']), $isFr ? 'Expirent ce Mois' : 'Expiring This Month',       'sub-spark-3.png'],
+        ['sub-kpi-4.png', number_format($subStats['revenue']),  $isFr ? 'Revenus Totaux (FCFA)' : 'Total Revenue (FCFA)', 'sub-spark-4.png'],
     ];
-    $railCard = ['sub-kpi-5.png', '98.6%', $isFr ? 'Taux de Renouvellement' : 'Renewal Rate', $isFr ? '+2.4% ce mois' : '+2.4% this month', '#1E8A4D', 'sub-spark-5.png'];
+    $railCard = ['sub-kpi-5.png', $subStats['renewal'] . '%', $isFr ? 'Taux de Renouvellement' : 'Renewal Rate', 'sub-spark-5.png'];
 
-    // Donut — design-verbatim segments (as drawn) + legend values.
-    $planConic = 'conic-gradient(#044D24 0deg 103.32deg, #CE8002 103.32deg 220.32deg, #1F5DBD 220.32deg 278.64deg, #57429E 278.64deg 345.6deg, #8C2126 345.6deg 360deg)';
-    $planLegend = [
-        ['#AAABAE', 'Basic',                                  '18.6% (234)'],
-        ['#D38613', 'Standard',                               '32.5% (408)'],
-        ['#B66309', 'Premium',                                '28.7% (360)'],
-        ['#6864BB', $isFr ? 'Entreprise' : 'Enterprise',      '16.2% (203)'],
-        ['#8C2126', $isFr ? 'Personnalisé' : 'Custom',        '4.0% (49)'],
-    ];
+    // Donut + legend — real plan distribution ($planDist), plan colours from the plans table.
+    $planTotal = max(1, (int) $planDist->sum('n'));
+    $planFallback = ['#044D24', '#CE8002', '#1F5DBD', '#57429E', '#8C2126'];
+    $planLegend = []; $planSegs = []; $planAngle = 0;
+    foreach ($planDist as $pi => $pd) {
+        $color = $pd->color ?: $planFallback[$pi % 5];
+        $to = $planAngle + ((int) $pd->n / $planTotal) * 360;
+        if ((int) $pd->n > 0) {
+            $planSegs[] = sprintf('%s %.2fdeg %.2fdeg', $color, $planAngle, $to);
+            $planAngle = $to;
+        }
+        $planLegend[] = [$color, $isFr ? $pd->name_fr : ($pd->name_en ?? $pd->name_fr),
+            round((int) $pd->n / $planTotal * 100, 1) . '% (' . (int) $pd->n . ')'];
+    }
+    $planConic = $planSegs ? 'conic-gradient(' . implode(', ', $planSegs) . ')' : '#EFEAE0';
 
-    // Financial summary — design-verbatim values.
+    // Financial summary — real sums from $finance.
     $financeRows = [
-        [$isFr ? 'Revenus ce mois' : 'Revenue this month',  '12,456,000 FCFA', '#23231F'],
-        [$isFr ? 'Revenus en attente' : 'Pending revenue',  '2,145,000 FCFA',  '#23231F'],
-        [$isFr ? 'Remboursements' : 'Refunds',              '125,000 FCFA',    '#23231F'],
-        [$isFr ? 'Revenus nets' : 'Net revenue',            '14,476,000 FCFA', '#157A43'],
+        [$isFr ? 'Revenus ce mois' : 'Revenue this month',  number_format($finance['this_month']) . ' FCFA', '#23231F'],
+        [$isFr ? 'Revenus en attente' : 'Pending revenue',  number_format($finance['pending']) . ' FCFA',    '#23231F'],
+        [$isFr ? 'Remboursements' : 'Refunds',              number_format($finance['refunds']) . ' FCFA',    '#23231F'],
+        [$isFr ? 'Revenus nets' : 'Net revenue',            number_format($finance['net']) . ' FCFA',        '#157A43'],
     ];
 
     $quickActions = [
@@ -74,17 +71,15 @@
         ['sub-qa-5.png', $isFr ? 'Paramètres de facturation' : 'Billing settings',    route('admin.settings', ['lang' => $lang])],
     ];
 
-    // Pagination model: page buttons 1 2 3 … last (design chrome). On the untouched
-    // default view the design's "157" labels the last-page link and the summary line
-    // reads the design's verbatim totals.
+    // Pagination model: page buttons 1 2 3 … last (design chrome), driven by the
+    // real paginator — the design's "157" last-page label was not a real page count.
     $lastPage = $subscriptions->lastPage();
     $pageItems = [];
-    if (($isDefaultView && $lastPage > 3) || $lastPage > 5) {
+    if ($lastPage > 5) {
         $pageItems = [1, 2, 3, '…', $lastPage];
     } else {
         for ($i = 1; $i <= $lastPage; $i++) $pageItems[] = $i;
     }
-    $pageLabel = fn ($p) => ($isDefaultView && $p === $lastPage) ? '157' : (string) $p;
 
     $perOptions = [10, 25, 50];
     $perUrl = fn ($n) => request()->fullUrlWithQuery(['per' => $n, 'page' => 1]);
@@ -97,14 +92,13 @@
                 <div class="min-w-0">
                     {{-- 4 stat cards --}}
                     <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        @foreach($cards as [$cIcon, $cValue, $cLabel, $cDelta, $cDeltaColor, $cSpark])
+                        @foreach($cards as [$cIcon, $cValue, $cLabel, $cSpark])
                         <div class="sub-card px-4 pt-4 pb-3">
                             <div class="flex items-start gap-3">
                                 <img src="{{ asset('images/landing/' . $cIcon) }}" alt="" class="w-[44px] h-[44px] shrink-0">
                                 <div class="min-w-0">
                                     <p class="text-[21px] font-bold text-[#23231F] leading-tight">{{ $cValue }}</p>
                                     <p class="text-[11.5px] font-medium text-[#3B382F] leading-snug">{{ $cLabel }}</p>
-                                    <p class="mt-1 text-[11px] font-semibold" style="color: {{ $cDeltaColor }}">{{ $cDelta }}</p>
                                 </div>
                             </div>
                             <img src="{{ asset('images/landing/' . $cSpark) }}" alt="" class="mt-3 w-full h-auto select-none pointer-events-none" aria-hidden="true">
@@ -172,11 +166,10 @@
                                         [$roLabel, $roCls] = $subRoleMeta[$s->vendor_type] ?? ['Artisan', 'bg-[#E9F3DE] text-[#4D8A3C]'];
                                         $initial = mb_strtoupper(mb_substr($s->owner_name ?? $s->business_name ?? '?', 0, 1));
                                         $planIsImg = $s->plan_icon && str_ends_with($s->plan_icon, '.png');
-                                        // Second line under "Prochain paiement": design rows verbatim, real rows computed
+                                        // Second line under "Prochain paiement" — computed from the row's real
+                                        // next_payment_at (the design's fixed "Dans 11 mois" labels were invented)
                                         $nextLine = null; $nextLineRed = false;
-                                        if ($s->sort_order && isset($designNextLine[$s->sort_order])) {
-                                            [$nextLine, $nextLineRed] = $designNextLine[$s->sort_order];
-                                        } elseif ($s->status === 'expired' && $s->next_payment_at) {
+                                        if ($s->status === 'expired' && $s->next_payment_at) {
                                             $nextLine = $isFr ? 'Expiré' : 'Expired'; $nextLineRed = true;
                                         } elseif ($s->status === 'active' && $s->next_payment_at) {
                                             $m = (int) ceil(now()->diffInMonths(\Carbon\Carbon::parse($s->next_payment_at), false));
@@ -227,11 +220,7 @@
                         {{-- Pagination --}}
                         <div class="mt-4 pt-4 border-t border-[#F5EBDA] flex flex-wrap items-center justify-between gap-3">
                             <p class="text-[12.5px] text-[#3B382F]">
-                                @if($isDefaultView)
-                                    {{ $isFr ? 'Affichage de 1 à 8 sur 1,254 abonnements' : 'Showing 1 to 8 of 1,254 subscriptions' }}
-                                @else
-                                    {{ $isFr ? 'Affichage de' : 'Showing' }} {{ $subscriptions->firstItem() ?? 0 }} {{ $isFr ? 'à' : 'to' }} {{ $subscriptions->lastItem() ?? 0 }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($subscriptions->total()) }} {{ $isFr ? 'abonnements' : 'subscriptions' }}
-                                @endif
+                                {{ $isFr ? 'Affichage de' : 'Showing' }} {{ $subscriptions->firstItem() ?? 0 }} {{ $isFr ? 'à' : 'to' }} {{ $subscriptions->lastItem() ?? 0 }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($subscriptions->total()) }} {{ $isFr ? 'abonnements' : 'subscriptions' }}
                             </p>
                             <div class="flex items-center gap-1.5">
                                 @if($subscriptions->currentPage() > 1)
@@ -247,7 +236,7 @@
                                     @elseif($pi === $subscriptions->currentPage())
                                     <span class="w-9 h-9 flex items-center justify-center bg-[#093F1F] text-white text-[13px] font-semibold rounded-[10px]">{{ $pi }}</span>
                                     @else
-                                    <a href="{{ $subscriptions->url($pi) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[13px] text-[#3B382F] hover:border-[#C9942E]">{{ $pageLabel($pi) }}</a>
+                                    <a href="{{ $subscriptions->url($pi) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[13px] text-[#3B382F] hover:border-[#C9942E]">{{ $pi }}</a>
                                     @endif
                                 @endforeach
                                 @if($subscriptions->hasMorePages())
@@ -268,14 +257,13 @@
                 {{-- ============ RIGHT RAIL ============ --}}
                 <aside class="space-y-4 min-w-0">
                     {{-- 5th stat card --}}
-                    @php [$rIcon, $rValue, $rLabel, $rDelta, $rDeltaColor, $rSpark] = $railCard; @endphp
+                    @php [$rIcon, $rValue, $rLabel, $rSpark] = $railCard; @endphp
                     <div class="sub-card px-4 pt-4 pb-3">
                         <div class="flex items-start gap-3">
                             <img src="{{ asset('images/landing/' . $rIcon) }}" alt="" class="w-[44px] h-[44px] shrink-0">
                             <div class="min-w-0">
                                 <p class="text-[21px] font-bold text-[#23231F] leading-tight">{{ $rValue }}</p>
                                 <p class="text-[11.5px] font-medium text-[#3B382F] leading-snug">{{ $rLabel }}</p>
-                                <p class="mt-1 text-[11px] font-semibold" style="color: {{ $rDeltaColor }}">{{ $rDelta }}</p>
                             </div>
                         </div>
                         <img src="{{ asset('images/landing/' . $rSpark) }}" alt="" class="mt-3 w-full h-auto select-none pointer-events-none" aria-hidden="true">
@@ -287,12 +275,14 @@
                         <div class="mt-4 flex items-center gap-4">
                             <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $planConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] m-[22px]"></span></span>
                             <div class="flex-1 space-y-2">
-                                @foreach($planLegend as [$plColor, $plName, $plValue])
+                                @forelse($planLegend as [$plColor, $plName, $plValue])
                                 <div class="flex items-center justify-between gap-2 text-[11.5px]">
                                     <span class="flex items-center gap-2 font-medium text-[#3B382F]"><span class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $plColor }}"></span>{{ $plName }}</span>
                                     <span class="font-semibold text-[#23231F] whitespace-nowrap">{{ $plValue }}</span>
                                 </div>
-                                @endforeach
+                                @empty
+                                <p class="text-[11.5px] text-[#6E6B63]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
+                                @endforelse
                             </div>
                         </div>
                     </section>
@@ -308,10 +298,9 @@
                         <div class="mt-4 border-t border-[#F5EBDA] pt-3.5">
                             <div class="flex items-center justify-between text-[12.5px]">
                                 <p class="font-medium text-[#3B382F]">{{ $isFr ? 'Revenus cette année' : 'Revenue this year' }}</p>
-                                <p class="font-bold text-[#157A43]">45,678,900 FCFA</p>
+                                <p class="font-bold text-[#157A43]">{{ number_format($finance['year']) }} FCFA</p>
                             </div>
-                            {{-- "denrière" is the design's own spelling — kept verbatim --}}
-                            <p class="mt-1.5 text-[11.5px] font-medium text-[#1E8A4D]">{{ $isFr ? '+12.5% vs année denrière' : '+12.5% vs last year' }}</p>
+                            {{-- The design's year-over-year delta line is gone: no prior-year figure exists --}}
                         </div>
                     </section>
 

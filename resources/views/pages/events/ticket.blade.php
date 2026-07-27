@@ -63,12 +63,8 @@
         ['ticket-chip-4.png', 'NETWORKING'],
         ['ticket-chip-5.png', $isFr ? "CONCOURS\n& PRIX" : "AWARDS &\nCONTESTS"],
     ];
-    $ticketStats = [
-        ['500+', $isFr ? 'Participants attendus' : 'Expected participants'],
-        ['50+',  $isFr ? 'Exposants' : 'Exhibitors'],
-        ['20+',  $isFr ? 'Ateliers & Conférences' : 'Workshops & Conferences'],
-        ['10+',  $isFr ? 'Régions représentées' : 'Regions represented'],
-    ];
+    // The design's participants / exhibitors / workshops / regions band was identical for
+    // every event and has no source in the events table — removed.
     $features = [
         ['ticket-feat-1.png', $isFr ? 'Imprimable' : 'Printable',
          $isFr ? "Imprimez ce ticket et\nprésentez-le à l'entrée" : "Print this ticket and\npresent it at the entrance"],
@@ -206,16 +202,6 @@
                             @endforeach
                         </div>
 
-                        <div class="mt-6 bg-white border border-[#E3DFD6] rounded-xl px-4 py-3 shadow-sm">
-                            <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-[#EBE7DE]">
-                                @foreach($ticketStats as [$tsValue, $tsLabel])
-                                <div class="px-3 first:pl-1 text-center">
-                                    <p class="text-[17px] font-bold text-[#1D1B16]">{{ $tsValue }}</p>
-                                    <p class="mt-0.5 text-[9.5px] text-[#6F6B60] leading-tight">{{ $tsLabel }}</p>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

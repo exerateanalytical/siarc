@@ -207,7 +207,7 @@
                 </button>
             </form>
 
-            @if(config('app.demo_login', true))
+            @if(config('app.demo_login'))
             <div class="mt-7 flex items-center gap-4">
                 <span class="flex-1 h-px bg-[#E4E0D8]"></span>
                 <span class="text-[14.5px] text-muted">{{ $isFr ? 'comptes de démonstration' : 'demo accounts' }}</span>

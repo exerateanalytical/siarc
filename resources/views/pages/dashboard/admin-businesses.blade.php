@@ -10,7 +10,7 @@
         [$isFr ? 'Entreprises & Boutiques' : 'Businesses & Shops', null],
     ];
 
-    // Numbers rendered like the design ("1,245")
+    // Numbers rendered with the design's thousands separator
     $fmtNum = fn ($n) => number_format((int) $n);
 
     // Dates like the design ("12 Jan 2025")
@@ -51,22 +51,23 @@
     // Colored-initial tiles when a business has no logo (same pattern as admin-artisans)
     $vbHues = ['bg-[#E7F0EA] text-[#0F4824]', 'bg-[#FDF0DC] text-[#8A6D1F]', 'bg-[#FDE8E8] text-[#B42025]', 'bg-[#EBE7F5] text-[#4A3B8A]', 'bg-[#E2F0F5] text-[#15607A]'];
 
-    // ── Stat cards (real counts when the controller passes $vendorStats, design values otherwise)
+    // ── Stat cards — real counts from the controller. The design's month-over-month
+    // percentages had no prior-period source, so no trend is rendered.
     $vbCards = [
-        ['users-round', '#157A43', '#E8F2EC', $isFr ? 'Vendeurs totaux' : 'Total vendors',      $vendorStats['total']     ?? 1245, '15.3%', true],
-        ['user-check',  '#157A43', '#E8F2EC', $isFr ? 'Actifs' : 'Active',                       $vendorStats['active']    ?? 1028, '12.8%', true],
-        ['clock',       '#C97A16', '#FDF0DC', $isFr ? 'En attente' : 'Pending',                  $vendorStats['pending']   ?? 156,  '8.5%',  true],
-        ['circle-x',    '#DC2626', '#FDE8E8', $isFr ? 'Suspendus' : 'Suspended',                 $vendorStats['suspended'] ?? 45,   '4.3%',  false],
-        ['badge-check', '#157A43', '#E8F2EC', $isFr ? 'Vérifiés (KYC)' : 'Verified (KYC)',       $vendorStats['verified']  ?? 876,  '18.7%', true],
-        ['user-plus',   '#157A43', '#E8F2EC', $isFr ? 'Nouveaux ce mois' : 'New this month',     $vendorStats['new_month'] ?? 78,   '22.1%', true],
+        ['users-round', '#157A43', '#E8F2EC', $isFr ? 'Vendeurs totaux' : 'Total vendors', $vendorStats['total']],
+        ['user-check',  '#157A43', '#E8F2EC', $isFr ? 'Actifs' : 'Active',                  $vendorStats['active']],
+        ['clock',       '#C97A16', '#FDF0DC', $isFr ? 'En attente' : 'Pending',             $vendorStats['pending']],
+        ['circle-x',    '#DC2626', '#FDE8E8', $isFr ? 'Suspendus' : 'Suspended',            $vendorStats['suspended']],
+        ['badge-check', '#157A43', '#E8F2EC', $isFr ? 'Vérifiés (KYC)' : 'Verified (KYC)',  $vendorStats['verified']],
+        ['user-plus',   '#157A43', '#E8F2EC', $isFr ? 'Nouveaux ce mois' : 'New this month', $vendorStats['new_month']],
     ];
 
-    // ── Répartition par statut (donut) — real breakdown when passed, design values otherwise
+    // ── Répartition par statut (donut) — real breakdown
     $vbBreakdown = [
-        ['#157A43', $isFr ? 'Actifs' : 'Active',        $statusBreakdown['active']    ?? 1028],
-        ['#E9B23C', $isFr ? 'En attente' : 'Pending',   $statusBreakdown['pending']   ?? 156],
-        ['#DC2626', $isFr ? 'Suspendus' : 'Suspended',  $statusBreakdown['suspended'] ?? 45],
-        ['#C9C3B5', $isFr ? 'Inactifs' : 'Inactive',    $statusBreakdown['inactive']  ?? 16],
+        ['#157A43', $isFr ? 'Actifs' : 'Active',        $statusBreakdown['active']],
+        ['#E9B23C', $isFr ? 'En attente' : 'Pending',   $statusBreakdown['pending']],
+        ['#DC2626', $isFr ? 'Suspendus' : 'Suspended',  $statusBreakdown['suspended']],
+        ['#C9C3B5', $isFr ? 'Inactifs' : 'Inactive',    $statusBreakdown['inactive']],
     ];
     $vbDonutTotal = max(1, array_sum(array_column($vbBreakdown, 2)));
     $vbSegments = [];
@@ -78,56 +79,21 @@
     }
     $vbConic = 'conic-gradient(' . implode(', ', $vbSegments) . ')';
 
-    // ── Nouveaux vendeurs (design fallback when the controller does not pass $newVendors)
-    $vbNewVendors = ($newVendors ?? null) && count($newVendors)
-        ? collect($newVendors)->map(fn ($v) => ['name' => $isFr ? $v->name_fr : ($v->name_en ?? $v->name_fr), 'date' => $vbDate($v->created_at), 'logo' => $v->logo ?? null])->all()
-        : [
-            ['name' => 'Galerie des Arts du Mbam',  'date' => '05 Juin 2025', 'logo' => null],
-            ['name' => 'Ébénisterie Moderne',       'date' => '04 Juin 2025', 'logo' => null],
-            ['name' => 'Tissage Bamiléké',          'date' => '03 Juin 2025', 'logo' => null],
-            ['name' => 'Poterie de Manengouba',     'date' => '02 Juin 2025', 'logo' => null],
-            ['name' => 'Cuir Excellence',           'date' => '01 Juin 2025', 'logo' => null],
-        ];
+    // ── Nouveaux vendeurs — the 5 most recently registered businesses
+    $vbNewVendors = collect($newVendors)
+        ->map(fn ($v) => ['name' => $isFr ? $v->name_fr : ($v->name_en ?? $v->name_fr), 'date' => $vbDate($v->created_at), 'logo' => $v->logo ?? null])
+        ->all();
 
-    // ── Top catégories (design fallback when the controller does not pass $topCategories)
-    $vbTopCats = ($topCategories ?? null) && count($topCategories)
-        ? collect($topCategories)->map(fn ($c) => [$isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr), (int) $c->total])->all()
-        : [
-            [$isFr ? 'Sculpture sur bois' : 'Wood sculpture',            312],
-            [$isFr ? 'Textiles & Tissages' : 'Textiles & Weaving',       268],
-            [$isFr ? 'Poterie & Céramique' : 'Pottery & Ceramics',       198],
-            [$isFr ? 'Bijouterie & Joaillerie' : 'Jewellery',            156],
-            [$isFr ? 'Cuir & Maroquinerie' : 'Leather & Leatherwork',    124],
-        ];
-    $vbTopCatMax = max(1, max(array_column($vbTopCats, 1)));
+    // ── Top catégories — real business counts per industry
+    $vbTopCats = collect($topCategories)
+        ->map(fn ($c) => [$isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr), (int) $c->total])
+        ->all();
+    $vbTopCatMax = $vbTopCats ? max(1, max(array_column($vbTopCats, 1))) : 1;
 
-    // ── Design table rows, shown only when the database has no businesses (silent fallback)
-    $vbCatEn = [
-        'Sculpture sur bois'       => 'Wood sculpture',
-        'Textiles & Tissages'      => 'Textiles & Weaving',
-        'Poterie & Céramique'      => 'Pottery & Ceramics',
-        'Bijouterie & Joaillerie'  => 'Jewellery',
-        'Cuir & Maroquinerie'      => 'Leather & Leatherwork',
-        'Métal & Ferronnerie'      => 'Metal & Ironwork',
-        'Vannerie & Rotin'         => 'Basketry & Rattan',
-        'Peinture & Arts visuels'  => 'Painting & Visual arts',
-    ];
-    // [name, contact, phone, type-key, category FR, region, city, status-key, kyc-key, date]
-    $vbFallbackRows = [
-        ['Sculpture & Bois du Cameroun', 'contact@sculptbois.cm',      '+237 6XX XXX XXX', 'entreprise', 'Sculpture sur bois',      'Centre',       'Yaoundé',    'actif',    'verifie',    '12 Jan 2025'],
-        ['Tissus d\'Afrique',            'info@tissusdafrique.cm',     '+237 6XX XXX XXX', 'entreprise', 'Textiles & Tissages',     'Littoral',     'Douala',     'actif',    'verifie',    '18 Jan 2025'],
-        ['Poterie Traditionnelle',       'poterie@tradition.cm',       '+237 6XX XXX XXX', 'artisan',    'Poterie & Céramique',     'Ouest',        'Bafoussam',  'attente',  'encours',    '22 Jan 2025'],
-        ['Bijoux Artisanaux SA',         'bijoux@artisanaux.cm',       '+237 6XX XXX XXX', 'entreprise', 'Bijouterie & Joaillerie', 'Centre',       'Yaoundé',    'actif',    'verifie',    '05 Fév 2025'],
-        ['Cuir & Créations',             'cuircreations.cm',           '+237 6XX XXX XXX', 'artisan',    'Cuir & Maroquinerie',     'Extrême-Nord', 'Maroua',     'actif',    'verifie',    '11 Fév 2025'],
-        ['Fer Forgé & Métal Art',        'metalart.cm',                '+237 6XX XXX XXX', 'entreprise', 'Métal & Ferronnerie',     'Nord',         'Garoua',     'suspendu', 'nonverifie', '15 Fév 2025'],
-        ['Vannerie du Noun',             'vannerie@noun.cm',           '+237 6XX XXX XXX', 'artisan',    'Vannerie & Rotin',        'Ouest',        'Foumban',    'actif',    'verifie',    '20 Fév 2025'],
-        ['Arts Plastiques du Cameroun',  'artsplastiques.cm',          '+237 6XX XXX XXX', 'entreprise', 'Peinture & Arts visuels', 'Littoral',     'Douala',     'attente',  'encours',    '28 Fév 2025'],
-    ];
-    $vbHasReal = count($businesses) > 0;
-
-    // Filter dropdown data (static — see scratchpad note for real controller-fed options)
+    // Filter dropdown data — regions are the 10 administrative regions of Cameroon;
+    // the category list mirrors the industries actually attached to vendors.
     $vbRegions = ['Adamaoua', 'Centre', 'Est', 'Extrême-Nord', 'Littoral', 'Nord', 'Nord-Ouest', 'Ouest', 'Sud', 'Sud-Ouest'];
-    $vbCategories = array_keys($vbCatEn);
+    $vbCategories = collect($topCategories)->pluck('name_fr')->filter()->all();
 
     // The sidebar links here with ?statut=en-attente — preselect the matching status
     $vbStatutMap = ['actifs' => 'published', 'en-attente' => 'draft', 'suspendus' => 'suspended', 'rejetes' => 'rejected'];
@@ -158,19 +124,14 @@
 
             {{-- 6 stat cards --}}
             <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-                @foreach($vbCards as [$vbIcon, $vbIconColor, $vbTile, $vbLabel, $vbValue, $vbTrend, $vbUp])
+                @foreach($vbCards as [$vbIcon, $vbIconColor, $vbTile, $vbLabel, $vbValue])
                 <div class="bg-white border border-[#EFEBE2] rounded-2xl px-4 py-3.5 flex items-start gap-3">
                     <span class="shrink-0 w-[38px] h-[38px] rounded-full flex items-center justify-center" style="background: {{ $vbTile }}">
                         <i data-lucide="{{ $vbIcon }}" class="w-[18px] h-[18px]" style="color: {{ $vbIconColor }}"></i>
                     </span>
                     <div class="min-w-0">
                         <p class="text-[10.5px] font-bold tracking-[0.05em] text-[#8A857A] uppercase leading-snug">{{ $vbLabel }}</p>
-                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] leading-none">{{ $fmtNum($vbValue) }}
-                            <span class="ml-1 text-[11px] font-semibold {{ $vbUp ? 'text-[#157A43]' : 'text-[#C0392B]' }}">
-                                <i data-lucide="{{ $vbUp ? 'arrow-up' : 'arrow-down' }}" class="inline w-3 h-3 -mt-0.5"></i>{{ $vbTrend }}
-                            </span>
-                        </p>
-                        <p class="mt-1 text-[10.5px] text-[#8A857A]">{{ $isFr ? 'vs mois dernier' : 'vs last month' }}</p>
+                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] leading-none">{{ $fmtNum($vbValue) }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -207,7 +168,7 @@
                         <select name="categorie" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
                             <option value="">{{ $isFr ? 'Catégorie' : 'Category' }}</option>
                             @foreach($vbCategories as $vbCategory)
-                            <option value="{{ $vbCategory }}" @selected(request('categorie') === $vbCategory)>{{ $isFr ? $vbCategory : ($vbCatEn[$vbCategory] ?? $vbCategory) }}</option>
+                            <option value="{{ $vbCategory }}" @selected(request('categorie') === $vbCategory)>{{ $vbCategory }}</option>
                             @endforeach
                         </select>
                         <select name="date" class="h-[36px] bg-white border border-[#E9E4D8] rounded-lg px-2.5 text-[12px] text-[#3B382F] focus:outline-none">
@@ -240,8 +201,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-[#F5F1E8]">
-                                @if($vbHasReal)
-                                @foreach($businesses as $b)
+                                @forelse($businesses as $b)
                                 @php
                                     $vbSt = $vbStatusMeta[$vbStatusKey($b->status)];
                                     $vbKy = $vbKycMeta[$vbKycKey($b->verification_tier)];
@@ -304,51 +264,16 @@
                                         </span>
                                     </td>
                                 </tr>
-                                @endforeach
-                                @else
-                                {{-- Design rows (silent fallback while the database is empty) --}}
-                                @foreach($vbFallbackRows as $vbI => [$vbName, $vbMail, $vbPhone, $vbTypeK, $vbCat, $vbReg, $vbCity, $vbStK, $vbKyK, $vbWhen])
-                                @php
-                                    $vbSt = $vbStatusMeta[$vbStK];
-                                    $vbKy = $vbKycMeta[$vbKyK];
-                                    $vbTy = $vbTypeMeta[$vbTypeK];
-                                    $vbHue = $vbHues[$vbI % count($vbHues)];
-                                @endphp
-                                <tr>
-                                    <td class="pl-5 pr-2 py-3">
-                                        <div class="flex items-center gap-3 min-w-[210px]">
-                                            <span class="w-[38px] h-[38px] rounded-lg flex items-center justify-center shrink-0 text-[14px] font-bold {{ $vbHue }}">{{ strtoupper(mb_substr($vbName, 0, 1)) }}</span>
-                                            <div class="min-w-0">
-                                                <p class="text-[12.5px] font-bold text-[#1B1B18] leading-snug truncate">{{ $vbName }}</p>
-                                                <p class="text-[11px] text-[#8A857A] truncate">{{ $vbMail }}</p>
-                                                <p class="text-[11px] text-[#8A857A] truncate">{{ $vbPhone }}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 py-3"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbTy['pill'] }}">{{ $vbTy['label'] }}</span></td>
-                                    <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $isFr ? $vbCat : ($vbCatEn[$vbCat] ?? $vbCat) }}</td>
-                                    <td class="px-2 py-3">
-                                        <p class="text-[12px] font-semibold text-[#3B382F]">{{ $vbReg }}</p>
-                                        <p class="text-[11px] text-[#8A857A]">{{ $vbCity }}</p>
-                                    </td>
-                                    <td class="px-2 py-3"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbSt['pill'] }}">{{ $vbSt['label'] }}</span></td>
-                                    <td class="px-2 py-3"><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $vbKy['pill'] }}">{{ $vbKy['label'] }}</span></td>
-                                    <td class="px-2 py-3 text-[12px] text-[#3B382F] whitespace-nowrap">{{ $vbWhen }}</td>
-                                    <td class="px-2 pr-5 py-3 text-right whitespace-nowrap">
-                                        <span title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] align-middle"><i data-lucide="eye" class="w-3.5 h-3.5"></i></span>
-                                        <span title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] align-middle"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></span>
-                                        <span title="{{ $isFr ? 'Plus d\'options' : 'More options' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] items-center justify-center text-[#55524A] align-middle"><i data-lucide="more-vertical" class="w-3.5 h-3.5"></i></span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                                @endif
+                                @empty
+                                {{-- The design shipped 8 invented companies here; an honest empty state replaces them --}}
+                                <tr><td colspan="8" class="px-5 py-10 text-center text-[12.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</td></tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
 
                     {{-- Pagination --}}
                     <div class="px-5 py-3.5 border-t border-[#F5F1E8] flex flex-wrap items-center justify-between gap-3">
-                        @if($vbHasReal)
                         <p class="text-[11.5px] text-[#8A857A]">
                             {{ $isFr
                                 ? 'Affichage de ' . ($businesses->firstItem() ?? 0) . ' à ' . ($businesses->lastItem() ?? 0) . ' sur ' . $fmtNum($businesses->total()) . ' vendeurs'
@@ -382,22 +307,8 @@
                             @else
                             <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
                             @endif
-                            <span class="ml-2 h-[28px] rounded-lg border border-[#E9E4D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center gap-1">10 / page <i data-lucide="chevron-down" class="w-3 h-3 text-[#8A857A]"></i></span>
+                            <span class="ml-2 h-[28px] rounded-lg border border-[#E9E4D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center gap-1">{{ $businesses->perPage() }} / page</span>
                         </div>
-                        @else
-                        <p class="text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Affichage de 1 à 8 sur 1,245 vendeurs' : 'Showing 1 to 8 of 1,245 vendors' }}</p>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#C9C3B5]"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
-                            <span class="w-[28px] h-[28px] rounded-lg bg-[#0F4824] text-white text-[11.5px] font-bold flex items-center justify-center">1</span>
-                            @foreach([2, 3, 4, 5] as $vbPage)
-                            <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] text-[11.5px] text-[#3B382F] flex items-center justify-center">{{ $vbPage }}</span>
-                            @endforeach
-                            <span class="px-0.5 text-[11.5px] text-[#8A857A]">…</span>
-                            <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] text-[11.5px] text-[#3B382F] flex items-center justify-center">156</span>
-                            <span class="w-[28px] h-[28px] rounded-lg border border-[#E9E4D8] flex items-center justify-center text-[#3B382F]"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
-                            <span class="ml-2 h-[28px] rounded-lg border border-[#E9E4D8] px-2.5 text-[11.5px] text-[#55524A] flex items-center gap-1">10 / page <i data-lucide="chevron-down" class="w-3 h-3 text-[#8A857A]"></i></span>
-                        </div>
-                        @endif
                     </div>
                 </section>
 
@@ -435,7 +346,7 @@
                             <a href="{{ route('admin.businesses', ['lang' => $lang]) }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <ul class="mt-3 divide-y divide-[#F5F1E8]">
-                            @foreach($vbNewVendors as $vbI => $vbNv)
+                            @forelse($vbNewVendors as $vbI => $vbNv)
                             <li class="py-2.5 flex items-center gap-3">
                                 @if(!empty($vbNv['logo']))
                                 <img src="{{ asset('storage/' . $vbNv['logo']) }}" alt="" class="w-[32px] h-[32px] rounded-lg object-cover shrink-0">
@@ -445,7 +356,9 @@
                                 <p class="flex-1 min-w-0 truncate text-[12px] font-bold text-[#1B1B18]">{{ $vbNv['name'] }}</p>
                                 <span class="shrink-0 text-[10.5px] text-[#8A857A] whitespace-nowrap">{{ $vbNv['date'] }}</span>
                             </li>
-                            @endforeach
+                            @empty
+                            <li class="py-3 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</li>
+                            @endforelse
                         </ul>
                     </section>
 
@@ -456,7 +369,7 @@
                             <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#C97A16]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <ul class="mt-3.5 space-y-3">
-                            @foreach($vbTopCats as [$vbCatName, $vbCatCount])
+                            @forelse($vbTopCats as [$vbCatName, $vbCatCount])
                             <li>
                                 <div class="flex items-center justify-between gap-2">
                                     <p class="min-w-0 truncate text-[11.5px] text-[#3B382F]">{{ $vbCatName }}</p>
@@ -466,7 +379,9 @@
                                     <div class="h-full rounded-full bg-gradient-to-r from-[#0F4824] to-[#157A43]" style="width: {{ round($vbCatCount / $vbTopCatMax * 100) }}%"></div>
                                 </div>
                             </li>
-                            @endforeach
+                            @empty
+                            <li class="text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</li>
+                            @endforelse
                         </ul>
                     </section>
 

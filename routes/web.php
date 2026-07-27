@@ -429,7 +429,7 @@ Route::get('/tableau-de-bord/admin/centres/{id}', function (Request $request, $i
     $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
 
     $centre = DB::table('artisan_centres as c')->leftJoin('regions as r', 'r.id', '=', 'c.region_id')
-        ->select('c.*', 'r.name_fr as region_fr', 'r.name_en as region_en', 'r.code as region_code', 'r.chef_lieu')
+        ->select('c.*', 'r.name_fr as region_fr', 'r.name_en as region_en', 'r.code as region_code', 'r.chef_lieu', 'r.coordinator')
         ->where('c.id', $id)->first();
     if (!$centre) abort(404);
 
@@ -817,7 +817,16 @@ Route::get('/tableau-de-bord/admin/exports', function (Request $request) {
     $exports = $rows->orderByRaw('sort_order is null')->orderBy('sort_order')->orderByDesc('created_at')
         ->paginate($perPage)->withQueryString();
 
-    return view('pages.dashboard.admin-exports', compact('lang', 'siacUser', 'filters', 'exports', 'isDefaultView', 'perPage'));
+    // Real registry aggregates for the KPI cards, the status donut and the type bars
+    // (the design shipped these as fixed marketing numbers).
+    $exportStats = [
+        'total'  => (int) DB::table('data_exports')->count(),
+        'bytes'  => (int) DB::table('data_exports')->sum('size_bytes'),
+    ];
+    $exportByStatus  = DB::table('data_exports')->select('status', DB::raw('count(*) as n'))->groupBy('status')->pluck('n', 'status');
+    $exportByDataset = DB::table('data_exports')->select('dataset', DB::raw('count(*) as n'))->groupBy('dataset')->orderByDesc('n')->get();
+
+    return view('pages.dashboard.admin-exports', compact('lang', 'siacUser', 'filters', 'exports', 'isDefaultView', 'perPage', 'exportStats', 'exportByStatus', 'exportByDataset'));
 })->name('admin.exports');
 
 Route::post('/tableau-de-bord/admin/exports', function (Request $request) {
@@ -1456,13 +1465,23 @@ Route::post('/creer-mon-compte', function (Request $request) {
         return back()->withErrors(['email' => $emailTakenError])->withInput();
     }
 
+    // users.phone is UNIQUE. Without this check the insert below throws and the
+    // catch reports it as "email already taken", which sends the member off to
+    // change a field that was never the problem.
+    $phone = trim((string) ($data['phone'] ?? '')) ?: null;
+    if ($phone && DB::table('users')->where('phone', $phone)->exists()) {
+        return back()->withErrors(['phone' => $isFr
+            ? 'Ce numéro de téléphone est déjà associé à un compte.'
+            : 'This phone number is already linked to an account.'])->withInput();
+    }
+
     $userId = Str::uuid()->toString();
     try {
         DB::table('users')->insert([
             'id'                  => $userId,
             'name'                => $name,
             'email'               => $email,
-            'phone'               => $data['phone'] ?? null,
+            'phone'               => $phone,
             'password'            => Hash::make($data['password']),
             'status'              => 'active',
             'language_preference' => $lang,
@@ -2240,10 +2259,28 @@ Route::get('/tableau-de-bord/admin/collections', function (Request $request) {
         ->filter(fn ($n, $k) => $k !== '' && $k !== null)
         ->all();
 
+    // "Artisan à l'honneur" — the most-viewed published vendor. The design hardcoded a
+    // named artisan with invented collection/product/visit counts.
+    $hcFeatured = DB::table('businesses as b')
+        ->leftJoin('regions as r', 'r.id', '=', 'b.region_id')
+        ->leftJoin('industries as i', 'i.id', '=', 'b.industry_id')
+        ->whereNull('b.deleted_at')->where('b.status', 'published')
+        ->select('b.id', 'b.slug', 'b.name_fr', 'b.name_en', 'b.logo', 'b.cover_image', 'b.address_fr', 'b.views_count',
+            'r.name_fr as region_fr', 'r.name_en as region_en', 'i.name_fr as industry_fr', 'i.name_en as industry_en')
+        ->orderByDesc('b.views_count')->first();
+    $hcFeaturedStats = $hcFeatured ? [
+        'collections' => (int) DB::table('heritage_collection_product as hcp')
+            ->join('products as p', 'p.id', '=', 'hcp.product_id')
+            ->where('p.business_id', $hcFeatured->id)->distinct()->count('hcp.collection_id'),
+        'products' => (int) DB::table('products')->where('business_id', $hcFeatured->id)
+            ->where('status', 'published')->whereNull('deleted_at')->count(),
+        'views' => (int) $hcFeatured->views_count,
+    ] : null;
+
     return view('pages.dashboard.admin-collections', compact(
         'lang', 'siacUser', 'filters', 'collections',
         'hcTotal', 'hcPublished', 'hcDraft', 'hcVisits', 'hcArtisans',
-        'hcRegions', 'hcCategories', 'hcBest', 'hcByCategory'
+        'hcRegions', 'hcCategories', 'hcBest', 'hcByCategory', 'hcFeatured', 'hcFeaturedStats'
     ));
 })->name('admin.collections');
 

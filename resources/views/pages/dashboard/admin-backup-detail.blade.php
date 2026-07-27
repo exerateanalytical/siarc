@@ -12,6 +12,9 @@
     $octets = number_format($backup->size_mb * 1024 * 1024, 0, '', ',');
     $checksum = substr(hash('sha256', $backup->filename . $backup->created_at), 0, 60);
     $usedGb = $settings['storage_used_gb'] ?? '256.8'; $totalGb = $settings['storage_total_gb'] ?? '500';
+    // Storage share/free space were hardcoded in the design — derive them from the settings above
+    $usedPct = (float) $totalGb > 0 ? round((float) $usedGb / (float) $totalGb * 100) : 0;
+    $freeGb  = number_format(max(0, (float) $totalGb - (float) $usedGb), 1);
 
     $tabs = [[$isFr?'Informations générales':'General info', true], ['Contenu', false], ['Historique', false], [$isFr?'Logs associés':'Related logs', false]];
     $metaRow = [
@@ -34,7 +37,7 @@
         [$isFr?'Version DB':'DB Version', $settings['backup_db'] ?? 'MySQL 8.0'],
         [$isFr?'Encodage':'Encoding', 'UTF-8'],
         ['Compression', $isFr?'ZIP (Déflation)':'ZIP (Deflate)'],
-        [$isFr?'Espace utilisé':'Storage used', $usedGb.' GB / '.$totalGb.' GB (51%)'],
+        [$isFr?'Espace utilisé':'Storage used', $usedGb.' GB / '.$totalGb.' GB ('.$usedPct.'%)'],
         [$isFr?'Rétention':'Retention', $settings['backup_retention'] ?? '30 jours'],
         [$isFr?'Prochain backup':'Next backup', $dt($created->copy()->addDay())],
     ];
@@ -42,17 +45,19 @@
     $bkLogs = ($logs ?? collect())->map(fn ($l) => [
         \Illuminate\Support\Carbon::parse($l->logged_at)->format('H:i:s'), $l->level, $l->event, $l->description, null,
     ]);
+    // The design broke the archive down into DB / media / config / other GB figures;
+    // backup_records stores only a total size, so the overview reports real facts instead.
     $apercu = [
-        [$isFr?'Base de données':'Database', '12.4 GB', '67%', '#157A43'],
-        [$isFr?'Fichiers & Médias':'Files & Media', '4.2 GB', '23%', '#C9942E'],
-        ['Configurations', '1.2 GB', '6%', '#3565DE'],
-        [$isFr?'Autres données':'Other data', '0.8 GB', '4%', '#C4C0B6'],
+        [$isFr?'Taille totale':'Total size',  $sizeGb.' GB'],
+        [$isFr?'Contenu':'Contents',          $backup->contents ?? ($isFr?'Dump + Fichiers':'Dump + Files')],
+        [$isFr?'Type':'Type',                 $backup->type === 'full' ? ($isFr?'Complet':'Full') : ($isFr?'Base de données':'Database')],
+        [$isFr?'Déclenchement':'Trigger',     $backup->mode === 'manual' ? ($isFr?'Manuel':'Manual') : ($isFr?'Automatique':'Automatic')],
     ];
     $storLoc = [
         [$isFr?'Stockage':'Storage', $isFr?'Serveur local':'Local server'],
         [$isFr?'Chemin':'Path', ($settings['backup_path'] ?? '/backups/gvna').'/'.$created->format('Y/m/d').'/'],
         [$isFr?'Disque':'Disk', '/dev/sda2 (SSD)'],
-        [$isFr?'Espace libre':'Free space', '243.2 GB (49%)'],
+        [$isFr?'Espace libre':'Free space', $freeGb.' GB ('.(100 - $usedPct).'%)'],
     ];
     $sysInfo = [
         [$isFr?'Serveur':'Server', $settings['backup_server'] ?? 'AH237-Server-01'],
@@ -150,10 +155,10 @@
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                         <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr?'Aperçu de la sauvegarde':'Backup overview' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
-                            <span class="relative w-[92px] h-[92px] rounded-full shrink-0" style="background: conic-gradient(#157A43 0deg 241deg, #C9942E 241deg 324deg, #3565DE 324deg 346deg, #C4C0B6 346deg 360deg)"><span class="absolute inset-[14px] rounded-full bg-white flex flex-col items-center justify-center"><span class="text-[15px] font-bold text-[#1B1B18] leading-none">{{ $sizeGb }}</span><span class="text-[9px] text-[#8A857A]">GB</span></span></span>
+                            <span class="relative w-[92px] h-[92px] rounded-full shrink-0 bg-[#157A43]"><span class="absolute inset-[14px] rounded-full bg-white flex flex-col items-center justify-center"><span class="text-[15px] font-bold text-[#1B1B18] leading-none">{{ $sizeGb }}</span><span class="text-[9px] text-[#8A857A]">GB</span></span></span>
                             <div class="flex-1 space-y-1.5">
-                                @foreach($apercu as [$aLabel, $aVal, $aPct, $aColor])
-                                <div class="flex items-center justify-between text-[11px]"><span class="flex items-center gap-1.5 text-[#3B382F]"><span class="w-2 h-2 rounded-full" style="background-color: {{ $aColor }}"></span>{{ $aLabel }}</span><span class="font-semibold text-[#1B1B18]">{{ $aVal }} ({{ $aPct }})</span></div>
+                                @foreach($apercu as [$aLabel, $aVal])
+                                <div class="flex items-center justify-between gap-2 text-[11px]"><span class="text-[#3B382F]">{{ $aLabel }}</span><span class="font-semibold text-[#1B1B18] text-right">{{ $aVal }}</span></div>
                                 @endforeach
                             </div>
                         </div>

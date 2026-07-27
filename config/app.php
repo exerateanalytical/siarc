@@ -43,6 +43,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | One-click demo logins
+    |--------------------------------------------------------------------------
+    |
+    | Shows the pre-filled demo account cards on the login page. Useful when
+    | showing the platform to someone; must stay off in production, where it
+    | would hand every visitor a working account. Off unless explicitly enabled.
+    |
+    */
+
+    'demo_login' => (bool) env('APP_DEMO_LOGIN', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |

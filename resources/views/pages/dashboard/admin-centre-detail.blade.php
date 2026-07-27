@@ -85,7 +85,8 @@
                         </dl>
                         <div class="mt-4 flex items-center gap-3">
                             <span class="w-9 h-9 rounded-full bg-[#F3F0E6] flex items-center justify-center"><i data-lucide="user-cog" class="w-4 h-4 text-[#14652F]"></i></span>
-                            <div><p class="text-[11px] text-[#6F6B60]">{{ $isFr ? 'Coordonnateur' : 'Coordinator' }}</p><p class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $centre->chef_lieu ? 'Jean Mbarga' : '—' }}</p></div>
+                            {{-- Used to print one hardcoded name for every centre; now the region's real coordinator --}}
+                            <div><p class="text-[11px] text-[#6F6B60]">{{ $isFr ? 'Coordonnateur' : 'Coordinator' }}</p><p class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $centre->coordinator ?: '—' }}</p></div>
                         </div>
                     </section>
 
@@ -126,7 +127,7 @@
                     <section class="bg-white border border-[#EFF0EF] rounded-2xl px-5 py-5">
                         <h2 class="text-[13px] font-bold text-[#1B1B18]">{{ $isFr ? 'Informations de Contact' : 'Contact Information' }}</h2>
                         <dl class="mt-3.5 space-y-2.5 text-[12px]">
-                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Responsable' : 'Manager' }}</dt><dd class="font-semibold text-[#1B1B18]">Jean Mbarga</dd></div>
+                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Responsable' : 'Manager' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->coordinator ?: '—' }}</dd></div>
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Téléphone' : 'Phone' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->contact_phone }}</dd></div>
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">Email</dt><dd class="font-semibold text-[#1B1B18] truncate">{{ $centre->contact_email ?? 'contact@artisanat.cm' }}</dd></div>
                             <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Ville' : 'City' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->city ?? $centre->chef_lieu }}</dd></div>

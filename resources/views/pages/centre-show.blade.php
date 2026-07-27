@@ -8,32 +8,26 @@
     $regionBiz  = \App\Modules\Businesses\Models\Business::whereNull('deleted_at')->where('status', 'published')->where('region_id', $centre->region_id)->count();
     $regionProd = DB::table('products as p')->join('businesses as b', 'b.id', '=', 'p.business_id')->where('b.region_id', $centre->region_id)->where('p.status', 'published')->count();
 
+    // Real counts only — the design's "Boutiques" tile was regionBiz/3 and its
+    // "Superficie 68 953 m²" was a fixed number printed for every centre; both removed.
     $chiffres = [
         ['users', '#157A43', $centre->artisans_count, 'Artisans'],
         ['shopping-basket', '#C9942E', $regionProd, $isFr ? 'Produits & Services' : 'Products & Services'],
         ['hammer', '#3565DE', $regionBiz, $isFr ? 'Ateliers' : 'Workshops'],
-        ['calendar-days', '#9B1C31', DB::table('events')->count(), $isFr ? 'Événements / an' : 'Events / year'],
-        ['store', '#7C4FE0', max(1, intdiv($regionBiz, 3)), 'Boutiques'],
-        ['ruler', '#0E9F9F', ($centre->region_id ? ($centre->chef_lieu ? '68 953 m²' : '—') : '—'), $isFr ? 'Superficie' : 'Area'],
+        ['calendar-days', '#9B1C31', DB::table('events')->count(), $isFr ? 'Événements' : 'Events'],
     ];
     $missions = $isFr
         ? [['award', 'Valoriser', 'le savoir-faire ancestral'], ['sparkles', 'Promouvoir', 'la créativité locale'], ['heart-handshake', 'Préserver', 'notre patrimoine vivant']]
         : [['award', 'Enhance', 'ancestral know-how'], ['sparkles', 'Promote', 'local creativity'], ['heart-handshake', 'Preserve', 'our living heritage']];
-    $timeline = [
-        ['1983', $isFr ? 'Création du Centre Artisanal' : 'Centre founded'],
-        ['1996', $isFr ? 'Extension et nouvelles infrastructures' : 'Extension and new facilities'],
-        ['2010', $isFr ? 'Modernisation et digitalisation' : 'Modernisation and digitalisation'],
-        ['2020+', $isFr ? 'Rayonnement africain et international' : 'African and international outreach'],
-    ];
     $specialites = array_filter(array_map('trim', explode(',', $centre->specialties_fr ?? '')));
     $specIcons = ['Sculpture' => 'axe', 'Vannerie' => 'shopping-basket', 'Bijouterie' => 'gem', 'Tissage' => 'shirt', 'Poterie' => 'amphora', 'Bois' => 'trees', 'Cuir' => 'wallet', 'Métal' => 'wrench', 'Peinture' => 'palette', 'Bronze' => 'gem', 'Perles' => 'gem', 'Couture' => 'shirt', 'Calebasses' => 'amphora', 'Coquillages' => 'shell', 'Élevage' => 'beef'];
     $infosCles = [
         ['tag', $isFr ? 'Type de centre' : 'Centre type', $centre->type === 'principal' ? ($isFr ? 'Principal' : 'Main') : ($isFr ? 'Secondaire' : 'Secondary')],
         ['badge-check', 'Statut', $isFr ? 'Actif' : 'Active'],
-        ['calendar', $isFr ? 'Année de création' : 'Founded', '1983'],
+        // No founding year exists per centre — the design printed 1983 for all of them
         ['users', 'Artisans', $fmt($centre->artisans_count)],
         ['map-pin', $isFr ? 'Ville' : 'City', $centre->city ?? $centre->chef_lieu],
-        ['clock', $isFr ? 'Heures d\'ouverture' : 'Opening hours', 'Lun - Sam : 08:00 - 17:00'],
+        ['map', $isFr ? 'Région' : 'Region', $regionName],
     ];
 @endphp
 <!DOCTYPE html>
@@ -65,11 +59,8 @@
             <h1 class="mt-4 font-serif text-[34px] sm:text-[44px] leading-[1.05] font-bold text-[#F3E7C9] uppercase">{{ $cName }}</h1>
             <p class="mt-2 text-[#E9C25A] text-[15px] tracking-[0.3em]">❈ ❈ ❈ ❈ ❈</p>
             <p class="mt-4 text-[13.5px] text-[#DCEAE0] leading-relaxed max-w-[420px]">{{ $isFr ? $centre->description_fr : ($centre->description_en ?? $centre->description_fr) }}</p>
-            <div class="mt-4 flex items-center gap-2 text-white">
-                <span class="flex items-center gap-1 text-[#E9C25A]">@for($i=0;$i<5;$i++)<i data-lucide="star" class="w-4 h-4 fill-current"></i>@endfor</span>
-                <span class="text-[13px] font-semibold">4.8</span><span class="text-[12px] text-[#CFE3D5]">(128 {{ $isFr ? 'avis' : 'reviews' }})</span>
-            </div>
-            <p class="mt-2 flex items-center gap-2 text-[12.5px] text-[#DCEAE0]"><i data-lucide="map-pin" class="w-4 h-4 text-[#E9C25A]"></i>{{ $centre->city ?? $centre->chef_lieu }}, {{ $regionName }}, {{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
+            {{-- No review system exists behind centres, so the design's star rating and review count are gone --}}
+            <p class="mt-4 flex items-center gap-2 text-[12.5px] text-[#DCEAE0]"><i data-lucide="map-pin" class="w-4 h-4 text-[#E9C25A]"></i>{{ $centre->city ?? $centre->chef_lieu }}, {{ $regionName }}, {{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
             <div class="mt-5 flex items-center gap-3">
                 <a href="{{ route('businesses.index', ['lang'=>$lang, 'region'=>$centre->region_code]) }}" class="inline-flex items-center gap-2 bg-[#0F7A3D] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 h-[44px] rounded-lg"><i data-lucide="navigation" class="w-4 h-4"></i>{{ $isFr ? 'Itinéraire' : 'Directions' }}</a>
                 <a href="{{ route('contact', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-[#F5EEDD] text-[#1D1B16] text-[13px] font-semibold px-5 h-[44px] rounded-lg"><i data-lucide="phone" class="w-4 h-4"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
@@ -105,15 +96,8 @@
             </section>
         </div>
 
-        {{-- Heritage timeline --}}
-        <section class="relative bg-gradient-to-br from-[#0E2C1A] to-[#123D24] rounded-2xl px-6 py-6 overflow-hidden">
-            <h2 class="flex items-center gap-2 text-[13px] font-bold tracking-[0.1em] text-[#E9C25A] uppercase"><i data-lucide="scroll-text" class="w-4 h-4"></i>{{ $isFr ? 'Notre Héritage, Notre Histoire' : 'Our Heritage, Our History' }}</h2>
-            <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                @foreach($timeline as [$tYear, $tLabel])
-                <div class="text-center"><span class="w-9 h-9 mx-auto rounded-full bg-[#E9C25A]/15 border border-[#E9C25A]/40 flex items-center justify-center"><i data-lucide="milestone" class="w-4 h-4 text-[#E9C25A]"></i></span><p class="mt-2 text-[15px] font-bold text-white">{{ $tYear }}</p><p class="text-[10.5px] text-[#CFE3D5] leading-snug">{{ $tLabel }}</p></div>
-                @endforeach
-            </div>
-        </section>
+        {{-- The design's 1983 / 1996 / 2010 founding timeline was printed identically for
+             every centre; artisan_centres holds no per-centre history, so it is gone. --}}
 
         {{-- Spécialités --}}
         <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">

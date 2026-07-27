@@ -49,7 +49,33 @@ class AdminWebController extends Controller
         }
         $businesses = $query->paginate(20)->withQueryString();
 
-        return view('pages.dashboard.admin-businesses', compact('lang', 'businesses'));
+        // Real vendor aggregates for the stat cards, donut and rails — the view used to
+        // fall back to invented design numbers whenever these were not passed.
+        $byStatus = Business::query()->selectRaw('status, count(*) as n')->groupBy('status')->pluck('n', 'status');
+        $vendorStats = [
+            'total'     => (int) $byStatus->sum(),
+            'active'    => (int) ($byStatus['published'] ?? 0),
+            'pending'   => (int) ($byStatus['draft'] ?? 0),
+            'suspended' => (int) ($byStatus['suspended'] ?? 0),
+            'verified'  => (int) Business::whereIn('verification_tier', ['verified', 'certified'])->count(),
+            'new_month' => (int) Business::where('created_at', '>=', now()->startOfMonth())->count(),
+        ];
+        $statusBreakdown = [
+            'active'    => $vendorStats['active'],
+            'pending'   => $vendorStats['pending'],
+            'suspended' => $vendorStats['suspended'],
+            'inactive'  => max(0, $vendorStats['total'] - $vendorStats['active'] - $vendorStats['pending'] - $vendorStats['suspended']),
+        ];
+        $newVendors = Business::latest()->limit(5)->get(['name_fr', 'name_en', 'logo', 'created_at']);
+        $topCategories = Business::query()
+            ->join('industries', 'industries.id', '=', 'businesses.industry_id')
+            ->selectRaw('industries.name_fr, industries.name_en, count(*) as total')
+            ->groupBy('industries.name_fr', 'industries.name_en')
+            ->orderByDesc('total')->limit(5)->get();
+
+        return view('pages.dashboard.admin-businesses', compact(
+            'lang', 'businesses', 'vendorStats', 'statusBreakdown', 'newVendors', 'topCategories'
+        ));
     }
 
     public function businessDetail(Request $request, int $id)

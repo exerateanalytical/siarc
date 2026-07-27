@@ -82,27 +82,25 @@
 
             {{-- Stat chips --}}
             @php
+                // Real counts from $newsStats. The design's engagement-rate chip had no
+                // analytics source and its "vs mois dernier" deltas had no prior period.
                 $chips = [
-                    ['file-text',   '#157A43', '#E2F3E8', $isFr ? 'Total publications' : 'Total publications', number_format($newsStats['total']),     '+18.2%'],
-                    ['send',        '#2563EB', '#E3EDFB', $isFr ? 'Publiées' : 'Published',                    number_format($newsStats['published']), '+16.4%'],
-                    ['pencil',      '#C97A16', '#FDF0DC', $isFr ? 'Brouillons' : 'Drafts',                     number_format($newsStats['draft']),     '+9.1%'],
-                    ['calendar',    '#7C3AED', '#F3E8FD', $isFr ? 'Planifiées' : 'Scheduled',                  number_format($newsStats['scheduled']), '+20.0%'],
-                    ['eye',         '#157A43', '#E2F3E8', $isFr ? 'Vues totales' : 'Total views',              number_format($newsStats['views']),     '+22.7%'],
-                    ['chart-line',  '#DC2646', '#FDE5E7', $isFr ? 'Taux d\'engagement' : 'Engagement rate',    '8.4%',                                 '+1.3%'],
+                    ['file-text',   '#157A43', '#E2F3E8', $isFr ? 'Total publications' : 'Total publications', number_format($newsStats['total'])],
+                    ['send',        '#2563EB', '#E3EDFB', $isFr ? 'Publiées' : 'Published',                    number_format($newsStats['published'])],
+                    ['pencil',      '#C97A16', '#FDF0DC', $isFr ? 'Brouillons' : 'Drafts',                     number_format($newsStats['draft'])],
+                    ['calendar',    '#7C3AED', '#F3E8FD', $isFr ? 'Planifiées' : 'Scheduled',                  number_format($newsStats['scheduled'])],
+                    ['eye',         '#157A43', '#E2F3E8', $isFr ? 'Vues totales' : 'Total views',              number_format($newsStats['views'])],
                 ];
             @endphp
-            <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-                @foreach($chips as [$cIcon, $cColor, $cBg, $cLabel, $cValue, $cTrend])
+            <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+                @foreach($chips as [$cIcon, $cColor, $cBg, $cLabel, $cValue])
                 <div class="bg-white border border-[#EFEBE2] rounded-2xl px-4 py-3.5 flex items-start gap-3">
                     <span class="shrink-0 w-[38px] h-[38px] rounded-xl flex items-center justify-center" style="background: {{ $cBg }}">
                         <i data-lucide="{{ $cIcon }}" class="w-[18px] h-[18px]" style="color: {{ $cColor }}"></i>
                     </span>
                     <div class="min-w-0">
                         <p class="text-[10px] font-bold tracking-[0.06em] text-[#8A857A] uppercase truncate">{{ $cLabel }}</p>
-                        <p class="mt-0.5 text-[18px] font-bold text-[#1B1B18] leading-none">{{ $cValue }}
-                            <span class="text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="arrow-up-right" class="inline w-3 h-3 -mt-0.5"></i> {{ $cTrend }}</span>
-                        </p>
-                        <p class="mt-1 text-[10px] text-[#8A857A]">{{ $isFr ? 'vs mois dernier' : 'vs last month' }}</p>
+                        <p class="mt-0.5 text-[18px] font-bold text-[#1B1B18] leading-none">{{ $cValue }}</p>
                     </div>
                 </div>
                 @endforeach
