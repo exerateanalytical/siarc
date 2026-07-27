@@ -131,10 +131,23 @@
                     {{ $isFr ? 'Favoris' : 'Saved' }}
                 </a>
                 @php
+                    // Badge counts come from the signed-in member's own records.
+                    // The design shipped fixed numbers here (3 messages, 2 or 3 in
+                    // the cart) which rendered on the site-wide header for every
+                    // visitor, including signed-out ones with no cart at all.
                     $dirShowMessages = in_array($dirIconVariant, ['vendors', 'vdetail']);
-                    $dirMsgBadge = $dirIconVariant === 'vdetail' ? ($dirMsgCount ?? 3) : null;
-                    $dirShowCart = in_array($dirIconVariant, ['vendors', 'detail', 'vdetail']);
-                    $dirCartBadge = $dirIconVariant === 'vendors' ? ($dirCartCount ?? 3) : ($dirIconVariant === 'detail' ? ($dirCartCount ?? 2) : null);
+                    $dirMsgBadge = $siacUser
+                        ? (\App\Modules\Messaging\Models\Conversation::where('buyer_id', $siacUser['id'])
+                            ->orWhereHas('business', fn ($q) => $q->where('user_id', $siacUser['id']))
+                            ->where('last_message_at', '>', now()->subDays(30))->count() ?: null)
+                        : null;
+                    $dirShowCart = $siacUser && in_array($dirIconVariant, ['vendors', 'detail', 'vdetail']);
+                    // There is no basket on this platform — buyers request quotes.
+                    // The icon links to saved items, so it counts those.
+                    $dirCartBadge = $siacUser
+                        ? ((\Illuminate\Support\Facades\DB::table('saved_products')->where('user_id', $siacUser['id'])->count()
+                            + \Illuminate\Support\Facades\DB::table('saved_businesses')->where('user_id', $siacUser['id'])->count()) ?: null)
+                        : null;
                 @endphp
                 @if($dirShowMessages || $dirShowCart)
                 @if($dirShowMessages)

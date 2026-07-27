@@ -46,12 +46,20 @@
         'poids' => 'weight', 'weight' => 'weight',
     ];
 
-    $featureChips = [
-        ['sparkles', $isFr ? 'Pièce unique' : 'One-of-a-kind'],
-        ['hand',     $isFr ? 'Fait main' : 'Handmade'],
-        ['leaf',     $isFr ? 'Écoresponsable' : 'Eco-friendly'],
-        ['home',     $isFr ? 'Produit local' : 'Local product'],
-    ];
+    // Only what this product's own record supports. The design asserted
+    // "Pièce unique", "Fait main", "Écoresponsable" and "Produit local" on
+    // every listing — "Écoresponsable" in particular is an environmental claim
+    // the platform is in no position to make on an artisan's behalf.
+    $featureChips = collect([
+        $product->is_custom_order ? ['sparkles', $isFr ? 'Sur commande' : 'Made to order'] : null,
+        $locationLabel !== '' ? ['map-pin', $locationLabel] : null,
+        $product->lead_time_days
+            ? ['clock', ($isFr ? 'Délai ' : 'Lead time ') . $product->lead_time_days . ($isFr ? ' jours' : ' days')]
+            : null,
+        $product->moq && $product->moq > 1
+            ? ['package', ($isFr ? 'Min. ' : 'Min. ') . $product->moq . ' ' . ($product->moq_unit ?? '')]
+            : null,
+    ])->filter()->values();
 
     $tabs = [
         ['description',    $isFr ? 'Description' : 'Description',                'align-left'],
@@ -66,7 +74,16 @@
     // "Vous pourriez aussi aimer" — real related products (similar + same artisan), max 6
     $related = collect($similarProducts ?? [])->concat($otherProducts ?? [])
         ->unique('id')->take(6)->values();
-    $designBadges = ['panier-africain-tresse' => 'new', 'sculpture-en-bois-sawa' => 'best', 'vase-en-terre-cuite-grave-a-la-main' => 'new'];
+    // Earned from each product's own record rather than pinned to the three
+    // slugs the design happened to feature. "Best" needs real traffic behind it,
+    // so it only appears once the leader has meaningful views.
+    $relTopViews = (int) ($related->max('views_count') ?? 0);
+    $relBadgeFor = function ($p) use ($relTopViews) {
+        if ($relTopViews >= 20 && (int) $p->views_count === $relTopViews) {
+            return 'best';
+        }
+        return $p->created_at && $p->created_at->gt(now()->subDays(30)) ? 'new' : null;
+    };
 
     $contactPhone = $business->phone ?: null;
     $contactEmail = $business->email ?: null;
@@ -235,6 +252,7 @@
             </div>
 
             <!-- Feature chips -->
+            @if($featureChips->isNotEmpty())
             <div class="mt-5 bg-[#F8F6F1] border border-[#EEEBE2] rounded-xl px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
                 @foreach($featureChips as [$chipIcon, $chipLabel])
                 <span class="flex items-center gap-2 text-[12px] text-[#3A3A35]">
@@ -243,6 +261,7 @@
                 </span>
                 @endforeach
             </div>
+            @endif
 
             <!-- CTA buttons -->
             <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -451,12 +470,20 @@
                 <div class="tab-panel" data-panel="description">
                     <div class="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6">
                         <div>
-                            <p class="text-[13px] text-[#3A3A35] leading-relaxed">
+                            {{-- The artisan's own words. This tab used to synthesise
+                                 provenance prose from the category and city — and for
+                                 one slug asserted the piece came from the "berceau de
+                                 la civilisation Bamoun" — while $description sat
+                                 unused a few lines above. --}}
+                            @if($description)
+                            <p class="text-[13px] text-[#3A3A35] leading-relaxed whitespace-pre-line">{{ $description }}</p>
+                            @else
+                            <p class="text-[13px] text-[#6F6B60]">
                                 {{ $isFr
-                                    ? 'Ce ' . mb_strtolower($categoryName ?? 'produit') . ' est une œuvre d\'art traditionnelle fabriquée à la main par des artisans expérimentés de ' . ($cityName ?? 'nos régions') . ($product->slug === 'vase-en-terre-cuite-grave-a-la-main' ? ', berceau de la civilisation Bamoun. Chaque motif gravé raconte une histoire et symbolise l\'héritage culturel camerounais.' : '. Chaque pièce raconte une histoire et symbolise l\'héritage culturel camerounais.')
-                                    : 'This piece is a traditional work of art handmade by experienced artisans from ' . ($cityName ?? 'our regions') . '. Each piece tells a story and symbolises Cameroon\'s cultural heritage.'
-                                }}
+                                   ? 'L\'artisan n\'a pas encore ajouté de description pour ce produit.'
+                                   : 'The artisan has not added a description for this product yet.' }}
                             </p>
+                            @endif
                             <ul class="mt-4 space-y-2 text-[12.5px] text-[#3A3A35]">
                                 <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-[14px] h-[14px] text-[#17A34A]"></i>{{ $isFr ? 'Idéal pour la décoration intérieure' : 'Ideal for interior decoration' }}</li>
                                 <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-[14px] h-[14px] text-[#17A34A]"></i>{{ $isFr ? 'Parfait comme cadeau unique et authentique' : 'Perfect as a unique and authentic gift' }}</li>
@@ -529,7 +556,7 @@
                 $relName = $isFr ? $rel->name_fr : ($rel->name_en ?? $rel->name_fr);
                 $relImg = $rel->primaryImage ? asset('storage/' . $rel->primaryImage->file_path) : null;
                 $relDefault = $defaultBySlug($rel->category?->sector?->industry?->slug ?? $rel->business?->industry?->slug);
-                $relBadge = $designBadges[$rel->slug] ?? null;
+                $relBadge = $relBadgeFor($rel);
             @endphp
             <article class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                 <div class="relative">

@@ -27,7 +27,9 @@
     $contactPhone = $business->phone ?: null;
     $waNumber = ($business->whatsapp ?: $contactPhone) ? preg_replace('/\D/', '', $business->whatsapp ?: $contactPhone) : null;
     $contactEmail = $business->email ?: null;
-    $languages = collect($business->languages_spoken ?? ['Français', 'English'])->implode(', ');
+    // No fallback: claiming an artisan speaks English when they have not said so
+    // sets a buyer up to open a conversation they cannot hold.
+    $languages = collect($business->languages_spoken ?? [])->filter()->implode(', ');
 
     $heroStats = array_values(array_filter([
         $business->employee_count ? ['users', $business->employee_count, $isFr ? 'Artisans' : 'Artisans'] : null,
@@ -48,25 +50,54 @@
         ['faq',            'FAQ',                                     'help-circle'],
     ];
 
-    $aboutFeatures = [
-        ['landmark',  $isFr ? 'Patrimoine culturel' : 'Cultural heritage',    $isFr ? 'Héritage Bamoun préservé' : 'Preserved Bamoun heritage'],
-        ['gem',       $isFr ? 'Pièces uniques' : 'Unique pieces',             $isFr ? 'Chaque pièce est originale' : 'Each piece is original'],
-        ['hand',      $isFr ? 'Savoir-faire ancestral' : 'Ancestral know-how',$isFr ? 'Techniques traditionnelles' : 'Traditional techniques'],
-        ['sprout',    $isFr ? 'Développement local' : 'Local development',    $isFr ? 'Impact positif sur la communauté' : 'Positive community impact'],
-    ];
+    // Facts about THIS shop, from its own record. The design hardcoded four
+    // claims here, including "Héritage Bamoun préservé" — printed on every
+    // artisan on the platform, most of whom are not Bamoun. Each entry below
+    // is dropped when the underlying field is empty.
+    $aboutFeatures = collect([
+        $industryName ? ['hammer', $isFr ? 'Métier' : 'Craft', $industryName] : null,
+        $regionName   ? ['map-pin', $isFr ? 'Région' : 'Region', $regionName] : null,
+        $business->year_established
+            ? ['landmark', $isFr ? 'Depuis' : 'Established', (string) $business->year_established]
+            : null,
+        $isVerified
+            ? ['badge-check', $isFr ? 'Statut' : 'Status', $isFr ? 'Artisan vérifié' : 'Verified artisan']
+            : null,
+    ])->filter()->values();
 
     $whyItems = $isFr
         ? ['Produits 100% authentiques', 'Fabrication artisanale & locale', 'Respect des traditions & du patrimoine', 'Qualité premium garantie', 'Emballage sécurisé', 'Livraison rapide & fiable']
         : ['100% authentic products', 'Artisanal & local manufacturing', 'Respect for traditions & heritage', 'Premium quality guaranteed', 'Secure packaging', 'Fast & reliable delivery'];
 
-    $certItems = [
-        ['vdetail-cert-1.png', $isFr ? "Artisanat\nAuthentique" : "Authentic\nCraftsmanship", 'Cameroun'],
-        ['vdetail-cert-2.png', $isFr ? 'Fait main' : 'Handmade', $isFr ? 'au Cameroun' : 'in Cameroon'],
-        ['vdetail-cert-3.png', $isFr ? 'Écoresponsable' : 'Eco-friendly', '& Durable'],
-        ['vdetail-cert-4.png', $isFr ? 'Membre' : 'Member', $isFr ? 'Chambre des Métiers' : 'Chamber of Trades'],
-    ];
+    // Certifications a shop ACTUALLY holds. The design shipped four fixed
+    // credentials printed on every page — including "Membre — Chambre des
+    // Métiers" and "Écoresponsable & Durable". Those assert membership of a
+    // real external body and an environmental standard on behalf of artisans
+    // who may hold neither, which is not ours to claim. Nothing here now
+    // renders unless there is a row behind it.
+    $certItems = $business->certifications
+        ->filter(fn ($bc) => $bc->certification && $bc->status !== 'revoked')
+        ->filter(fn ($bc) => ! $bc->expires_at || $bc->expires_at->isFuture())
+        ->map(fn ($bc) => [
+            'name'    => $isFr
+                ? $bc->certification->name_fr
+                : ($bc->certification->name_en ?: $bc->certification->name_fr),
+            'issued'  => $bc->issued_at?->translatedFormat('Y'),
+            'expires' => $bc->expires_at,
+        ])
+        ->values();
 
-    $designBadges = ['vase-en-terre-cuite-grave-a-la-main' => 'best'];
+    // "Best seller" / "New" earned from the product's own record rather than
+    // pinned to a slug the design happened to feature. Best = most-viewed of
+    // this shop's featured products, and only once there is real traffic to
+    // rank on; new = published within the last 30 days.
+    $fpTopViews = (int) ($featuredProducts->max('views_count') ?? 0);
+    $fpBadgeFor = function ($p) use ($fpTopViews) {
+        if ($fpTopViews >= 20 && (int) $p->views_count === $fpTopViews) {
+            return 'best';
+        }
+        return $p->created_at && $p->created_at->gt(now()->subDays(30)) ? 'new' : null;
+    };
 
     // Footer options (vendors family, this design adds Événements + Politique de confidentialité)
     $dfShowHelp = true;
@@ -167,14 +198,27 @@
                     </div>
                 </div>
 
+                {{-- Chips describing THIS shop. The design hardcoded "Fait main",
+                     "Écoresponsable" and "Patrimoine culturel" onto every artisan;
+                     the middle one is an environmental claim we cannot make for
+                     someone else. --}}
+                @php
+                    $profileChips = collect([
+                        $industryName ? ['hammer', $industryName] : null,
+                        $regionName ? ['map-pin', $regionName] : null,
+                        $isVerified ? ['badge-check', $isFr ? 'Vérifié' : 'Verified'] : null,
+                    ])->filter()->values();
+                @endphp
+                @if($profileChips->isNotEmpty())
                 <div class="mt-4 flex flex-wrap items-center gap-2">
-                    @foreach([['hand', $isFr ? 'Fait main' : 'Handmade'], ['leaf', $isFr ? 'Écoresponsable' : 'Eco-friendly'], ['landmark', $isFr ? 'Patrimoine culturel' : 'Cultural heritage']] as [$pcIcon, $pcLabel])
+                    @foreach($profileChips as [$pcIcon, $pcLabel])
                     <span class="inline-flex items-center gap-1.5 bg-white border border-[#E7E3DA] rounded-md px-2.5 py-1.5 text-[11px] text-[#3A3A35]">
                         <i data-lucide="{{ $pcIcon }}" class="w-[12px] h-[12px] text-[#8A6D1F]"></i>
                         {{ $pcLabel }}
                     </span>
                     @endforeach
                 </div>
+                @endif
 
                 <p class="mt-4 flex items-center gap-2">
                     @if($hasReviews)
@@ -240,6 +284,7 @@
                         <p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'En moyenne ' . ($business->response_time_hours ?? 2) . ' heures' : 'On average ' . ($business->response_time_hours ?? 2) . ' hours' }}</p>
                     </div>
                 </div>
+                @if($languages !== '')
                 <div class="flex items-start gap-3">
                     <i data-lucide="users" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
                     <div>
@@ -247,6 +292,7 @@
                         <p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $languages }}</p>
                     </div>
                 </div>
+                @endif
                 <div class="flex items-start gap-3">
                     <i data-lucide="truck" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
                     <div>
@@ -278,9 +324,15 @@
                     <h2 class="font-serif text-[23px] leading-snug text-white font-semibold">
                         {{ $isFr ? 'L\'art ancestral, façonné avec passion & authenticité.' : 'Ancestral art, shaped with passion & authenticity.' }}
                     </h2>
+                    {{-- The shop's own words. This banner used to speak for every
+                         artisan in the first person — "Nous créons des pièces
+                         uniques en terre cuite inspirées de la richesse culturelle
+                         Bamoun" — regardless of their craft or region. --}}
+                    @if($business->tagline_fr || $business->tagline_en)
                     <p class="mt-3.5 text-[12.5px] text-white/85 leading-relaxed">
-                        {{ $isFr ? 'Nous créons des pièces uniques en terre cuite inspirées de la richesse culturelle Bamoun. Chaque création raconte une histoire, chaque motif transmet un héritage.' : 'We create unique terracotta pieces inspired by the wealth of Bamoun culture. Each creation tells a story, each pattern passes on a heritage.' }}
+                        {{ $isFr ? $business->tagline_fr : ($business->tagline_en ?: $business->tagline_fr) }}
                     </p>
+                    @endif
                 </div>
                 <div class="absolute inset-x-0 bottom-0 bg-[#1C1809]/95 px-4 py-2.5">
                     <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -317,11 +369,10 @@
                                 <p class="mt-3 text-[12.5px] text-[#3A3A35] leading-relaxed">
                                     {{ $descriptionText ?: ($isFr ? 'Cet artisan n\'a pas encore ajouté de description.' : 'This artisan has not added a description yet.') }}
                                 </p>
-                                <p class="mt-3 text-[12.5px] text-[#3A3A35] leading-relaxed">
-                                    {{ $isFr
-                                        ? 'Nos créations allient tradition et esthétique contemporaine pour sublimer vos espaces et transmettre le riche patrimoine culturel Bamoun.'
-                                        : 'Our creations combine tradition and contemporary aesthetics to enhance your spaces and pass on rich Cameroonian cultural heritage.' }}
-                                </p>
+                                {{-- A second paragraph of invented first-person copy
+                                     used to follow the artisan's real description,
+                                     ending "...le riche patrimoine culturel Bamoun"
+                                     on every shop. The description above is enough. --}}
                                 <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     @foreach($aboutFeatures as [$afIcon, $afTitle, $afSub])
                                     <div class="flex items-start gap-3">
@@ -364,11 +415,22 @@
                         @endif
                     </div>
                     <div class="tab-panel hidden" data-panel="certifications">
+                        @if($certItems->isNotEmpty())
                         <ul class="space-y-2 text-[12.5px] text-[#3A3A35]">
-                            @foreach($certItems as [$ciImg, $ciTitle, $ciSub])
-                            <li class="flex items-center gap-2.5"><i data-lucide="badge-check" class="w-4 h-4 text-[#17A34A]"></i>{{ str_replace("\n", ' ', $ciTitle) }} {{ $ciSub }}</li>
+                            @foreach($certItems as $ci)
+                            <li class="flex items-center gap-2.5">
+                                <i data-lucide="badge-check" class="w-4 h-4 text-[#17A34A] shrink-0"></i>
+                                <span>{{ $ci['name'] }}@if($ci['issued'])<span class="text-[#6F6B60]"> — {{ $ci['issued'] }}</span>@endif</span>
+                            </li>
                             @endforeach
                         </ul>
+                        @else
+                        <p class="text-[13px] text-[#55524A]">
+                            {{ $isFr
+                               ? 'Cet artisan n\'a pas encore de certification enregistrée sur la plateforme.'
+                               : 'This artisan has no certification recorded on the platform yet.' }}
+                        </p>
+                        @endif
                     </div>
                     <div class="tab-panel hidden" data-panel="galerie">
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -401,7 +463,7 @@
                         @php
                             $fpName = $isFr ? $fp->name_fr : ($fp->name_en ?? $fp->name_fr);
                             $fpCat = $fp->category ? ($isFr ? $fp->category->name_fr : ($fp->category->name_en ?? $fp->category->name_fr)) : ($industryName ?? '');
-                            $fpBadge = $designBadges[$fp->slug] ?? null;
+                            $fpBadge = $fpBadgeFor($fp);
                         @endphp
                         <article class="shrink-0 w-[152px] bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
                             <div class="relative">
@@ -497,23 +559,29 @@
                 </ul>
             </div>
 
-            <!-- Certifications & Labels -->
+            {{-- Certifications the shop genuinely holds. The whole card is hidden
+                 when there are none — an empty "Certifications & Labels" panel
+                 still implies the artisan was assessed and found wanting. --}}
+            @if($certItems->isNotEmpty())
             <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
                 <h2 class="text-[14px] font-bold text-[#1D1B16]">Certifications & Labels</h2>
-                <div class="mt-4 grid grid-cols-4 gap-2 text-center">
-                    @foreach($certItems as [$ciImg, $ciTitle, $ciSub])
-                    <div>
-                        <img src="{{ asset('images/landing/' . $ciImg) }}" alt="" class="h-[38px] w-auto mx-auto object-contain">
-                        <p class="mt-2 text-[9.5px] font-semibold text-[#1D1B16] leading-tight whitespace-pre-line">{{ $ciTitle }}</p>
-                        <p class="text-[9px] text-[#6F6B60] leading-tight">{{ $ciSub }}</p>
-                    </div>
+                <ul class="mt-4 space-y-2.5">
+                    @foreach($certItems as $ci)
+                    <li class="flex items-start gap-2.5">
+                        <i data-lucide="badge-check" class="w-4 h-4 text-[#17A34A] shrink-0 mt-0.5"></i>
+                        <span class="text-[12px] leading-snug text-[#1D1B16]">
+                            {{ $ci['name'] }}
+                            @if($ci['issued'])<span class="block text-[10.5px] text-[#6F6B60]">{{ $isFr ? 'Obtenue en' : 'Awarded' }} {{ $ci['issued'] }}</span>@endif
+                        </span>
+                    </li>
                     @endforeach
-                </div>
+                </ul>
                 <a href="{{ route('certificate.verify', ['lang' => $lang]) }}" class="mt-4 w-full h-[36px] bg-[#F6F4EF] hover:bg-[#EFECe4] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#3A3A35] transition-colors">
-                    {{ $isFr ? 'Voir tous les certificats' : 'See all certificates' }}
+                    {{ $isFr ? 'Vérifier un certificat' : 'Verify a certificate' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>
+            @endif
 
             {{-- Featured testimonial — the highest-rated real review, or nothing.
                  The design shipped an invented "Marie-Louise T." quote here that
