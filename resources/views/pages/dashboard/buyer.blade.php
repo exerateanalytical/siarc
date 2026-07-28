@@ -114,14 +114,14 @@
             ['shield-check',   $isFr ? 'Sécurité' : 'Security',                  route('security.show')],
             ['circle-help',    $isFr ? 'Aide & Support' : 'Help & Support',      route('support.index')],
         ] as [$mIcon, $mLabel, $mHref])
-        <a href="{{ $mHref }}" class="flex items-center gap-3.5 px-5 py-3 text-[14px] text-white hover:bg-white dark:hover:bg-[#242A1E]/5">
+        <a href="{{ $mHref }}" class="flex items-center gap-3.5 px-5 py-3 text-[14px] text-white hover:bg-white/5 dark:hover:bg-[#242A1E]/5">
             <i data-lucide="{{ $mIcon }}" class="w-5 h-5 text-[#A8B8AC] dark:text-[#868778]" style="stroke-width:1.7"></i>
             {{ $mLabel }}
         </a>
         @endforeach
         <form method="POST" action="{{ route('logout') }}" class="mt-2 border-t border-white/10 pt-2">
             @csrf
-            <button type="submit" class="w-full flex items-center gap-3.5 px-5 py-3 text-[14px] text-[#FF8B8B] dark:text-[#F0555C] hover:bg-white dark:hover:bg-[#242A1E]/5">
+            <button type="submit" class="w-full flex items-center gap-3.5 px-5 py-3 text-[14px] text-[#FF8B8B] dark:text-[#F0555C] hover:bg-white/5 dark:hover:bg-[#242A1E]/5">
                 <i data-lucide="log-out" class="w-5 h-5" style="stroke-width:1.7"></i>
                 {{ $isFr ? 'Se déconnecter' : 'Log out' }}
             </button>
@@ -170,7 +170,7 @@
                     @endif
                 </div>
             </div>
-            <a href="{{ route('products.index', ['lang' => $lang]) }}" class="absolute right-4 bottom-3.5 inline-flex items-center gap-2 bg-[#0A3D22] dark:bg-[#0C3B1E]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
+            <a href="{{ route('products.index', ['lang' => $lang]) }}" class="absolute right-4 bottom-3.5 inline-flex items-center gap-2 bg-[#0A3D22]/80 dark:bg-[#0C3B1E]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
                 <i data-lucide="compass" class="w-3.5 h-3.5"></i>
                 {{ $isFr ? 'Explorer la galerie' : 'Browse the gallery' }}
             </a>

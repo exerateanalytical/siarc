@@ -293,7 +293,7 @@
                             @endif
                         </div>
                     </div>
-                    <a href="{{ $ownStoreUrl }}" class="absolute right-3.5 bottom-3 inline-flex items-center gap-2 bg-[#0A3D22] dark:bg-[#0C3B1E]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
+                    <a href="{{ $ownStoreUrl }}" class="absolute right-3.5 bottom-3 inline-flex items-center gap-2 bg-[#0A3D22]/80 dark:bg-[#0C3B1E]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
                         {{ $isFr ? 'Voir ma boutique' : 'View my shop' }}
                         <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     </a>
@@ -584,7 +584,7 @@
                             <span class="font-bold text-white">{{ number_format($pendingInvoiceTotal, 0, ',', ' ') }} FCFA</span>
                         </div>
                         <p class="mt-5 text-[11.5px] text-[#B9CBBE] leading-relaxed">{{ $isFr ? 'Les retraits en ligne arrivent bientôt.' : 'Online withdrawals are coming soon.' }}</p>
-                        <a href="{{ route('support.index') }}" class="mt-4 block w-full border border-white/40 hover:bg-white dark:hover:bg-[#242A1E]/10 text-white text-[13.5px] font-semibold text-center py-3 rounded-lg transition-colors">
+                        <a href="{{ route('support.index') }}" class="mt-4 block w-full border border-white/40 hover:bg-white/10 dark:hover:bg-[#242A1E]/10 text-white text-[13.5px] font-semibold text-center py-3 rounded-lg transition-colors">
                             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
                         </a>
                     </div>

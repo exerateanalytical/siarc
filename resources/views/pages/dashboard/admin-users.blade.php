@@ -70,7 +70,7 @@
 <div class="mt-4 flex flex-wrap items-stretch gap-1 bg-[#F1EDE3] dark:bg-[#1A1E16] border border-[#EAE5D8] dark:border-[#262B21] rounded-xl p-1 overflow-x-auto">
     @foreach($tabs as $key => $label)
     <a href="{{ route('admin.users', array_merge(request()->except('page', 'role'), $key === 'tous' ? [] : ['role' => $key])) }}"
-       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] shadow-sm font-bold text-[#1B1B18] dark:text-[#F3EFE7] ' : 'font-semibold text-[#C97A16] dark:text-[#EDB33A] hover:bg-white dark:hover:bg-[#242A1E] dark:hover:bg-[#242A1E]/60' }}">
+       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] shadow-sm font-bold text-[#1B1B18] dark:text-[#F3EFE7] ' : 'font-semibold text-[#C97A16] dark:text-[#EDB33A] hover:bg-white/60 dark:hover:bg-[#242A1E]/60' }}">
         {{ $label }} ({{ number_format($roleCounts[$key] ?? 0) }})
     </a>
     @endforeach

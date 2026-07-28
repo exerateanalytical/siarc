@@ -30,7 +30,7 @@ $statusMeta = [
             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors {{ request('status') === $key ? 'bg-[#157A43] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:bg-[#F8F4EC] dark:hover:bg-[#242A1E] ' }}">
             {{ $meta[$lang] }}
             @if($key === 'pending' && $pendingCount > 0)
-            <span class="{{ request('status') === $key ? 'bg-white dark:bg-[#12150F] dark:bg-[#12150F]/20' : 'bg-amber-100 dark:bg-[#3A2B06] text-amber-700 dark:text-[#EDB33A] ' }} px-1.5 rounded-full text-[10px]">{{ $pendingCount }}</span>
+            <span class="{{ request('status') === $key ? 'bg-white/20 dark:bg-[#12150F]/20' : 'bg-amber-100 dark:bg-[#3A2B06] text-amber-700 dark:text-[#EDB33A] ' }} px-1.5 rounded-full text-[10px]">{{ $pendingCount }}</span>
             @endif
         </a>
         @endforeach

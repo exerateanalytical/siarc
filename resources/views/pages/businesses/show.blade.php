@@ -254,6 +254,39 @@
         /* An absence, styled so it can never be mistaken for a measured figure. */
         .ap-absent { font-style: italic; color: #A8A296; font-weight: 500; }
 
+        /* ── Dark ────────────────────────────────────────────────────────
+           The four rules above hardcode a colour rather than read a token,
+           which is precisely how a card stays cream while the text inside it
+           goes light — white on white, the worst failure mode there is. Each
+           gets its counterpart here, from docs/DARK-MODE-CONTRACT.md.
+
+           The card fill keeps the artwork's relationship rather than its
+           value: surface #12150F sits one step above the page #0A0C09, the
+           border still doing the separating, exactly as #FCFAF6 sits above
+           #FCF9F6 in light. */
+        html.dark .ap-desktop .ui-card { background-color: #12150F; }
+        html.dark .ap-sec-title        { color: #F3EFE7; }   /* 17.12:1 on the page */
+        html.dark .ap-sec-title > i    { color: #E9A81E; }   /*  9.43:1 */
+        html.dark .ap-sec-link         { color: #EDB33A; }   /* 10.39:1 */
+        html.dark .ap-absent           { color: #868778; }   /*  5.04:1 on the card */
+
+        /* The workshop map is a drawn evocation, not a photograph or a brand
+           mark, so it darkens with the page instead of sitting there as a pale
+           rectangle. Its light values are unchanged — they moved out of the
+           inline style only so the dark counterpart could exist at all. */
+        .ap-map-tile {
+            background:
+                repeating-linear-gradient(0deg, transparent 0 26px, #DFDACC 26px 28px),
+                repeating-linear-gradient(90deg, transparent 0 34px, #E4DFD2 34px 36px),
+                linear-gradient(115deg, #E9E4D6 0%, #F2EFE6 55%, #E3E7DB 100%);
+        }
+        html.dark .ap-map-tile {
+            background:
+                repeating-linear-gradient(0deg, transparent 0 26px, #262B21 26px 28px),
+                repeating-linear-gradient(90deg, transparent 0 34px, #262B21 34px 36px),
+                linear-gradient(115deg, #12150F 0%, #1A1E16 55%, #141A12 100%);
+        }
+
         /* The artwork's foil-shield rendering of a certificate, as a purely
            visual gradient treatment (violet→cyan→gold) inside a shield clip. */
         .ap-shield {
@@ -279,7 +312,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FCF9F6] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
+<body class="bg-[#FCF9F6] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 {{-- ── Phone ──────────────────────────────────────────────────────────────
      A sibling document, not a reflow: its own top bar, hero card and fixed
@@ -659,11 +692,7 @@
                  evocation of the artwork's tile, keyed to nothing: the pin sits
                  at its decorative centre, not at anybody's door. --}}
             <div class="relative mt-3 h-[132px] rounded-[10px] overflow-hidden border border-[#EFEBE2] dark:border-[#262B21] bg-[#EFEDE6] dark:bg-[#0A0C09]">
-                <div class="absolute inset-0 opacity-70"
-                     style="background:
-                        repeating-linear-gradient(0deg, transparent 0 26px, #DFDACC 26px 28px),
-                        repeating-linear-gradient(90deg, transparent 0 34px, #E4DFD2 34px 36px),
-                        linear-gradient(115deg, #E9E4D6 0%, #F2EFE6 55%, #E3E7DB 100%)"></div>
+                <div class="absolute inset-0 opacity-70 ap-map-tile"></div>
                 <div class="absolute left-[8%] top-0 bottom-0 w-[14%] bg-[#CBD9E4]/60 dark:bg-[#0E2436]/60" style="transform: skewX(-18deg)"></div>
                 <div class="absolute right-[18%] -top-4 w-10 h-10 rounded-full bg-[#D7E3CE]/80 dark:bg-[#0C3D1D]/80"></div>
                 <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-[#0A5C2E] dark:text-[#339B56]">

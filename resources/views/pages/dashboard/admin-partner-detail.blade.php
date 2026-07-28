@@ -178,9 +178,9 @@
                     <section class="bg-[#0E3D22] dark:bg-[#0C3B1E] rounded-2xl px-5 py-5">
                         <h2 class="text-[12px] font-bold tracking-[0.06em] text-white uppercase">{{ $isFr?'Actions rapides':'Quick actions' }}</h2>
                         <div class="mt-3 space-y-2">
-                            <a href="{{ route('messages.inbox', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-white dark:bg-[#12150F]/10 hover:bg-white dark:hover:bg-[#242A1E]/15 rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-white"><i data-lucide="mail" class="w-4 h-4"></i>{{ $isFr?'Envoyer un message':'Send a message' }}</a>
-                            <a href="{{ route('admin.events', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-white dark:bg-[#12150F]/10 hover:bg-white dark:hover:bg-[#242A1E]/15 rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-white"><i data-lucide="calendar-plus" class="w-4 h-4"></i>{{ $isFr?'Planifier une réunion':'Schedule a meeting' }}</a>
-                            <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-white dark:bg-[#12150F]/10 hover:bg-white dark:hover:bg-[#242A1E]/15 rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-white"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr?'Télécharger le kit média':'Download media kit' }}</a>
+                            <a href="{{ route('messages.inbox', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-white/10 dark:bg-[#12150F]/10 hover:bg-white/15 dark:hover:bg-[#242A1E]/15 rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-white"><i data-lucide="mail" class="w-4 h-4"></i>{{ $isFr?'Envoyer un message':'Send a message' }}</a>
+                            <a href="{{ route('admin.events', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-white/10 dark:bg-[#12150F]/10 hover:bg-white/15 dark:hover:bg-[#242A1E]/15 rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-white"><i data-lucide="calendar-plus" class="w-4 h-4"></i>{{ $isFr?'Planifier une réunion':'Schedule a meeting' }}</a>
+                            <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-white/10 dark:bg-[#12150F]/10 hover:bg-white/15 dark:hover:bg-[#242A1E]/15 rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-white"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr?'Télécharger le kit média':'Download media kit' }}</a>
                         </div>
                     </section>
                 </aside>

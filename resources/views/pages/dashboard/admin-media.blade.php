@@ -152,7 +152,7 @@
                                 <img src="{{ asset('storage/' . $m->path) }}" alt="{{ $m->name }}" class="w-full h-full object-cover" loading="lazy">
                                 @elseif($m->kind === 'video')
                                 <div class="w-full h-full bg-[#20301F] flex items-center justify-center">
-                                    <span class="w-11 h-11 rounded-full bg-white dark:bg-[#12150F]/25 flex items-center justify-center"><i data-lucide="play" class="w-5 h-5 text-white"></i></span>
+                                    <span class="w-11 h-11 rounded-full bg-white/25 dark:bg-[#12150F]/25 flex items-center justify-center"><i data-lucide="play" class="w-5 h-5 text-white"></i></span>
                                 </div>
                                 @elseif($m->kind === 'audio')
                                 <div class="w-full h-full flex items-center justify-center">

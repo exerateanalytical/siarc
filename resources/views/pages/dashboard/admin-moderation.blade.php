@@ -27,13 +27,13 @@ $reasonLabels = [
             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $tab === 'reports' ? 'bg-[#157A43] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:bg-[#F8F4EC] dark:hover:bg-[#242A1E] ' }}">
             <i data-lucide="flag" class="w-3.5 h-3.5"></i>
             {{ $lang === 'fr' ? 'Signalements' : 'Reports' }}
-            <span class="{{ $tab === 'reports' ? 'bg-white dark:bg-[#12150F] dark:bg-[#12150F]/20' : 'bg-[#F1EDE3] dark:bg-[#1A1E16] ' }} px-1.5 rounded-full text-[10px]">{{ $reports->total() }}</span>
+            <span class="{{ $tab === 'reports' ? 'bg-white/20 dark:bg-[#12150F]/20' : 'bg-[#F1EDE3] dark:bg-[#1A1E16] ' }} px-1.5 rounded-full text-[10px]">{{ $reports->total() }}</span>
         </a>
         <a href="{{ route('admin.moderation', ['tab' => 'reviews']) }}"
             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $tab === 'reviews' ? 'bg-[#157A43] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:bg-[#F8F4EC] dark:hover:bg-[#242A1E] ' }}">
             <i data-lucide="star" class="w-3.5 h-3.5"></i>
             {{ $lang === 'fr' ? 'Avis' : 'Reviews' }}
-            <span class="{{ $tab === 'reviews' ? 'bg-white dark:bg-[#12150F] dark:bg-[#12150F]/20' : 'bg-[#F1EDE3] dark:bg-[#1A1E16] ' }} px-1.5 rounded-full text-[10px]">{{ $reviews->total() }}</span>
+            <span class="{{ $tab === 'reviews' ? 'bg-white/20 dark:bg-[#12150F]/20' : 'bg-[#F1EDE3] dark:bg-[#1A1E16] ' }} px-1.5 rounded-full text-[10px]">{{ $reviews->total() }}</span>
         </a>
     </div>
 

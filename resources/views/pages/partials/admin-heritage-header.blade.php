@@ -8,6 +8,13 @@
     // than displaying a placeholder number of unread notifications.
     $pageBellCount = $pageBellCount ?? 0;
 @endphp
+{{-- The admin header is the densest bar on the platform: burger, mask, title,
+     search, language, bell and account all sit on one 1280px row. The theme
+     control therefore renders icon-only below 1536px -- the word "Thème" is
+     ~46px that the page title needs more. --}}
+<style>
+    @media (max-width: 1535.98px) { .ad-theme-toggle .theme-toggle__label { display: none; } }
+</style>
 <header class="px-5 lg:px-7 pt-4">
     <div class="flex items-center gap-4">
         <button type="button" onclick="document.getElementById('ad-sidebar').classList.toggle('ad-open')" class="shrink-0 w-[46px] h-[46px] bg-[#F5EEDD] dark:bg-[#1A1E16] border border-[#E7DDC3] dark:border-[#4A3A12] hover:border-[#C9942E] dark:hover:border-[#E9A81E] rounded-xl flex items-center justify-center text-[#3B382F] dark:text-[#B4B5A6] transition-colors">
@@ -16,8 +23,13 @@
 
         <img src="{{ asset('images/landing/hh-mask.png') }}" alt="" class="w-[44px] h-[46px] object-contain shrink-0 hidden sm:block" aria-hidden="true">
 
-        <div class="min-w-0">
-            <h1 class="text-[22px] lg:text-[26px] font-extrabold tracking-tight text-[#0E3D22] dark:text-[#339B56] leading-none uppercase">{{ $pageTitle }}</h1>
+        {{-- `flex-1 min-w-0` + `truncate`: the actions row on the right is
+             `shrink-0`, so anything added to it steals width from this column.
+             Without these the title has no width to lose and simply overflows
+             underneath the controls -- which is exactly what the theme toggle
+             did when it landed here. --}}
+        <div class="flex-1 min-w-0 basis-[220px]">
+            <h1 class="text-[22px] lg:text-[26px] font-extrabold tracking-tight text-[#0E3D22] dark:text-[#339B56] leading-none uppercase truncate">{{ $pageTitle }}</h1>
             @if($pageSubtitle)
             <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $pageSubtitle }}</p>
             @endif
@@ -31,13 +43,13 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-3.5 shrink-0 ml-auto">
+        <div class="flex items-center gap-3.5 min-w-0 ml-auto">
             {{-- Dark-mode control. Its presence suppresses the floating
                  fallback mounted by pages.partials.theme. --}}
-            @include('pages.partials.theme-toggle')
-            <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:block">
+            <span class="ad-theme-toggle">@include('pages.partials.theme-toggle')</span>
+            <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:block min-w-0 shrink">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <div class="flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E7DDC3] dark:border-[#4A3A12] rounded-lg px-4 h-[44px] w-[300px]">
+                <div class="flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E7DDC3] dark:border-[#4A3A12] rounded-lg px-4 h-[44px] w-[300px] max-w-full">
                     <input type="text" name="q" placeholder="{{ $pageSearchPlaceholder }}" class="flex-1 min-w-0 bg-transparent text-[12.5px] focus:outline-none placeholder-[#8A857A] dark:placeholder-[#868778]">
                     <button type="submit" class="shrink-0 text-[#55524A] dark:text-[#B4B5A6]"><i data-lucide="search" class="w-[16px] h-[16px]"></i></button>
                 </div>
@@ -68,7 +80,7 @@
                     <span class="leading-tight text-left hidden md:block">
                         {{-- Real operator name or nothing; never a placeholder identity. --}}
                         @if(! empty($siacUser['name']))
-                        <span class="block text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $siacUser['name'] }}</span>
+                        <span class="block max-w-[190px] truncate text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $siacUser['name'] }}</span>
                         @endif
                         <span class="block text-[11px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $isFr ? 'Super Administrateur' : 'Super Administrator' }}</span>
                     </span>
