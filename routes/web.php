@@ -2881,47 +2881,6 @@ Route::get('/tableau-de-bord/admin/medias', function (Request $request) {
     ));
 })->name('admin.media');
 
-// DISABLED FOR LAUNCH: the transaction feed is built entirely on business_subscriptions,
-// which nothing writes to, and settlement happens offline — the platform processes no
-// payments. Re-enable when there is a real payment record to show.
-Route::get('/tableau-de-bord/admin/paiements', function (Request $request) {
-    abort(404);
-    $siacUser = session('siac_user');
-    if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
-    $lang = in_array($request->query('lang', $request->cookie('lang', 'fr')), ['fr', 'en']) ? $request->query('lang', $request->cookie('lang', 'fr')) : 'fr';
-
-    // Real transaction feed: platform revenue comes from subscription payments +
-    // marketplace invoices. No hardcoded rows.
-    $subPayments = DB::table('business_subscriptions')
-        ->leftJoin('businesses', 'businesses.id', '=', 'business_subscriptions.business_id')
-        ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'business_subscriptions.subscription_plan_id')
-        ->select('business_subscriptions.*', 'businesses.name_fr as biz_name',
-            'subscription_plans.name_fr as plan_name', 'subscription_plans.currency as plan_currency')
-        ->orderByDesc('business_subscriptions.created_at')->limit(20)->get();
-
-    $payKpis = [
-        'revenue'      => (float) DB::table('business_subscriptions')->where('status', 'active')->sum('amount'),
-        'active'       => DB::table('business_subscriptions')->where('status', 'active')->count(),
-        'pending'      => DB::table('business_subscriptions')->where('status', 'pending')->count(),
-        'invoices'     => DB::table('invoices')->count(),
-        'invoices_due' => DB::table('invoices')->where('status', '!=', 'paid')->count(),
-        'pos'          => DB::table('purchase_orders')->count(),
-    ];
-    // Rows come back as stdClass; the view indexes them as arrays ($row['c'],
-    // $row['total']), which threw "Cannot use object of type stdClass as array"
-    // and 500'd the whole page. Hand it plain arrays.
-    $payByStatus = DB::table('business_subscriptions')
-        ->select('status', DB::raw('count(*) as c'), DB::raw('sum(amount) as total'))
-        ->groupBy('status')->get()
-        ->mapWithKeys(fn ($row) => [$row->status => [
-            'status' => $row->status,
-            'c'      => (int) $row->c,
-            'total'  => (float) $row->total,
-        ]]);
-
-    return view('pages.dashboard.admin-payments', compact('lang', 'siacUser', 'subPayments', 'payKpis', 'payByStatus'));
-})->name('admin.payments');
-
 Route::get('/tableau-de-bord/admin/analytique', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser || !$siacUser['is_admin']) return redirect('/login');
@@ -3605,6 +3564,17 @@ Route::post('/verification-email/confirmer', function (Request $request) {
 // These two routes let the real artisan take ownership of theirs. Nothing is
 // assigned automatically and nothing is published — the member confirms it is
 // them, and publishes when they are ready.
+//
+// CLAIMING IS FREE, AND PUBLICATION IS WHAT COSTS. These artisans never signed
+// up: their names, trades and regions were taken from competition records
+// without their involvement, and by standing instruction none of them has been
+// contacted. A person who discovers their own name here and wants to correct a
+// mistake in it, or have it taken down, must be able to do so without paying
+// anybody — charging for that would be holding somebody's own data to ransom.
+// So the claim hands over control immediately and for nothing, the profile
+// stays a draft, and the subscription buys the one thing it should buy:
+// appearing in the public directory. The plan and its price are read from the
+// database and shown before the claim, so nobody discovers the fee afterwards.
 Route::get('/tableau-de-bord/revendiquer', function (Request $request) {
     $siacUser = session('siac_user');
     if (! $siacUser) {
@@ -3620,6 +3590,10 @@ Route::get('/tableau-de-bord/revendiquer', function (Request $request) {
         'lang'       => $lang,
         'siacUser'   => $siacUser,
         'candidates' => $candidates,
+        // Every active plan, priced from `subscription_plans`. The view names
+        // the entry price rather than a rounded "from" figure invented in a
+        // template; if the table is empty it must say nothing at all.
+        'plans'      => \App\Support\PlatformFees::plans($lang),
     ]);
 })->middleware('throttle:30,1')->name('siarc.claim');
 
@@ -3653,11 +3627,58 @@ Route::post('/tableau-de-bord/revendiquer/{business}', function (Request $reques
             : 'You already have a business on the platform.']);
     }
 
+    // The claim itself: free, unconditional, and complete before any money is
+    // mentioned. It re-points ownership and stamps claimed_at, which is what
+    // gives this person the ability to correct or withdraw what we hold about
+    // them. Nothing below may be allowed to undo or block it.
     \App\Support\SiarcClaim::assign($target, $siacUser['id']);
 
-    return redirect()->route('business.edit', ['lang' => $lang])->with('success', $isFr
-        ? 'Profil récupéré. Vérifiez vos informations, puis publiez votre boutique quand vous êtes prêt.'
-        : 'Profile claimed. Check your details, then publish your shop when you are ready.');
+    // The profile deliberately stays `draft`. SiarcClaim::assign leaves the
+    // status alone and nothing here changes it: publication is the thing the
+    // subscription pays for, and BusinessService::publish refuses until a
+    // reviewer has confirmed a payment.
+    //
+    // No mail, no notification, no queued job. Not an omission — a standing
+    // instruction on this project. These 510 people were imported without being
+    // asked and hold no email address in our records; the only contact they get
+    // is the one they initiate.
+
+    // The plan they picked on the claim page, checked against the database
+    // rather than trusted, and never defaulted to a price invented here.
+    $plans = collect(\App\Support\PlatformFees::plans($lang));
+    $chosen = $plans->firstWhere('slug', (string) $request->input('plan'))
+        ?? $plans->where('price_yearly', '>', 0)->sortBy('price_yearly')->first();
+
+    $claimed = $isFr
+        ? 'Profil récupéré : il vous appartient désormais et vous pouvez le corriger.'
+        : 'Profile claimed: it is yours now and you can correct it.';
+
+    if (! $chosen) {
+        // No priced plan exists. Refuse to name a figure rather than guess one;
+        // the artisan still has their profile, and the fee can be settled when
+        // an administrator has fixed the plan table.
+        return redirect()->route('business.edit', ['lang' => $lang])->with('success', $claimed);
+    }
+
+    try {
+        $payment = \App\Support\PlatformFees::openRegistration($target, $chosen['slug']);
+    } catch (\DomainException $e) {
+        // Typically no mobile-money account is configured, so there is no number
+        // to send anyone to. Showing a payment page without one would invite a
+        // member to guess where to send money, so we say nothing about payment
+        // here and leave the claim standing on its own.
+        report($e);
+
+        return redirect()->route('business.edit', ['lang' => $lang])->with('success', $claimed);
+    }
+
+    // An intent, not a receipt. The reference is what the artisan types into the
+    // mobile-money reason field; until a reviewer confirms it, this profile
+    // stays out of the directory and the wording must not suggest otherwise.
+    return redirect()->route('payment.instructions', ['reference' => $payment->reference, 'lang' => $lang])
+        ->with('success', $isFr
+            ? $claimed . ' Pour apparaître dans l\'annuaire public, la cotisation annuelle reste à régler.'
+            : $claimed . ' To appear in the public directory, the yearly subscription remains to be paid.');
 })->middleware('throttle:10,1')->name('siarc.claim.assign');
 
 Route::get('/tableau-de-bord/profil', function (Request $request) {
@@ -4199,3 +4220,208 @@ Route::post('/inscription-rapide', function (Request $request) {
     ]]);
     return redirect('/tableau-de-bord')->with('quick_signup', true);
 })->name('register.quick.store')->middleware('throttle:10,1');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Manual settlement of the platform's own fees — the three human surfaces.
+//
+// Scope, because it is the line that is easiest to blur and worst to cross:
+// everything below concerns money the PLATFORM charges for its own services.
+// The platform is not a party to a sale between a buyer and an artisan, never
+// receives the price of a product, and nothing here may grow a path that does.
+//
+// There is no payment gateway. A member reads a number off a screen, sends
+// money with their own phone, tells us they did, and a human here checks the
+// operator's records and confirms. Every state change goes through
+// App\Support\ManualPayment so the audit trail stays continuous; these routes
+// only validate input, decide who is allowed to act, and hand over.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/* General instructions, with no particular payment attached. Public because
+   somebody who has lost the link still needs to find out how any of this works,
+   and because it carries no reference it discloses nothing about anyone. */
+Route::get('/paiement', function (Request $request) {
+    return view('pages.payment-instructions', [
+        'lang'    => webLang($request),
+        'payment' => null,
+    ]);
+})->middleware('throttle:60,1')->name('payment.instructions.general');
+
+/* One payment's instruction sheet.
+   Public, guarded by the unguessability of the reference rather than by a login.
+   That is deliberate: the person who owes a registration fee frequently does not
+   yet have an account, and a payer often forwards the page to the relative who
+   actually holds the mobile-money account. The page is therefore written to be
+   safe in a stranger's hands — it names no other payment and grants nothing. */
+Route::get('/paiement/{reference}', function (Request $request, string $reference) {
+    $payment = \App\Support\ManualPayment::findByReference($reference);
+    abort_unless($payment, 404);
+
+    return view('pages.payment-instructions', [
+        'lang'    => webLang($request),
+        'payment' => $payment,
+    ]);
+})->middleware('throttle:60,1')->name('payment.instructions');
+
+/* The payer tells us they have sent the money.
+   This records a CLAIM. It cannot reach `confirmed` — ManualPayment::report()
+   has no argument that gets there — and the copy on the page says as much. */
+Route::post('/paiement/{reference}/signaler', function (Request $request, string $reference) {
+    $lang    = webLang($request);
+    $isFr    = $lang === 'fr';
+    $payment = \App\Support\ManualPayment::findByReference($reference);
+    abort_unless($payment, 404);
+
+    $data = $request->validate([
+        'payer_name'      => ['required', 'string', 'max:190'],
+        'payer_number'    => ['nullable', 'string', 'max:40'],
+        'payer_reference' => ['nullable', 'string', 'max:80'],
+        // A screenshot of an operator SMS, taken on a phone. Kept small and to
+        // image types because it is only ever looked at by a human eye.
+        'proof'           => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:8192'],
+    ]);
+
+    // Private disk, not public storage. A payment confirmation screenshot shows
+    // a real person's phone number and balance; putting it behind a guessable
+    // public URL would publish that to anyone who tried.
+    if ($request->hasFile('proof')) {
+        $data['proof_path'] = $request->file('proof')->store('payment-proofs', 'local');
+    }
+
+    try {
+        \App\Support\ManualPayment::report($payment->id, $data);
+    } catch (\DomainException $e) {
+        // The state machine refused — almost always because the payer reloaded
+        // a stale form after already reporting. Say what is true rather than
+        // showing a 500 to somebody who has just parted with money.
+        return back()->withInput()->withErrors(['payer_name' => $isFr
+            ? "Ce paiement n'attend plus d'être signalé. Son état actuel figure ci-dessous."
+            : 'This payment is no longer awaiting a report. Its current state is shown below.']);
+    }
+
+    return redirect()->route('payment.instructions', ['reference' => $payment->reference, 'lang' => $lang])
+        ->with('payment_reported', true);
+})->middleware('throttle:10,1')->name('payment.report');
+
+/* The artisan's own view of what they owe and what has been reviewed. */
+Route::get('/tableau-de-bord/paiements', function (Request $request) {
+    return view('pages.dashboard.payments', ['lang' => webLang($request)]);
+})->name('dashboard.payments')->middleware('verified.email');
+
+/* ── The reviewer's queue ────────────────────────────────────────────────────
+   requireAdmin() is the same guard every other /tableau-de-bord/admin route
+   uses: guests to login, signed-in non-admins back to their own dashboard. */
+Route::get('/tableau-de-bord/admin/paiements', function (Request $request) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $lang   = webLang($request);
+    $filter = in_array($request->query('status'), ['reported', 'under_review', 'confirmed', 'rejected', 'expired', 'cancelled'], true)
+        ? $request->query('status') : 'reported';
+
+    $rows = DB::table('payments as p')
+        ->leftJoin('businesses as b', 'b.id', '=', 'p.business_id')
+        ->leftJoin('users as u', 'u.id', '=', 'p.user_id')
+        ->where('p.status', $filter)
+        // Oldest first: somebody who reported a week ago and has heard nothing
+        // is the person this queue exists for, and newest-first buries them.
+        ->orderBy('p.created_at')
+        ->limit(200)
+        ->get([
+            'p.*', 'b.name_fr as business_name', 'b.slug as business_slug',
+            'u.name as user_name', 'u.email as user_email',
+        ]);
+
+    // Counts per state, so a reviewer can see the queue they are not looking at.
+    $counts = DB::table('payments')->selectRaw('status, count(*) as n')->groupBy('status')
+        ->pluck('n', 'status')->all();
+
+    $trails = [];
+    foreach ($rows as $row) {
+        $trails[$row->id] = \App\Support\ManualPayment::trail($row->id);
+    }
+
+    return view('pages.dashboard.admin.payments', [
+        'lang'     => $lang,
+        'siacUser' => session('siac_user'),
+        'rows'     => $rows,
+        'trails'   => $trails,
+        'counts'   => $counts,
+        'filter'   => $filter,
+    ]);
+})->name('admin.payments');
+
+/*
+ * Nobody reviews their own money.
+ *
+ * The admin role check is not sufficient on its own. An administrator who also
+ * runs a shop owes the platform the same fees as everybody else, and the
+ * separation that actually matters is payer from reviewer, not user from admin.
+ * Enforced here in the route rather than by hiding a button, because a hidden
+ * button is not a control — the POST is one curl away.
+ */
+if (! function_exists('paymentReviewerOrForbid')) {
+    function paymentReviewerOrForbid(object $payment): string
+    {
+        $reviewer = session('siac_user')['id'] ?? null;
+        abort_unless($reviewer, 403);
+
+        if ($payment->user_id !== null && (string) $payment->user_id === (string) $reviewer) {
+            abort(403, 'A payer may not review their own payment.');
+        }
+
+        return (string) $reviewer;
+    }
+}
+
+Route::post('/tableau-de-bord/admin/paiements/{id}/confirmer', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $payment = \App\Support\ManualPayment::find((int) $id);
+    abort_unless($payment, 404);
+
+    $reviewer = paymentReviewerOrForbid($payment);
+
+    $request->validate(['note' => ['nullable', 'string', 'max:500']]);
+
+    try {
+        \App\Support\ManualPayment::confirm((int) $id, $reviewer, $request->input('note') ?: null);
+    } catch (\DomainException $e) {
+        return back()->withErrors(['note' => $e->getMessage()]);
+    }
+
+    return back()->with('payment_reviewed', true);
+})->name('admin.payments.confirm')->middleware('throttle:60,1');
+
+Route::post('/tableau-de-bord/admin/paiements/{id}/rejeter', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $payment = \App\Support\ManualPayment::find((int) $id);
+    abort_unless($payment, 404);
+
+    $reviewer = paymentReviewerOrForbid($payment);
+
+    // A rejection without a reason is a dead end for the payer: they are told no
+    // and given nothing to act on. Required here, not only in the markup, since
+    // the browser's `required` attribute is advisory and trivially bypassed.
+    $request->validate(['reason' => ['required', 'string', 'min:3', 'max:500']]);
+
+    try {
+        \App\Support\ManualPayment::reject((int) $id, $reviewer, trim($request->input('reason')));
+    } catch (\DomainException $e) {
+        return back()->withErrors(['reason' => $e->getMessage()]);
+    }
+
+    return back()->with('payment_reviewed', true);
+})->name('admin.payments.reject')->middleware('throttle:60,1');
+
+/* The uploaded proof, streamed to a reviewer only. It lives on the private disk
+   for the reason given at the upload site: it is a photograph of somebody's
+   phone, not a public document. */
+Route::get('/tableau-de-bord/admin/paiements/{id}/preuve', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $payment = \App\Support\ManualPayment::find((int) $id);
+    abort_unless($payment && $payment->proof_path, 404);
+    abort_unless(\Illuminate\Support\Facades\Storage::disk('local')->exists($payment->proof_path), 404);
+
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($payment->proof_path);
+})->name('admin.payments.proof')->middleware('throttle:60,1');

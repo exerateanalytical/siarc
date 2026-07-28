@@ -19,7 +19,8 @@ boîte mail.
 {{ rtrim(config('app.url'), '/') }}@if(config('legal.company.email')) · {{ config('legal.company.email') }}@endif
 
 Artisan Hub 237 met en relation artisans et acheteurs. La plateforme n'est pas
-partie aux transactions et n'encaisse aucun paiement.
+partie aux ventes et n'en reçoit pas le prix ; seuls ses propres frais de
+service lui sont réglés.
 @else
 Artisan Hub 237
 Our heritage, our pride, our future
@@ -39,5 +40,5 @@ and nobody can use this code without access to your inbox.
 {{ rtrim(config('app.url'), '/') }}@if(config('legal.company.email')) · {{ config('legal.company.email') }}@endif
 
 Artisan Hub 237 connects artisans and buyers. The platform is not a party to
-transactions and collects no payments.
+sales and does not receive the price; only its own service fees are paid to it.
 @endif

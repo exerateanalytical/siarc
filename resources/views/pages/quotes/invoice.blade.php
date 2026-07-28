@@ -144,7 +144,7 @@
         </div>
 
         {{-- ── Offline settlement ──────────────────────────────────────────
-             The platform processes no payments, so it cannot know an invoice
+             The platform never receives the price of a sale, so it cannot know an invoice
              is paid. The artisan records what they received; the buyer confirms
              or disputes it. Every entry is attributed, so "paid" is never one
              party's unaccountable word. --}}
@@ -166,8 +166,8 @@
                 <div>
                     <h2 class="ui-card-title">{{ $isFr ? 'Règlement' : 'Settlement' }}</h2>
                     <p class="ui-card-sub">{{ $isFr
-                        ? 'Le paiement se fait directement entre vous — la plateforme n\'encaisse rien.'
-                        : 'Payment happens directly between you — the platform collects nothing.' }}</p>
+                        ? 'Le paiement se fait directement entre vous — la plateforme ne reçoit pas le prix de la vente.'
+                        : 'Payment happens directly between you — the platform does not receive the price of the sale.' }}</p>
                 </div>
                 @if($rin->disputed_at)
                     <span class="ui-pill ui-pill-danger">{{ $isFr ? 'Contesté' : 'Disputed' }}</span>

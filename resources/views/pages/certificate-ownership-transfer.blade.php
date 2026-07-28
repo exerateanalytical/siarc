@@ -971,8 +971,8 @@
                 </svg>
                 <p style="margin-top:9px;font-size:8.5px;line-height:1.5;color:#5D5745;text-align:left;">
                     {{ $isFr
-                       ? 'ArtisanHub237 est une entreprise privée. Elle n\'est ni un registre public ni une autorité de titre : elle horodate et signe ce que des parties identifiées déclarent, et conserve la trace de chaque modification. Elle n\'est pas partie à la transaction et n\'encaisse aucun paiement.'
-                       : 'ArtisanHub237 is a private company. It is neither a public register nor a title authority: it timestamps and signs what identified parties declare, and keeps a trace of every change. It is not a party to the transaction and collects no payments.' }}
+                       ? 'ArtisanHub237 est une entreprise privée. Elle n\'est ni un registre public ni une autorité de titre : elle horodate et signe ce que des parties identifiées déclarent, et conserve la trace de chaque modification. Elle n\'est pas partie à la transaction et n\'en reçoit pas le prix ; seuls ses propres frais de service lui sont réglés.'
+                       : 'ArtisanHub237 is a private company. It is neither a public register nor a title authority: it timestamps and signs what identified parties declare, and keeps a trace of every change. It is not a party to the transaction and does not receive the price; only its own service fees are paid to it.' }}
                 </p>
                 <p class="mono" style="margin-top:7px;font-size:8.5px;color:#164C28;">www.artisanhub237.com</p>
             </section>

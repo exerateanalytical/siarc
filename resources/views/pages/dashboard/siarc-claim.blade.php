@@ -3,6 +3,12 @@
 @php
     $isFr = $lang === 'fr';
     $pageTitle = $isFr ? 'Récupérer mon profil SIARC 2026' : 'Claim my SIARC 2026 profile';
+
+    // The entry price, read from `subscription_plans` via PlatformFees. If the
+    // table holds no priced plan, nothing about money is rendered at all — a
+    // figure invented in a template is a figure somebody would pay.
+    $paidPlans  = collect($plans ?? [])->where('price_yearly', '>', 0)->sortBy('price_yearly')->values();
+    $entryPlan  = $paidPlans->first();
 @endphp
 
 @section('content')
@@ -23,6 +29,45 @@
                : 'Artisans selected for SIARC 2026 already have a profile here, created from the competition records. If one of them is yours, claim it — you become its owner and can correct it before anything is published.' }}
         </p>
     </div>
+
+    {{--
+        Said before the claim, not after it. The two halves of this notice are
+        the whole arrangement: taking back your own record costs nothing, and
+        being listed publicly is what the subscription pays for. Anyone reading
+        this should be able to claim, correct their details and stop there
+        without owing the platform anything.
+    --}}
+    @if($candidates->isNotEmpty())
+    <div class="ui-card">
+        <h2 class="text-[14px] font-bold text-[#1B1B18]">
+            {{ $isFr ? 'Ce que la récupération implique' : 'What claiming means' }}
+        </h2>
+        <ul class="mt-2 space-y-1.5 text-[12.5px] text-[#55524A] leading-relaxed">
+            <li>
+                {{ $isFr
+                   ? 'La récupération est gratuite. La fiche devient la vôtre : vous pouvez la corriger, la compléter ou demander sa suppression, sans rien payer.'
+                   : 'Claiming is free. The profile becomes yours: you can correct it, complete it or ask for it to be deleted, without paying anything.' }}
+            </li>
+            <li>
+                {{ $isFr
+                   ? 'Tant qu\'aucun paiement n\'est confirmé, la fiche reste un brouillon : elle n\'apparaît pas dans l\'annuaire public.'
+                   : 'Until a payment is confirmed the profile stays a draft: it does not appear in the public directory.' }}
+            </li>
+            @if($entryPlan)
+            <li>
+                {{ $isFr
+                   ? 'Apparaître publiquement demande une cotisation annuelle, à partir de'
+                   : 'Appearing publicly requires a yearly subscription, from' }}
+                <strong class="text-[#1B1B18]">{{ number_format($entryPlan['price_yearly'], 0, ',', ' ') }} {{ $entryPlan['currency'] }}</strong>
+                {{ $isFr ? 'par an (formule ' : 'per year (' }}{{ $entryPlan['name'] }}{{ $isFr ? ').' : ' plan).' }}
+                {{ $isFr
+                   ? 'Le paiement se fait par mobile money et n\'est enregistré qu\'après vérification par un administrateur.'
+                   : 'Payment is by mobile money and is only recorded once an administrator has checked it.' }}
+            </li>
+            @endif
+        </ul>
+    </div>
+    @endif
 
     @forelse($candidates as $c)
     <div class="ui-card">
@@ -64,6 +109,18 @@
               onsubmit="return confirm('{{ $isFr ? 'Confirmez-vous que cette fiche est la vôtre ?' : 'Do you confirm this profile is yours?' }}')">
             @csrf
             <input type="hidden" name="lang" value="{{ $lang }}">
+            @if($paidPlans->count() > 1)
+            {{-- Chosen now so the amount on the payment sheet is the one the
+                 artisan picked, rather than one assigned on their behalf. --}}
+            <label class="ui-label" for="plan-{{ $c->id }}">{{ $isFr ? 'Formule souhaitée' : 'Preferred plan' }}</label>
+            <select name="plan" id="plan-{{ $c->id }}" class="ui-select mb-3">
+                @foreach($paidPlans as $p)
+                <option value="{{ $p['slug'] }}">{{ $p['name'] }} — {{ number_format($p['price_yearly'], 0, ',', ' ') }} {{ $p['currency'] }}{{ $isFr ? ' / an' : ' / year' }}</option>
+                @endforeach
+            </select>
+            @elseif($entryPlan)
+            <input type="hidden" name="plan" value="{{ $entryPlan['slug'] }}">
+            @endif
             <button type="submit" class="ui-btn ui-btn-primary">
                 <i data-lucide="check" class="w-4 h-4"></i>
                 {{ $isFr ? "C'est mon profil — le récupérer" : 'This is mine — claim it' }}

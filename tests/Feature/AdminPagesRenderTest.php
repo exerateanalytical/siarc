@@ -56,11 +56,19 @@ class AdminPagesRenderTest extends TestCase
             'is_admin' => true,
         ]];
 
-        // Subscriptions/payments have no write path, the backup screen reported
-        // backups it never took, and the developer programme is not being run.
+        // Subscriptions have no write path, the backup screen reported backups it
+        // never took, and the developer programme is not being run.
+        //
+        // /tableau-de-bord/admin/paiements used to be on this list and no longer
+        // is. It was disabled because its feed was built on business_subscriptions,
+        // which nothing writes to — the screen showed transactions that had never
+        // happened. It is now the reviewer's queue over the `payments` table, where
+        // every row is a real record somebody opened, and PaymentSurfacesTest
+        // guards it. The old dead route has been deleted rather than left in place,
+        // because two registrations of the same URI resolve to whichever was
+        // declared last, which is not a thing to leave lying around.
         foreach ([
             '/tableau-de-bord/admin/abonnements',
-            '/tableau-de-bord/admin/paiements',
             '/tableau-de-bord/admin/sauvegardes',
             '/tableau-de-bord/admin/sauvegardes/1',
             '/tableau-de-bord/admin/api-consommateurs',

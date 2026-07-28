@@ -663,8 +663,8 @@
                         ? 'Ce document n\'évalue pas la qualité du travail, ne confère aucun titre professionnel et ne remplace aucune autorisation, licence ou inscription exigée par la loi.'
                         : 'This document does not assess the quality of the work, confers no professional title, and replaces no permit, licence or registration required by law.' }}</p>
                     <p>{{ $isFr
-                        ? 'ArtisanHub237 est une entreprise privée, sans affiliation gouvernementale. La plateforme n\'est partie à aucune transaction et n\'encaisse aucun paiement.'
-                        : 'ArtisanHub237 is a private company with no governmental affiliation. The platform is party to no transaction and collects no payments.' }}</p>
+                        ? 'ArtisanHub237 est une entreprise privée, sans affiliation gouvernementale. La plateforme n\'est partie à aucune transaction et n\'en reçoit pas le prix ; elle ne perçoit que ses propres frais de service.'
+                        : 'ArtisanHub237 is a private company with no governmental affiliation. The platform is party to no transaction and does not receive the price; it collects only its own service fees.' }}</p>
                     <p style="margin-top:2px;text-align:center;font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:16px;color:#0A3A22;">
                         ArtisanHub237 Certification Authority
                     </p>

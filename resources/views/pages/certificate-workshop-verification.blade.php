@@ -1212,8 +1212,8 @@
             <div class="sc-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
                 <p class="note">
                     {{ $isFr
-                       ? 'ArtisanHub237 est une entreprise privée. Elle n\'est ni un organisme public d\'inspection, ni une autorité de licence, ni un certificateur au sens de la loi. Elle consigne ce que des personnes identifiées déclarent et ce qu\'un inspecteur nommé a constaté, et l\'horodate. Elle n\'est partie à aucune transaction : elle n\'encaisse aucun paiement et n\'expédie rien.'
-                       : 'ArtisanHub237 is a private company. It is not a public inspectorate, a licensing authority or a certifier in law. It records what identified people declare and what a named inspector found, and timestamps it. It is party to no transaction: it collects no payments and ships nothing.' }}
+                       ? 'ArtisanHub237 est une entreprise privée. Elle n\'est ni un organisme public d\'inspection, ni une autorité de licence, ni un certificateur au sens de la loi. Elle consigne ce que des personnes identifiées déclarent et ce qu\'un inspecteur nommé a constaté, et l\'horodate. Elle n\'est partie à aucune transaction : elle n\'en reçoit pas le prix, ne perçoit que ses propres frais de service, et n\'expédie rien.'
+                       : 'ArtisanHub237 is a private company. It is not a public inspectorate, a licensing authority or a certifier in law. It records what identified people declare and what a named inspector found, and timestamps it. It is party to no transaction: it does not receive the price, collects only its own service fees, and ships nothing.' }}
                 </p>
                 <p class="note">
                     {{ $isFr

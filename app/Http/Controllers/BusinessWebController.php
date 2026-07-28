@@ -98,14 +98,44 @@ class BusinessWebController extends Controller
         $user = User::findOrFail($siacUser['id']);
 
         $business = $this->service->create($user, $data);
-        $this->service->publish($business);
         $this->handleUploads($request, $business);
+
+        /*
+         * The shop is created as a draft and stays invisible until a
+         * registration payment is confirmed, because publication is what the
+         * subscription buys. Publishing here unconditionally used to be
+         * harmless; once BusinessService::publish() began refusing unpaid
+         * businesses it would have thrown on every new signup, which is a far
+         * worse failure than an unlisted shop.
+         *
+         * A missing plan or an unconfigured payment method must not cost the
+         * member their shop either: the record is theirs regardless, and they
+         * are simply told it is awaiting payment.
+         */
+        $payment = null;
+
+        try {
+            $payment = \App\Support\PlatformFees::openRegistration($business, $request->input('plan'));
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         // Ensure the session reflects the business_owner role for immediate dashboard access
         session(['siac_user' => array_merge($siacUser, ['role' => 'business_owner'])]);
 
+        $fr = $this->lang($request) === 'fr';
+
+        if ($payment) {
+            return redirect()->route('payment.instructions', ['reference' => $payment->reference, 'lang' => $this->lang($request)])
+                ->with('success', $fr
+                    ? "Votre entreprise a été créée. Elle restera hors ligne jusqu'à la confirmation de votre paiement."
+                    : 'Your business has been created. It stays offline until your payment is confirmed.');
+        }
+
         return redirect()->route('dashboard.entrepreneur')
-            ->with('success', $this->lang($request) === 'fr' ? 'Votre entreprise a été créée et publiée.' : 'Your business has been created and published.');
+            ->with('success', $fr
+                ? "Votre entreprise a été créée. Elle sera publiée dès qu'un abonnement aura été réglé et confirmé."
+                : 'Your business has been created. It will be published once a subscription has been paid and confirmed.');
     }
 
     public function edit(Request $request)

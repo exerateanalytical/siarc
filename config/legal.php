@@ -70,12 +70,12 @@ return [
                     'list' => [
                         'fr' => [
                             "Nous ne sommes pas partie au contrat de vente conclu entre l'acheteur et le vendeur.",
-                            "Nous ne traitons aucun paiement : les documents générés (bon de commande, facture) sont des documents commerciaux entre les parties, et le règlement se fait directement entre elles.",
+                            "Nous ne recevons pas le prix de la vente : les documents générés (bon de commande, facture) sont des documents commerciaux entre les parties, et le règlement se fait directement entre elles. Seuls nos propres frais de service nous sont réglés.",
                             "Nous ne fabriquons, ne stockons, n'inspectons et n'expédions aucun produit.",
                         ],
                         'en' => [
                             'We are not a party to the sales contract concluded between buyer and seller.',
-                            'We process no payments: the documents generated (purchase order, invoice) are commercial documents between the parties, and settlement happens directly between them.',
+                            'We do not receive the price of the sale: the documents generated (purchase order, invoice) are commercial documents between the parties, and settlement happens directly between them. Only our own service fees are paid to us.',
                             'We do not manufacture, store, inspect or ship any product.',
                         ],
                     ],
@@ -234,8 +234,8 @@ return [
                 [
                     'heading' => ['fr' => 'Nous sommes un intermédiaire', 'en' => 'We are an intermediary'],
                     'body' => [
-                        'fr' => "Artisan Hub 237 met en relation des acheteurs et des vendeurs indépendants. Chaque vente est un contrat direct entre eux. Nous n'en sommes pas partie, nous ne la garantissons pas, et nous n'en percevons pas le prix.",
-                        'en' => 'Artisan Hub 237 connects buyers with independent sellers. Each sale is a direct contract between them. We are not a party to it, we do not guarantee it, and we do not receive the price.',
+                        'fr' => "Artisan Hub 237 met en relation des acheteurs et des vendeurs indépendants. Chaque vente est un contrat direct entre eux. Nous n'en sommes pas partie, nous ne la garantissons pas, et nous n'en recevons pas le prix. Nos propres frais de service sont distincts et nous sont réglés directement.",
+                        'en' => 'Artisan Hub 237 connects buyers with independent sellers. Each sale is a direct contract between them. We are not a party to it, we do not guarantee it, and we do not receive the price. Our own service fees are separate and are paid to us directly.',
                     ],
                 ],
                 [
@@ -248,8 +248,8 @@ return [
                 [
                     'heading' => ['fr' => 'Paiements', 'en' => 'Payments'],
                     'body' => [
-                        'fr' => "La plateforme ne traite aucun paiement et ne propose aucun service de séquestre. Les bons de commande et factures générés servent à formaliser l'accord entre les parties ; le règlement s'effectue directement entre acheteur et vendeur, par les moyens qu'ils choisissent.",
-                        'en' => 'The platform processes no payments and offers no escrow service. Purchase orders and invoices generated serve to formalise the agreement between the parties; settlement takes place directly between buyer and seller, by whatever means they choose.',
+                        'fr' => "La plateforme ne reçoit pas le prix de la vente et ne propose aucun service de séquestre. Les bons de commande et factures générés servent à formaliser l'accord entre les parties ; le règlement s'effectue directement entre acheteur et vendeur, par les moyens qu'ils choisissent. Nos propres frais de service (inscription, adhésion, vérification) sont distincts et nous sont réglés directement.",
+                        'en' => 'The platform does not receive the price of the sale and offers no escrow service. Purchase orders and invoices generated serve to formalise the agreement between the parties; settlement takes place directly between buyer and seller, by whatever means they choose. Our own service fees (registration, membership, verification) are separate and are paid to us directly.',
                     ],
                     'list' => [
                         'fr' => [

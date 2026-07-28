@@ -120,3 +120,27 @@ same ESPRCF block; it is stored once.
   audited. Sustainability defaults for forced labour and human rights compliance
   default true and must default unassessed. The built perceptual fingerprint is
   not AI.
+
+## [1.0-draft] — 2026-07-28 (item 10 resolved)
+
+### Decisions recorded
+- **Item 10 is resolved and no longer blocking. The platform charges its own
+  service fees, manually, and takes nothing else.** Registration, membership and
+  verification fees are sent by mobile money to a published number and confirmed
+  by an administrator. No gateway, no card processing, no wallet, no
+  installments, no escrow, and no funds held for a sale. An MTN API may later
+  replace the manual confirmation; it would not change what is collected.
+- **`spec/110-marketplace-commerce.json` is not being built as written.** Its
+  escrow, card, wallet and installment blocks — and the refunds, tax engine and
+  KYC/AML screening that hung off them — remain specification only. The file is
+  left as authored; `20-conflicts.md` item 10 is where reality is tracked.
+
+### Changed
+- **The certificate payment sentence was corrected before the first fee was
+  taken.** Every certificate, the digital product passport and `config/legal.php`
+  now say that the platform is not a party to the sale between buyer and artisan
+  and does not receive the price of the work, and that its own service fees are
+  separate and paid to it directly. The unqualified "collects no payments" claim
+  is gone.
+- `tests/Feature/CertificateFamilyTest.php` pins the new wording and fails if any
+  document reintroduces a blanket "collects no payments" claim.

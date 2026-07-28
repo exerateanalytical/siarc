@@ -95,8 +95,34 @@ class BusinessService
         return $business;
     }
 
+    /**
+     * Put a business in front of the public.
+     *
+     * This is the single choke point through which a business reaches
+     * `published`, which is why the fee gate lives here rather than in each
+     * controller: a gate a caller has to remember to ask about is a gate that
+     * eventually gets forgotten, and the thing forgotten would be a free
+     * listing.
+     *
+     * What the subscription buys is exactly this line and nothing more. It does
+     * not buy ownership of the record — an artisan who has not paid still owns
+     * their profile, can correct it and can ask for it to be removed. That
+     * separation is what lets the imported SIARC artisans, who never signed up,
+     * take control of their own data for nothing; see App\Support\PlatformFees.
+     *
+     * It throws rather than returning the business unchanged because a caller
+     * that ignored a silent refusal would tell a member their shop is live when
+     * it is not, and they would wait for orders that cannot come.
+     */
     public function publish(Business $business): Business
     {
+        if (\App\Support\PlatformFees::requiresPaymentToPublish($business)) {
+            throw new \DomainException(
+                "Business {$business->id} has no active subscription; publication is what the subscription buys, "
+                . 'so it stays a draft until a reviewer confirms a payment.'
+            );
+        }
+
         $business->update(['status' => 'published']);
         return $business;
     }

@@ -8,7 +8,7 @@
         ['La plateforme est-elle gratuite ?', "L'inscription et la création de votre vitrine sont gratuites. Des offres premium avec plus de visibilité et des statistiques avancées sont proposées aux membres."],
         ['Comment obtenir le badge « Vérifié » ?', "Soumettez vos documents officiels (registre de commerce, attestation fiscale, carte d'artisan) depuis votre tableau de bord, rubrique Vérification. Notre équipe traite chaque dossier sous 24 à 72 heures."],
         ['Comment demander un devis à un artisan ?', "Depuis la fiche d'un produit ou d'une entreprise, cliquez sur « Demander un devis » et décrivez votre besoin. L'artisan vous répond directement dans votre messagerie."],
-        ['Comment les paiements fonctionnent-ils ?', "Les conditions de paiement sont convenues entre l'acheteur et l'artisan dans le devis (généralement 50% à la commande, 50% avant expédition). La plateforme n'encaisse pas les paiements à votre place."],
+        ['Comment les paiements fonctionnent-ils ?', "Les conditions de paiement sont convenues entre l'acheteur et l'artisan dans le devis (généralement 50% à la commande, 50% avant expédition). La plateforme ne reçoit pas le prix de la vente à votre place ; elle ne facture que ses propres frais de service."],
         ['Puis-je vérifier l\'authenticité d\'un certificat ?', "Oui : la page « Vérifier un certificat » vous permet de contrôler tout certificat de membre à partir de son numéro ou de son QR code."],
         ['Comment participer aux événements et salons ?', "Consultez la page Événements, ouvrez l'événement qui vous intéresse et cliquez sur « S'inscrire »."],
     ] : [

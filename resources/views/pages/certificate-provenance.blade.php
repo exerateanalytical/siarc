@@ -843,8 +843,8 @@
                     </table>
                     <p class="note" style="margin-top:5px;">
                         {{ $isFr
-                           ? 'Les valeurs et références de paiement sont déclarées par les parties. La plateforme n\'est pas partie à la vente et n\'encaisse rien.'
-                           : 'Values and payment references are declared by the parties. The platform is not a party to the sale and handles no payment.' }}
+                           ? 'Les valeurs et références de paiement sont déclarées par les parties. La plateforme n\'est pas partie à la vente et n\'en reçoit pas le prix ; elle ne facture que ses propres frais de service.'
+                           : 'Values and payment references are declared by the parties. The platform is not a party to the sale and does not receive the price; it bills only its own service fees.' }}
                     </p>
                     @else
                     <p class="note">{{ $isFr ? 'Aucun certificat de transfert n\'a été émis pour cette pièce.' : 'No transfer certificate has been issued for this piece.' }}</p>
@@ -1151,8 +1151,8 @@
                     </p>
                     <p style="margin-top:6px;font-size:8.5px;line-height:1.5;color:#241A1E;">
                         {{ $isFr
-                           ? 'ArtisanHub237 est une société privée. Elle n\'est ni une administration ni un organisme public, n\'est pas partie aux ventes et n\'encaisse aucun paiement. Ce document ne crée, ne transfère et ne remplace aucun droit de propriété ou de propriété intellectuelle.'
-                           : 'ArtisanHub237 is a private company. It is neither a government body nor a public authority, is not a party to any sale, and handles no payment. This document creates, transfers and replaces no ownership or intellectual property right.' }}
+                           ? 'ArtisanHub237 est une société privée. Elle n\'est ni une administration ni un organisme public, n\'est pas partie aux ventes et n\'en reçoit pas le prix ; seuls ses propres frais de service lui sont réglés. Ce document ne crée, ne transfère et ne remplace aucun droit de propriété ou de propriété intellectuelle.'
+                           : 'ArtisanHub237 is a private company. It is neither a government body nor a public authority, is not a party to any sale and does not receive the price; only its own service fees are paid to it. This document creates, transfers and replaces no ownership or intellectual property right.' }}
                     </p>
                     <p class="note" style="margin-top:6px;">
                         {{ $isFr

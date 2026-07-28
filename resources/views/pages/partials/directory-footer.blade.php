@@ -193,8 +193,8 @@
              not a party to any sale made through the platform. --}}
         <p class="mt-3 text-[11px] text-[#7C917F] leading-relaxed">
             {{ $isFr
-               ? 'Artisan Hub 237 est une plateforme privée et indépendante. Elle n\'est affiliée à aucun ministère ni organisme public, n\'est pas partie aux ventes conclues entre acheteurs et artisans, et ne traite aucun paiement.'
-               : 'Artisan Hub 237 is a private, independent platform. It is not affiliated with any ministry or public body, is not a party to sales concluded between buyers and artisans, and processes no payments.' }}
+               ? 'Artisan Hub 237 est une plateforme privée et indépendante. Elle n\'est affiliée à aucun ministère ni organisme public, n\'est pas partie aux ventes conclues entre acheteurs et artisans et n\'en reçoit pas le prix ; seuls ses propres frais de service lui sont réglés.'
+               : 'Artisan Hub 237 is a private, independent platform. It is not affiliated with any ministry or public body, is not a party to sales concluded between buyers and artisans and does not receive the price; only its own service fees are paid to it.' }}
         </p>
     </div>
 </footer>

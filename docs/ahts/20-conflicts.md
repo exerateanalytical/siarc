@@ -307,7 +307,37 @@ that difference matters.
 
 ---
 
-## 10. Marketplace payments contradict the platform's legal position — decide first
+## 10. Marketplace payments contradict the platform's legal position — RESOLVED 2026-07-28
+
+**Decision (2026-07-28, platform owner): the platform charges its own service
+fees, manually, and takes nothing else.** A member who owes a fee — account
+registration, membership, verification — sends it by mobile money to a published
+number, and an administrator confirms receipt against the record. There is no
+payment gateway, no card processing, no wallet, no installment plan, no escrow,
+and no funds are ever held on behalf of a buyer or a seller. An MTN API may
+replace the manual confirmation step later; that would change how a fee is
+confirmed, not what is collected.
+
+**What this means for `spec/110-marketplace-commerce.json`:** its escrow,
+card-payment, wallet and installment blocks are **not being built** and remain
+specification only. The same goes for refunds to an original payment method, the
+tax calculation engine, and the KYC/AML screening those blocks required. The file
+itself is left exactly as authored — the specification is a record of what was
+asked for, and this conflicts file is where what is actually built is tracked.
+
+**Certificate wording was corrected before the first fee was taken.** The
+distinction now printed everywhere is precise: the platform is not a party to the
+sale between buyer and artisan and does not receive the price of the work; its
+own service fees are separate and paid to it directly. The over-broad "collects
+no payments" sentence is gone from every certificate, from the digital product
+passport, and from `config/legal.php`, and
+`tests/Feature/CertificateFamilyTest.php` now fails if any document reintroduces
+it. Certificates issued before this date carry the older sentence; it was true of
+the platform on the day each was issued, which is why the decision is dated here.
+
+The analysis that led to the decision is kept below, unchanged.
+
+---
 
 This is the most consequential item in the file, and it is not a technical
 question.

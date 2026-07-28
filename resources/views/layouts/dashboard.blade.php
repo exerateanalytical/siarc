@@ -73,6 +73,7 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
                     ['admin.quotes', 'file-text', 'Devis & Commandes', 'Quotes & Orders'],
                     ['admin.industries', 'tags', 'Catégories & Régions', 'Categories & Regions'],
                     ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
+                    ['admin.payments', 'wallet', 'Paiements à contrôler', 'Payments to check'],
                     ['admin.moderation', 'flag', 'Modération', 'Moderation'],
                     ['admin.users', 'users', 'Utilisateurs', 'Users'],
                 ],
@@ -110,6 +111,10 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
                     ['business.edit', 'building-2', 'Mon entreprise', 'My Business'],
                     ['messages.inbox', 'message-circle', 'Messages', 'Messages'],
                     ['verification.show', 'badge-check', 'Vérification', 'Verification'],
+                    // A fee you owe but cannot find is a fee you do not pay, and
+                    // the payment pages are otherwise reachable only by a link
+                    // somebody sent you once.
+                    ['dashboard.payments', 'wallet', 'Mes paiements', 'My payments'],
                     ['events.index', 'calendar-days', 'Événements', 'Events'],
                     ['support.index', 'life-buoy', 'Support', 'Support'],
                     ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],

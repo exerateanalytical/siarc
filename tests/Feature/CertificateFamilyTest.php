@@ -377,11 +377,20 @@ class CertificateFamilyTest extends TestCase
     /* ───────────────── Rule 4 — the platform's legal position ───────────── */
 
     /**
-     * The wording of this disclaimer is not identical across the family - one
-     * sheet says it "collects no payments", another that it "handles no
-     * payment" - so the assertions below accept either phrasing rather than
-     * pinning one document's sentence on all six. The drift is recorded as an
-     * audit finding; unifying the sentence is the owner's call, not a test's.
+     * The legal position a document must state has two halves, and only one of
+     * them is about money the platform never touches.
+     *
+     * The platform is not a party to the sale between a buyer and an artisan,
+     * and never receives the price of the work. That is unchanged and is what
+     * the assertions below pin.
+     *
+     * What changed is the second half. The platform now charges its own service
+     * fees — registration, membership, verification — collected manually to a
+     * mobile-money number. So a blanket "collects no payments" is no longer a
+     * true sentence to print on a certificate, and the sweep in
+     * test_no_document_claims_the_platform_collects_no_payments_at_all forbids
+     * it outright. Each sheet keeps its own voice; what is pinned here is the
+     * meaning: no party to the sale, no share of the price, own fees separate.
      */
     public function test_every_document_that_mentions_a_transaction_states_the_platform_is_not_a_party(): void
     {
@@ -421,9 +430,43 @@ class CertificateFamilyTest extends TestCase
                 );
 
                 $this->assertMatchesRegularExpression(
-                    "/(n'encaisse aucun paiement|ne (traite|per[çc]oit|g[èe]re) aucun paiement|collects no payments?|processes no payments?|handles no payments?)/iu",
+                    "/(n'en re[çc]oit pas le prix|ne re[çc]oit pas le prix|n'en per[çc]oit pas le prix|does not receive the price|receives no part of the price)/iu",
                     $text,
-                    $code . ' (' . $lang . ') describes a transaction without saying the platform collects no payments.'
+                    $code . ' (' . $lang . ') describes a transaction without saying the platform does not receive the price.'
+                );
+
+                // The counterpart clause: the platform does charge for its own
+                // service, and a sheet that disclaims the price must say so, or
+                // a reader who later pays a registration fee was misled by it.
+                $this->assertMatchesRegularExpression(
+                    '/(frais de service|service fees?)/iu',
+                    $text,
+                    $code . ' (' . $lang . ') disclaims the price without saying its own service fees are separate.'
+                );
+            }
+        }
+    }
+
+    /**
+     * No sheet may say the platform collects nothing at all.
+     *
+     * This is swept over every document rather than only those describing a
+     * transaction, because the claim is false wherever it is printed: the
+     * platform bills members for registration, membership and verification.
+     */
+    public function test_no_document_claims_the_platform_collects_no_payments_at_all(): void
+    {
+        $forbidden = "/(n'encaisse (aucun paiement|rien)|ne (traite|per[çc]oit|g[èe]re) aucun paiement"
+                   . '|collects no payments?|processes no payments?|handles no payments?|takes no payments?)/iu';
+
+        foreach (['fr', 'en'] as $lang) {
+            foreach ($this->documents($lang) as $code => $doc) {
+                [$html] = $this->fetch($doc['url']);
+
+                $this->assertDoesNotMatchRegularExpression(
+                    $forbidden,
+                    $this->documentText($html),
+                    $code . ' (' . $lang . ') claims the platform collects no payments, which is untrue now that it charges its own service fees.'
                 );
             }
         }

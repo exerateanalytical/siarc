@@ -17,9 +17,10 @@ Artisan Hub 237
 @if($isFr)
 
 Artisan Hub 237 met en relation artisans et acheteurs. La plateforme n'est pas
-partie aux transactions et n'encaisse aucun paiement.
+partie aux ventes et n'en reçoit pas le prix ; seuls ses propres frais de
+service lui sont réglés.
 @else
 
 Artisan Hub 237 connects artisans and buyers. The platform is not a party to
-transactions and collects no payments.
+sales and does not receive the price; only its own service fees are paid to it.
 @endif

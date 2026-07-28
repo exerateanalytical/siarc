@@ -1226,8 +1226,8 @@
             <div class="sc-body" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
                 <p class="note">
                     {{ $isFr
-                       ? 'ArtisanHub237 est une entreprise privée. Elle n\'est ni un registre public, ni une autorité douanière, ni un organisme de licence à l\'exportation. Elle horodate et signe ce que des parties identifiées déclarent, conserve la trace de chaque modification, et n\'est partie à aucune transaction : elle n\'encaisse aucun paiement et n\'expédie rien.'
-                       : 'ArtisanHub237 is a private company. It is not a public register, a customs authority or an export licensing body. It timestamps and signs what identified parties declare and keeps a trace of every change. It is party to no transaction: it collects no payments and ships nothing.' }}
+                       ? 'ArtisanHub237 est une entreprise privée. Elle n\'est ni un registre public, ni une autorité douanière, ni un organisme de licence à l\'exportation. Elle horodate et signe ce que des parties identifiées déclarent, conserve la trace de chaque modification, et n\'est partie à aucune transaction : elle n\'en reçoit pas le prix, ne perçoit que ses propres frais de service, et n\'expédie rien.'
+                       : 'ArtisanHub237 is a private company. It is not a public register, a customs authority or an export licensing body. It timestamps and signs what identified parties declare and keeps a trace of every change. It is party to no transaction: it does not receive the price, collects only its own service fees, and ships nothing.' }}
                 </p>
                 <p class="note">
                     {{ $isFr

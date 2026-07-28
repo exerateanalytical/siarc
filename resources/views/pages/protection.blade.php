@@ -116,7 +116,7 @@
         ['globe', 'Une boutique publiée est publique',
          'Une fois publiée, votre fiche et vos produits sont visibles par tous, y compris les moteurs de recherche. Vos messages, vos devis, vos commandes et vos documents de vérification ne le sont jamais.'],
         ['wallet', 'Nous ne touchons pas à l\'argent',
-         'La plateforme ne traite aucun paiement et n\'est pas partie à la vente. Le bon de commande et la facture sont vos documents ; le règlement se fait directement entre l\'acheteur et vous.'],
+         'La plateforme n\'est pas partie à la vente et n\'en reçoit pas le prix ; seuls ses propres frais de service lui sont réglés. Le bon de commande et la facture sont vos documents ; le règlement se fait directement entre l\'acheteur et vous.'],
         ['user-round-cog', 'Vos données vous appartiennent',
          'Vous pouvez consulter et corriger vos informations depuis votre profil, demander une copie de vos données ou la fermeture de votre compte en nous écrivant. Nous ne vendons vos données à personne.'],
     ] : [
@@ -125,7 +125,7 @@
         ['globe', 'A published shop is public',
          'Once published, your profile and products are visible to everyone, including search engines. Your messages, quotes, orders and verification documents never are.'],
         ['wallet', 'We never touch the money',
-         'The platform processes no payments and is not a party to the sale. The purchase order and invoice are your documents; settlement happens directly between the buyer and you.'],
+         'The platform is not a party to the sale and does not receive the price; only its own service fees are paid to it. The purchase order and invoice are your documents; settlement happens directly between the buyer and you.'],
         ['user-round-cog', 'Your data is yours',
          'You can view and correct your details from your profile, request a copy of your data or the closure of your account by writing to us. We sell your data to nobody.'],
     ];

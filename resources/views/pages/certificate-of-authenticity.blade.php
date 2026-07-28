@@ -532,8 +532,8 @@
                         ? 'L\'enregistrement sur ArtisanHub237 ne remplace pas le droit d\'auteur, une marque, un dessin ou modèle industriel ni aucun autre droit de propriété intellectuelle applicable. Les utilisateurs restent responsables de l\'obtention de toute protection légale supplémentaire prévue par la loi applicable.'
                         : 'Registration on ArtisanHub237 does not replace applicable copyright, trademark, industrial design, or other intellectual property rights. Users remain responsible for obtaining any additional legal protections available under applicable law.' }}</p>
                     <p>{{ $isFr
-                        ? 'ArtisanHub237 est une entreprise privée. La plateforme n\'est pas partie aux transactions et n\'encaisse aucun paiement.'
-                        : 'ArtisanHub237 is a private company. The platform is not a party to transactions and collects no payments.' }}</p>
+                        ? 'ArtisanHub237 est une entreprise privée. La plateforme n\'est pas partie aux transactions entre acheteur et artisan et n\'en reçoit pas le prix ; seuls ses propres frais de service lui sont réglés.'
+                        : 'ArtisanHub237 is a private company. The platform is not a party to transactions between buyer and artisan and does not receive the price; only its own service fees are paid to it.' }}</p>
                 </div>
             </section>
         </div>
