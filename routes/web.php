@@ -26,6 +26,47 @@ Route::get('/galerie/secteurs', [FrontendController::class, 'industriesIndex'])-
 Route::get('/galerie/recherche', [FrontendController::class, 'search'])->name('gallery.search');
 Route::get('/galerie/produits', [FrontendController::class, 'productsIndex'])->name('products.index');
 Route::get('/galerie/produits/{slug}', [FrontendController::class, 'productShow'])->name('products.show');
+
+// ── Certificate of Authenticity ─────────────────────────────────────────────
+// Public, because the point of a certificate is that a buyer can check it
+// without an account. Issued lazily on first view of a published product.
+Route::get('/certificat/{slug}', function (Request $request, string $slug) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $product = \App\Modules\Products\Models\Product::with([
+        'business.region', 'business.city', 'category', 'images', 'attributes.template',
+    ])->where('slug', $slug)->firstOrFail();
+
+    // Only a published product is registered; a draft has nothing to certify.
+    abort_unless($product->status === 'published', 404);
+
+    $certificate = \App\Support\ProductCertificate::forProduct($product);
+    abort_unless($certificate, 404);
+
+    return view('pages.certificate-of-authenticity', [
+        'lang'        => $lang,
+        'product'     => $product,
+        'certificate' => $certificate,
+        'status'      => \App\Support\ProductCertificate::verify($certificate->certificate_no)['status'],
+    ]);
+})->middleware('throttle:60,1')->name('product.certificate');
+
+Route::get('/verifier', function (Request $request) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+    $ref  = trim((string) $request->query('ref', ''));
+    $pin  = $request->query('pin');
+
+    $result = $ref !== ''
+        ? \App\Support\ProductCertificate::verify($ref, $pin ?: null)
+        : ['status' => null, 'certificate' => null, 'product' => null];
+
+    return view('pages.certificate-verify-product', [
+        'lang'   => $lang,
+        'ref'    => $ref,
+        'pin'    => $pin,
+        'result' => $result,
+    ]);
+})->middleware('throttle:30,1')->name('product.certificate.verify');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;
@@ -3693,6 +3734,13 @@ Route::get('/guide-artisan', function (Request $request) {
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     return view('pages.guide-artisan', compact('lang'));
 })->name('guide.artisan');
+
+// What the platform actually does to protect an artisan's work, split between
+// what is live and what is only planned. Static copy, so no query needed.
+Route::get('/proteger-mon-travail', function (Request $request) {
+    $lang = webLang($request);
+    return response(view('pages.protection', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
+})->name('protection');
 
 Route::get('/faq', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));

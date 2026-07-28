@@ -304,6 +304,17 @@
                     <span class="text-[11px] text-[#3A3A35]">{{ $isFr ? 'Appel' : 'Call' }}</span>
                 </a>
                 @endif
+                {{-- The certificate is the reason a buyer can trust the listing,
+                     so it belongs beside the contact actions rather than buried
+                     in a tab. Only published products have one. --}}
+                @if($product->status === 'published')
+                <a href="{{ route('product.certificate', ['slug' => $product->slug, 'lang' => $lang]) }}" class="flex flex-col items-center gap-1.5 group">
+                    <span class="w-11 h-11 rounded-full bg-white border border-[#DFDCD5] flex items-center justify-center text-[#157A43] group-hover:border-leaf transition-colors">
+                        <i data-lucide="badge-check" class="w-[18px] h-[18px]"></i>
+                    </span>
+                    <span class="text-[11px] text-[#3A3A35]">{{ $isFr ? 'Certificat' : 'Certificate' }}</span>
+                </a>
+                @endif
                 <button type="button" id="share-btn" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-white border border-[#DFDCD5] flex items-center justify-center text-[#3A3A35] group-hover:border-leaf transition-colors">
                         <i data-lucide="share-2" class="w-[18px] h-[18px]"></i>

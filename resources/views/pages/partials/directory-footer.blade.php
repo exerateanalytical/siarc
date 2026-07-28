@@ -17,6 +17,7 @@
     ];
     $dfRessources = $dfRessources ?? [
         ($isFr ? 'Guide de l\'artisan' : 'Artisan guide')            => route('guide.artisan', ['lang' => $lang]),
+        ($isFr ? 'Protection de votre travail' : 'Protecting your work')  => route('protection', ['lang' => $lang]),
         'FAQ'                                                        => route('faq', ['lang' => $lang]),
         ($isFr ? 'Centre d\'aide' : 'Help center')                   => route('support.index'),
         ($isFr ? 'Actualités' : 'News')                              => route('news.index', ['lang' => $lang]),

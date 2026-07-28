@@ -32,7 +32,8 @@ const PAGES = [
   '/disclaimer', '/evenements', '/faq', '/forgot-password', '/galerie/entreprises',
   '/galerie/messages/nouveau', '/galerie/produits', '/galerie/recherche',
   '/galerie/secteurs', '/guide-artisan', '/inscription-rapide', '/login',
-  '/mentions-legales', '/partenaires', '/presse', '/privacy', '/terms',
+  '/mentions-legales', '/partenaires', '/presse', '/privacy',
+  '/proteger-mon-travail', '/terms',
   '/verification-certificat',
 ];
 

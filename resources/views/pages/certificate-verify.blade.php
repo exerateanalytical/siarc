@@ -58,9 +58,17 @@
         'ccQrId'   => 'verify-cert-qr',
     ] : [];
 
+    // What actually secures this certificate.
+    //
+    // This list used to promise an invisible watermark, a 3D hologram, UV ink
+    // and security microtext — physical anti-counterfeiting features, on a web
+    // page, under the old GVN brand. None of them exist and none of them could:
+    // there is nothing physical to print them on. What does exist is a unique
+    // number, a live lookup that returns the current status, and the platform's
+    // ability to revoke — which is worth more than an imaginary hologram.
     $securityChecks = $isFr
-        ? ['Filigrane invisible', 'Hologramme 3D GVN', 'Encre UV invisible', 'Microtexte de sécurité', 'Numéro unique infalsifiable']
-        : ['Invisible watermark', '3D GVN hologram', 'Invisible UV ink', 'Security microtext', 'Tamper-proof unique number'];
+        ? ['Numéro de certificat unique', 'Vérification en ligne en temps réel', 'Statut révocable par la plateforme', 'Dates d\'émission et d\'expiration enregistrées', 'Adresse de vérification officielle']
+        : ['Unique certificate number', 'Real-time online verification', 'Revocable by the platform', 'Issue and expiry dates on record', 'Official verification address'];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -232,8 +240,11 @@
             </div>
             <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">
                 {{ $isFr
-                    ? "Ce certificat est émis et certifié par la Artisan Hub 237. Il est infalsifiable et entièrement vérifiable en ligne."
-                    : 'This certificate is issued and certified by Artisan Hub 237. It is tamper-proof and fully verifiable online.'
+                    {{-- "Infalsifiable" was never true of a web page. What is true
+                         is that the number is checked against the live record here,
+                         so a forged printout fails the moment anyone looks it up. --}}
+                    ? "Ce certificat est émis par Artisan Hub 237. Son numéro est vérifiable en ligne à tout moment : un document falsifié ne correspondra à aucun enregistrement."
+                    : 'This certificate is issued by Artisan Hub 237. Its number can be checked online at any time, so a forged document matches no record.'
                 }}
             </p>
         </div>
