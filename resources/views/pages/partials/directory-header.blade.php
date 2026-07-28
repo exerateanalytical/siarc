@@ -165,6 +165,14 @@
                 </a>
                 @endforeach
 
+                {{-- Dark-mode control. Sits in the utility row so it is reachable
+                     from every public page's chrome; `data-theme-toggle-slot` on
+                     the wrapper tells pages/partials/theme.blade.php not to mount
+                     its floating fallback here. --}}
+                <div data-theme-toggle-slot class="hidden sm:block shrink-0">
+                    @include('pages.partials.theme-toggle')
+                </div>
+
                 <!-- Account -->
                 <div class="relative group hidden sm:block">
                     @if($siacUser)
@@ -242,6 +250,10 @@
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">FR</a>
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ !$isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">EN</a>
                 </span>
+                {{-- Same control again for the phone menu, where the utility row
+                     above is hidden. Duplicate `.theme-toggle` nodes are wired by
+                     delegation, so this needs no script of its own. --}}
+                @include('pages.partials.theme-toggle')
             </div>
         </div>
     </div>

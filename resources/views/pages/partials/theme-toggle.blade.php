@@ -8,7 +8,14 @@
 
      Icons are inline SVG rather than lucide: this control renders inside a
      <template> for the floating fallback, where `lucide.createIcons()` has
-     already run and would never see it. --}}
+     already run and would never see it.
+
+     Self-guarding: seven certificate views include the shared directory header,
+     and a document ships neither the theme API nor the click delegation, so a
+     control rendered there would be dead furniture on a printed page. The same
+     condition `pages/partials/theme.blade.php` uses is evaluated here, and the
+     partial renders nothing at all on a locked document. --}}
+@unless (($lockLightTheme ?? false) || \App\Support\Theme::routeIsDocument())
 <button type="button"
         class="theme-toggle"
         role="switch"
@@ -28,3 +35,4 @@
         </span>
     </span>
 </button>
+@endunless

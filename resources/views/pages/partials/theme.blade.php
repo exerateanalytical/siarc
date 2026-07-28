@@ -305,12 +305,12 @@
    rendered by a partial, injected later, or duplicated in a mobile menu all
    work without extra script.
 
-   The shared `directory-header` / `directory-footer` partials are owned by
-   another agent mid-flight and cannot be edited yet, so public pages have no
-   slot for the control. Until they gain one, a discreet floating control is
-   mounted so dark mode is reachable everywhere. The moment the chrome renders
-   the `pages.partials.theme-toggle` partial — or any element carrying
-   `data-theme-toggle-slot` — the floating fallback stops being mounted. */
+   The three shells now carry the control themselves: `directory-header` (public
+   chrome — utility row on desktop, mobile menu on phones), `layouts/dashboard`
+   and `admin-heritage-header`. The floating fallback below therefore mounts only
+   on a page that uses none of them, so dark mode is still reachable there. It
+   stands down the moment the page contains a `.theme-toggle` or an element
+   carrying `data-theme-toggle-slot`. */
 (function () {
     document.addEventListener('click', function (ev) {
         var btn = ev.target.closest && ev.target.closest('.theme-toggle');

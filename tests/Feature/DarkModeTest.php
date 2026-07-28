@@ -267,6 +267,79 @@ class DarkModeTest extends TestCase
     }
 
     /**
+     * The control is in the chrome itself, not only in the floating fallback.
+     *
+     * Asserted against the three shells by name, because "reachable from the
+     * chrome" is the requirement and a page that merely gets the floating
+     * fallback satisfies the rendered-HTML check without satisfying it.
+     */
+    public function test_each_shell_includes_the_toggle_partial(): void
+    {
+        $shells = [
+            'resources/views/pages/partials/directory-header.blade.php'      => 'the public chrome',
+            'resources/views/layouts/dashboard.blade.php'                    => 'the member dashboard shell',
+            'resources/views/pages/partials/admin-heritage-header.blade.php' => 'the admin shell',
+        ];
+
+        foreach ($shells as $path => $what) {
+            $this->assertStringContainsString(
+                "@include('pages.partials.theme-toggle')",
+                file_get_contents(base_path($path)),
+                "$what ($path) must render the theme toggle: the floating fallback is for pages with no chrome, not a substitute for it."
+            );
+        }
+    }
+
+    /** And the rendered public page really carries a wired control, not just the template. */
+    public function test_a_public_page_renders_the_toggle_in_its_header(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $header = substr($html, 0, stripos($html, 'id="mobile-menu"') ?: strlen($html));
+
+        $this->assertStringContainsString(
+            'data-theme-toggle-slot',
+            $header,
+            'The public header carries a slot for the control, which also stands the floating fallback down.'
+        );
+        $this->assertStringContainsString('role="switch"', $header);
+        $this->assertGreaterThanOrEqual(
+            2,
+            substr_count($html, 'class="theme-toggle"'),
+            'Desktop utility row and mobile menu each get one; delegation wires both.'
+        );
+    }
+
+    /**
+     * Seven certificate views include the shared public header, which now
+     * carries the toggle. A document ships neither the theme API nor the click
+     * delegation, so a control rendered there would be dead furniture on a
+     * printed page — the partial must render nothing at all when locked.
+     */
+    public function test_a_certificate_that_includes_the_public_chrome_renders_no_toggle(): void
+    {
+        $user    = $this->makeUser();
+        $biz     = $this->makeBusiness($user);
+        $product = $this->makeProduct($biz, ['status' => 'published', 'slug' => 'theme-lock-probe']);
+
+        // Sanity: this document really does pull in the chrome that carries the
+        // control, so the assertion below is testing the guard and not an absence.
+        $this->assertStringContainsString(
+            'pages.partials.directory-header',
+            file_get_contents(base_path('resources/views/pages/certificate-of-authenticity.blade.php')),
+        );
+
+        $html = $this->get('/certificat/' . $product->slug)->assertOk()->getContent();
+
+        $this->assertStringContainsString('data-theme-locked', $html, 'Sanity: this is a locked document.');
+        $this->assertStringNotContainsString(
+            'class="theme-toggle"',
+            $html,
+            'A locked document must render no toggle at all, even though it includes the shared header that carries one.'
+        );
+    }
+
+    /**
      * Every token in the contract's table exists, in both themes, with the
      * documented value. A page that reaches for `bg-surface` must get the hex
      * the contract promises rather than an inherited Tailwind default.
