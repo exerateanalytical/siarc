@@ -400,7 +400,7 @@
             {{-- Name block --}}
             <div class="min-w-0 flex-1 pt-1">
                 @if($isVerified)
-                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] dark:text-[#F3EFE7] text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
+                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
                     <i data-lucide="badge-check" class="w-3 h-3"></i>
                     {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                 </span>

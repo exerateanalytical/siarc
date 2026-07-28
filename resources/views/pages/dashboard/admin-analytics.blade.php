@@ -7,13 +7,18 @@
     // [icon, iconColor, tileBg, label, valueRaw, isMoney, sparkColor, sparkFill]
     $an = $anKpis ?? [];
     $anRevenue = $an['revenue'] ?? null;
+    // [icon, inkLight, tileLight, label, value, isMoney, sparkLight, _, inkDark, tileDark]
+    // The dark tiles are the same hue laid over the card at 18%, and every icon
+    // was measured on its own tile: 3.78 / 4.70 / 5.70 / 5.08 / 5.65 / 4.35:1.
+    // The saturated light inks are darkened-on-dark rather than reused — #2563EB
+    // on #12150F is 3.0:1 and #157A43 is 2.4:1, both too low to be a KPI colour.
     $anKpiCards = [
-        ['coins',        '#157A43', '#E8F2EC', ($isFr ? 'REVENU (FCFA)'        : 'REVENUE (FCFA)'),      $anRevenue,               true,  '#2F7D4E', '#EAF4EE'],
-        ['store',        '#2563EB', '#E7EEFD', ($isFr ? 'ENTREPRISES'          : 'BUSINESSES'),          $an['businesses'] ?? null, false, '#2563EB', '#E9EFFD'],
-        ['users-round',  '#C97A16', '#FDF3E0', ($isFr ? 'UTILISATEURS'         : 'USERS'),               $an['users'] ?? null,      false, '#E09A2A', '#FCF2E1'],
-        ['package',      '#7C4FE0', '#F0EAFB', ($isFr ? 'PRODUITS'             : 'PRODUCTS'),            $an['products'] ?? null,   false, '#7C4FE0', '#F1ECFB'],
-        ['calendar-days','#0D9488', '#E1F4F1', ($isFr ? 'ÉVÉNEMENTS'           : 'EVENTS'),              $an['events'] ?? null,     false, '#0D9488', '#E4F4F1'],
-        ['eye',          '#DC2626', '#FDECEC', ($isFr ? 'VUES TOTALES'         : 'TOTAL VIEWS'),         $an['views'] ?? null,      false, '#DC2626', '#FCEBEB'],
+        ['coins',        '#157A43', '#E8F2EC', ($isFr ? 'REVENU (FCFA)'        : 'REVENUE (FCFA)'),      $anRevenue,               true,  '#2F7D4E', '#EAF4EE', '#2E9250', '#172C1B'],
+        ['store',        '#2563EB', '#E7EEFD', ($isFr ? 'ENTREPRISES'          : 'BUSINESSES'),          $an['businesses'] ?? null, false, '#2563EB', '#E9EFFD', '#5B93F5', '#1F2C38'],
+        ['users-round',  '#C97A16', '#FDF3E0', ($isFr ? 'UTILISATEURS'         : 'USERS'),               $an['users'] ?? null,      false, '#E09A2A', '#FCF2E1', '#E09A2A', '#372D14'],
+        ['package',      '#7C4FE0', '#F0EAFB', ($isFr ? 'PRODUITS'             : 'PRODUCTS'),            $an['products'] ?? null,   false, '#7C4FE0', '#F1ECFB', '#A98BEE', '#2D2A37'],
+        ['calendar-days','#0D9488', '#E1F4F1', ($isFr ? 'ÉVÉNEMENTS'           : 'EVENTS'),              $an['events'] ?? null,     false, '#0D9488', '#E4F4F1', '#2FBAAB', '#17332B'],
+        ['eye',          '#DC2626', '#FDECEC', ($isFr ? 'VUES TOTALES'         : 'TOTAL VIEWS'),         $an['views'] ?? null,      false, '#DC2626', '#FCEBEB', '#F0555C', '#3A211D'],
     ];
 
     // ---- Growth series (real) ---------------------------------------------
@@ -78,13 +83,25 @@
         </div>
     </div>
 
+    <style>
+        .an-swatch { background-color: var(--l); }
+        .an-ink    { color: var(--l); }
+        .an-stroke { stroke: var(--l); }
+        html.dark .an-swatch { background-color: var(--d); }
+        html.dark .an-ink    { color: var(--d); }
+        html.dark .an-stroke { stroke: var(--d); }
+    </style>
+
     {{-- KPI cards --}}
     <section class="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        @foreach($anKpiCards as [$kIcon, $kColor, $kTile, $kLabel, $kValue, $kMoney, $kSpark, $kFill])
+        @foreach($anKpiCards as [$kIcon, $kColor, $kTile, $kLabel, $kValue, $kMoney, $kSpark, $kFill, $kColorD, $kTileD])
         <div class="ui-card flex flex-col">
             <div class="flex items-center justify-between">
-                <span class="w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="background-color: {{ $kTile }}">
-                    <i data-lucide="{{ $kIcon }}" class="w-[20px] h-[20px]" style="color: {{ $kColor }};stroke-width:1.8"></i>
+                {{-- Per-card colours are data, so they cannot carry a `dark:`
+                     class. Both values ride as custom properties and one rule
+                     picks between them. --}}
+                <span class="an-swatch w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="--l: {{ $kTile }}; --d: {{ $kTileD }}">
+                    <i data-lucide="{{ $kIcon }}" class="an-ink w-[20px] h-[20px]" style="--l: {{ $kColor }}; --d: {{ $kColorD }};stroke-width:1.8"></i>
                 </span>
             </div>
             <p class="mt-3 text-[11px] font-semibold tracking-[0.04em] text-[#8A857A] dark:text-[#868778] uppercase">{{ $kLabel }}</p>
@@ -96,7 +113,7 @@
                 @endif
             </p>
             <svg viewBox="0 0 120 26" class="mt-3 w-full h-[24px]" preserveAspectRatio="none" aria-hidden="true">
-                <polyline points="0,20 15,15 30,17 45,9 60,13 75,6 90,10 105,4 120,7" fill="none" stroke="{{ $kSpark }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <polyline class="an-stroke" points="0,20 15,15 30,17 45,9 60,13 75,6 90,10 105,4 120,7" fill="none" style="--l: {{ $kSpark }}; --d: {{ $kColorD }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
             </svg>
         </div>
         @endforeach

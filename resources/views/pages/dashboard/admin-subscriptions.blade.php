@@ -67,11 +67,11 @@
     ];
 
     $quickActions = [
-        ['sub-qa-1.png', $isFr ? 'Ajouter un abonnement' : 'Add a subscription',      route('admin.businesses', ['lang' => $lang])],
-        ['sub-qa-2.png', $isFr ? 'Plans d\'abonnement' : 'Subscription plans',        route('admin.subscriptions', ['lang' => $lang])],
-        ['sub-qa-3.png', $isFr ? 'Codes promo' : 'Promo codes',                       route('admin.settings', ['lang' => $lang])],
-        ['sub-qa-4.png', 'Factures',                                                  route('admin.reports', ['lang' => $lang])],
-        ['sub-qa-5.png', $isFr ? 'Paramètres de facturation' : 'Billing settings',    route('admin.settings', ['lang' => $lang])],
+        ['plus',           $isFr ? 'Ajouter un abonnement' : 'Add a subscription',      route('admin.businesses', ['lang' => $lang])],
+        ['clipboard-list', $isFr ? 'Plans d\'abonnement' : 'Subscription plans',        route('admin.subscriptions', ['lang' => $lang])],
+        ['ticket',         $isFr ? 'Codes promo' : 'Promo codes',                       route('admin.settings', ['lang' => $lang])],
+        ['file-text',      'Factures',                                                  route('admin.reports', ['lang' => $lang])],
+        ['settings',       $isFr ? 'Paramètres de facturation' : 'Billing settings',    route('admin.settings', ['lang' => $lang])],
     ];
 
     // Pagination model: page buttons 1 2 3 … last (design chrome), driven by the
@@ -98,7 +98,7 @@
                         @foreach($cards as [$cIcon, $cValue, $cLabel, $cSpark])
                         <div class="sub-card px-4 pt-4 pb-3">
                             <div class="flex items-start gap-3">
-                                <img src="{{ asset('images/landing/' . $cIcon) }}" alt="" class="w-[44px] h-[44px] shrink-0">
+                                <span class="w-[44px] h-[44px] shrink-0 rounded-xl grid place-items-center" style="background:{{ $cIcon[1] }};color:{{ $cIcon[2] }}" aria-hidden="true"><i data-lucide="{{ $cIcon[0] }}" class="w-[22px] h-[22px]" stroke-width="1.9"></i></span>
                                 <div class="min-w-0">
                                     <p class="text-[21px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $cValue }}</p>
                                     <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
@@ -168,7 +168,11 @@
                                         [$stLabel, $stText, $stDot] = $subStatusMeta[$s->status] ?? [$s->status, 'text-[#6E6B63] dark:text-[#868778]', '#9B978D'];
                                         [$roLabel, $roCls] = $subRoleMeta[$s->vendor_type] ?? ['Artisan', 'bg-[#E9F3DE] dark:bg-[#0C3D1D] text-[#4D8A3C] dark:text-[#339B56]'];
                                         $initial = mb_strtoupper(mb_substr($s->owner_name ?? $s->business_name ?? '?', 0, 1));
-                                        $planIsImg = $s->plan_icon && str_ends_with($s->plan_icon, '.png');
+                                        // Plans seeded before the icon set moved to lucide still carry a
+                                        // raster filename (sub-plan-*.png). Every one of those was a gem
+                                        // in the plan's own colour, so they resolve to lucide `gem`
+                                        // rather than rendering a fixed-colour PNG on a dark page.
+                                        $planIcon = (! $s->plan_icon || str_ends_with($s->plan_icon, '.png')) ? 'gem' : $s->plan_icon;
                                         // Second line under "Prochain paiement" — computed from the row's real
                                         // next_payment_at (the design's fixed "Dans 11 mois" labels were invented)
                                         $nextLine = null; $nextLineRed = false;
@@ -193,8 +197,7 @@
                                         <td><span class="inline-block rounded-lg px-3 py-1 text-[11.5px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
                                         <td>
                                             <span class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">
-                                                @if($planIsImg)<img src="{{ asset('images/landing/' . $s->plan_icon) }}" alt="" class="w-[22px] h-[22px] object-contain shrink-0">
-                                                @else<i data-lucide="{{ $s->plan_icon ?? 'gem' }}" class="w-4 h-4" style="color: {{ $s->plan_color }}"></i>@endif
+                                                <i data-lucide="{{ $planIcon }}" class="w-[18px] h-[18px] shrink-0" style="color: {{ $s->plan_color }}" aria-hidden="true"></i>
                                                 {{ $isFr ? $s->plan_fr : ($s->plan_en ?? $s->plan_fr) }}
                                             </span>
                                         </td>
@@ -263,7 +266,7 @@
                     @php [$rIcon, $rValue, $rLabel, $rSpark] = $railCard; @endphp
                     <div class="sub-card px-4 pt-4 pb-3">
                         <div class="flex items-start gap-3">
-                            <img src="{{ asset('images/landing/' . $rIcon) }}" alt="" class="w-[44px] h-[44px] shrink-0">
+                            <span class="w-[44px] h-[44px] shrink-0 rounded-xl grid place-items-center" style="background:{{ $rIcon[1] }};color:{{ $rIcon[2] }}" aria-hidden="true"><i data-lucide="{{ $rIcon[0] }}" class="w-[22px] h-[22px]" stroke-width="1.9"></i></span>
                             <div class="min-w-0">
                                 <p class="text-[21px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $rValue }}</p>
                                 <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $rLabel }}</p>
@@ -312,7 +315,7 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
-                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0"><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
+                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><i data-lucide="{{ $qIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#8A5A16] dark:text-[#EDB33A]" stroke-width="1.9" aria-hidden="true"></i><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
                             @endforeach
                         </div>
                     </section>

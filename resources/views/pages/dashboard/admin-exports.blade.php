@@ -25,7 +25,15 @@
         'pdf'  => ['PDF',  'bg-[#FAE7E3] dark:bg-[#3A1013] text-[#C4392B] dark:text-[#F0555C]'],
         'zip'  => ['ZIP',  'bg-[#ECE6F7] dark:bg-[#1E1733] text-[#7C4FE0] dark:text-[#BCA4F0]'],
     ];
-    $fileIcon = ['csv' => 'dex-file-csv.png', 'xlsx' => 'dex-file-xlsx.png', 'pdf' => 'dex-file-pdf.png', 'zip' => 'dex-file-zip.png'];
+    // [lucide name, light colour, dark colour] — the design's coloured file
+    // badges as stroked glyphs, so the format still reads by shape and colour
+    // without a raster tile that keeps its own white edge on the dark theme.
+    $fileIcon = [
+        'csv'  => ['file-spreadsheet', '#0A6220', '#4FB06C'],
+        'xlsx' => ['file-chart-column', '#084512', '#4FB06C'],
+        'pdf'  => ['file-text', '#9A080E', '#F0555C'],
+        'zip'  => ['file-archive', '#562E93', '#BCA4F0'],
+    ];
     $statusMeta = [
         'reussi'   => [$isFr ? 'Réussi' : 'Success',      'text-[#157A43] dark:text-[#339B56]', 'circle-check'],
         'en_cours' => [$isFr ? 'En cours' : 'Running',    'text-[#DF860A] dark:text-[#EDB33A]', 'dot'],
@@ -54,12 +62,15 @@
     $dexRun     = (int) ($exportByStatus['en_cours'] ?? 0);
     $dexFail    = (int) ($exportByStatus['echoue'] ?? 0);
     $dexPlan    = (int) ($exportByStatus['planifie'] ?? 0);
+    // [lucide name, tile fill] — the design's raster tiles redrawn as lucide
+    // glyphs on the same fills. A stroked glyph inherits its colour, so nothing
+    // here carries a baked white edge onto the dark theme.
     $cards = [
-        ['dex-kpi-1.png', number_format($dexTotal),        $isFr ? 'Exports Totaux' : 'Total Exports',       ''],
-        ['dex-kpi-2.png', number_format($dexOk),           $isFr ? 'Exports Réussis' : 'Successful Exports', $dexOfTotal($dexOk)],
-        ['dex-kpi-3.png', number_format($dexRun),          $isFr ? 'En Cours' : 'Running',                   $dexOfTotal($dexRun)],
-        ['dex-kpi-4.png', number_format($dexFail),         $isFr ? 'Échoués' : 'Failed',                     $dexOfTotal($dexFail)],
-        ['dex-kpi-5.png', $dexSize($exportStats['bytes']), $isFr ? 'Données Exportées' : 'Data Exported',    ''],
+        [['file-down', '#04411C'],    number_format($dexTotal),        $isFr ? 'Exports Totaux' : 'Total Exports',       ''],
+        [['shield-check', '#6F3E09'], number_format($dexOk),           $isFr ? 'Exports Réussis' : 'Successful Exports', $dexOfTotal($dexOk)],
+        [['clock', '#9B4503'],        number_format($dexRun),          $isFr ? 'En Cours' : 'Running',                   $dexOfTotal($dexRun)],
+        [['circle-x', '#850D0E'],     number_format($dexFail),         $isFr ? 'Échoués' : 'Failed',                     $dexOfTotal($dexFail)],
+        [['database', '#543186'],     $dexSize($exportStats['bytes']), $isFr ? 'Données Exportées' : 'Data Exported',    ''],
     ];
 
     // Donut — real status split of the registry.
@@ -81,7 +92,7 @@
     $dexConic = $dexSegs ? 'conic-gradient(' . implode(', ', $dexSegs) . ')' : '#F3E9DA';
 
     // Type bars — real per-dataset counts (icons/colours cycle through the design set).
-    $dexTypeIcons  = ['dex-type-1.png', 'dex-type-2.png', 'dex-type-3.png', 'dex-type-4.png', 'dex-type-5.png'];
+    $dexTypeIcons  = ['file-text', 'users', 'package', 'receipt', 'folder-tree'];
     $dexTypeColors = ['#10562C', '#E48C16', '#5887BD', '#B84A45', '#9882BB'];
     $typeBars = [];
     foreach ($exportByDataset as $ti => $td) {
@@ -93,10 +104,10 @@
     }
 
     $quickActions = [
-        ['dex-qa-1.png', $isFr ? 'Créer un nouvel export' : 'Create a new export', '#dex-new'],
-        ['dex-qa-2.png', $isFr ? 'Export planifié' : 'Scheduled export',           route('admin.exports', ['lang' => $lang, 'statut' => 'planifie'])],
-        ['dex-qa-3.png', $isFr ? 'Modèles d\'export' : 'Export templates',         route('admin.settings', ['lang' => $lang])],
-        ['dex-qa-4.png', $isFr ? 'Paramètres d\'export' : 'Export settings',       route('admin.settings', ['lang' => $lang])],
+        ['plus',            $isFr ? 'Créer un nouvel export' : 'Create a new export', '#dex-new'],
+        ['calendar-clock',  $isFr ? 'Export planifié' : 'Scheduled export',           route('admin.exports', ['lang' => $lang, 'statut' => 'planifie'])],
+        ['layout-template', $isFr ? 'Modèles d\'export' : 'Export templates',         route('admin.settings', ['lang' => $lang])],
+        ['settings',        $isFr ? 'Paramètres d\'export' : 'Export settings',       route('admin.settings', ['lang' => $lang])],
     ];
 
     $lastPage = $exports->lastPage();

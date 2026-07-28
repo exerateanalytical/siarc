@@ -25,7 +25,7 @@
             </div>
             @endif
         </a>
-        <span class="absolute top-2 left-2 bg-[#EFA912] text-[#3A2A03] dark:text-[#EDB33A] text-[10px] font-bold tracking-[0.04em] px-2.5 py-1 rounded-md">{{ $bcType }}</span>
+        <span class="absolute top-2 left-2 bg-[#EFA912] text-[#3A2A03] text-[10px] font-bold tracking-[0.04em] px-2.5 py-1 rounded-md">{{ $bcType }}</span>
         @if($bcUser)
         <form method="POST" action="{{ route('businesses.toggle-save', $business->slug) }}" class="absolute top-2 right-2">
             @csrf

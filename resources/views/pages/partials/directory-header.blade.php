@@ -243,7 +243,7 @@
                 @else
                 <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
                 @endif
-                <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#231903] dark:text-[#EDB33A] text-[12.5px] font-bold px-4 py-2 rounded-lg uppercase tracking-[0.04em]">
+                <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#231903] text-[12.5px] font-bold px-4 py-2 rounded-lg uppercase tracking-[0.04em]">
                     {{ $isFr ? 'Vendre sur ArtisanHub237' : 'Sell on ArtisanHub237' }}
                 </a>
                 <span class="flex items-center gap-2 text-[13px] font-semibold">

@@ -152,7 +152,7 @@
 
                         <div class="mt-3 flex items-center gap-5 text-[12.5px]">
                             <span class="inline-flex items-center gap-1.5 text-[#3B382F] dark:text-[#B4B5A6]">
-                                <i data-lucide="star" class="w-4 h-4 text-[#E6B201] dark:text-[#EDB33A]" fill="#E6B201"></i>
+                                <i data-lucide="star" class="w-4 h-4 text-[#E6B201] dark:text-[#EDB33A]" style="fill: currentColor"></i>
                                 <span class="font-semibold">{{ $p->quality_score ? number_format($p->quality_score, 1) : '—' }}</span>
                             </span>
                             <span class="inline-flex items-center gap-1.5 text-[#55524A] dark:text-[#B4B5A6]">
@@ -378,7 +378,7 @@
                 <div class="mt-4 relative h-[190px] rounded-lg border border-dashed border-[#EAE5D8] dark:border-[#262B21] bg-[#FBFAF6] dark:bg-[#12150F] flex items-center justify-center">
                     <svg viewBox="0 0 320 170" class="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="none" aria-hidden="true">
                         @foreach([30, 65, 100, 135] as $gy)
-                        <line x1="0" y1="{{ $gy }}" x2="320" y2="{{ $gy }}" stroke="#D9D3C5" stroke-width="1"/>
+                        <line x1="0" y1="{{ $gy }}" x2="320" y2="{{ $gy }}" style="stroke: rgb(var(--t-border-strong))" stroke-width="1"/>
                         @endforeach
                     </svg>
                     <div class="relative text-center px-6">

@@ -22,17 +22,17 @@
     $headProd = $current ? ($prod[$current->id] ?? 0) : array_sum(array_map(fn ($s) => $prod[$s->id] ?? 0, $sectors->all()));
 
     $trustItems = $isFr ? [
-        ['cat-trust-1.png', 'Authenticité garantie', "Tous nos produits sont\nauthentiques et certifiés."],
-        ['cat-trust-2.png', 'Soutien aux artisans',  "Chaque achat soutient directement\nnos artisans locaux."],
-        ['cat-trust-3.png', 'Paiement sécurisé',     "Transactions 100% sécurisées\net protégées."],
-        ['cat-trust-4.png', 'Livraison fiable',      "Livraison rapide partout\ndans le monde."],
-        ['cat-trust-5.png', 'Service client dédié',  "Une équipe à votre écoute\n7j/7."],
+        ['shield-check','Authenticité garantie', "Tous nos produits sont\nauthentiques et certifiés."],
+        ['users','Soutien aux artisans',  "Chaque achat soutient directement\nnos artisans locaux."],
+        ['lock','Paiement sécurisé',     "Transactions 100% sécurisées\net protégées."],
+        ['truck','Livraison fiable',      "Livraison rapide partout\ndans le monde."],
+        ['headset','Service client dédié',  "Une équipe à votre écoute\n7j/7."],
     ] : [
-        ['cat-trust-1.png', 'Guaranteed authenticity', "All our products are\nauthentic and certified."],
-        ['cat-trust-2.png', 'Support for artisans',    "Every purchase directly supports\nour local artisans."],
-        ['cat-trust-3.png', 'Secure payment',          "100% secure and protected\ntransactions."],
-        ['cat-trust-4.png', 'Reliable delivery',       "Fast delivery anywhere\nin the world."],
-        ['cat-trust-5.png', 'Dedicated support',       "A team at your service\n7 days a week."],
+        ['shield-check','Guaranteed authenticity', "All our products are\nauthentic and certified."],
+        ['users','Support for artisans',    "Every purchase directly supports\nour local artisans."],
+        ['lock','Secure payment',          "100% secure and protected\ntransactions."],
+        ['truck','Reliable delivery',       "Fast delivery anywhere\nin the world."],
+        ['headset','Dedicated support',       "A team at your service\n7 days a week."],
     ];
 @endphp
 <!DOCTYPE html>
@@ -341,7 +341,9 @@
             <div class="mt-7 bg-[#F6F6EF] dark:bg-[#0A0C09] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9] dark:divide-[#6A5210]">
                 @foreach($trustItems as [$trustIcon, $trustTitle, $trustDesc])
                 <div class="flex items-start gap-2.5 lg:px-4 first:lg:pl-0 last:lg:pr-0">
-                    <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[52px] h-[52px] shrink-0 -mt-1" aria-hidden="true">
+                    <span class="w-[52px] h-[52px] rounded-full bg-[#FBF3E6] dark:bg-[#1B2016] flex items-center justify-center shrink-0 -mt-1" aria-hidden="true">
+                        <i data-lucide="{{ $trustIcon }}" class="w-[26px] h-[26px] text-[#04291A] dark:text-[#EDB33A]" stroke-width="1.5"></i>
+                    </span>
                     <div>
                         <h3 class="text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</h3>
                         <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $trustDesc }}</p>

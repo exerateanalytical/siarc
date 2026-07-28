@@ -47,11 +47,11 @@
     $fmt = fn ($n) => $isFr ? number_format($n, 0, ',', ' ') : number_format($n);
 
     $trustItems = [
-        ['product-trust-1.png', $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity', $isFr ? 'Produits 100% authentiques' : '100% authentic products'],
-        ['product-trust-2.png', $isFr ? 'Soutien aux artisans' : 'Support for artisans',     $isFr ? 'Vous contribuez à l\'économie locale' : 'You support the local economy'],
-        ['product-trust-3.png', $isFr ? 'Paiement sécurisé' : 'Secure payment',              $isFr ? 'Transactions protégées' : 'Protected transactions'],
-        ['product-trust-4.png', $isFr ? 'Livraison fiable' : 'Reliable delivery',            $isFr ? "Partout au Cameroun et\nà l'international" : "Across Cameroon and\nworldwide"],
-        ['product-trust-5.png', $isFr ? 'Service client dédié' : 'Dedicated customer service',$isFr ? 'Nous sommes à votre écoute' : 'We are here to listen'],
+        ['shield-check', $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity', $isFr ? 'Produits 100% authentiques' : '100% authentic products'],
+        ['users', $isFr ? 'Soutien aux artisans' : 'Support for artisans',     $isFr ? 'Vous contribuez à l\'économie locale' : 'You support the local economy'],
+        ['lock', $isFr ? 'Paiement sécurisé' : 'Secure payment',              $isFr ? 'Transactions protégées' : 'Protected transactions'],
+        ['truck', $isFr ? 'Livraison fiable' : 'Reliable delivery',            $isFr ? "Partout au Cameroun et\nà l'international" : "Across Cameroon and\nworldwide"],
+        ['headset', $isFr ? 'Service client dédié' : 'Dedicated customer service',$isFr ? 'Nous sommes à votre écoute' : 'We are here to listen'],
     ];
 
 @endphp
@@ -298,7 +298,9 @@
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             @foreach($trustItems as [$trustIcon, $trustTitle, $trustSub])
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[42px] h-[42px] object-contain shrink-0">
+                <span class="w-[42px] h-[42px] rounded-full bg-[#FBF3E6] dark:bg-[#1B2016] flex items-center justify-center shrink-0" aria-hidden="true">
+                    <i data-lucide="{{ $trustIcon }}" class="w-[21px] h-[21px] text-[#04291A] dark:text-[#EDB33A]" stroke-width="1.6"></i>
+                </span>
                 <div class="leading-tight">
                     <p class="text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
                     <p class="mt-0.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line">{{ $trustSub }}</p>

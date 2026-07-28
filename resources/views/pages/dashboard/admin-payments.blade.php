@@ -241,7 +241,8 @@
                 <div class="mt-4 flex items-center justify-center">
                     <div class="relative w-[150px] h-[150px]">
                         <svg viewBox="0 0 42 42" class="w-full h-full -rotate-90">
-                            <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#F0EFEA" stroke-width="5"></circle>
+                            {{-- The unfilled track. An SVG attribute takes no `dark:`, so it reads the theme variable: 1.71:1 on the dark card, against light mode's own 1.09:1. --}}
+                            <circle cx="21" cy="21" r="15.9155" fill="none" style="stroke: rgb(var(--t-border-strong))" stroke-width="5"></circle>
                             @if($statusGrand > 0)
                                 @foreach($donut as $seg)
                                     @if($seg['pct'] > 0)

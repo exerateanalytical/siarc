@@ -35,15 +35,15 @@
     ];
 
     $trustItems = [
-        ['vendor-trust-1.png', $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity',
+        ['shield-check', $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity',
          $isFr ? "Tous nos artisans et entreprises\nsont vérifiés" : "All our artisans and businesses\nare verified"],
-        ['vendor-trust-2.png', $isFr ? 'Soutien à l\'économie locale' : 'Support for the local economy',
+        ['user-round', $isFr ? 'Soutien à l\'économie locale' : 'Support for the local economy',
          $isFr ? "Ensemble, valorisons le savoir-faire\ncamerounais" : "Together, let's promote Cameroonian\nknow-how"],
-        ['vendor-trust-3.png', $isFr ? 'Paiement sécurisé' : 'Secure payment',
+        ['lock', $isFr ? 'Paiement sécurisé' : 'Secure payment',
          $isFr ? "Transactions protégées\net sécurisées" : "Protected and secure\ntransactions"],
-        ['vendor-trust-4.png', $isFr ? 'Mise en relation directe' : 'Direct connection',
+        ['message-circle', $isFr ? 'Mise en relation directe' : 'Direct connection',
          $isFr ? "Contactez directement artisans\net entreprises" : "Contact artisans and businesses\ndirectly"],
-        ['vendor-trust-5.png', $isFr ? 'Visibilité & Promotion' : 'Visibility & Promotion',
+        ['megaphone', $isFr ? 'Visibilité & Promotion' : 'Visibility & Promotion',
          $isFr ? "Boostez votre activité et touchez\nplus de clients" : "Boost your activity and reach\nmore customers"],
     ];
 
@@ -187,7 +187,7 @@
                     <label class="mt-2.5 flex items-center gap-2.5 cursor-pointer">
                         <input type="checkbox" name="tier" value="certified" class="ui-check">
                         <span class="text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Artisanat Authentique' : 'Authentic Craftsmanship' }}</span>
-                        <img src="{{ asset('images/landing/vendor-cert-icon.png') }}" alt="" class="w-[15px] h-[14px] object-contain">
+                        <i data-lucide="award" class="w-[15px] h-[15px] text-[#C08A16] dark:text-[#EDB33A] shrink-0" stroke-width="1.8" aria-hidden="true"></i>
                     </label>
 
                     <button type="submit" class="mt-5 w-full h-[38px] bg-[#02331C] hover:bg-leaf text-white text-[12.5px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors">
@@ -202,7 +202,7 @@
                 <img src="{{ asset('images/landing/vendor-cta-mask.png') }}" alt="" class="absolute right-0 top-0 h-full w-auto object-cover" aria-hidden="true">
                 <p class="text-[13px] font-bold text-white leading-snug">{{ $isFr ? 'Vous êtes artisan ou entreprise ?' : 'Are you an artisan or a business?' }}</p>
                 <p class="mt-2 text-[11px] text-[#B9C4BC] leading-relaxed">{{ $isFr ? 'Rejoignez notre plateforme pour promouvoir vos créations et développer votre activité.' : 'Join our platform to promote your creations and grow your activity.' }}</p>
-                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="relative z-10 mt-4 inline-flex items-center gap-2 bg-[#EBA51D] hover:bg-goldbt hover:dark:bg-[#3A2B06] text-[#3A2E08] dark:text-[#EDB33A] text-[12px] font-semibold px-3.5 py-2.5 rounded-lg transition-colors">
+                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="relative z-10 mt-4 inline-flex items-center gap-2 bg-[#EBA51D] hover:bg-goldbt text-[#3A2E08] text-[12px] font-semibold px-3.5 py-2.5 rounded-lg transition-colors">
                     {{ $isFr ? 'S\'inscrire maintenant' : 'Sign up now' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
@@ -346,7 +346,9 @@
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             @foreach($trustItems as [$trustIcon, $trustTitle, $trustSub])
             <div class="flex items-start gap-3">
-                <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[40px] h-[42px] object-contain shrink-0">
+                <span class="w-[42px] h-[42px] rounded-full bg-[#FBF3E6] dark:bg-[#1B2016] flex items-center justify-center shrink-0" aria-hidden="true">
+                    <i data-lucide="{{ $trustIcon }}" class="w-[21px] h-[21px] text-[#04291A] dark:text-[#EDB33A]" stroke-width="1.6"></i>
+                </span>
                 <div class="leading-tight">
                     <p class="text-[12px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
                     <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line leading-relaxed">{{ $trustSub }}</p>
