@@ -80,6 +80,32 @@ Route::get('/verifier/{ref}', function (Request $request, string $ref) {
         'lang' => in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : null,
     ]));
 })->where('ref', '[A-Za-z0-9\-]+')->middleware('throttle:30,1')->name('product.certificate.verify.short');
+
+/*
+ * The Certification Authority's public key, in the standard JOSE form.
+ *
+ * This is what makes "digitally signed" mean anything on a certificate we
+ * issue: a museum, insurer or customs office can verify a document offline,
+ * against a key they pinned themselves, without asking us and believing the
+ * answer. Cached hard because it changes only at a key ceremony.
+ */
+Route::get('/.well-known/jwks.json', function () {
+    return response()->json(\App\Support\CertificationAuthority::jwks())
+        ->header('Cache-Control', 'public, max-age=86400');
+})->name('ca.jwks');
+
+/* Human-readable companion to the JWKS, with the verification recipe. */
+Route::get('/autorite-de-certification', function (Request $request) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    return view('pages.certification-authority', [
+        'lang'  => $lang,
+        'jwks'  => \App\Support\CertificationAuthority::jwks(),
+        'kid'   => \App\Support\CertificationAuthority::kid(),
+        'head'  => \App\Support\CertificationAuthority::head(),
+        'chain' => \App\Support\CertificationAuthority::verifyChain(),
+    ]);
+})->middleware('throttle:30,1')->name('ca.page');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;

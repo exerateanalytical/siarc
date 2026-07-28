@@ -16,11 +16,17 @@ use Illuminate\Support\Str;
  * says.
  *
  * What it deliberately does NOT assert: that the object in a buyer's hands is
- * the one in the photographs. Proving that needs a physical link — an AI visual
- * fingerprint, an invisible watermark, an NFC tag — and the platform has none
- * of those. Printing "AI Visual Fingerprint" with an empty value beside it
- * would be a claim we cannot keep, which is the whole failure mode this page
- * exists to avoid.
+ * the one in the photographs. The platform can tie a certificate to a
+ * photograph — see perceptualHash() and ImageFingerprint — but nothing ties a
+ * photograph to the wood in front of you. That needs a physical mark: an NFC
+ * tag, an embedded chip. Until one exists the certificate says so plainly,
+ * because a document that overstates its reach is worth less than one that
+ * states its limit.
+ *
+ * Every certificate carries two signatures. The HMAC is ours to re-derive and
+ * catches our own corruption; the Ed25519 signature from CertificationAuthority
+ * is what a museum or insurer can check against the published public key
+ * without asking us anything.
  */
 class ProductCertificate
 {
@@ -130,9 +136,8 @@ class ProductCertificate
      *
      * Anyone can copy the visible fields off a certificate page; only the
      * platform holds APP_KEY, so only the platform can produce a signature that
-     * recomputes. This is what "digitally signed" means here — an HMAC the
-     * server can re-derive — and nothing more. It is not a PKI signature a third
-     * party could check without us, and the page does not claim it is.
+     * recomputes. This is the internal integrity check. The externally
+     * verifiable one is the authority's Ed25519 signature stored beside it.
      */
     public static function signatureFor(string $certificateNo, string $contentHash, ?string $imagePhash = null): string
     {
@@ -178,6 +183,11 @@ class ProductCertificate
         $certificateNo = "AHC-COA-{$year}-{$seq}" . ($version > 1 ? "-V{$version}" : '');
         $contentHash   = self::hashFor($product);
         $imagePhash    = self::perceptualHash($product);
+        $issuedAt      = now();
+
+        [$caSignature, $caKid] = CertificationAuthority::signCertificate(
+            'coa', $certificateNo, $contentHash, $issuedAt->toIso8601String()
+        );
 
         $id = DB::table('product_certificates')->insertGetId([
             'uuid'             => (string) Str::uuid(),
@@ -191,10 +201,16 @@ class ProductCertificate
             'content_hash'     => $contentHash,
             'image_phash'      => $imagePhash,
             'signature'        => self::signatureFor($certificateNo, $contentHash, $imagePhash),
-            'issued_at'        => now(),
+            // The authority's Ed25519 signature: unlike the HMAC above, this one
+            // can be checked by anyone holding the published public key.
+            'ca_signature'     => $caSignature,
+            'ca_kid'           => $caKid,
+            'issued_at'        => $issuedAt,
             'created_at'       => now(),
             'updated_at'       => now(),
         ]);
+
+        CertificationAuthority::appendToChain('coa', $id, 'issued');
 
         return DB::table('product_certificates')->find($id);
     }
@@ -209,6 +225,32 @@ class ProductCertificate
      *
      * @return array{status:string, certificate:?object, product:?Product}
      */
+    /**
+     * Whether the authority's signature over this certificate still verifies.
+     *
+     * Reported separately from the certificate status because they answer
+     * different questions: "superseded" means the record moved on, while a
+     * failed signature would mean the stored row itself had been tampered with.
+     *
+     * @return array{state:string, kid:?string}
+     */
+    public static function signatureState(object $cert): array
+    {
+        if (! $cert->ca_signature) {
+            return ['state' => 'unsigned', 'kid' => null];
+        }
+
+        $ok = CertificationAuthority::verifyCertificate(
+            'coa',
+            $cert->certificate_no,
+            $cert->content_hash,
+            \Illuminate\Support\Carbon::parse($cert->issued_at)->toIso8601String(),
+            $cert->ca_signature
+        );
+
+        return ['state' => $ok ? 'valid' : 'invalid', 'kid' => $cert->ca_kid];
+    }
+
     public static function verify(string $reference, ?string $pin = null): array
     {
         $reference = trim($reference);
@@ -262,6 +304,11 @@ class ProductCertificate
             }
         }
 
-        return ['status' => 'valid', 'certificate' => $cert, 'product' => $product];
+        return [
+            'status'      => 'valid',
+            'certificate' => $cert,
+            'product'     => $product,
+            'signature'   => self::signatureState($cert),
+        ];
     }
 }

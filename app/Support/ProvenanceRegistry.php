@@ -247,6 +247,10 @@ class ProvenanceRegistry
             $row['content_hash'] = self::transferHash($product, $row);
             $row['signature']    = ProductCertificate::signatureFor($no, $row['content_hash'], $product->oln);
 
+            [$row['ca_signature'], $row['ca_kid']] = CertificationAuthority::signCertificate(
+                'otc', $no, $row['content_hash'], $row['issued_at']->toIso8601String()
+            );
+
             $id = DB::table('ownership_transfers')->insertGetId($row);
 
             self::event('otc', $id, 'issued');
@@ -282,16 +286,9 @@ class ProvenanceRegistry
      */
     public static function event(string $type, int $id, string $event, ?string $note = null, ?string $actor = null): void
     {
-        DB::table('certificate_events')->insert([
-            'certificate_type' => $type,
-            'certificate_id'   => $id,
-            'event'            => $event,
-            'actor_user_id'    => $actor,
-            'note'             => $note,
-            'occurred_at'      => now(),
-            'created_at'       => now(),
-            'updated_at'       => now(),
-        ]);
+        // Goes through the authority so every event joins the hash chain; an
+        // audit trail that can be edited without trace is not an audit trail.
+        CertificationAuthority::appendToChain($type, $id, $event, $note, $actor);
     }
 
     /** @return array<int,object> */

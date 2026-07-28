@@ -31,3 +31,6 @@ SIARC/
 
 # Release bundles built by scripts/package-release.sh (never commit an upload)
 /build
+
+# The Certification Authority signing key must never be committed.
+/storage/app/ca
