@@ -178,7 +178,7 @@
             </p>
         </div>
 
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-7 max-w-2xl">
+        <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-7 max-w-2xl">
             @foreach($heroItems as [$hiIcon, $hiText])
             <div>
                 <i data-lucide="{{ $hiIcon }}" class="w-8 h-8 text-gold" stroke-width="1.4"></i>
@@ -230,7 +230,7 @@
 <section class="relative bg-pine overflow-hidden">
     <div class="absolute inset-0 opacity-60 bg-repeat" style="background-image:url('{{ asset('images/landing/about-pattern-tile.png') }}')"></div>
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8">
-        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 sm:divide-x divide-gold/25 py-10">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 sm:divide-x divide-gold/25 py-10">
             @foreach($aboutTiles as [$asIcon, $asNum, $asLabel, $asCap])
             <div class="flex items-start gap-3.5 px-2 lg:px-6 py-3 sm:py-0">
                 <i data-lucide="{{ $asIcon }}" class="w-7 h-7 text-gold shrink-0 mt-1" stroke-width="1.4"></i>

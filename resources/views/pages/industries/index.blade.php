@@ -338,7 +338,7 @@
 
 
             <!-- Trust strip -->
-            <div class="mt-7 bg-[#F6F6EF] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9]">
+            <div class="mt-7 bg-[#F6F6EF] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9]">
                 @foreach($trustItems as [$trustIcon, $trustTitle, $trustDesc])
                 <div class="flex items-start gap-2.5 lg:px-4 first:lg:pl-0 last:lg:pr-0">
                     <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[52px] h-[52px] shrink-0 -mt-1" aria-hidden="true">

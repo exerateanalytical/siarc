@@ -227,35 +227,9 @@
             <p class="mt-2 text-center text-[11px] text-muted">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
             @endif
 
-            <div class="mt-7 flex items-center gap-4">
-                <span class="flex-1 h-px bg-[#E4E0D8]"></span>
-                <span class="text-[14.5px] text-muted">{{ $isFr ? 'ou continuer avec' : 'or continue with' }}</span>
-                <span class="flex-1 h-px bg-[#E4E0D8]"></span>
-            </div>
-
-            <div class="mt-6 grid grid-cols-2 gap-4">
-                <button type="button" data-soon
-                    class="h-[54px] rounded-[12px] border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] flex items-center justify-center gap-3 text-[16.5px] font-semibold text-[#26251F] transition-colors">
-                    <svg viewBox="0 0 24 24" class="w-[22px] h-[22px]" aria-hidden="true">
-                        <path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81z"/>
-                        <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.93-2.91l-3.87-3c-1.07.72-2.44 1.14-4.06 1.14-3.12 0-5.77-2.11-6.71-4.95H1.29v3.1A12 12 0 0 0 12 24z"/>
-                        <path fill="#FBBC05" d="M5.29 14.28a7.2 7.2 0 0 1 0-4.56v-3.1H1.29a12 12 0 0 0 0 10.76l4-3.1z"/>
-                        <path fill="#EA4335" d="M12 4.77c1.76 0 3.34.6 4.58 1.79l3.44-3.44A11.98 11.98 0 0 0 12 0 12 12 0 0 0 1.29 6.62l4 3.1C6.23 6.88 8.88 4.77 12 4.77z"/>
-                    </svg>
-                    Google
-                </button>
-                <button type="button" data-soon
-                    class="h-[54px] rounded-[12px] border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] flex items-center justify-center gap-3 text-[16.5px] font-semibold text-[#26251F] transition-colors">
-                    <svg viewBox="0 0 24 24" class="w-[22px] h-[22px]" aria-hidden="true">
-                        <circle cx="12" cy="12" r="12" fill="#1877F2"/>
-                        <path fill="#fff" d="M16.4 15.4l.53-3.4h-3.28V9.75c0-.93.46-1.84 1.93-1.84h1.49V5.01S15.71 4.8 14.42 4.8c-2.7 0-4.46 1.62-4.46 4.56V12H7v3.4h2.96v8.23a11.9 11.9 0 0 0 3.69 0V15.4h2.75z"/>
-                    </svg>
-                    Facebook
-                </button>
-            </div>
-            <p id="social-soon" class="hidden mt-2 text-[12.5px] text-muted text-center">
-                {{ $isFr ? 'Bientôt disponible.' : 'Coming soon.' }}
-            </p>
+            {{-- Google and Facebook sign-in removed for launch: neither provider
+                 is configured, so the buttons only ever said "coming soon". The
+                 passkey option below is real and stays. --}}
 
             <button type="button" id="passkey-login"
                 class="mt-4 w-full h-[48px] rounded-[12px] border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] flex items-center justify-center gap-3 text-[15px] font-semibold text-[#26251F] transition-colors">
@@ -299,10 +273,6 @@
         lucide.createIcons();
     });
 
-    // Social providers are not wired up yet
-    document.querySelectorAll('[data-soon]').forEach(btn => {
-        btn.addEventListener('click', () => document.getElementById('social-soon').classList.remove('hidden'));
-    });
 
     // ── Passkey login ──
     function pkB64ToBuf(obj) {

@@ -218,7 +218,7 @@
 
 <!-- Stats band -->
 <section class="max-w-[1280px] mx-auto px-5 lg:px-8">
-    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 sm:divide-x divide-[#E2DCCF] py-9">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 sm:divide-x divide-[#E2DCCF] py-9">
         @foreach($statItems as $stat)
         <div class="flex items-center gap-3.5 px-2 lg:px-4 py-3 sm:py-1">
             <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0" style="background:{{ $stat['color'] }}">
@@ -469,7 +469,7 @@
     <div class="lg:mx-12 relative">
         <!-- Mission strip -->
         <div class="bg-pineur">
-            <div class="max-w-[1200px] mx-auto px-5 lg:px-8 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+            <div class="max-w-[1200px] mx-auto px-5 lg:px-8 py-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-5">
                 @foreach($missionItems as [$mIcon, $mTitle, $mSub])
                 <div class="flex items-center gap-3">
                     <i data-lucide="{{ $mIcon }}" class="w-8 h-8 text-goldic shrink-0" stroke-width="1.4"></i>

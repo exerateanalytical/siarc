@@ -50,7 +50,7 @@
 </section>
 
 <main class="max-w-[1024px] mx-auto px-5 py-10 pb-20">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="grid grid-cols-2 md:grid-cols-2 gap-5">
         @foreach($guideSteps as [$gsIcon, $gsTitle, $gsDesc, $gsCta, $gsHref])
         <article class="bg-white border border-[#ECECEA] rounded-2xl p-6 flex flex-col">
             <span class="w-[46px] h-[46px] rounded-xl bg-[#E4F1E8] flex items-center justify-center">

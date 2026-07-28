@@ -34,7 +34,7 @@
 </section>
 
 <main class="max-w-[820px] mx-auto px-5 py-10 pb-20">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
         @foreach($careerValues as [$cvIcon, $cvTitle, $cvDesc])
         <div class="bg-white border border-[#ECECEA] rounded-2xl p-5 text-center">
             <span class="w-[44px] h-[44px] mx-auto rounded-xl bg-[#E4F1E8] flex items-center justify-center">

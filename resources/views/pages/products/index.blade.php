@@ -295,7 +295,7 @@
 <!-- Trust strip -->
 <div class="bg-[#F8F6F2] border-t border-[#EEEBE4]">
     <div class="max-w-[1472px] mx-auto px-4 sm:px-6 py-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             @foreach($trustItems as [$trustIcon, $trustTitle, $trustSub])
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[42px] h-[42px] object-contain shrink-0">

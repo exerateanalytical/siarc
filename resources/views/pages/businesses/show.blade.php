@@ -374,7 +374,7 @@
                                      used to follow the artisan's real description,
                                      ending "...le riche patrimoine culturel Bamoun"
                                      on every shop. The description above is enough. --}}
-                                <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="mt-5 grid grid-cols-2 sm:grid-cols-2 gap-4">
                                     @foreach($aboutFeatures as [$afIcon, $afTitle, $afSub])
                                     <div class="flex items-start gap-3">
                                         <span class="w-9 h-9 rounded-lg bg-[#FBF4E0] flex items-center justify-center shrink-0">

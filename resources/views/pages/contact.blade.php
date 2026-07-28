@@ -248,7 +248,7 @@
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8 py-12">
         <h2 class="font-serif text-[27px] sm:text-[31px] text-[#20211D] font-medium text-center">{{ $isFr ? 'Comment pouvons-nous vous aider ?' : 'How can we help you?' }}</h2>
         <div class="mt-4 h-[2.5px] w-[62px] bg-[#D9991F] mx-auto"></div>
-        <div class="mt-11 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-9 lg:divide-x lg:divide-[#E5DFD3]">
+        <div class="mt-11 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-y-9 lg:divide-x lg:divide-[#E5DFD3]">
             @foreach($helpCards as [$helpIcon, $helpTitle, $helpSub])
             <div class="flex flex-col items-center text-center px-4">
                 <img src="{{ asset('images/landing/' . $helpIcon) }}" alt="" class="h-[46px] w-auto object-contain">

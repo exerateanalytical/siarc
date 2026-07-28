@@ -266,7 +266,7 @@
     </div>
 
     <!-- Feature row -->
-    <div class="no-print mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1240px] mx-auto">
+    <div class="no-print mt-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1240px] mx-auto">
         @foreach($features as [$ftImg, $ftTitle, $ftSub])
         <div class="flex items-start gap-4 justify-center">
             <img src="{{ asset('images/landing/' . $ftImg) }}" alt="" class="w-[46px] h-auto object-contain shrink-0">
