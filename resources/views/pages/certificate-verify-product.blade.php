@@ -142,6 +142,42 @@
                     </div>
                     @endif
                 </dl>
+
+                {{-- The certificate itself prints only the leading characters of
+                     these values, because it is a poster and a 64-character
+                     string across it is unreadable. The full values belong here,
+                     on the page whose whole job is checking, so that anyone
+                     comparing two copies of a certificate has something
+                     complete to compare. --}}
+                <details class="mt-4">
+                    <summary class="text-[12.5px] font-semibold text-[#157A43] cursor-pointer">
+                        {{ $isFr ? 'Empreintes complètes' : 'Full fingerprints' }}
+                    </summary>
+                    <div class="mt-2 space-y-2">
+                        <div>
+                            <p class="ui-dt">{{ $isFr ? 'Empreinte du contenu (SHA-256)' : 'Content hash (SHA-256)' }}</p>
+                            <p class="mt-1 font-mono text-[10.5px] leading-relaxed text-[#55524A] break-all">{{ $cert->content_hash }}</p>
+                        </div>
+                        @if($cert->image_phash)
+                        <div>
+                            <p class="ui-dt">{{ $isFr ? 'Empreinte de l\'image' : 'Perceptual image hash' }}</p>
+                            <p class="mt-1 font-mono text-[10.5px] text-[#55524A] break-all">{{ $cert->image_phash }}</p>
+                        </div>
+                        @endif
+                        @if($cert->signature)
+                        <div>
+                            <p class="ui-dt">{{ $isFr ? 'Signature (HMAC-SHA256)' : 'Signature (HMAC-SHA256)' }}</p>
+                            <p class="mt-1 font-mono text-[10.5px] leading-relaxed text-[#55524A] break-all">{{ $cert->signature }}</p>
+                        </div>
+                        @endif
+                        <p class="ui-hint">
+                            {{ $isFr
+                               ? 'Recalculées à chaque vérification. Toute modification de la fiche ou de la photographie change ces valeurs et remplace le certificat.'
+                               : 'Recomputed on every verification. Any change to the record or the photograph changes these values and supersedes the certificate.' }}
+                        </p>
+                    </div>
+                </details>
+
                 <a href="{{ route('product.certificate', ['slug' => $product->slug, 'lang' => $lang]) }}"
                    class="ui-btn ui-btn-secondary ui-btn-sm mt-4">
                     {{ $isFr ? 'Voir le certificat complet' : 'View the full certificate' }}

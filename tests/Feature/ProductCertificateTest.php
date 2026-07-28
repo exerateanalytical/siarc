@@ -58,10 +58,28 @@ class ProductCertificateTest extends TestCase
         $product = $this->publishedProduct();
         $cert    = ProductCertificate::forProduct($product);
 
+        // The certificate is a poster, so it prints the leading characters of
+        // the fingerprint rather than all sixty-four across the page.
         $this->get('/certificat/' . $product->slug)
             ->assertOk()
             ->assertSee($cert->certificate_no)
-            ->assertSee($cert->content_hash);
+            ->assertSee(strtoupper(substr($cert->content_hash, 0, 24)));
+    }
+
+    /**
+     * Truncating the fingerprint on the poster must not mean the full value is
+     * nowhere public — two people comparing copies of a certificate need
+     * something complete to compare. It lives on the verification page.
+     */
+    public function test_the_full_fingerprints_are_published_for_checking(): void
+    {
+        $product = $this->publishedProduct();
+        $cert    = ProductCertificate::forProduct($product);
+
+        $this->get('/verifier?ref=' . $cert->certificate_no)
+            ->assertOk()
+            ->assertSee($cert->content_hash)
+            ->assertSee($cert->signature);
     }
 
     /**
@@ -128,10 +146,10 @@ class ProductCertificateTest extends TestCase
         $html = $this->get('/certificat/' . $product->slug)->assertOk()->getContent();
 
         foreach ([
-            'Empreinte visuelle IA', 'AI Visual Fingerprint',
-            'Filigrane invisible', 'Invisible Watermark',
-            'Signature numérique', 'Digital Signature',
-            'Blockchain', 'Perceptual Image Hash',
+            'Empreinte visuelle IA', 'AI Visual Fingerprint', 'AI Image Fingerprint',
+            'Filigrane', 'Watermark',
+            'Blockchain', 'NFC', 'Hologramme', 'Hologram',
+            'infalsifiable', 'tamper-proof',
         ] as $unbacked) {
             $this->assertStringNotContainsString($unbacked, $html, "The certificate claims \"{$unbacked}\", which the platform does not implement.");
         }
@@ -141,6 +159,120 @@ class ProductCertificateTest extends TestCase
         $this->get('/certificat/' . $product->slug . '?lang=en')
             ->assertOk()
             ->assertSee('does not prove');
+    }
+
+    /**
+     * The perceptual hash and the signature were removed from the "unbacked"
+     * list above because they are now implemented. That is only defensible if
+     * they actually compute — a constant, or a value derived from the row id,
+     * would be exactly the sort of decorative field the list exists to keep
+     * off the page. These two tests are what earn that removal.
+     */
+    public function test_the_perceptual_hash_is_computed_from_the_photograph(): void
+    {
+        $product = $this->publishedProduct();
+
+        // Two visibly different pictures must not hash alike, and the same
+        // picture re-encoded must still hash the same.
+        $black = $this->storeImage($product, imagecreatetruecolor(240, 240));
+
+        // Vertical stripes, not a left-to-right gradient: a difference hash
+        // compares each pixel with its right-hand neighbour, so a monotonic
+        // ramp and a flat fill both reduce to all-zero bits. Stripes give the
+        // alternation the hash is actually built to see.
+        $stripes = imagecreatetruecolor(240, 240);
+        $white   = imagecolorallocate($stripes, 255, 255, 255);
+        for ($x = 0; $x < 240; $x += 60) {
+            imagefilledrectangle($stripes, $x, 0, $x + 29, 239, $white);
+        }
+
+        $first = ProductCertificate::perceptualHash($product->fresh());
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{16}$/', (string) $first);
+
+        // Re-encode the very same picture at a different size: the hash holds.
+        $wider = imagecreatetruecolor(480, 480);
+        imagecopyresampled($wider, $black, 0, 0, 0, 0, 480, 480, 240, 240);
+        $this->replaceImage($product, $wider);
+        $this->assertSame($first, ProductCertificate::perceptualHash($product->fresh()));
+
+        // A different picture: the hash moves.
+        $this->replaceImage($product, $stripes);
+        $this->assertNotSame($first, ProductCertificate::perceptualHash($product->fresh()));
+    }
+
+    public function test_the_signature_is_keyed_and_not_reproducible_without_the_key(): void
+    {
+        $product = $this->publishedProduct();
+        $cert    = ProductCertificate::forProduct($product);
+
+        $this->assertSame(
+            ProductCertificate::signatureFor($cert->certificate_no, $cert->content_hash, $cert->image_phash),
+            $cert->signature,
+            'The stored signature must recompute from the certified values.'
+        );
+
+        // Everything the signature covers is printed on the page. Only the key
+        // is not — so an identical input under a different key must not match.
+        $forged = hash_hmac('sha256', implode('|', [$cert->certificate_no, $cert->content_hash, $cert->image_phash ?? '']), 'not-the-app-key');
+        $this->assertNotSame($cert->signature, $forged);
+    }
+
+    /**
+     * A replaced photograph keeps its file path, so the content hash alone
+     * would not notice. This is the case the perceptual hash exists for.
+     */
+    public function test_swapping_the_photograph_in_place_supersedes_the_certificate(): void
+    {
+        $product = $this->publishedProduct();
+        $this->storeImage($product, imagecreatetruecolor(240, 240));
+
+        $cert = ProductCertificate::forProduct($product->fresh());
+        $this->assertNotNull($cert->image_phash);
+        $this->assertSame('valid', ProductCertificate::verify($cert->certificate_no)['status']);
+
+        // Structure, not a flat fill: any two uniform images differ in no
+        // left-to-right comparison and so legitimately share a hash.
+        $other = imagecreatetruecolor(240, 240);
+        $ink   = imagecolorallocate($other, 250, 250, 250);
+        for ($x = 0; $x < 240; $x += 60) {
+            imagefilledrectangle($other, $x, 0, $x + 29, 239, $ink);
+        }
+        $this->replaceImage($product, $other);
+
+        // Same product row, same file path, different picture.
+        $this->assertSame($cert->content_hash, ProductCertificate::hashFor($product->fresh()));
+        $this->assertSame('superseded', ProductCertificate::verify($cert->certificate_no)['status']);
+    }
+
+    /** Attaches a cover image to the product and writes the file to disk. */
+    private function storeImage(Product $product, \GdImage $gd): \GdImage
+    {
+        // The product fixture ships its own cover; this one must replace it,
+        // or the hash under test would be taken from a file we never wrote.
+        DB::table('product_images')->where('product_id', $product->id)->delete();
+
+        $path = 'products/test-' . $product->id . '.png';
+        $full = storage_path('app/public/' . $path);
+
+        @mkdir(dirname($full), 0777, true);
+        imagepng($gd, $full);
+
+        DB::table('product_images')->insert([
+            'product_id' => $product->id,
+            'file_path'  => $path,
+            'is_cover'   => 1,
+            'sort_order' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return $gd;
+    }
+
+    /** Overwrites the file behind the existing cover, leaving the row alone. */
+    private function replaceImage(Product $product, \GdImage $gd): void
+    {
+        imagepng($gd, storage_path('app/public/products/test-' . $product->id . '.png'));
     }
 
     /**
