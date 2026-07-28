@@ -9,6 +9,11 @@ class SiacTaxonomySeeder extends Seeder
 {
     public function run(): void
     {
+        // Handicraft only. The aquaculture, agriculture and agroalimentaire
+        // branches were removed on the owner's instruction (2026-07-28): they
+        // seeded product categories like Tilapia, Carpe, Crevettes, Maïs and
+        // Banane Plantain, which are farm and fish produce rather than
+        // something an artisan makes.
         $industries = [
             [
                 'slug' => 'artisanat', 'icon' => 'hand', 'sort_order' => 1,
@@ -42,46 +47,6 @@ class SiacTaxonomySeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'aquaculture', 'icon' => 'fish', 'sort_order' => 2,
-                'name_fr' => 'Aquaculture & Pêche',
-                'name_en' => 'Aquaculture & Fishing',
-                'description_fr' => 'Élevage de poissons, crevettes, huîtres et produits halieutiques du Cameroun.',
-                'description_en' => 'Fish farming, shrimp, oysters and fishery products from Cameroon.',
-                'sectors' => [
-                    ['slug' => 'pisciculture', 'name_fr' => 'Pisciculture', 'name_en' => 'Fish Farming', 'categories' => [
-                        ['slug' => 'tilapia', 'name_fr' => 'Tilapia', 'name_en' => 'Tilapia'],
-                        ['slug' => 'silure-poisson-chat', 'name_fr' => 'Silure & Poisson-chat', 'name_en' => 'Catfish'],
-                        ['slug' => 'carpe', 'name_fr' => 'Carpe', 'name_en' => 'Carp'],
-                    ]],
-                    ['slug' => 'peche-maritime', 'name_fr' => 'Pêche Maritime', 'name_en' => 'Marine Fishing', 'categories' => [
-                        ['slug' => 'crevettes', 'name_fr' => 'Crevettes', 'name_en' => 'Shrimp'],
-                        ['slug' => 'poissons-marins', 'name_fr' => 'Poissons Marins', 'name_en' => 'Marine Fish'],
-                    ]],
-                    ['slug' => 'transformation-poisson', 'name_fr' => 'Transformation & Conserve', 'name_en' => 'Processing & Preservation', 'categories' => [
-                        ['slug' => 'poisson-fume', 'name_fr' => 'Poisson Fumé & Séché', 'name_en' => 'Smoked & Dried Fish'],
-                        ['slug' => 'conserves-poisson', 'name_fr' => 'Conserves de Poisson', 'name_en' => 'Canned Fish'],
-                    ]],
-                ],
-            ],
-            [
-                'slug' => 'agriculture', 'icon' => 'sprout', 'sort_order' => 3,
-                'name_fr' => 'Agriculture & Agro-industrie',
-                'name_en' => 'Agriculture & Agro-industry',
-                'description_fr' => 'Cacao, café, banane plantain, manioc et produits agricoles transformés.',
-                'description_en' => 'Cocoa, coffee, plantain, cassava and processed agricultural products.',
-                'sectors' => [
-                    ['slug' => 'cultures-rente', 'name_fr' => 'Cultures de Rente', 'name_en' => 'Cash Crops', 'categories' => [
-                        ['slug' => 'cacao', 'name_fr' => 'Cacao & Chocolat', 'name_en' => 'Cocoa & Chocolate'],
-                        ['slug' => 'cafe', 'name_fr' => 'Café', 'name_en' => 'Coffee'],
-                    ]],
-                    ['slug' => 'cultures-vivrieres', 'name_fr' => 'Cultures Vivrières', 'name_en' => 'Food Crops', 'categories' => [
-                        ['slug' => 'manioc-derives', 'name_fr' => 'Manioc & Dérivés', 'name_en' => 'Cassava & Derivatives'],
-                        ['slug' => 'plantain', 'name_fr' => 'Banane Plantain', 'name_en' => 'Plantain'],
-                        ['slug' => 'mais', 'name_fr' => 'Maïs', 'name_en' => 'Corn'],
-                    ]],
-                ],
-            ],
-            [
                 'slug' => 'textile-mode', 'icon' => 'shirt', 'sort_order' => 4,
                 'name_fr' => 'Textile & Mode Africaine',
                 'name_en' => 'Textile & African Fashion',
@@ -92,20 +57,6 @@ class SiacTaxonomySeeder extends Seeder
                         ['slug' => 'vetements-femme', 'name_fr' => 'Vêtements Femme', 'name_en' => "Women's Clothing"],
                         ['slug' => 'vetements-homme', 'name_fr' => 'Vêtements Homme', 'name_en' => "Men's Clothing"],
                         ['slug' => 'accessoires-mode', 'name_fr' => 'Accessoires Mode', 'name_en' => 'Fashion Accessories'],
-                    ]],
-                ],
-            ],
-            [
-                'slug' => 'agroalimentaire', 'icon' => 'utensils', 'sort_order' => 5,
-                'name_fr' => 'Agroalimentaire & Épices',
-                'name_en' => 'Food & Spices',
-                'description_fr' => 'Épices, condiments, huiles essentielles et produits agroalimentaires artisanaux.',
-                'description_en' => 'Spices, condiments, essential oils and artisanal food products.',
-                'sectors' => [
-                    ['slug' => 'epices-condiments', 'name_fr' => 'Épices & Condiments', 'name_en' => 'Spices & Condiments', 'categories' => [
-                        ['slug' => 'poivre-penja', 'name_fr' => 'Poivre de Penja', 'name_en' => 'Penja Pepper'],
-                        ['slug' => 'piments', 'name_fr' => 'Piments & Sauces', 'name_en' => 'Peppers & Sauces'],
-                        ['slug' => 'huiles-vegetales', 'name_fr' => 'Huiles Végétales', 'name_en' => 'Vegetable Oils'],
                     ]],
                 ],
             ],

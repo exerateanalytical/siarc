@@ -30,10 +30,24 @@ class AppServiceProvider extends ServiceProvider
             $rows = DB::table('industries')->whereIn('level', [1, 2])->where('is_active', true)
                 ->orderBy('sort_order')->get(['id', 'parent_id', 'level', 'slug', 'name_fr', 'name_en']);
             $byParent = $rows->groupBy('parent_id');
+            // Only sectors that actually contain trades.
+            //
+            // The industries table carries two things: the official craft
+            // nomenclature (Artisanat d'Art / de Production / de Service, which
+            // hold all 349 métiers between them) and a handful of top-level rows
+            // that exist only as parents for the product-category tree —
+            // "Agriculture & Agro-industrie", "Textile & Mode Africaine" — plus,
+            // on older databases, generic business sectors like "Banque &
+            // Finance" that were never craft at all.
+            //
+            // Those have no filières beneath them, so offering them in a browse
+            // menu gives the visitor a category that can never hold an artisan.
+            // Requiring at least one filière selects the craft sectors without a
+            // hardcoded name list, and keeps doing so as the taxonomy grows.
             $navSectors = $rows->where('level', 1)->map(function ($s) use ($byParent) {
                 $s->filieres = $byParent->get($s->id, collect())->values();
                 return $s;
-            })->values();
+            })->filter(fn ($s) => $s->filieres->isNotEmpty())->values();
             $view->with('navSectors', $navSectors);
         });
     }

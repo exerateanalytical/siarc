@@ -517,7 +517,15 @@ class FrontendController extends Controller
             $children = $all->where('level', 2)
                 ->sortBy(fn ($f) => sprintf('%08d%04d', $f->parent_id, $f->sort_order))->values();
         } else {
-            $children = $all->where('level', 1)->sortBy('sort_order')->values();
+            // Craft sectors only — those with filières beneath them. The other
+            // level-1 rows exist to parent the product-category tree, or are
+            // generic business sectors left over on older databases; either way
+            // they hold no artisans, so listing them offers a dead end. Same
+            // rule as the nav in AppServiceProvider.
+            $withChildren = $childrenByParent->keys()->flip();
+            $children = $all->where('level', 1)
+                ->filter(fn ($s) => $withChildren->has($s->id))
+                ->sortBy('sort_order')->values();
         }
 
         // Breadcrumb trail: root → current.

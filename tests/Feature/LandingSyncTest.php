@@ -57,7 +57,15 @@ class LandingSyncTest extends TestCase
 
     public function test_categories_page_shows_real_product_counts_from_the_backend(): void
     {
-        $ind = $this->makeIndustry(['name_fr' => 'Poterie Test', 'image_icon' => 'cat-icon-4.png', 'side_icon' => 'cat-side-4.png']);
+        // A browsable sector, i.e. one with a filière beneath it. The categories
+        // page lists only those — a top-level row with no children holds no
+        // trades, so offering it as a category is a dead end.
+        $ind = $this->makeIndustry([
+            'name_fr' => 'Poterie Test', 'level' => 1,
+            'image_icon' => 'cat-icon-4.png', 'side_icon' => 'cat-side-4.png',
+        ]);
+        $this->makeIndustry(['name_fr' => 'Filière Test', 'level' => 2, 'parent_id' => $ind->id]);
+
         $biz = $this->makeBusiness(null, ['industry_id' => $ind->id]);
         $this->makeProduct($biz);
         $this->makeProduct($biz);
