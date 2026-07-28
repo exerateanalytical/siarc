@@ -23,6 +23,10 @@ class Business extends Model
         'phone', 'whatsapp', 'email', 'website',
         'address_fr', 'address_en', 'gps_lat', 'gps_lng',
         'year_established', 'employee_count', 'ownership_type', 'vendor_type',
+        // SIARC 2026 import identity — without these, mass assignment drops
+        // them silently and every imported profile loses the code the claim
+        // flow matches on.
+        'siarc_code', 'claimed_at', 'source_metier',
         'export_countries', 'languages_spoken',
         'is_featured', 'featured_until',
         'verification_tier', 'status',

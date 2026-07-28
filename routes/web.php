@@ -3291,6 +3291,66 @@ Route::post('/verification-email/confirmer', function (Request $request) {
 // ─────────────────────────────────────────────
 // Profile / settings (all roles)
 // ─────────────────────────────────────────────
+// ── SIARC 2026 profile claim ────────────────────────────────────────────────
+// 510 artisans were imported from the competition dataset as unpublished shops.
+// These two routes let the real artisan take ownership of theirs. Nothing is
+// assigned automatically and nothing is published — the member confirms it is
+// them, and publishes when they are ready.
+Route::get('/tableau-de-bord/revendiquer', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (! $siacUser) {
+        return redirect('/login');
+    }
+
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+    $user = DB::table('users')->where('id', $siacUser['id'])->first();
+
+    $candidates = \App\Support\SiarcClaim::candidatesFor($user?->name, $user?->phone);
+
+    return view('pages.dashboard.siarc-claim', [
+        'lang'       => $lang,
+        'siacUser'   => $siacUser,
+        'candidates' => $candidates,
+    ]);
+})->middleware('throttle:30,1')->name('siarc.claim');
+
+Route::post('/tableau-de-bord/revendiquer/{business}', function (Request $request, int $business) {
+    $siacUser = session('siac_user');
+    if (! $siacUser) {
+        return redirect('/login');
+    }
+
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $isFr = $lang === 'fr';
+
+    $target = \App\Modules\Businesses\Models\Business::whereNotNull('siarc_code')
+        ->whereNull('claimed_at')
+        ->findOrFail($business);
+
+    $user = DB::table('users')->where('id', $siacUser['id'])->first();
+
+    // Re-check eligibility server-side: the id in the URL proves nothing about
+    // whose profile it is.
+    $allowed = \App\Support\SiarcClaim::candidatesFor($user?->name, $user?->phone)
+        ->contains(fn ($b) => $b->id === $target->id);
+
+    if (! $allowed) {
+        abort(403);
+    }
+
+    if (\App\Modules\Businesses\Models\Business::where('user_id', $siacUser['id'])->whereNull('siarc_code')->exists()) {
+        return back()->withErrors(['claim' => $isFr
+            ? 'Vous avez déjà une entreprise sur la plateforme.'
+            : 'You already have a business on the platform.']);
+    }
+
+    \App\Support\SiarcClaim::assign($target, $siacUser['id']);
+
+    return redirect()->route('business.edit', ['lang' => $lang])->with('success', $isFr
+        ? 'Profil récupéré. Vérifiez vos informations, puis publiez votre boutique quand vous êtes prêt.'
+        : 'Profile claimed. Check your details, then publish your shop when you are ready.');
+})->middleware('throttle:10,1')->name('siarc.claim.assign');
+
 Route::get('/tableau-de-bord/profil', function (Request $request) {
     $siacUser = session('siac_user');
     if (!$siacUser) return redirect('/login');
