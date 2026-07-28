@@ -150,7 +150,7 @@
          above the #0A0C09 page instead of disappearing into it. Every label on
          it was re-measured against that fill — the quietest, #A9C4B3, is
          6.77:1. --}}
-    class="dash-aside fixed lg:static inset-y-0 left-0 z-40 w-[268px] shrink-0 bg-[#02301B] dark:bg-[#0C3B1E] flex flex-col h-full lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
+    class="dash-aside fixed lg:static inset-y-0 left-0 z-40 w-[268px] shrink-0 bg-[#02301B] dark:bg-[#0C3B1E] dark:border-r dark:border-[#2A6B41] flex flex-col h-full lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
 
     {{-- Brand --}}
     <a href="{{ route('home', ['lang' => $sbLang]) }}" class="h-[64px] flex items-center gap-3 px-4 border-b border-white/10 shrink-0">
@@ -189,9 +189,15 @@
                 $sbBadge  = $sideBadges[$sbRoute] ?? null;
             @endphp
             <a href="{{ route($sbRoute, ['lang' => $sbLang]) }}"
-                class="relative flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] mb-0.5 transition-colors {{ $sbActive ? 'bg-[#14532D] dark:bg-[#1E7A44] text-white font-bold' : 'text-[#DCE7DF] hover:bg-white/5 hover:text-white' }}">
+                {{-- The active pill must separate from the rail behind it. #1E7A44 on
+                     the deepened rail is 2.36:1 — under 1.4.11's 3:1 — so dark mode
+                     takes the contract's `brand` #2E9250 (3.22:1 on the rail) with
+                     `brand-ink` #04150A on it (4.78:1). Gold at #E5A82E is only
+                     2.54:1 on that fill, so the active icon takes the ink too and the
+                     gold survives as the left marker bar (6.01:1 on the rail). --}}
+                class="relative flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] mb-0.5 transition-colors {{ $sbActive ? 'bg-[#14532D] dark:bg-[#2E9250] text-white dark:text-[#04150A] font-bold' : 'text-[#DCE7DF] hover:bg-white/5 hover:text-white' }}">
                 @if($sbActive)<span class="absolute left-0 inset-y-1.5 w-[3px] rounded-r bg-[#E5A82E]"></span>@endif
-                <i data-lucide="{{ $sbIcon }}" class="w-[17px] h-[17px] shrink-0 {{ $sbActive ? 'text-[#E5A82E]' : 'text-[#A9C4B3]' }}" style="stroke-width:1.7"></i>
+                <i data-lucide="{{ $sbIcon }}" class="w-[17px] h-[17px] shrink-0 {{ $sbActive ? 'text-[#E5A82E] dark:text-[#04150A]' : 'text-[#A9C4B3]' }}" style="stroke-width:1.7"></i>
                 <span class="truncate">{{ $sbIsFr ? $sbLabelFr : $sbLabelEn }}</span>
                 @if($sbBadge && $sbBadge !== '0')
                 <span class="ml-auto shrink-0 min-w-[22px] text-center text-[10.5px] font-bold px-1.5 py-[2px] rounded-full bg-[#DC0508] text-white">{{ $sbBadge }}</span>

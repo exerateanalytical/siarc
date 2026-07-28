@@ -54,7 +54,15 @@
     ];
     $adSideQuote = $adSideQuote ?? ($isFr ? 'Valorisons l\'artisanat, développons nos communautés, préservons notre héritage.' : 'Let\'s value craftsmanship, grow our communities, preserve our heritage.');
 @endphp
-<aside id="ad-sidebar" class="shrink-0 lg:w-[290px] bg-gradient-to-b from-[#042B15] to-[#03200E] text-white flex flex-col relative">
+{{-- Dark mode deepens this rail rather than inverting it: it is already dark in
+     light mode, so an inversion would turn the admin navigation white. The
+     gradient moves onto the contract's `brand-deep` (#0C3B1E → #093017), which
+     sits 1.55:1 above the #0A0C09 page — visible, but not a second page. The
+     page-facing edge gets a real boundary at #2A6B41 (3.07:1 on the page,
+     meeting WCAG 1.4.11) because a 1.55:1 fill alone is a soft edge on a large
+     region. Every label was re-measured on the new fill: gold group headings
+     6.47:1, idle items 11.15:1, the tagline 7.43:1. --}}
+<aside id="ad-sidebar" class="shrink-0 lg:w-[290px] bg-gradient-to-b from-[#042B15] to-[#03200E] dark:from-[#0C3B1E] dark:to-[#093017] dark:border-r dark:border-[#2A6B41] text-white flex flex-col relative">
     <div class="px-4 pt-4 pb-3 flex items-center gap-3">
         <img src="{{ brand_asset('mark') }}" alt="" class="w-[50px] h-[50px] object-contain shrink-0">
         <div class="leading-tight min-w-0">
@@ -70,16 +78,20 @@
             @endif
             @foreach($adItems as [$adKey, $adIcon, $adLabel, $adUrl, $adBadge])
                 @if($adKey === $adminActive)
-                <a href="{{ $adUrl }}" class="mt-0.5 flex items-center gap-3 bg-[#0D5A30] rounded-xl px-3 py-[9px] text-[13px] font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                {{-- The active pill has to separate from the rail it sits on. On the
+                     deepened rail #0D5A30 is only 1.52:1, so dark mode uses the
+                     contract's `brand` #2E9250 (3.22:1 on the rail) with `brand-ink`
+                     #04150A on it (4.78:1) — white on that fill is 3.93:1 and fails. --}}
+                <a href="{{ $adUrl }}" class="mt-0.5 flex items-center gap-3 bg-[#0D5A30] dark:bg-[#2E9250] rounded-xl px-3 py-[9px] text-[13px] font-bold text-white dark:text-[#04150A] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:shadow-none">
                     <img src="{{ asset('images/landing/' . $adIcon . '.png') }}" alt="" class="w-[17px] h-[16px] object-contain shrink-0">
                     <span class="flex-1 truncate">{{ $adLabel }}</span>
-                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
+                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
                 </a>
                 @else
                 <a href="{{ $adUrl }}" class="flex items-center gap-3 rounded-xl px-3 py-[7px] text-[12.5px] {{ $adKey === 'dashboard' ? 'font-bold tracking-[0.03em] text-white' : 'text-[#EDF2EC]' }} hover:bg-white/5 transition-colors">
                     <img src="{{ asset('images/landing/' . $adIcon . '.png') }}" alt="" class="w-[17px] h-[16px] object-contain shrink-0">
                     <span class="flex-1 truncate">{{ $adLabel }}</span>
-                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
+                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
                 </a>
                 @endif
             @endforeach

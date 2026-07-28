@@ -233,7 +233,7 @@
                     {{ $isFr ? 'Scannez pour vérifier' : 'Scan to verify' }}<br>
                     {{ $isFr ? 'cet artisan' : 'this artisan' }}
                 </p>
-                <a href="{{ $dfVerifyUrl }}" class="mt-2.5 block w-[105px] mx-auto lg:mr-0 bg-white rounded-md p-1.5"
+                <a href="{{ $dfVerifyUrl }}" class="mt-2.5 block w-[105px] mx-auto lg:mr-0 bg-white dark:bg-[#12150F] rounded-md p-1.5"
                     aria-label="{{ $isFr ? 'Vérifier cet artisan' : 'Verify this artisan' }}">
                     <span id="df-verify-qr" class="block w-[93px] h-[93px]"
                           data-verify-url="{{ $dfVerifyUrl }}"></span>
@@ -260,7 +260,7 @@
                 </select>
                 <span class="flex items-center gap-2 whitespace-nowrap">
                     <span class="inline-flex h-[13px] w-[20px] overflow-hidden rounded-[2px]" aria-hidden="true">
-                        <span class="flex-1 bg-[#007A5E]"></span><span class="flex-1 bg-[#CE1126]"></span><span class="flex-1 bg-[#FCD116]"></span>
+                        <span class="flex-1 bg-[#007A5E]"></span><span class="flex-1 bg-[#CE1126]"></span><span class="flex-1 bg-[#FCD116] dark:bg-[#3A2B06]"></span>
                     </span>
                     {{ $isFr ? 'Cameroun' : 'Cameroon' }}
                 </span>
@@ -306,7 +306,7 @@
 @endif
 
 <!-- Mobile bottom navigation -->
-<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-[#EEEDEA] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
+<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-[#12150F] border-t border-[#EEEDEA] dark:border-[#262B21] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
     @php
         $dfBottomTabs = [
             ['href' => route('home', ['lang' => $lang]), 'icon' => 'home', 'label' => $isFr ? 'Accueil' : 'Home'],
@@ -317,7 +317,7 @@
         ];
     @endphp
     @foreach($dfBottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[#8A857A]">
+    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[#8A857A] dark:text-[#868778]">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
         <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>

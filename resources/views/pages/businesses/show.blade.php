@@ -279,7 +279,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FCF9F6] text-[#1D1B16] antialiased">
+<body class="bg-[#FCF9F6] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 {{-- ── Phone ──────────────────────────────────────────────────────────────
      A sibling document, not a reflow: its own top bar, hero card and fixed
@@ -304,15 +304,15 @@
 
     {{-- ── Breadcrumb ─────────────────────────────────────────────────── --}}
     <nav class="flex flex-wrap items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf transition-colors">Artisans</a>
+        <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">Artisans</a>
         @if($industryName)
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <span class="text-[#6F6B60]">{{ $industryName }}</span>
+        <span class="text-[#6F6B60] dark:text-[#868778]">{{ $industryName }}</span>
         @endif
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <span class="text-[#1D1B16] font-medium">{{ $businessName }}</span>
+        <span class="text-[#1D1B16] dark:text-[#F3EFE7] font-medium">{{ $businessName }}</span>
     </nav>
 
     {{-- ── Hero ───────────────────────────────────────────────────────── --}}
@@ -367,7 +367,7 @@
             {{-- Name block --}}
             <div class="min-w-0 flex-1 pt-1">
                 @if($isVerified)
-                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
+                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] dark:text-[#F3EFE7] text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
                     <i data-lucide="badge-check" class="w-3 h-3"></i>
                     {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                 </span>
@@ -562,9 +562,9 @@
                 @foreach($identityRows as [$idLabel, $idValue, $idIcon, $idMono])
                 <div class="flex items-start gap-2.5 py-[3.5px] min-h-[25px] first:pt-0">
                     <i data-lucide="{{ $idIcon }}" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B]">{{ $idLabel }}</dt>
+                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B] dark:text-[#B4B5A6]">{{ $idLabel }}</dt>
                     <span class="shrink-0 text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
-                    <dd class="min-w-0 flex-1 text-[12.5px] font-medium leading-[18px] text-[#1D1F24] break-words {{ $idMono ? 'font-mono text-[11.5px]' : '' }}">{{ $idValue }}</dd>
+                    <dd class="min-w-0 flex-1 text-[12.5px] font-medium leading-[18px] text-[#1D1F24] dark:text-[#F3EFE7] break-words {{ $idMono ? 'font-mono text-[11.5px]' : '' }}">{{ $idValue }}</dd>
                 </div>
                 @endforeach
 
@@ -574,7 +574,7 @@
                      row says which of the two it is. --}}
                 <div class="flex items-start gap-2.5 py-[3.5px] min-h-[25px]">
                     <i data-lucide="shield-check" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
+                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B] dark:text-[#B4B5A6]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
                     <span class="shrink-0 text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
                     <dd class="min-w-0 flex-1">
                         @if($isVerified)
@@ -592,7 +592,7 @@
             <h2 class="ap-sec-title mb-4"><i data-lucide="user" class="w-4 h-4"></i>{{ $isFr ? 'À propos de' : 'About' }} {{ $businessName }}</h2>
 
             @if(trim((string) $descriptionText) !== '')
-            <div class="space-y-3 text-[12.5px] leading-[1.75] text-[#3B382F]">
+            <div class="space-y-3 text-[12.5px] leading-[1.75] text-[#3B382F] dark:text-[#F3EFE7]">
                 @foreach(preg_split('/\R{2,}/', trim((string) $descriptionText)) as $para)
                 <p>{{ $para }}</p>
                 @endforeach
@@ -629,13 +629,13 @@
             <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 @foreach($aboutTiles as [$tileKey, $tileLabel])
                 @php $tile = $apStats[$tileKey] ?? $unknownStat; @endphp
-                <div class="rounded-lg border border-[#EFEBE2] px-2 py-3 text-center">
+                <div class="rounded-lg border border-[#EFEBE2] dark:border-[#262B21] px-2 py-3 text-center">
                     @if($statKnown($tile))
-                    <p class="text-[18px] font-bold leading-none text-[#1D1B16]">{{ $statText($tile) }}</p>
+                    <p class="text-[18px] font-bold leading-none text-[#1D1B16] dark:text-[#F3EFE7]">{{ $statText($tile) }}</p>
                     @else
                     <p class="text-[11.5px] leading-tight ap-absent" @if(trim((string) ($tile['basis'] ?? '')) !== '') title="{{ $tile['basis'] }}" @endif>{{ $notTracked }}</p>
                     @endif
-                    <p class="mt-1.5 text-[9px] font-normal leading-tight text-[#8A857A]">{{ $tileLabel }}</p>
+                    <p class="mt-1.5 text-[9px] font-normal leading-tight text-[#8A857A] dark:text-[#868778]">{{ $tileLabel }}</p>
                 </div>
                 @endforeach
             </div>
@@ -645,8 +645,8 @@
         <section id="ap-workshop" class="col-span-12 xl:col-span-4 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="map-pin" class="w-4 h-4"></i>{{ $isFr ? "Localisation de l'atelier" : 'Workshop location' }}</h2>
 
-            <p class="flex items-start gap-2 text-[12.5px] font-semibold leading-snug text-[#1D1B16]">
-                <i data-lucide="map-pin" class="w-[14px] h-[14px] text-[#157A43] mt-[2px] shrink-0"></i>
+            <p class="flex items-start gap-2 text-[12.5px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">
+                <i data-lucide="map-pin" class="w-[14px] h-[14px] text-[#157A43] dark:text-[#339B56] mt-[2px] shrink-0"></i>
                 {{ $coarseLocation ?: ($isFr ? 'Non communiquée' : 'Not published') }}
             </p>
 
@@ -658,16 +658,16 @@
                  including inside a map URL. The map area below is a pure CSS
                  evocation of the artwork's tile, keyed to nothing: the pin sits
                  at its decorative centre, not at anybody's door. --}}
-            <div class="relative mt-3 h-[132px] rounded-[10px] overflow-hidden border border-[#EFEBE2] bg-[#EFEDE6]">
+            <div class="relative mt-3 h-[132px] rounded-[10px] overflow-hidden border border-[#EFEBE2] dark:border-[#262B21] bg-[#EFEDE6] dark:bg-[#0A0C09]">
                 <div class="absolute inset-0 opacity-70"
                      style="background:
                         repeating-linear-gradient(0deg, transparent 0 26px, #DFDACC 26px 28px),
                         repeating-linear-gradient(90deg, transparent 0 34px, #E4DFD2 34px 36px),
                         linear-gradient(115deg, #E9E4D6 0%, #F2EFE6 55%, #E3E7DB 100%)"></div>
-                <div class="absolute left-[8%] top-0 bottom-0 w-[14%] bg-[#CBD9E4]/60" style="transform: skewX(-18deg)"></div>
-                <div class="absolute right-[18%] -top-4 w-10 h-10 rounded-full bg-[#D7E3CE]/80"></div>
-                <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-[#0A5C2E]">
-                    <i data-lucide="map-pin" class="w-7 h-7 fill-[#0A5C2E] text-[#0A5C2E]"></i>
+                <div class="absolute left-[8%] top-0 bottom-0 w-[14%] bg-[#CBD9E4] dark:bg-[#0E2436]/60" style="transform: skewX(-18deg)"></div>
+                <div class="absolute right-[18%] -top-4 w-10 h-10 rounded-full bg-[#D7E3CE] dark:bg-[#0C3D1D]/80"></div>
+                <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-[#0A5C2E] dark:text-[#339B56]">
+                    <i data-lucide="map-pin" class="w-7 h-7 fill-[#0A5C2E] dark:fill-[#339B56] text-[#0A5C2E] dark:text-[#339B56]"></i>
                 </span>
                 @if($coarseLocation)
                 <a href="https://www.google.com/maps/search/{{ urlencode($coarseLocation) }}" target="_blank" rel="noopener"
@@ -677,16 +677,16 @@
                 @endif
             </div>
 
-            <p class="mt-2.5 text-[11.5px] leading-relaxed text-[#8A857A]">
+            <p class="mt-2.5 text-[11.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Seuls la ville et la région sont publiés. L'adresse exacte de l'atelier est communiquée par l'artisan lors d'une prise de contact."
                    : 'Only the town and region are published. The exact workshop address is given by the artisan when you get in touch.' }}
             </p>
 
             @if($apWorkshop && ($apWorkshop['reference'] ?? null))
-            <p class="mt-3 text-[11px] text-[#8A857A]">
+            <p class="mt-3 text-[11px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr ? 'Atelier enregistré' : 'Registered workshop' }}
-                <span class="block mt-0.5 font-mono text-[11.5px] font-semibold text-[#1D1B16] break-all">{{ $apWorkshop['reference'] }}</span>
+                <span class="block mt-0.5 font-mono text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] break-all">{{ $apWorkshop['reference'] }}</span>
             </p>
             @endif
 
@@ -752,7 +752,7 @@
                  the certificate's name beside it over two lines, the number
                  beneath both, and a bottom row carrying the state, the date and
                  the download control. --}}
-            <article class="relative ui-card p-3.5 pb-9 {{ $issued ? '' : 'bg-[#FCFBF8]' }}">
+            <article class="relative ui-card p-3.5 pb-9 {{ $issued ? '' : 'bg-[#FCFBF8] dark:bg-[#12150F]' }}">
                 <div class="flex items-start gap-2.5">
                     {{-- The artwork draws each certificate as a foil shield. On
                          screen this is a visual treatment only — layered
@@ -764,21 +764,21 @@
                         <img src="{{ brand_asset('mark') }}" alt="" class="relative w-6 h-6 object-contain">
                     </span>
                     <div class="min-w-0">
-                        <p class="text-[11.5px] font-semibold leading-snug text-[#1D1B16]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
+                        <p class="text-[11.5px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
                         <p class="mt-0.5 text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
                     </div>
                 </div>
 
                 @if($issued && $first)
-                <p class="mt-2.5 font-mono text-[10px] font-semibold text-[#6F6B60] break-all">{{ $first['number'] }}</p>
+                <p class="mt-2.5 font-mono text-[10px] font-semibold text-[#6F6B60] dark:text-[#868778] break-all">{{ $first['number'] }}</p>
                 <div class="mt-2.5 flex items-center gap-2">
                     <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Au registre' : 'On register' }}</span>
                     @if(! empty($first['issued_at']))
-                    <span class="text-[10px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($first['issued_at'])->format('d/m/Y') }}</span>
+                    <span class="text-[10px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($first['issued_at'])->format('d/m/Y') }}</span>
                     @endif
                 </div>
                 @if(($block['count'] ?? 0) > 1)
-                <p class="mt-1.5 text-[10px] text-[#8A857A]">+{{ $block['count'] - 1 }} {{ $isFr ? 'autre(s)' : 'more' }}</p>
+                <p class="mt-1.5 text-[10px] text-[#8A857A] dark:text-[#868778]">+{{ $block['count'] - 1 }} {{ $isFr ? 'autre(s)' : 'more' }}</p>
                 @endif
 
                 {{-- The artwork puts a download glyph on every card. It renders
@@ -789,7 +789,7 @@
                 <a href="{{ $first['url'] }}" target="_blank" rel="noopener"
                    title="{{ $isFr ? 'Ouvrir le certificat' : 'Open the certificate' }}"
                    aria-label="{{ $isFr ? 'Ouvrir le certificat' : 'Open the certificate' }} {{ strtoupper($block['type']) }}"
-                   class="absolute right-2.5 bottom-2.5 w-7 h-7 rounded-md border border-[#EFE7D4] bg-[#FBF7EC] text-[#8A6D1F] flex items-center justify-center hover:bg-[#F3E7CB] transition-colors">
+                   class="absolute right-2.5 bottom-2.5 w-7 h-7 rounded-md border border-[#EFE7D4] dark:border-[#6A5210] bg-[#FBF7EC] dark:bg-[#0A0C09] text-[#8A6D1F] dark:text-[#EDB33A] flex items-center justify-center hover:bg-[#F3E7CB] hover:dark:bg-[#3A2B06] transition-colors">
                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 </a>
                 @endif
@@ -802,7 +802,7 @@
         </div>
 
         @if($certIssuedCount === 0)
-        <p class="mt-3 text-[11.5px] text-[#8A857A]">
+        <p class="mt-3 text-[11.5px] text-[#8A857A] dark:text-[#868778]">
             {{ $isFr
                ? "Aucun certificat n'a encore été émis pour cet artisan. Un certificat ne s'obtient pas automatiquement : il suppose une démarche et un contrôle."
                : 'No certificate has been issued for this artisan yet. A certificate is not automatic — it follows an application and a check.' }}
@@ -859,28 +859,28 @@
                         @if($p['image'])
                         <img src="{{ asset('storage/' . $p['image']) }}" alt="{{ $p['name'] }}" class="w-full h-[152px] object-cover">
                         @else
-                        <span class="w-full h-[152px] bg-[#F6F2E9] flex items-center justify-center text-[#C8C1B2]">
+                        <span class="w-full h-[152px] bg-[#F6F2E9] dark:bg-[#0A0C09] flex items-center justify-center text-[#C8C1B2]">
                             <i data-lucide="image" class="w-7 h-7"></i>
                         </span>
                         @endif
                     </a>
                     <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}"
                        aria-label="{{ $isFr ? 'Enregistrer' : 'Save' }}"
-                       class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 text-[#6F6B60] flex items-center justify-center hover:text-[#CC060E] transition-colors">
+                       class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 dark:bg-[#12150F/90] text-[#6F6B60] dark:text-[#868778] flex items-center justify-center hover:text-[#CC060E] hover:dark:text-[#F0555C] transition-colors">
                         <i data-lucide="heart" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
                 <div class="p-3">
-                    <h3 class="text-[11px] font-semibold leading-snug text-[#1D1B16]">
-                        <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="hover:text-leaf transition-colors">{{ $p['name'] }}</a>
+                    <h3 class="text-[11px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">
+                        <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $p['name'] }}</a>
                     </h3>
 
                     @if($productCategories->get((int) ($p['id'] ?? 0)))
-                    <p class="mt-1 text-[9px] font-normal text-[#8A857A]">{{ $productCategories->get((int) $p['id']) }}</p>
+                    <p class="mt-1 text-[9px] font-normal text-[#8A857A] dark:text-[#868778]">{{ $productCategories->get((int) $p['id']) }}</p>
                     @endif
 
                     @if(($p['price']['amount'] ?? null) !== null)
-                    <p class="mt-2 font-bold text-[#1D1B16]">
+                    <p class="mt-2 font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
                         <span class="text-[11.5px]">{{ $p['price']['currency'] === 'XAF' ? 'FCFA' : $p['price']['currency'] }}</span>
                         <span class="text-[14px]">{{ $isFr ? number_format($p['price']['amount'], 0, ',', ' ') : number_format($p['price']['amount'], 0, '.', ',') }}</span>
                     </p>
@@ -911,7 +911,7 @@
             @endforeach
         </div>
         @if(trim((string) ($apProducts['ratings_basis'] ?? '')) !== '')
-        <p class="mt-3 text-[11px] leading-relaxed text-[#8A857A]">{{ $apProducts['ratings_basis'] }}</p>
+        <p class="mt-3 text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">{{ $apProducts['ratings_basis'] }}</p>
         @endif
         @else
         <p class="mt-3 text-[12.5px] ap-absent">{{ $isFr ? "Cet artisan n'a encore publié aucune pièce." : 'This artisan has not published any pieces yet.' }}</p>
@@ -936,13 +936,13 @@
             @if($hasReviews)
             <div class="flex items-start gap-6">
                 <div class="shrink-0 text-center">
-                    <p class="text-[36px] leading-none font-bold text-[#04240D]">{{ $statText($apReviews['mean']) }}</p>
+                    <p class="text-[36px] leading-none font-bold text-[#04240D] dark:text-[#339B56]">{{ $statText($apReviews['mean']) }}</p>
                     <p class="mt-1.5 flex items-center justify-center gap-0.5">
                         @for($i = 1; $i <= 5; $i++)
                         <svg viewBox="0 0 20 20" class="w-[12.5px] h-[12.5px] {{ $i <= round($apReviews['mean']['value']) ? 'fill-[#E29A08]' : 'fill-[#E6E1D6]' }}"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
                         @endfor
                     </p>
-                    <p class="mt-2 text-[10.6px] font-normal text-[#8A857A]">{{ $isFr ? 'Sur' : 'Based on' }} {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}</p>
+                    <p class="mt-2 text-[10.6px] font-normal text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Sur' : 'Based on' }} {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}</p>
                 </div>
                 <div class="min-w-0 flex-1">
                     @foreach([5, 4, 3, 2, 1] as $star)
@@ -951,11 +951,11 @@
                         $pct = $apReviews['count'] > 0 ? round($n / $apReviews['count'] * 100) : 0;
                     @endphp
                     <div class="flex items-center gap-2.5 h-[24px]">
-                        <span class="w-[58px] shrink-0 text-[11px] font-normal text-[#616469]">{{ $star }} {{ $isFr ? 'Étoiles' : 'Stars' }}</span>
-                        <span class="flex-1 h-[7px] rounded-full bg-[#F2EEE4] overflow-hidden">
+                        <span class="w-[58px] shrink-0 text-[11px] font-normal text-[#616469] dark:text-[#B4B5A6]">{{ $star }} {{ $isFr ? 'Étoiles' : 'Stars' }}</span>
+                        <span class="flex-1 h-[7px] rounded-full bg-[#F2EEE4] dark:bg-[#0A0C09] overflow-hidden">
                             <span class="block h-full rounded-full bg-[#E29A08]" style="width: {{ $pct }}%"></span>
                         </span>
-                        <span class="w-[26px] shrink-0 text-right text-[11px] text-[#3C4145]">{{ $n }}</span>
+                        <span class="w-[26px] shrink-0 text-right text-[11px] text-[#3C4145] dark:text-[#F3EFE7]">{{ $n }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -974,22 +974,22 @@
                  piece to show — picking one of this shop's carvings would
                  attribute a stranger's sentence to a work they never named. --}}
             @if($reviewRows->isNotEmpty())
-            <ul class="mt-5 pt-4 border-t border-[#F2EEE4] space-y-4">
+            <ul class="mt-5 pt-4 border-t border-[#F2EEE4] dark:border-[#262B21] space-y-4">
                 @foreach($reviewRows as $r)
                 <li class="flex items-start gap-3">
-                    <span class="w-9 h-9 rounded-full bg-[#F3E7CB] text-[#8A6D1F] flex items-center justify-center shrink-0 text-[13px] font-bold">
+                    <span class="w-9 h-9 rounded-full bg-[#F3E7CB] dark:bg-[#3A2B06] text-[#8A6D1F] dark:text-[#EDB33A] flex items-center justify-center shrink-0 text-[13px] font-bold">
                         {{ mb_strtoupper(mb_substr((string) ($r->reviewer_name ?: '?'), 0, 1)) }}
                     </span>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1">
-                                <span class="text-[12px] font-semibold text-[#1D1B16]">{{ $r->reviewer_name ?: ($isFr ? 'Compte supprimé' : 'Deleted account') }}</span>
+                                <span class="text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $r->reviewer_name ?: ($isFr ? 'Compte supprimé' : 'Deleted account') }}</span>
                                 @if(! empty($r->is_verified_contact) && $reviewBadgeLabel !== '')
                                 <span class="ui-pill ui-pill-ok text-[9.5px]"><i data-lucide="message-square" class="w-3 h-3"></i>{{ $reviewBadgeLabel }}</span>
                                 @endif
                             </div>
                             @if(! empty($r->published_at))
-                            <span class="shrink-0 text-[10.5px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($r->published_at)->locale($lang)->translatedFormat('d/m/Y') }}</span>
+                            <span class="shrink-0 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($r->published_at)->locale($lang)->translatedFormat('d/m/Y') }}</span>
                             @endif
                         </div>
 
@@ -1000,10 +1000,10 @@
                         </p>
 
                         @if(trim((string) $r->title) !== '')
-                        <p class="mt-1.5 text-[12px] font-semibold text-[#1D1B16]">{{ $r->title }}</p>
+                        <p class="mt-1.5 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $r->title }}</p>
                         @endif
                         @if(trim((string) $r->body) !== '')
-                        <p class="mt-1 text-[11.5px] leading-relaxed text-[#3B382F]">{{ $r->body }}</p>
+                        <p class="mt-1 text-[11.5px] leading-relaxed text-[#3B382F] dark:text-[#F3EFE7]">{{ $r->body }}</p>
                         @endif
                     </div>
                 </li>
@@ -1011,13 +1011,13 @@
             </ul>
 
             @if(($apReviews['count'] ?? 0) > $reviewRows->count())
-            <p class="mt-3 text-[11px] text-[#8A857A]">
+            <p class="mt-3 text-[11px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr ? 'et' : 'and' }} {{ $apReviews['count'] - $reviewRows->count() }}
                 {{ $isFr ? 'autre(s) avis publié(s).' : 'other published review(s).' }}
             </p>
             @endif
 
-            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A]">
+            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Chaque avis est lu par un modérateur avant publication. Le badge atteste d'un échange par la messagerie de la plateforme — il n'atteste d'aucun achat : la plateforme n'est pas partie aux ventes."
                    : 'Every review is read by a moderator before publication. The badge attests to an exchange through the platform’s own messaging — it attests to no purchase: the platform is not party to sales.' }}
@@ -1030,7 +1030,7 @@
                    : 'Nobody has reviewed this artisan yet. No rating is shown while there is nothing to count.' }}
             </p>
             @if(trim((string) ($apReviews['mean']['basis'] ?? '')) !== '')
-            <p class="mt-2 text-[11px] leading-relaxed text-[#8A857A]">{{ $apReviews['mean']['basis'] }}</p>
+            <p class="mt-2 text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">{{ $apReviews['mean']['basis'] }}</p>
             @endif
             @endif
         </section>
@@ -1062,15 +1062,15 @@
         @endphp
         <section class="col-span-12 md:col-span-6 xl:col-span-3 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="bar-chart-3" class="w-4 h-4"></i>{{ $isFr ? "Statistiques de l'artisan" : 'Artisan statistics' }}</h2>
-            <ul class="divide-y divide-[#F5F1E8]">
+            <ul class="divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                 @foreach($statRows as [$sKey, $sLabel, $sIcon])
                 @php $s = $apStats[$sKey] ?? null; @endphp
                 @if(is_array($s))
                 <li class="flex items-center gap-3 py-2.5 first:pt-0">
                     <i data-lucide="{{ $sIcon }}" class="w-[14px] h-[14px] text-[#C9942E] shrink-0"></i>
-                    <span class="min-w-0 flex-1 text-[12px] text-[#3B382F]">{{ $sLabel }}</span>
+                    <span class="min-w-0 flex-1 text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $sLabel }}</span>
                     @if($statKnown($s))
-                    <span class="shrink-0 text-[13px] font-bold text-[#1D1B16]" @if(trim((string) ($s['basis'] ?? '')) !== '') title="{{ $s['basis'] }}" @endif>{{ $statText($s) }}</span>
+                    <span class="shrink-0 text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]" @if(trim((string) ($s['basis'] ?? '')) !== '') title="{{ $s['basis'] }}" @endif>{{ $statText($s) }}</span>
                     @else
                     {{-- Never "0", and never omitted: a counter reading zero is a
                          claim about this artisan, a counter the platform does
@@ -1106,22 +1106,22 @@
             <ul class="space-y-3.5">
                 @foreach($awards as $awIndex => $award)
                 <li class="flex items-start gap-2.5 {{ $awIndex >= 4 ? 'ap-award-extra hidden' : '' }}">
-                    <span class="w-7 h-7 rounded-lg bg-[#FBF1DD] text-[#8A6D1F] flex items-center justify-center shrink-0">
+                    <span class="w-7 h-7 rounded-lg bg-[#FBF1DD] dark:bg-[#3A2B06] text-[#8A6D1F] dark:text-[#EDB33A] flex items-center justify-center shrink-0">
                         <i data-lucide="medal" class="w-3.5 h-3.5"></i>
                     </span>
                     <div class="min-w-0">
-                        <p class="text-[12px] font-semibold leading-snug text-[#1D1B16]">
-                            {{ $award['title'] }}@if(! empty($award['year']))<span class="text-[#8A857A]"> — {{ $award['year'] }}</span>@endif
+                        <p class="text-[12px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">
+                            {{ $award['title'] }}@if(! empty($award['year']))<span class="text-[#8A857A] dark:text-[#868778]"> — {{ $award['year'] }}</span>@endif
                         </p>
                         @if(! empty($award['issuer']))
-                        <p class="mt-0.5 text-[10.5px] text-[#8A857A]">{{ $award['issuer'] }}</p>
+                        <p class="mt-0.5 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $award['issuer'] }}</p>
                         @endif
                         {{-- The one thing that makes an outside body's honour
                              checkable by somebody other than us. Rendered when
                              the reviewer who recorded it left a pointer. --}}
                         @if(! empty($award['evidence_url']))
                         <a href="{{ $award['evidence_url'] }}" target="_blank" rel="noopener nofollow"
-                           class="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-[#8A6D1F] hover:underline">
+                           class="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:underline">
                             <i data-lucide="external-link" class="w-3 h-3"></i>{{ $isFr ? 'Justificatif' : 'Evidence' }}
                         </a>
                         @endif
@@ -1132,14 +1132,14 @@
 
             @if($awards->count() > 4)
             <button type="button" id="ap-awards-all"
-                    class="ui-btn ui-btn-block mt-4 bg-transparent text-[#8A6D1F] border-[#E2CD9B] hover:bg-[#FBF7EC] text-[10.5px] font-bold uppercase tracking-[.06em]">
+                    class="ui-btn ui-btn-block mt-4 bg-transparent text-[#8A6D1F] dark:text-[#EDB33A] border-[#E2CD9B] dark:border-[#6A5210] hover:bg-[#FBF7EC] hover:dark:bg-[#0A0C09] text-[10.5px] font-bold uppercase tracking-[.06em]">
                 {{ $isFr ? 'Voir toutes les distinctions' : 'View all achievements' }} ({{ $awards->count() }})
             </button>
             @endif
 
             {{-- Whose statement this is. The row says an outside body honoured
                  this artisan; the platform is repeating it, not confirming it. --}}
-            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A]">
+            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Distinctions saisies au dossier depuis des justificatifs, et rapportées telles quelles. La plateforme ne vérifie pas l'organisme décernant."
                    : 'Distinctions recorded on file from evidence and reported verbatim. The platform does not verify the awarding body.' }}
@@ -1150,7 +1150,7 @@
                    ? "Aucune distinction n'est enregistrée pour cet artisan."
                    : 'No award is recorded for this artisan.' }}
             </p>
-            <p class="mt-2 text-[11px] leading-relaxed text-[#8A857A]">
+            <p class="mt-2 text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Les distinctions sont conférées par des organismes extérieurs, dont la plateforme ne tient pas registre. Seul ce qui a été fourni et vérifié figure ici."
                    : 'Awards are conferred by outside bodies, of which the platform keeps no register. Only what has been supplied and checked appears here.' }}
@@ -1234,17 +1234,17 @@
         ],
     ];
 @endphp
-<section class="mt-10 border-y border-[#EFE7D4] bg-[#F9F6EF]">
+<section class="mt-10 border-y border-[#EFE7D4] dark:border-[#6A5210] bg-[#F9F6EF] dark:bg-[#0A0C09]">
     <div class="max-w-[1280px] mx-auto px-[25px] py-6">
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-6 gap-y-5">
             @foreach($trustBar as $tb)
             <div class="flex items-start gap-3">
-                <span class="w-10 h-10 rounded-full bg-[#F3E7CB] border border-[#E2CD9B] text-[#8A6D1F] flex items-center justify-center shrink-0">
+                <span class="w-10 h-10 rounded-full bg-[#F3E7CB] dark:bg-[#3A2B06] border border-[#E2CD9B] dark:border-[#6A5210] text-[#8A6D1F] dark:text-[#EDB33A] flex items-center justify-center shrink-0">
                     <i data-lucide="{{ $tb['icon'] }}" class="w-[18px] h-[18px]"></i>
                 </span>
                 <div class="min-w-0">
-                    <p class="text-[11.5px] font-bold uppercase tracking-[.05em] leading-snug text-[#1D1B16]">{{ $tb['title'] }}</p>
-                    <p class="mt-1 text-[10.5px] leading-relaxed text-[#6F6B60]">{{ $tb['body'] }}</p>
+                    <p class="text-[11.5px] font-bold uppercase tracking-[.05em] leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">{{ $tb['title'] }}</p>
+                    <p class="mt-1 text-[10.5px] leading-relaxed text-[#6F6B60] dark:text-[#868778]">{{ $tb['body'] }}</p>
                 </div>
             </div>
             @endforeach
@@ -1254,11 +1254,11 @@
              A "verified" badge is a document check, not a warranty of the goods
              or of the order — config/legal.php is explicit on that, and a buyer
              who misreads it is the person who bears the cost. --}}
-        <p class="mt-5 pt-4 border-t border-[#EADFC6] text-[10.5px] leading-relaxed text-[#8A857A]">
+        <p class="mt-5 pt-4 border-t border-[#EADFC6] dark:border-[#6A5210] text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
             {{ $isFr
                ? "Artisan Hub 237 est une société privée, sans affiliation ministérielle ou publique. La vérification atteste d'un contrôle documentaire : ce n'est ni une garantie de qualité des produits, ni une garantie de bonne exécution d'une commande, ni une caution financière."
                : 'Artisan Hub 237 is a private company with no ministerial or public affiliation. Verification attests to a document check: it is not a guarantee of product quality, of an order being properly fulfilled, or a financial guarantee.' }}
-            <a href="{{ route('legal.show', ['doc' => 'avertissement', 'lang' => $lang]) }}" class="font-semibold text-[#8A6D1F] hover:underline">{{ $isFr ? 'Lire l\'avertissement' : 'Read the disclaimer' }}</a>
+            <a href="{{ route('legal.show', ['doc' => 'avertissement', 'lang' => $lang]) }}" class="font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:underline">{{ $isFr ? 'Lire l\'avertissement' : 'Read the disclaimer' }}</a>
         </p>
     </div>
 </section>

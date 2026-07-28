@@ -61,6 +61,28 @@ control boundary. `border #262B21` keeps its 1.27:1 for card hairlines, which ar
 decorative — a card is also identified by its fill (`surface` vs `bg`), so 1.4.11
 does not apply to them.
 
+### Added by the authenticated-surfaces pass
+
+One pair, for the two dark-green rails. They are already dark in light mode, so
+dark mode **deepens** them onto `brand-deep` rather than inverting them — but a
+`#0C3B1E` rail is only **1.55:1** against the `#0A0C09` page, which is a soft
+edge for a region that large. The rail therefore gains a real boundary.
+
+| Token | Light | Dark | Use | Measured |
+|---|---|---|---|---|
+| `rail-edge` | — | `#2A6B41` | the page-facing edge of a dark-green sidebar | 3.07:1 on `bg`, meeting WCAG 1.4.11 |
+
+The active nav pill on those rails uses the existing `brand` / `brand-ink`
+pair: `#0D5A30` and `#1E7A44` measure 1.52:1 and 2.36:1 on the deepened rail and
+both fail 1.4.11, while `brand #2E9250` is 3.22:1 with `brand-ink #04150A` at
+4.78:1 on it. Gold `#E5A82E` is 2.54:1 on that fill, so an active *icon* takes
+the ink and gold survives only as the left marker bar (6.01:1 on the rail).
+
+The admin rail's orange count badge carries white text, which is **2.63:1** on
+`#DE8E14` — a light-mode defect, not introduced here. Dark mode does not
+reproduce it: the badge ink becomes `#2A1902`, 6.45:1. The light rendering is
+left alone so this pass changes nothing anyone can see in light mode.
+
 ## Non-negotiables
 
 **1. Certificates never go dark.** Every view under the certificate routes is a

@@ -95,7 +95,7 @@
             <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
         </svg>
     </div>
-    <div class="flex-1 bg-[#FBB604] hidden sm:flex items-center justify-end pr-4 sm:pr-6 text-[#3A2E08] font-medium whitespace-nowrap">
+    <div class="flex-1 bg-[#FBB604] dark:bg-[#3A2B06] hidden sm:flex items-center justify-end pr-4 sm:pr-6 text-[#3A2E08] dark:text-[#EDB33A] font-medium whitespace-nowrap">
         <a href="{{ route('partners.index') }}" class="hover:underline">{{ $isFr ? 'Devenir partenaire' : 'Become a partner' }}</a>
         <span class="mx-2 opacity-50">|</span>
         <a href="{{ route('login', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Espace Artisan' : 'Artisan area' }}</a>
@@ -104,7 +104,7 @@
         <span class="mx-2 opacity-50">|</span>
         <a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Aide' : 'Help' }}</a>
     </div>
-    <div class="flex-1 bg-[#FBB604] sm:hidden"></div>
+    <div class="flex-1 bg-[#FBB604] dark:bg-[#3A2B06] sm:hidden"></div>
 </div>
 @else
 <div class="relative flex h-5 overflow-hidden">
@@ -114,20 +114,20 @@
             <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
         </svg>
     </div>
-    <div class="flex-1 bg-[#FBB604]"></div>
+    <div class="flex-1 bg-[#FBB604] dark:bg-[#3A2B06]"></div>
 </div>
 @endif
 
 <!-- Topbar — measured off the artwork: 64px band at 1024 = 80px at 1280,
      cream #FBF6EF, content 1230 wide inside a 25px page margin. -->
-<header class="bg-[#FBF6EF] border-b border-[#EFE4D5]">
+<header class="bg-[#FBF6EF] dark:bg-[#0A0C09] border-b border-[#EFE4D5] dark:border-[#6A5210]">
     <div class="max-w-[1280px] mx-auto px-[25px]">
         <div class="flex items-center justify-between gap-4 xl:gap-8 lg:h-[80px] py-3 lg:py-0">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-[15px] shrink-0">
                 <img src="{{ brand_asset('mark') }}" alt="" class="w-[56px] h-[56px] lg:w-[68px] lg:h-[68px] object-contain shrink-0">
                 <span class="leading-none">
-                    <span class="block text-[24px] lg:text-[29px] font-bold tracking-[-0.005em] text-[#0F3D24] whitespace-nowrap">Artisan<span class="text-[#0F3D24]">Hub</span><span class="text-[#B8891F]">237</span></span>
-                    <span class="block mt-[10px] text-[9px] font-semibold tracking-[0.16em] text-[#3C4A3E] uppercase whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                    <span class="block text-[24px] lg:text-[29px] font-bold tracking-[-0.005em] text-[#0F3D24] dark:text-[#339B56] whitespace-nowrap">Artisan<span class="text-[#0F3D24] dark:text-[#339B56]">Hub</span><span class="text-[#B8891F]">237</span></span>
+                    <span class="block mt-[10px] text-[9px] font-semibold tracking-[0.16em] text-[#3C4A3E] dark:text-[#B4B5A6] uppercase whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
             </a>
 
@@ -159,7 +159,7 @@
             <!-- Utility icon links + account avatar -->
             <div class="flex items-center gap-[22px] shrink-0">
                 @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
-                <a href="{{ $duHref }}" class="hidden md:flex flex-col items-center gap-[7px] text-[#1D1B16] hover:text-leaf transition-colors">
+                <a href="{{ $duHref }}" class="hidden md:flex flex-col items-center gap-[7px] text-[#1D1B16] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                     <i data-lucide="{{ $duIcon }}" class="w-[17.5px] h-[17.5px]"></i>
                     <span class="text-[10px] font-medium leading-none whitespace-nowrap">{{ $duLabel }}</span>
                 </a>
@@ -177,78 +177,78 @@
                 <div class="relative group hidden sm:block">
                     @if($siacUser)
                     <a href="{{ route('dashboard.siac') }}" aria-label="{{ $isFr ? 'Mon compte' : 'My account' }}"
-                        class="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#0F4227] text-white text-[13px] font-bold ring-2 ring-[#E3D6B0]">
+                        class="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#0F4227] text-white text-[13px] font-bold ring-2 ring-[#E3D6B0] dark:ring-[#6A5210]">
                         {{ mb_strtoupper(mb_substr($siacUser['name'] ?? 'A', 0, 1)) }}
                     </a>
                     <div class="absolute right-0 top-full w-52 pt-2 hidden group-hover:block z-50">
-                        <div class="bg-white rounded-lg shadow-lg border border-[#E7E1D4] py-1">
-                            <a href="{{ route('dashboard.siac') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
-                            <a href="{{ route('profile.show') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
-                            <a href="{{ route('messages.inbox') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">Messages</a>
-                            <a href="{{ route('saved.index') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Favoris' : 'Wishlist' }}</a>
+                        <div class="bg-white dark:bg-[#12150F] rounded-lg shadow-lg border border-[#E7E1D4] dark:border-[#262B21] py-1">
+                            <a href="{{ route('dashboard.siac') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
+                            <a href="{{ route('profile.show') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
+                            <a href="{{ route('messages.inbox') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">Messages</a>
+                            <a href="{{ route('saved.index') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Favoris' : 'Wishlist' }}</a>
                         </div>
                     </div>
                     @else
                     <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Se connecter' : 'Sign in' }}"
-                        class="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#EFEDE6] text-[#0F4227] ring-2 ring-[#E3D6B0]">
+                        class="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#EFEDE6] dark:bg-[#0A0C09] text-[#0F4227] dark:text-[#339B56] ring-2 ring-[#E3D6B0] dark:ring-[#6A5210]">
                         <i data-lucide="user" class="w-[19px] h-[19px]"></i>
                     </a>
                     <div class="absolute right-0 top-full w-52 pt-2 hidden group-hover:block z-50">
-                        <div class="bg-white rounded-lg shadow-lg border border-[#E7E1D4] py-1">
-                            <a href="{{ route('login', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
-                            <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Créer mon compte' : 'Create an account' }}</a>
-                            <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
+                        <div class="bg-white dark:bg-[#12150F] rounded-lg shadow-lg border border-[#E7E1D4] dark:border-[#262B21] py-1">
+                            <a href="{{ route('login', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                            <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Créer mon compte' : 'Create an account' }}</a>
+                            <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
                         </div>
                     </div>
                     @endif
                 </div>
 
-                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4]/50" aria-label="Menu">
-                    <i data-lucide="menu" class="w-5 h-5 text-[#262521]"></i>
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4] hover:dark:bg-[#0A0C09]/50" aria-label="Menu">
+                    <i data-lucide="menu" class="w-5 h-5 text-[#262521] dark:text-[#F3EFE7]"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden lg:hidden pb-4 border-t border-[#E7E1D4] pt-3">
+        <div id="mobile-menu" class="hidden lg:hidden pb-4 border-t border-[#E7E1D4] dark:border-[#262B21] pt-3">
             <form action="{{ route('gallery.search') }}" method="GET" class="relative mb-3">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}"
                     class="ui-field pr-9">
-                <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#55524A]">
+                <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#55524A] dark:text-[#B4B5A6]">
                     <i data-lucide="search" class="w-4 h-4"></i>
                 </button>
             </form>
             <div class="flex flex-wrap items-center gap-x-4 gap-y-2 px-1 mb-2">
                 @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
-                <a href="{{ $duHref }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16]">
+                <a href="{{ $duHref }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16] dark:text-[#F3EFE7]">
                     <i data-lucide="{{ $duIcon }}" class="w-4 h-4"></i>{{ $duLabel }}
                 </a>
                 @endforeach
             </div>
             {{-- Main page links — same $dirNavItems array as the green bar below --}}
             <div class="mb-2">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $dirNavActive === 'home' ? 'font-semibold text-leaf' : 'text-[#1D1B16] hover:text-leaf' }}">
-                    <i data-lucide="home" class="w-4 h-4 text-[#55524A]"></i>{{ $isFr ? 'Accueil' : 'Home' }}
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $dirNavActive === 'home' ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#1D1B16] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]' }}">
+                    <i data-lucide="home" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6]"></i>{{ $isFr ? 'Accueil' : 'Home' }}
                 </a>
                 @foreach($dirNavItems as [$mmKey, $mmIcon, $mmLabel, $mmHref])
-                <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $mmKey === $dirNavActive ? 'font-semibold text-leaf' : 'text-[#1D1B16] hover:text-leaf' }}">
-                    <i data-lucide="{{ $mmIcon }}" class="w-4 h-4 text-[#55524A]"></i>{{ $mmLabel }}
+                <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $mmKey === $dirNavActive ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#1D1B16] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]' }}">
+                    <i data-lucide="{{ $mmIcon }}" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6]"></i>{{ $mmLabel }}
                 </a>
                 @endforeach
             </div>
-            <div class="border-t border-[#E7E1D4] pt-3 flex flex-wrap items-center justify-between gap-2 px-1">
+            <div class="border-t border-[#E7E1D4] dark:border-[#262B21] pt-3 flex flex-wrap items-center justify-between gap-2 px-1">
                 @if($siacUser)
                 <a href="{{ route('dashboard.siac') }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
                 @else
                 <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
                 @endif
-                <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#231903] text-[12.5px] font-bold px-4 py-2 rounded-lg uppercase tracking-[0.04em]">
+                <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#231903] dark:text-[#EDB33A] text-[12.5px] font-bold px-4 py-2 rounded-lg uppercase tracking-[0.04em]">
                     {{ $isFr ? 'Vendre sur ArtisanHub237' : 'Sell on ArtisanHub237' }}
                 </a>
                 <span class="flex items-center gap-2 text-[13px] font-semibold">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">FR</a>
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ !$isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">EN</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf dark:text-[#339B56] underline' : 'text-[#8A857A] dark:text-[#868778]' }}">FR</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ !$isFr ? 'text-leaf dark:text-[#339B56] underline' : 'text-[#8A857A] dark:text-[#868778]' }}">EN</a>
                 </span>
                 {{-- Same control again for the phone menu, where the utility row
                      above is hidden. Duplicate `.theme-toggle` nodes are wired by
@@ -276,24 +276,24 @@
                         @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
                     </a>
                     <div class="absolute left-0 top-full pt-1 hidden group-hover:block z-50">
-                        <div class="w-[600px] max-w-[92vw] bg-white rounded-xl shadow-xl border border-[#EFEDEA] p-5">
+                        <div class="w-[600px] max-w-[92vw] bg-white dark:bg-[#12150F] rounded-xl shadow-xl border border-[#EFEDEA] dark:border-[#262B21] p-5">
                             <div class="grid grid-cols-3 gap-x-5 gap-y-4">
                                 @foreach($navSectors as $sec)
                                 <div class="min-w-0">
-                                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="flex items-center gap-1.5 text-[12.5px] font-bold text-[#14532D] hover:underline mb-2">
+                                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="flex items-center gap-1.5 text-[12.5px] font-bold text-[#14532D] dark:text-[#339B56] hover:underline mb-2">
                                         <i data-lucide="layers" class="w-3.5 h-3.5 shrink-0"></i>
                                         <span class="truncate">{{ $isFr ? $sec->name_fr : ($sec->name_en ?? $sec->name_fr) }}</span>
                                     </a>
                                     <div class="space-y-1">
                                         @foreach($sec->filieres as $fil)
                                         @php $filName = $isFr ? $fil->name_fr : ($fil->name_en ?? $fil->name_fr); @endphp
-                                        <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $fil->slug]) }}" title="{{ $filName }}" class="block text-[11.5px] text-[#55524A] hover:text-leaf truncate">{{ $filName }}</a>
+                                        <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $fil->slug]) }}" title="{{ $filName }}" class="block text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] hover:text-leaf hover:dark:text-[#339B56] truncate">{{ $filName }}</a>
                                         @endforeach
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
-                            <a href="{{ $dnHref }}" class="mt-4 pt-3 border-t border-[#F1F0EC] flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] hover:underline">
+                            <a href="{{ $dnHref }}" class="mt-4 pt-3 border-t border-[#F1F0EC] dark:border-[#262B21] flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:underline">
                                 {{ $isFr ? 'Explorer toute la nomenclature officielle' : 'Explore the full official nomenclature' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </a>
                         </div>
@@ -317,11 +317,11 @@
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                 </a>
                 <div class="absolute right-0 top-full w-60 pt-1.5 hidden group-hover:block z-50">
-                    <div class="bg-white rounded-lg shadow-xl border border-[#E7E1D4] py-1">
-                        <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Créer mon compte artisan' : 'Create my artisan account' }}</a>
-                        <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
-                        <a href="{{ route('guide.artisan', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? "Guide de l'artisan" : 'Artisan guide' }}</a>
-                        <a href="{{ route('login', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED] border-t border-[#F1F0EC]">{{ $isFr ? 'J\'ai déjà un compte' : 'I already have an account' }}</a>
+                    <div class="bg-white dark:bg-[#12150F] rounded-lg shadow-xl border border-[#E7E1D4] dark:border-[#262B21] py-1">
+                        <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Créer mon compte artisan' : 'Create my artisan account' }}</a>
+                        <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
+                        <a href="{{ route('guide.artisan', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09]">{{ $isFr ? "Guide de l'artisan" : 'Artisan guide' }}</a>
+                        <a href="{{ route('login', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F8F3ED] hover:dark:bg-[#0A0C09] border-t border-[#F1F0EC] dark:border-[#262B21]">{{ $isFr ? 'J\'ai déjà un compte' : 'I already have an account' }}</a>
                     </div>
                 </div>
             </div>

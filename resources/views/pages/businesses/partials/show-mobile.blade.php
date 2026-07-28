@@ -573,9 +573,9 @@
 {{-- ── Status bar ──────────────────────────────────────────────────────────
      Purely chrome: the clock is the device's, not a value from the record, so
      it is drawn as a live clock rather than the mockup's frozen 9:41. --}}
-<div class="flex items-center justify-between px-5 pt-2 pb-1 text-[15px] font-semibold text-[#1B1B18]">
+<div class="flex items-center justify-between px-5 pt-2 pb-1 text-[15px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
     <span data-mob-clock>&nbsp;</span>
-    <span class="flex items-center gap-1.5 text-[#1B1B18]">
+    <span class="flex items-center gap-1.5 text-[#1B1B18] dark:text-[#F3EFE7]">
         <i data-lucide="signal" class="w-4 h-4"></i>
         <i data-lucide="wifi" class="w-4 h-4"></i>
         <i data-lucide="battery-full" class="w-5 h-5"></i>
@@ -589,28 +589,28 @@
      unread rows in `user_notifications`. --}}
 <header class="flex items-center gap-3 px-4 pb-3">
     <button type="button" aria-label="{{ $isFr ? 'Menu' : 'Menu' }}" class="p-1 -ml-1" data-mob-menu>
-        <i data-lucide="menu" class="w-7 h-7 text-[#1B1B18]"></i>
+        <i data-lucide="menu" class="w-7 h-7 text-[#1B1B18] dark:text-[#F3EFE7]"></i>
     </button>
     <a href="{{ route('home', ['lang' => $lang]) }}" class="flex-1 min-w-0">
         <img src="{{ brand_asset('full') }}" alt="ArtisanHub237" class="h-9 w-auto">
     </a>
     <a href="{{ route('gallery.search', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="p-1">
-        <i data-lucide="search" class="w-6 h-6 text-[#1B1B18]"></i>
+        <i data-lucide="search" class="w-6 h-6 text-[#1B1B18] dark:text-[#F3EFE7]"></i>
     </a>
     <a href="{{ route('notifications.index') }}" aria-label="{{ $isFr ? 'Notifications' : 'Notifications' }}" class="p-1 relative">
-        <i data-lucide="bell" class="w-6 h-6 text-[#1B1B18]"></i>
+        <i data-lucide="bell" class="w-6 h-6 text-[#1B1B18] dark:text-[#F3EFE7]"></i>
         @if($mUnread > 0)
             <span class="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#CC060E] text-white text-[10px] font-bold flex items-center justify-center">{{ $mUnread > 9 ? '9+' : $mUnread }}</span>
         @endif
     </a>
     <a href="{{ route('saved.index') }}" aria-label="{{ $isFr ? 'Favoris' : 'Saved' }}" class="p-1">
-        <i data-lucide="heart" class="w-6 h-6 text-[#1B1B18]"></i>
+        <i data-lucide="heart" class="w-6 h-6 text-[#1B1B18] dark:text-[#F3EFE7]"></i>
     </a>
     {{-- The artwork's cart. There is no cart on this platform, so the icon is a
          quote-request link — the transaction the operator actually carries. --}}
     <a href="{{ route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) }}"
        aria-label="{{ $isFr ? 'Demander un devis' : 'Request a quote' }}" class="p-1">
-        <i data-lucide="shopping-bag" class="w-6 h-6 text-[#1B1B18]"></i>
+        <i data-lucide="shopping-bag" class="w-6 h-6 text-[#1B1B18] dark:text-[#F3EFE7]"></i>
     </a>
 </header>
 
@@ -767,7 +767,7 @@
         <i data-lucide="shield-check" class="w-[18px] h-[18px] text-[var(--mob-green)]"></i>
         <span class="flex-1">{{ $isFr ? 'CERTIFICATS VÉRIFIÉS' : 'VERIFIED CERTIFICATES' }}</span>
         @if($mCerts->isNotEmpty())
-            <a href="{{ route('certificate.verify') }}" class="text-[11.5px] font-semibold normal-case tracking-normal text-[#14652F] flex items-center gap-1">
+            <a href="{{ route('certificate.verify') }}" class="text-[11.5px] font-semibold normal-case tracking-normal text-[#14652F] dark:text-[#339B56] flex items-center gap-1">
                 {{ $isFr ? 'Tout voir' : 'View All' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
         @endif
@@ -786,11 +786,11 @@
                     <span class="mob-shield" aria-hidden="true">
                         <img src="{{ brand_asset('mark') }}" alt="">
                     </span>
-                    <p class="mt-2 text-[13px] font-extrabold text-[#1B1B18]">{{ is_array($c) ? $c['code'] : $c->code }}</p>
-                    <p class="mt-0.5 text-[9.5px] leading-tight text-[#3B382F]">{{ is_array($c) ? $c['name'] : $c->name }}</p>
+                    <p class="mt-2 text-[13px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7]">{{ is_array($c) ? $c['code'] : $c->code }}</p>
+                    <p class="mt-0.5 text-[9.5px] leading-tight text-[#3B382F] dark:text-[#F3EFE7]">{{ is_array($c) ? $c['name'] : $c->name }}</p>
                     @php $cAt = is_array($c) ? ($c['issued_at'] ?? null) : ($c->issued_at ?? null); @endphp
                     @if($cAt)
-                        <p class="mt-1.5 text-[9.5px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($cAt)->format('d/m/Y') }}</p>
+                        <p class="mt-1.5 text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($cAt)->format('d/m/Y') }}</p>
                     @endif
                     <p class="mt-2"><span class="mob-vpill"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Vérifié' : 'Verified' }}</span></p>
                 </a>
@@ -809,7 +809,7 @@
         <i data-lucide="package" class="w-[18px] h-[18px] text-[#C9942E]"></i>
         <span class="flex-1">{{ $isFr ? 'PRODUITS EN VITRINE' : 'FEATURED PRODUCTS' }}</span>
         @if($mProducts->isNotEmpty())
-            <a href="{{ route('products.index', ['business' => $business->slug, 'lang' => $lang]) }}" class="text-[11.5px] font-semibold normal-case tracking-normal text-[#14652F] flex items-center gap-1">
+            <a href="{{ route('products.index', ['business' => $business->slug, 'lang' => $lang]) }}" class="text-[11.5px] font-semibold normal-case tracking-normal text-[#14652F] dark:text-[#339B56] flex items-center gap-1">
                 {{ $isFr ? 'Tout voir' : 'View All' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </a>
         @endif
@@ -868,10 +868,10 @@
                     {{-- Two lines, clamped and given a fixed measure, so the four
                          tiles in a row keep their price lines on one baseline
                          whatever the piece is called. --}}
-                    <p class="mt-1.5 text-[10.5px] font-bold leading-[1.25] text-[#1B1B18]"
+                    <p class="mt-1.5 text-[10.5px] font-bold leading-[1.25] text-[#1B1B18] dark:text-[#F3EFE7]"
                        style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:26px">{{ $pName }}</p>
                     @if($pCat)
-                        <p class="text-[9px] leading-tight text-[#8A857A] truncate">{{ $pCat }}</p>
+                        <p class="text-[9px] leading-tight text-[#8A857A] dark:text-[#868778] truncate">{{ $pCat }}</p>
                     @endif
                     {{-- The artwork stacks the price on its own line and puts the
                          rating and the cart on the next. At a ~100px tile the
@@ -880,17 +880,17 @@
                          only one that fits. --}}
                     @php $pHasStars = $pRating && $pRatingCount > 0; @endphp
                     @if($pPrice)
-                        <p class="mt-1 text-[10.5px] font-extrabold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ in_array($pCur, [null, '', 'XAF'], true) ? 'FCFA' : $pCur }} {{ number_format((float) $pPrice, 0, ',', ' ') }}</p>
+                        <p class="mt-1 text-[10.5px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap overflow-hidden text-ellipsis">{{ in_array($pCur, [null, '', 'XAF'], true) ? 'FCFA' : $pCur }} {{ number_format((float) $pPrice, 0, ',', ' ') }}</p>
                     @else
-                        <p class="mt-1 text-[10px] text-[#8A857A]">{{ $isFr ? 'Sur devis' : 'On quote' }}</p>
+                        <p class="mt-1 text-[10px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Sur devis' : 'On quote' }}</p>
                     @endif
                     <div class="mt-1 flex items-center justify-between gap-1">
                         {{-- The star line, drawn from the register or not at all. --}}
                         @if($pHasStars)
-                            <span class="flex items-center gap-0.5 text-[10px] font-semibold text-[#1B1B18] min-w-0" @if($pRating['basis'] ?? null) title="{{ $pRating['basis'] }}" @endif>
+                            <span class="flex items-center gap-0.5 text-[10px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] min-w-0" @if($pRating['basis'] ?? null) title="{{ $pRating['basis'] }}" @endif>
                                 <svg class="mob-star" viewBox="0 0 24 24" aria-hidden="true" style="width:11px;height:11px"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
                                 {{ number_format((float) $pRating['value'], 1, $isFr ? ',' : '.', ' ') }}
-                                <span class="text-[#8A857A] font-medium">({{ $pRatingCount }})</span>
+                                <span class="text-[#8A857A] dark:text-[#868778] font-medium">({{ $pRatingCount }})</span>
                             </span>
                         @else
                             <span aria-hidden="true"></span>
@@ -924,14 +924,14 @@
          right, exactly as the design lays it out at this width. --}}
     <div id="panel-about" data-mob-panel="about" class="p-3 grid grid-cols-2 gap-3">
         <div>
-            <h2 class="text-[13px] font-extrabold text-[#1B1B18]">{{ $isFr ? 'À propos' : 'About' }} {{ \Illuminate\Support\Str::limit($mName, 22) }}</h2>
+            <h2 class="text-[13px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'À propos' : 'About' }} {{ \Illuminate\Support\Str::limit($mName, 22) }}</h2>
             @if($mDesc)
                 {{-- The design clamps the prose and offers "Read More". The
                      disclosure is drawn only when there is something folded
                      away: a two-line description with a Read More under it
                      promises text that does not exist. --}}
                 @php $mLong = mb_strlen(trim($mDesc)) > 220; @endphp
-                <p class="mt-2 text-[11.5px] leading-relaxed text-[#3B382F] whitespace-pre-line"
+                <p class="mt-2 text-[11.5px] leading-relaxed text-[#3B382F] dark:text-[#F3EFE7] whitespace-pre-line"
                    data-mob-bio @if($mLong) style="display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden" @endif>{{ $mDesc }}</p>
                 @if($mLong)
                     <button type="button" data-mob-more
@@ -948,13 +948,13 @@
                 </p>
             @endif
         </div>
-        <dl class="rounded-[12px] border border-[var(--mob-line)] bg-[#FDFBF7] px-3 py-1.5 self-start">
+        <dl class="rounded-[12px] border border-[var(--mob-line)] bg-[#FDFBF7] dark:bg-[#12150F] px-3 py-1.5 self-start">
             @forelse($mFacts as [$ic, $k, $v, $basis])
                 <div class="mob-fact" @if($basis) title="{{ $basis }}" @endif>
                     <span class="mob-fact-ic"><i data-lucide="{{ $ic }}"></i></span>
                     <span class="min-w-0">
-                        <dt class="text-[9.5px] text-[#8A857A]">{{ $k }}</dt>
-                        <dd class="text-[11px] font-semibold text-[#1B1B18] leading-snug">{{ $v }}</dd>
+                        <dt class="text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ $k }}</dt>
+                        <dd class="text-[11px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $v }}</dd>
                     </span>
                 </div>
             @empty
@@ -991,15 +991,15 @@
             ]));
         @endphp
         @if($wRows !== [])
-            <dl class="divide-y divide-[#F5F1E8]">
+            <dl class="divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                 @foreach($wRows as [$k, $v])
                     <div class="flex items-start justify-between gap-3 py-2">
-                        <dt class="text-[11.5px] text-[#8A857A]">{{ $k }}</dt>
-                        <dd class="text-[12.5px] font-semibold text-[#1B1B18] text-right">{{ $v }}</dd>
+                        <dt class="text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $k }}</dt>
+                        <dd class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] text-right">{{ $v }}</dd>
                     </div>
                 @endforeach
             </dl>
-            <p class="mt-3 text-[11.5px] leading-snug text-[#8A857A]">
+            <p class="mt-3 text-[11.5px] leading-snug text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                     ? 'Seules la ville et la région sont publiées. Les coordonnées exactes ne sont jamais affichées publiquement.'
                     : 'Only the town and region are published. Exact coordinates are never shown publicly.' }}
@@ -1024,11 +1024,11 @@
                     [$label, $icon] = $mStatLabels[$key] ?? [\Illuminate\Support\Str::of($key)->replace('_', ' ')->ucfirst(), 'circle-dot'];
                 @endphp
                 <div class="rounded-[10px] border border-[var(--mob-line)] p-2.5">
-                    <dt class="flex items-center gap-1.5 text-[9.5px] text-[#8A857A]">
+                    <dt class="flex items-center gap-1.5 text-[9.5px] text-[#8A857A] dark:text-[#868778]">
                         <i data-lucide="{{ $icon }}" class="w-3.5 h-3.5 text-[#B8B2A4]"></i>{{ $label }}
                     </dt>
                     @if($stat['known'] ?? false)
-                        <dd class="text-[16px] font-extrabold text-[#1B1B18] leading-none mt-1">{{ $stat['value'] }}</dd>
+                        <dd class="text-[16px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none mt-1">{{ $stat['value'] }}</dd>
                     @else
                         <dd class="text-[12px] mt-1 ap-absent">{{ $mNotTracked }}</dd>
                     @endif
@@ -1047,28 +1047,28 @@
                  buckets divided by its own count — no bar is drawn from a
                  percentage this file made up, and the whole block is absent
                  while the register counts nothing. --}}
-            <div class="flex items-start gap-4 pb-3 border-b border-[#F5F1E8]">
+            <div class="flex items-start gap-4 pb-3 border-b border-[#F5F1E8] dark:border-[#262B21]">
                 <div class="flex-none text-center">
                     @if($mRating !== null)
-                        <p class="text-[28px] font-extrabold leading-none text-[#1B1B18]">{{ $mRating }}</p>
+                        <p class="text-[28px] font-extrabold leading-none text-[#1B1B18] dark:text-[#F3EFE7]">{{ $mRating }}</p>
                         <p class="mt-1.5 flex items-center justify-center gap-0.5" aria-hidden="true">
                             @for($s = 1; $s <= 5; $s++)
                                 <svg class="mob-star" viewBox="0 0 24 24" @if($s > round($mReviewMean)) style="opacity:.25" @endif><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
                             @endfor
                         </p>
                     @endif
-                    <p class="mt-1 text-[11px] text-[#8A857A]">{{ $mReviewCount }} {{ $isFr ? 'avis' : ($mReviewCount === 1 ? 'review' : 'reviews') }}</p>
+                    <p class="mt-1 text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $mReviewCount }} {{ $isFr ? 'avis' : ($mReviewCount === 1 ? 'review' : 'reviews') }}</p>
                 </div>
                 <div class="min-w-0 flex-1">
                     @foreach([5, 4, 3, 2, 1] as $star)
                         @php $n = (int) ($mReviewDist[$star] ?? 0); @endphp
                         <div class="flex items-center gap-2 py-[3px]">
-                            <span class="w-2 text-[10.5px] text-[#8A857A]">{{ $star }}</span>
+                            <span class="w-2 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $star }}</span>
                             <svg class="mob-star" style="width:11px;height:11px" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-                            <span class="flex-1 h-[6px] rounded-full bg-[#F1ECE2] overflow-hidden">
+                            <span class="flex-1 h-[6px] rounded-full bg-[#F1ECE2] dark:bg-[#0A0C09] overflow-hidden">
                                 <span class="block h-full rounded-full bg-[var(--mob-star)]" style="width:{{ $mReviewCount > 0 ? round(100 * $n / $mReviewCount, 1) : 0 }}%"></span>
                             </span>
-                            <span class="w-5 text-right text-[10.5px] text-[#8A857A]">{{ $n }}</span>
+                            <span class="w-5 text-right text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $n }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -1085,7 +1085,7 @@
             $mShown = $mWritten->take(8);
         @endphp
         @forelse($mShown as $rev)
-            <article class="py-3 border-b border-[#F5F1E8] last:border-0">
+            <article class="py-3 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
                 <div class="flex items-center gap-2">
                     <p class="flex items-center gap-0.5" aria-hidden="true">
                         @for($s = 1; $s <= 5; $s++)
@@ -1093,19 +1093,19 @@
                             <svg class="mob-star" viewBox="0 0 24 24" style="width:13px;height:13px{{ $rDim }}"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
                         @endfor
                     </p>
-                    <span class="text-[11.5px] font-semibold text-[#1B1B18]">{{ $rev->rating }}/5</span>
+                    <span class="text-[11.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $rev->rating }}/5</span>
                     @if($rev->is_verified_contact)
                         <span class="mob-vpill"><i data-lucide="check-circle-2" class="w-3 h-3"></i>{{ $isFr ? 'Contact vérifié' : 'Verified contact' }}</span>
                     @endif
                 </div>
                 @if($rev->title)
-                    <p class="mt-1.5 text-[12.5px] font-bold text-[#1B1B18]">{{ $rev->title }}</p>
+                    <p class="mt-1.5 text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $rev->title }}</p>
                 @endif
                 @if($rev->body)
-                    <p class="mt-1 text-[12.5px] leading-relaxed text-[#3B382F]">{{ $rev->body }}</p>
+                    <p class="mt-1 text-[12.5px] leading-relaxed text-[#3B382F] dark:text-[#F3EFE7]">{{ $rev->body }}</p>
                 @endif
                 @if($rev->created_at)
-                    <p class="mt-1.5 text-[10.5px] text-[#8A857A]">{{ $rev->created_at->locale($isFr ? 'fr' : 'en')->translatedFormat('d F Y') }}</p>
+                    <p class="mt-1.5 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $rev->created_at->locale($isFr ? 'fr' : 'en')->translatedFormat('d F Y') }}</p>
                 @endif
             </article>
         @empty
@@ -1116,7 +1116,7 @@
             </p>
         @endforelse
         @if($mReviewCount > $mShown->count())
-            <p class="pt-3 text-[11px] text-[#8A857A]">
+            <p class="pt-3 text-[11px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                     ? $mShown->count() . ' avis sont affichés ici ; les ' . $mReviewCount . ' avis publiés sont tous comptés dans la note et dans les barres ci-dessus.'
                     : $mShown->count() . ' are shown here; all ' . $mReviewCount . ' published reviews are counted in the rating and the bars above.' }}
@@ -1138,12 +1138,12 @@
                    entered rather than as a finding of this platform. */
                 $aIssuer = is_array($award) ? ($award['issuer'] ?? null) : ($award->issuer ?? null);
             @endphp
-            <article class="flex items-start gap-2.5 py-2.5 border-b border-[#F5F1E8] last:border-0">
+            <article class="flex items-start gap-2.5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
                 <span class="mob-fact-ic"><i data-lucide="trophy"></i></span>
                 <div class="min-w-0">
-                    <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $aTitle }}</p>
-                    @if($aIssuer)<p class="text-[11.5px] text-[#3B382F]">{{ $aIssuer }}</p>@endif
-                    @if($aYear)<p class="text-[11px] text-[#8A857A]">{{ $aYear }}</p>@endif
+                    <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $aTitle }}</p>
+                    @if($aIssuer)<p class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $aIssuer }}</p>@endif
+                    @if($aYear)<p class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $aYear }}</p>@endif
                 </div>
             </article>
         @empty
