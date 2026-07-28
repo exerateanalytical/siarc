@@ -175,6 +175,28 @@
 
         /* An absence, styled so it can never be mistaken for a measured figure. */
         .ap-absent { font-style: italic; color: #A8A296; font-weight: 500; }
+
+        /* The artwork's foil-shield rendering of a certificate, as a purely
+           visual gradient treatment (violet→cyan→gold) inside a shield clip. */
+        .ap-shield {
+            position: relative; display: inline-flex; align-items: center; justify-content: center;
+            width: 52px; height: 60px;
+            clip-path: polygon(50% 0, 96% 12%, 96% 55%, 50% 100%, 4% 55%, 4% 12%);
+            background:
+                radial-gradient(120% 90% at 30% 20%, rgba(255,255,255,.55), transparent 45%),
+                conic-gradient(from 210deg at 50% 45%, #8D6ADF, #4FB8D8, #E9C25C, #C98BD8, #5FC9B2, #8D6ADF);
+        }
+        .ap-shield::after {
+            content: ''; position: absolute; inset: 3px;
+            clip-path: polygon(50% 0, 96% 12%, 96% 55%, 50% 100%, 4% 55%, 4% 12%);
+            background: linear-gradient(160deg, rgba(255,255,255,.35), rgba(20,15,5,.28) 70%);
+            mix-blend-mode: soft-light;
+        }
+        .ap-shield-sheen {
+            position: absolute; inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.5) 46%, transparent 60%);
+        }
+        .ap-shield-dim { filter: saturate(.25) opacity(.55); }
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
@@ -216,26 +238,44 @@
     </nav>
 
     {{-- ── Hero ───────────────────────────────────────────────────────── --}}
-    <section class="mt-3 relative overflow-hidden rounded-[14px] bg-[#17130C]">
-        {{-- The design bleeds a large carved-mask photograph across the right
-             half of the hero. It renders only when this shop has a cover image
-             of its own: the design's stock artwork would put another artisan's
-             work behind this artisan's name and face. --}}
-        @if($business->cover_image)
-        <img src="{{ asset('storage/' . $business->cover_image) }}" alt=""
-             class="absolute inset-y-0 right-0 w-[62%] h-full object-cover opacity-75" aria-hidden="true">
-        <div class="absolute inset-0 bg-gradient-to-r from-[#17130C] via-[#17130C]/95 to-transparent"></div>
-        @endif
+    {{-- The artwork's hero: a near-black card (#0E0A03 family) with a faint
+         green glow bleeding in from the left, the artisan block across the
+         left two-thirds, and a floating dark trust card overlapping the
+         hero's right edge and hanging past its bottom. The overlap is real:
+         the card is absolutely positioned and the section carries a bottom
+         margin sized to the overhang. --}}
+    <section class="mt-3 relative rounded-[16px] mb-10">
+        <div class="absolute inset-0 rounded-[16px] overflow-hidden bg-[#0E0A03]">
+            {{-- Left green glow, as sampled (#106239) in the artwork. --}}
+            <div class="absolute -left-24 -top-24 w-[520px] h-[420px] rounded-full opacity-40"
+                 style="background: radial-gradient(closest-side, #106239, transparent 70%)"></div>
+            {{-- The design bleeds a large carved-mask photograph across the
+                 right half. It renders only when this shop has a cover image
+                 of its own: the design's stock artwork would put another
+                 artisan's work behind this artisan's name and face. --}}
+            @if($business->cover_image)
+            <img src="{{ asset('storage/' . $business->cover_image) }}" alt=""
+                 class="absolute inset-y-0 right-0 w-[62%] h-full object-cover opacity-75" aria-hidden="true">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0E0A03] via-[#0E0A03]/95 to-[#070300]/40"></div>
+            @else
+            {{-- No photograph on record: the right half keeps the artwork's
+                 darkened-relief feel with a pure CSS carve pattern instead of
+                 someone else's mask. --}}
+            <div class="absolute inset-y-0 right-0 w-[46%] opacity-[.28]"
+                 style="background: repeating-linear-gradient(115deg, #C9942E 0 1px, transparent 1px 26px), repeating-linear-gradient(-115deg, #6B5426 0 1px, transparent 1px 34px)"></div>
+            <div class="absolute inset-y-0 right-0 w-[55%] bg-gradient-to-r from-[#0E0A03] to-transparent"></div>
+            @endif
+        </div>
 
-        <div class="relative flex items-start gap-7 p-7">
+        <div class="relative flex items-start gap-7 p-7 pr-[292px] min-h-[252px]">
 
             {{-- Portrait --}}
             <div class="shrink-0">
                 @if($business->logo)
                 <img src="{{ asset('storage/' . $business->logo) }}" alt=""
-                     class="w-[156px] h-[156px] rounded-full object-cover ring-[3px] ring-[#C9942E]">
+                     class="w-[176px] h-[176px] rounded-full object-cover ring-[3px] ring-[#C9942E]">
                 @else
-                <span class="w-[156px] h-[156px] rounded-full bg-[#2A2318] ring-[3px] ring-[#C9942E] flex items-center justify-center text-[#C9942E]">
+                <span class="w-[176px] h-[176px] rounded-full bg-[#2A2318] ring-[3px] ring-[#C9942E] flex items-center justify-center text-[#C9942E]">
                     <i data-lucide="user-round" class="w-14 h-14" stroke-width="1.4"></i>
                 </span>
                 @endif
@@ -244,7 +284,7 @@
             {{-- Name block --}}
             <div class="min-w-0 flex-1 pt-1">
                 @if($isVerified)
-                <span class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#1B1403] text-[10.5px] font-bold tracking-[.06em] uppercase rounded px-2.5 py-1">
+                <span class="inline-flex items-center gap-1.5 bg-[#C8860B] text-[#1B1403] text-[10.5px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
                     <i data-lucide="badge-check" class="w-3 h-3"></i>
                     {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                 </span>
@@ -290,9 +330,13 @@
                  and the breakdown that produced it is reachable from here rather
                  than kept private. Unknown says so plainly.
             --}}
-            <div class="shrink-0 w-[228px] rounded-xl border border-[#C9942E] bg-[#1E1809]/95 p-4">
+            <div class="absolute right-5 top-5 -bottom-6 w-[236px] rounded-[13px] border border-[#C9942E]/80 bg-[#070805] shadow-[0_18px_40px_-18px_rgba(0,0,0,.65)] p-4 flex flex-col">
                 <p class="text-center text-[11px] font-bold tracking-[.08em] uppercase text-[#C9942E]">
-                    {{ $isFr ? 'Indice de confiance' : 'Trust score' }}
+                    {{-- The register's own name for this figure. It measures how
+                         much of the account has been checked, not anyone's honesty
+                         or craft, and calling it a trust score would promote it
+                         into a claim about the person. --}}
+                    {{ $apTrust['label'] ?? ($isFr ? 'Niveau de vérification' : 'Verification standing') }}
                 </p>
 
                 @if($statKnown($apTrust))
@@ -337,7 +381,7 @@
                 </p>
                 @endif
 
-                <div class="mt-3.5 space-y-2">
+                <div class="mt-auto pt-3.5 space-y-2">
                     <a href="{{ $siacUser
                             ? route('quotes.create', ['business' => $business->slug, 'lang' => $lang])
                             : route('login', ['lang' => $lang]) }}"
@@ -351,7 +395,7 @@
                     </a>
                     @endif
                     <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}"
-                       class="ui-btn ui-btn-block bg-transparent text-white border-[#6B5426] hover:border-[#C9942E]">
+                       class="ui-btn ui-btn-block rounded-full bg-transparent text-white border-[#6B5426] hover:border-[#C9942E]">
                         <i data-lucide="heart" class="w-3.5 h-3.5"></i>
                         {{ $isFr ? 'Suivre' : 'Follow' }}
                     </a>
@@ -394,9 +438,10 @@
             <h2 class="ap-sec-title mb-4"><i data-lucide="id-card" class="w-4 h-4"></i>{{ $isFr ? "Fiche d'identité" : 'Identity' }}</h2>
             <dl class="divide-y divide-[#F5F1E8]">
                 @foreach($identityRows as [$idLabel, $idValue, $idIcon, $idMono])
-                <div class="flex items-start gap-3 py-2.5 first:pt-0">
+                <div class="flex items-start gap-2.5 py-2.5 first:pt-0">
                     <i data-lucide="{{ $idIcon }}" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[132px] shrink-0 text-[11px] uppercase tracking-[.04em] text-[#8A857A] pt-[1px]">{{ $idLabel }}</dt>
+                    <dt class="w-[128px] shrink-0 text-[10.5px] uppercase tracking-[.05em] text-[#8A857A] pt-[2px]">{{ $idLabel }}</dt>
+                    <span class="shrink-0 text-[11px] text-[#C8C1B2] pt-[1px]" aria-hidden="true">:</span>
                     <dd class="min-w-0 flex-1 text-[12.5px] font-semibold text-[#1D1B16] break-words {{ $idMono ? 'font-mono text-[11.5px]' : '' }}">{{ $idValue }}</dd>
                 </div>
                 @endforeach
@@ -405,9 +450,10 @@
                      and checked — config/legal.php is explicit that it is not a
                      guarantee of quality or of an order being fulfilled — so the
                      row says which of the two it is. --}}
-                <div class="flex items-start gap-3 py-2.5">
+                <div class="flex items-start gap-2.5 py-2.5">
                     <i data-lucide="shield-check" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[132px] shrink-0 text-[11px] uppercase tracking-[.04em] text-[#8A857A] pt-[1px]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
+                    <dt class="w-[128px] shrink-0 text-[10.5px] uppercase tracking-[.05em] text-[#8A857A] pt-[2px]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
+                    <span class="shrink-0 text-[11px] text-[#C8C1B2] pt-[1px]" aria-hidden="true">:</span>
                     <dd class="min-w-0 flex-1">
                         @if($isVerified)
                         <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Documents vérifiés' : 'Documents checked' }}</span>
@@ -469,16 +515,39 @@
         <section id="ap-workshop" class="col-span-12 xl:col-span-3 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="map-pin" class="w-4 h-4"></i>{{ $isFr ? "Localisation de l'atelier" : 'Workshop location' }}</h2>
 
-            <p class="text-[12.5px] font-semibold leading-snug text-[#1D1B16]">{{ $coarseLocation ?: ($isFr ? 'Non communiquée' : 'Not published') }}</p>
+            <p class="flex items-start gap-2 text-[12.5px] font-semibold leading-snug text-[#1D1B16]">
+                <i data-lucide="map-pin" class="w-[14px] h-[14px] text-[#157A43] mt-[2px] shrink-0"></i>
+                {{ $coarseLocation ?: ($isFr ? 'Non communiquée' : 'Not published') }}
+            </p>
 
             {{-- The design shows a pinned street map and prints the decimal
                  coordinates above it — "4.0480° N, 9.7679° E". This workshop is
                  in most cases somebody's home. The product passport already
                  withholds these, and a public profile is the more exposed
-                 surface of the two, so neither the coordinates nor a map keyed
-                 to them appears here; the town and region are what a buyer
-                 actually needs in order to travel. --}}
-            <p class="mt-2 text-[11.5px] leading-relaxed text-[#8A857A]">
+                 surface of the two, so no coordinate reaches the markup at all —
+                 including inside a map URL. The map area below is a pure CSS
+                 evocation of the artwork's tile, keyed to nothing: the pin sits
+                 at its decorative centre, not at anybody's door. --}}
+            <div class="relative mt-3 h-[132px] rounded-[10px] overflow-hidden border border-[#EFEBE2] bg-[#EFEDE6]">
+                <div class="absolute inset-0 opacity-70"
+                     style="background:
+                        repeating-linear-gradient(0deg, transparent 0 26px, #DFDACC 26px 28px),
+                        repeating-linear-gradient(90deg, transparent 0 34px, #E4DFD2 34px 36px),
+                        linear-gradient(115deg, #E9E4D6 0%, #F2EFE6 55%, #E3E7DB 100%)"></div>
+                <div class="absolute left-[8%] top-0 bottom-0 w-[14%] bg-[#CBD9E4]/60" style="transform: skewX(-18deg)"></div>
+                <div class="absolute right-[18%] -top-4 w-10 h-10 rounded-full bg-[#D7E3CE]/80"></div>
+                <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-[#0A5C2E]">
+                    <i data-lucide="map-pin" class="w-7 h-7 fill-[#0A5C2E] text-[#0A5C2E]"></i>
+                </span>
+                @if($coarseLocation)
+                <a href="https://www.google.com/maps/search/{{ urlencode($coarseLocation) }}" target="_blank" rel="noopener"
+                   class="absolute right-2 bottom-2 inline-flex items-center gap-1.5 rounded-md bg-[#0A5C2E] px-2.5 py-1.5 text-[9.5px] font-bold uppercase tracking-[.06em] text-white hover:bg-[#0D6E38]">
+                    {{ $isFr ? 'Voir sur la carte' : 'View on map' }}
+                </a>
+                @endif
+            </div>
+
+            <p class="mt-2.5 text-[11.5px] leading-relaxed text-[#8A857A]">
                 {{ $isFr
                    ? "Seuls la ville et la région sont publiés. L'adresse exacte de l'atelier est communiquée par l'artisan lors d'une prise de contact."
                    : 'Only the town and region are published. The exact workshop address is given by the artisan when you get in touch.' }}
@@ -500,12 +569,18 @@
                     $business->website ? ['globe', $business->website, $isFr ? 'Site web' : 'Website'] : null,
                 ])->filter()->values();
             @endphp
+            {{-- The artwork closes this card with a row of coloured social
+                 discs. Same shape here — one disc per channel this artisan has
+                 actually published, none invented to fill the row. --}}
             @if($channels->isNotEmpty())
-            <div class="mt-4 flex flex-wrap gap-2">
+            <div class="mt-4 flex items-center justify-center gap-2.5">
+                @php $chColors = ['message-circle' => '#25A05A', 'phone' => '#0A5C2E', 'mail' => '#C8860B', 'globe' => '#1877A8']; @endphp
                 @foreach($channels as [$chIcon, $chHref, $chLabel])
                 <a href="{{ $chHref }}" @if(in_array($chIcon, ['globe', 'message-circle'])) target="_blank" rel="noopener" @endif
-                   class="inline-flex items-center gap-1.5 rounded-lg border border-[#EFEBE2] px-2.5 py-2 text-[11px] font-medium text-[#3B382F] hover:border-[#C9942E] transition-colors">
-                    <i data-lucide="{{ $chIcon }}" class="w-[13px] h-[13px] text-[#8A6D1F]"></i>{{ $chLabel }}
+                   title="{{ $chLabel }}" aria-label="{{ $chLabel }}"
+                   class="w-9 h-9 rounded-full flex items-center justify-center text-white hover:opacity-85 transition-opacity"
+                   style="background: {{ $chColors[$chIcon] ?? '#1D1B16' }}">
+                    <i data-lucide="{{ $chIcon }}" class="w-4 h-4"></i>
                 </a>
                 @endforeach
             </div>
@@ -543,20 +618,23 @@
         <div class="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
             @foreach($certBlocks as $block)
             @php $issued = ! empty($block['issued']); $first = $block['items'][0] ?? null; @endphp
-            <article class="ui-card p-4 {{ $issued ? '' : 'bg-[#FCFBF8]' }}">
-                <div class="flex items-start gap-2.5">
-                    <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ $issued ? 'bg-[#E2F3E8] text-[#157A43]' : 'bg-[#F4F1EA] text-[#B8B2A4]' }}">
-                        <i data-lucide="{{ $issued ? 'badge-check' : 'file-x' }}" class="w-4 h-4"></i>
-                    </span>
-                    <div class="min-w-0">
-                        <p class="text-[11.5px] font-semibold leading-snug text-[#1D1B16]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
-                        <p class="text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
-                    </div>
-                </div>
+            <article class="ui-card p-4 text-center {{ $issued ? '' : 'bg-[#FCFBF8]' }}">
+                {{-- The artwork draws each certificate as a foil shield. On
+                     screen this is a visual treatment only — layered gradients
+                     in a shield clip with the brand mark centred. It is never
+                     captioned as a hologram or a security feature;
+                     docs/PRINT-SECURITY-SPEC.md governs claims. --}}
+                <span class="ap-shield mx-auto {{ $issued ? '' : 'ap-shield-dim' }}">
+                    <span class="ap-shield-sheen"></span>
+                    <img src="{{ brand_asset('mark') }}" alt="" class="relative w-6 h-6 object-contain">
+                </span>
+
+                <p class="mt-2.5 text-[11.5px] font-semibold leading-snug text-[#1D1B16]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
+                <p class="text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
 
                 @if($issued && $first)
-                <p class="mt-3 font-mono text-[10.5px] font-semibold text-[#1D1B16] break-all">{{ $first['number'] }}</p>
-                <div class="mt-2.5 flex items-center justify-between gap-2">
+                <p class="mt-2.5 font-mono text-[10px] font-semibold text-[#6F6B60] break-all">{{ $first['number'] }}</p>
+                <div class="mt-2.5 flex items-center justify-center gap-2">
                     <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Au registre' : 'On register' }}</span>
                     @if(! empty($first['issued_at']))
                     <span class="text-[10px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($first['issued_at'])->format('d/m/Y') }}</span>
@@ -567,7 +645,7 @@
                 @endif
                 @else
                 {{-- The register's own explanation of the absence, not ours. --}}
-                <p class="mt-3 text-[10.5px] leading-relaxed ap-absent">{{ $block['basis'] ?? ($isFr ? 'Non émis.' : 'Not issued.') }}</p>
+                <p class="mt-2.5 text-[10.5px] leading-relaxed ap-absent">{{ $block['basis'] ?? ($isFr ? 'Non émis.' : 'Not issued.') }}</p>
                 @endif
             </article>
             @endforeach
@@ -593,7 +671,7 @@
     @php $products = collect($apProducts['items'] ?? []); @endphp
     <section class="mt-7">
         <div class="flex items-center justify-between gap-4">
-            <h2 class="ap-sec-title"><i data-lucide="package" class="w-4 h-4"></i>{{ $isFr ? 'Produits' : 'Products' }}</h2>
+            <h2 class="ap-sec-title"><i data-lucide="package" class="w-4 h-4"></i>{{ $isFr ? 'Produits en vedette' : 'Featured products' }}</h2>
             @if(($apProducts['total_published'] ?? 0) > $products->take(6)->count())
             <a href="{{ route('products.index', ['lang' => $lang]) }}" class="ap-sec-link">
                 {{ $isFr ? 'Tous les produits' : 'All products' }} ({{ $apProducts['total_published'] }})<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
@@ -605,15 +683,22 @@
         <div class="mt-3 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
             @foreach($products->take(6) as $p)
             <article class="ui-card p-0 overflow-hidden">
-                <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="block">
-                    @if($p['image'])
-                    <img src="{{ asset('storage/' . $p['image']) }}" alt="{{ $p['name'] }}" class="w-full h-[152px] object-cover">
-                    @else
-                    <span class="w-full h-[152px] bg-[#F6F2E9] flex items-center justify-center text-[#C8C1B2]">
-                        <i data-lucide="image" class="w-7 h-7"></i>
-                    </span>
-                    @endif
-                </a>
+                <div class="relative">
+                    <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="block">
+                        @if($p['image'])
+                        <img src="{{ asset('storage/' . $p['image']) }}" alt="{{ $p['name'] }}" class="w-full h-[152px] object-cover">
+                        @else
+                        <span class="w-full h-[152px] bg-[#F6F2E9] flex items-center justify-center text-[#C8C1B2]">
+                            <i data-lucide="image" class="w-7 h-7"></i>
+                        </span>
+                        @endif
+                    </a>
+                    <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}"
+                       aria-label="{{ $isFr ? 'Enregistrer' : 'Save' }}"
+                       class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 text-[#6F6B60] flex items-center justify-center hover:text-[#CC060E] transition-colors">
+                        <i data-lucide="heart" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
                 <div class="p-3">
                     <h3 class="text-[12px] font-semibold leading-snug text-[#1D1B16]">
                         <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="hover:text-leaf transition-colors">{{ $p['name'] }}</a>
@@ -877,8 +962,8 @@
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-6 gap-y-5">
             @foreach($trustBar as $tb)
             <div class="flex items-start gap-3">
-                <span class="w-9 h-9 rounded-lg bg-white border border-[#EADFC6] text-[#8A6D1F] flex items-center justify-center shrink-0">
-                    <i data-lucide="{{ $tb['icon'] }}" class="w-4 h-4"></i>
+                <span class="w-10 h-10 rounded-full bg-[#F3E7CB] border border-[#E2CD9B] text-[#8A6D1F] flex items-center justify-center shrink-0">
+                    <i data-lucide="{{ $tb['icon'] }}" class="w-[18px] h-[18px]"></i>
                 </span>
                 <div class="min-w-0">
                     <p class="text-[11.5px] font-bold uppercase tracking-[.05em] leading-snug text-[#1D1B16]">{{ $tb['title'] }}</p>

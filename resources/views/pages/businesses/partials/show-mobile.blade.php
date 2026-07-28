@@ -78,7 +78,13 @@
     $mPlace = collect([$mCity, $mRegion])->filter()->implode(', ') ?: null;
 
     $mVerified = in_array($business->verification_tier, ['verified', 'certified'], true);
-    $mWorkshop = $ask('workshop') ?: ($business->address_fr || $business->address_en ? ($isFr ? $business->address_fr : ($business->address_en ?? $business->address_fr)) : null);
+    /* workshop() returns the register's array (name, level, place) or null;
+       the row here wants a name. The address fallback stays for shops with no
+       registered workshop — it is the artisan's own published wording. */
+    $mWorkshopData = $ask('workshop');
+    $mWorkshop = is_array($mWorkshopData)
+        ? ($mWorkshopData['name'] ?? null)
+        : ($mWorkshopData ?: ($business->address_fr || $business->address_en ? ($isFr ? $business->address_fr : ($business->address_en ?? $business->address_fr)) : null));
     $mYears = $business->year_established ? max(0, (int) date('Y') - (int) $business->year_established) : null;
     $mMemberSince = $business->created_at;
 
@@ -214,11 +220,11 @@
        printed with a dash, because four rows of "—" reads as a neglected
        profile where three real rows read as a short one. */
     $mFacts = array_values(array_filter([
-        $business->languages_spoken ? [$isFr ? 'Langues' : 'Languages', collect($business->languages_spoken)->filter()->implode(', ')] : null,
-        $mIndustry ? [$isFr ? 'Métier' : 'Craft', $mIndustry] : null,
-        $mYears !== null ? [$isFr ? 'Expérience' : 'Experience', $mYears . ' ' . ($isFr ? 'ans' : 'yrs')] : null,
-        $mRegion ? [$isFr ? 'Région' : 'Region', $mRegion] : null,
-        $business->employee_count ? [$isFr ? 'Artisans à l’atelier' : 'Workshop size', $business->employee_count] : null,
+        $business->languages_spoken ? ['languages', $isFr ? 'Langues' : 'Languages', collect($business->languages_spoken)->filter()->implode(', ')] : null,
+        $mIndustry ? ['clipboard-check', $isFr ? 'Métier' : 'Craft', $mIndustry] : null,
+        $mYears !== null ? ['map-pin', $isFr ? 'Expérience' : 'Years Experience', $mYears . ' ' . ($isFr ? 'ans' : 'yrs')] : null,
+        $mRegion ? ['map', $isFr ? 'Région' : 'Region', $mRegion] : null,
+        $business->employee_count ? ['users', $isFr ? 'Artisans à l’atelier' : 'Workshop size', $business->employee_count] : null,
     ]));
 @endphp
 
@@ -228,93 +234,179 @@
        document that includes it. Plain CSS for the same reason as the UI kit:
        Tailwind is a runtime CDN bundle here, so @apply is unavailable. */
     [data-mobile-profile] {
-        --mob-page:   #FDFAF6;
-        --mob-dark:   #0B0B0A;
-        --mob-nav:    #05311A;
-        --mob-gold:   #E3A33D;
-        --mob-green:  #157A43;
-        --mob-line:   #EFEBE2;
+        --mob-page:   #FCF8F5;
+        --mob-dark:   #0E0A03;
+        --mob-dark2:  #070300;
+        --mob-nav:    #02411D;
+        --mob-pill:   #054821;
+        --mob-gold:   #EDA817;
+        --mob-gold2:  #C8860B;
+        --mob-green:  #0E6A34;
+        --mob-red:    #CC060E;
+        --mob-line:   #EFEAE2;
+        --mob-panel:  #0B0B07;
         background: var(--mob-page);
-        padding-bottom: 74px;      /* clears the fixed bottom bar */
+        padding-bottom: 84px;      /* clears the fixed bottom bar + raised disc */
         font-family: inherit;
     }
     [data-mobile-profile] .mob-card {
         background: #fff;
         border: 1px solid var(--mob-line);
-        border-radius: 14px;
-        margin: 0 10px 10px;
+        border-radius: 16px;
+        margin: 0 10px 12px;
         overflow: hidden;
+        box-shadow: 0 1px 2px rgba(20,16,8,.04);
     }
     [data-mobile-profile] .mob-sec-h {
-        display: flex; align-items: center; gap: 8px;
-        padding: 12px 12px 8px;
-        font-size: 12.5px; font-weight: 800; letter-spacing: .06em;
-        color: #1B1B18; text-transform: uppercase;
+        display: flex; align-items: center; gap: 9px;
+        padding: 14px 14px 10px;
+        font-size: 13px; font-weight: 800; letter-spacing: .05em;
+        color: #113B22; text-transform: uppercase;
     }
     [data-mobile-profile] .mob-scroll {
-        display: flex; gap: 8px; overflow-x: auto;
-        padding: 0 12px 12px; scroll-snap-type: x mandatory;
+        display: flex; gap: 9px; overflow-x: auto;
+        padding: 0 14px 14px; scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
     }
     [data-mobile-profile] .mob-scroll::-webkit-scrollbar { display: none; }
 
+    /* ── Hero: dark card, artwork/cover fading in from the right ── */
     [data-mobile-profile] .mob-hero {
-        position: relative; margin: 0 10px 10px;
-        border-radius: 14px; overflow: hidden;
-        background: var(--mob-dark); color: #fff;
-        min-height: 235px;
+        position: relative; margin: 0 10px 12px;
+        border-radius: 20px; overflow: hidden;
+        background: linear-gradient(118deg, var(--mob-dark) 0%, #150E04 55%, var(--mob-dark2) 100%);
+        color: #fff;
+        min-height: 236px;
     }
-    [data-mobile-profile] .mob-hero-meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; line-height: 17px; color: #E8E3D8; margin-top: 4px; }
+    [data-mobile-profile] .mob-hero-art {
+        position: absolute; top: 0; right: 0; bottom: 0; width: 62%;
+        object-fit: cover; object-position: center;
+        -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.55) 38%, #000 72%);
+                mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.55) 38%, #000 72%);
+    }
+    [data-mobile-profile] .mob-hero-glow {
+        position: absolute; top: 0; right: 0; bottom: 0; width: 62%;
+        background:
+            radial-gradient(120% 90% at 85% 30%, rgba(200,134,11,.32) 0%, rgba(200,134,11,.10) 45%, transparent 75%),
+            linear-gradient(90deg, transparent 0%, rgba(60,38,8,.35) 60%, rgba(93,58,12,.45) 100%);
+        -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
+                mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
+    }
+    [data-mobile-profile] .mob-hero-scrim {
+        position: absolute; inset: 0;
+        background: linear-gradient(90deg, var(--mob-dark) 34%, rgba(14,10,3,.72) 55%, rgba(14,10,3,.18) 100%);
+    }
+    [data-mobile-profile] .mob-hero-meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; line-height: 17px; color: #EFEADF; margin-top: 5px; }
     [data-mobile-profile] .mob-hero-meta i { width: 15px; height: 15px; color: var(--mob-gold); flex: none; }
 
     [data-mobile-profile] .mob-trust {
-        margin: 10px 0 0; border: 1px solid rgba(227,163,61,.55);
-        border-radius: 10px; background: rgba(0,0,0,.55); padding: 10px 12px;
+        margin: 12px 0 0; border: 1px solid rgba(237,168,23,.38);
+        border-radius: 14px; background: rgba(11,11,7,.88); padding: 12px 14px 13px;
+        backdrop-filter: blur(2px);
     }
-    [data-mobile-profile] .mob-trust-h { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--mob-gold); }
+    [data-mobile-profile] .mob-trust-h { font-size: 11px; font-weight: 800; letter-spacing: .1em; color: var(--mob-gold); text-transform: uppercase; }
+    [data-mobile-profile] .mob-star { width: 15px; height: 15px; color: var(--mob-gold); fill: var(--mob-gold); }
 
-    [data-mobile-profile] .mob-act { display: grid; grid-template-columns: repeat(4, 1fr); }
+    /* ── Action row: white card, 4 equal columns split by hairlines ── */
+    [data-mobile-profile] .mob-act { display: grid; }
     [data-mobile-profile] .mob-act > * {
-        display: flex; flex-direction: column; align-items: center; gap: 6px;
-        padding: 11px 2px; font-size: 11.5px; color: #1B1B18; text-align: center;
+        display: flex; flex-direction: column; align-items: center; gap: 7px;
+        padding: 13px 2px 12px; font-size: 12px; font-weight: 600;
+        color: #1B1B18; text-align: center;
         border-left: 1px solid var(--mob-line); background: none;
     }
     [data-mobile-profile] .mob-act > *:first-child { border-left: 0; }
-    [data-mobile-profile] .mob-act i { width: 21px; height: 21px; }
+    [data-mobile-profile] .mob-act i { width: 22px; height: 22px; }
 
+    /* ── Certificate shield cards ── */
     [data-mobile-profile] .mob-cert {
-        flex: 0 0 103px; scroll-snap-align: start;
-        border: 1px solid var(--mob-line); border-radius: 10px;
-        padding: 10px 6px; text-align: center; background: #fff;
+        flex: 0 0 118px; scroll-snap-align: start;
+        border: 1px solid var(--mob-line); border-radius: 12px;
+        padding: 12px 8px 11px; text-align: center; background: #fff;
+        box-shadow: 0 1px 2px rgba(20,16,8,.05);
     }
-    [data-mobile-profile] .mob-prod { flex: 0 0 99px; scroll-snap-align: start; }
-    [data-mobile-profile] .mob-prod img { width: 99px; height: 99px; object-fit: cover; border-radius: 9px; display: block; }
+    /* Iridescent shield: layered conic/linear gradients clipped to a shield.
+       Purely a visual treatment — never captioned as a hologram or a security
+       feature; docs/PRINT-SECURITY-SPEC.md governs those claims. */
+    [data-mobile-profile] .mob-shield {
+        position: relative; width: 56px; height: 62px; margin: 0 auto;
+        clip-path: polygon(50% 0%, 96% 12%, 96% 55%, 78% 86%, 50% 100%, 22% 86%, 4% 55%, 4% 12%);
+        background:
+            conic-gradient(from 210deg at 30% 25%, rgba(255,255,255,.55), transparent 28%),
+            conic-gradient(from 20deg at 70% 70%, rgba(255,255,255,.35), transparent 30%),
+            linear-gradient(135deg, #8A63D2 0%, #4FB6E0 30%, #6FE0C0 50%, #E8D25A 72%, #C98BD9 100%);
+        display: flex; align-items: center; justify-content: center;
+    }
+    [data-mobile-profile] .mob-shield::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.5) 45%, transparent 60%);
+    }
+    [data-mobile-profile] .mob-shield img { width: 38px; height: 38px; border-radius: 50%; position: relative; }
+    [data-mobile-profile] .mob-vpill {
+        display: inline-flex; align-items: center; gap: 4px;
+        border: 1px solid #CBE3D2; border-radius: 999px;
+        padding: 2.5px 9px; font-size: 10.5px; font-weight: 700; color: #0E6A34;
+        background: #F2FAF4;
+    }
 
+    /* ── Product grid: 2 columns, rounded image, heart, cart-square ── */
+    [data-mobile-profile] .mob-prods { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; padding: 0 14px 14px; }
+    [data-mobile-profile] .mob-prod { min-width: 0; }
+    [data-mobile-profile] .mob-prod .mob-prod-img {
+        position: relative; display: block; border-radius: 14px; overflow: hidden;
+        aspect-ratio: 1 / 1; background: #F6F1E8;
+    }
+    [data-mobile-profile] .mob-prod .mob-prod-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    [data-mobile-profile] .mob-prod .mob-heart {
+        position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
+        border-radius: 50%; background: rgba(255,255,255,.92);
+        display: flex; align-items: center; justify-content: center; color: #1B1B18;
+    }
+    [data-mobile-profile] .mob-cartsq {
+        flex: none; width: 30px; height: 30px; border-radius: 8px;
+        background: var(--mob-nav); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Tabs ── */
     [data-mobile-profile] .mob-tabs { display: flex; border-bottom: 1px solid var(--mob-line); overflow-x: auto; }
     [data-mobile-profile] .mob-tabs::-webkit-scrollbar { display: none; }
     [data-mobile-profile] .mob-tab {
-        flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px;
-        padding: 9px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: .03em;
-        color: #8A857A; border-bottom: 2px solid transparent; white-space: nowrap;
+        flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; gap: 5px;
+        padding: 11px 10px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: .04em;
+        color: #6E6A5F; border-bottom: 2.5px solid transparent; white-space: nowrap;
     }
-    [data-mobile-profile] .mob-tab i { width: 17px; height: 17px; }
-    [data-mobile-profile] .mob-tab[aria-selected="true"] { color: #14652F; border-bottom-color: #14652F; }
+    [data-mobile-profile] .mob-tab i { width: 18px; height: 18px; }
+    [data-mobile-profile] .mob-tab[aria-selected="true"] { color: #0E6A34; border-bottom-color: #0E6A34; }
 
+    /* Facts list: gold-tinted icon chips, as the artwork's right column */
+    [data-mobile-profile] .mob-fact { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; }
+    [data-mobile-profile] .mob-fact-ic {
+        flex: none; width: 26px; height: 26px; border-radius: 8px;
+        background: #F4FAF5; border: 1px solid #DCEEDF; color: #0E6A34;
+        display: flex; align-items: center; justify-content: center;
+    }
+    [data-mobile-profile] .mob-fact-ic i { width: 14px; height: 14px; }
+
+    /* ── Bottom navigation ── */
     [data-mobile-profile] .mob-nav {
         position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
         display: grid; grid-template-columns: repeat(5, 1fr);
-        background: var(--mob-nav); color: #EAF3EC; padding: 8px 0 10px;
+        background: var(--mob-nav); color: #EAF3EC; padding: 10px 0 12px;
+        box-shadow: 0 -2px 10px rgba(2,26,12,.25);
     }
-    [data-mobile-profile] .mob-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: #D8E7DC; }
-    [data-mobile-profile] .mob-nav a i { width: 21px; height: 21px; }
-    [data-mobile-profile] .mob-nav .mob-nav-mid { position: relative; }
+    [data-mobile-profile] .mob-nav a { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: #E4F0E7; }
+    [data-mobile-profile] .mob-nav a i { width: 22px; height: 22px; }
+    [data-mobile-profile] .mob-nav .mob-nav-mid { position: relative; padding-top: 34px; }
     [data-mobile-profile] .mob-nav .mob-nav-mid span.mob-disc {
         position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
         width: 62px; height: 62px; border-radius: 50%;
-        background: var(--mob-nav); border: 2px solid var(--mob-gold);
+        background: radial-gradient(circle at 50% 40%, #0A5A2C 0%, var(--mob-nav) 75%);
+        border: 3px solid var(--mob-gold);
         display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 3px 10px rgba(2,26,12,.4);
     }
-    [data-mobile-profile] .mob-nav .mob-nav-mid { padding-top: 32px; }
+    [data-mobile-profile] .mob-nav .mob-nav-mid span.mob-disc img { width: 44px; height: 44px; border-radius: 50%; }
 </style>
 
 {{-- ── Status bar ──────────────────────────────────────────────────────────
@@ -347,11 +439,17 @@
     <a href="{{ route('notifications.index') }}" aria-label="{{ $isFr ? 'Notifications' : 'Notifications' }}" class="p-1 relative">
         <i data-lucide="bell" class="w-6 h-6 text-[#1B1B18]"></i>
         @if($mUnread > 0)
-            <span class="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#B42025] text-white text-[10px] font-bold flex items-center justify-center">{{ $mUnread > 9 ? '9+' : $mUnread }}</span>
+            <span class="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#CC060E] text-white text-[10px] font-bold flex items-center justify-center">{{ $mUnread > 9 ? '9+' : $mUnread }}</span>
         @endif
     </a>
     <a href="{{ route('saved.index') }}" aria-label="{{ $isFr ? 'Favoris' : 'Saved' }}" class="p-1">
         <i data-lucide="heart" class="w-6 h-6 text-[#1B1B18]"></i>
+    </a>
+    {{-- The artwork's cart. There is no cart on this platform, so the icon is a
+         quote-request link — the transaction the operator actually carries. --}}
+    <a href="{{ route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) }}"
+       aria-label="{{ $isFr ? 'Demander un devis' : 'Request a quote' }}" class="p-1">
+        <i data-lucide="shopping-bag" class="w-6 h-6 text-[#1B1B18]"></i>
     </a>
 </header>
 
@@ -360,43 +458,48 @@
      carved-mask backdrop is stock art and must not stand in for a shop that
      has uploaded nothing. --}}
 <section class="mob-hero">
+    {{-- Right-half backdrop: the shop's own cover photo fading in under a warm
+         glow when one exists; the plain gradient glow when not. The mockup's
+         carved-mask photo is stock art and never stands in for either. --}}
     @if($business->cover_image)
-        <img src="{{ asset('storage/' . $business->cover_image) }}" alt=""
-             class="absolute inset-0 w-full h-full object-cover opacity-40" aria-hidden="true">
-        <span class="absolute inset-0" style="background:linear-gradient(90deg,#0B0B0A 38%,rgba(11,11,10,.35) 100%)"></span>
+        <img src="{{ asset('storage/' . $business->cover_image) }}" alt="" aria-hidden="true" class="mob-hero-art">
     @endif
+    <span class="mob-hero-glow" aria-hidden="true"></span>
+    <span class="mob-hero-scrim" aria-hidden="true"></span>
 
-    <div class="relative flex gap-3 px-3 pt-2.5">
-        {{-- Portrait, gold ring, verification pill overlapping its foot --}}
-        <div class="relative flex-none w-[118px] pt-2">
-            <div class="w-[118px] h-[118px] rounded-full overflow-hidden" style="border:3px solid var(--mob-gold)">
+    <div class="relative flex gap-4 px-4 pt-4">
+        {{-- Portrait Ø118, 3px gold ring, VERIFIED pill overlapping its foot --}}
+        <div class="relative flex-none w-[118px]">
+            <div class="w-[118px] h-[118px] rounded-full overflow-hidden" style="border:3px solid var(--mob-gold); box-shadow:0 0 0 3px rgba(14,10,3,.9), 0 4px 14px rgba(0,0,0,.5)">
                 @if($business->logo)
                     <img src="{{ asset('storage/' . $business->logo) }}" alt="{{ $mName }}" class="w-full h-full object-cover">
                 @else
-                    <div class="w-full h-full flex items-center justify-center bg-[#1B1B18] text-[var(--mob-gold)] text-3xl font-bold">
+                    <div class="w-full h-full flex items-center justify-center bg-[#241A08] text-[var(--mob-gold)] text-3xl font-bold">
                         {{ mb_strtoupper(mb_substr($mName, 0, 1)) }}
                     </div>
                 @endif
             </div>
             @if($mVerified)
-                <span class="absolute left-1/2 -translate-x-1/2 top-[112px] whitespace-nowrap rounded-full bg-[#0F4824] border border-[var(--mob-gold)] px-2.5 py-1 text-[9.5px] font-extrabold tracking-wide text-white flex items-center gap-1">
-                    <i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'ARTISAN VÉRIFIÉ' : 'VERIFIED ARTISAN' }}
+                <span class="absolute left-1/2 -translate-x-1/2 top-[108px] whitespace-nowrap rounded-full bg-[#054821] border border-[var(--mob-gold)] px-2.5 py-[5px] text-[9.5px] font-extrabold tracking-[.04em] text-white flex items-center gap-1 shadow-md">
+                    <i data-lucide="check" class="w-3 h-3 text-[var(--mob-gold)]"></i>{{ $isFr ? 'ARTISAN VÉRIFIÉ' : 'VERIFIED ARTISAN' }}
                 </span>
             @endif
         </div>
 
-        <div class="min-w-0 flex-1 pt-1">
-            <p class="flex items-center gap-2 text-[13px] text-[#E8E3D8]">
+        <div class="min-w-0 flex-1 pt-0.5">
+            <p class="flex items-center gap-2 text-[13.5px] font-medium text-[#F2EDE2]">
                 <span aria-hidden="true">🇨🇲</span>{{ $isFr ? 'Cameroun' : 'Cameroon' }}
             </p>
-            <h1 class="mt-0.5 flex items-start gap-1.5 text-[21px] leading-tight font-extrabold text-white">
+            <h1 class="mt-1 flex items-start gap-2 text-[22px] leading-[1.15] font-extrabold text-white">
                 <span class="min-w-0 break-words">{{ $mName }}</span>
                 @if($mVerified)
-                    <i data-lucide="badge-check" class="w-5 h-5 mt-0.5 flex-none text-[#22A05B]" aria-label="{{ $isFr ? 'Vérifié' : 'Verified' }}"></i>
+                    <span class="mt-1 flex-none w-[19px] h-[19px] rounded-full bg-[#1E9A50] flex items-center justify-center" aria-label="{{ $isFr ? 'Vérifié' : 'Verified' }}">
+                        <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                    </span>
                 @endif
             </h1>
             @if($mTagline || $mIndustry)
-                <p class="mt-0.5 text-[13px] leading-snug text-[#EDE8DD]">{{ $mTagline ?: $mIndustry }}</p>
+                <p class="mt-1 text-[13.5px] leading-snug text-[#EFEADF]">{{ $mTagline ?: $mIndustry }}</p>
             @endif
 
             @if($mPlace)
@@ -418,24 +521,32 @@
          128 reviews. There is no scoring model and the review register is
          empty, so each half states what it does not have. An empty panel is
          less use to the artisan and more use to the buyer. --}}
-    <div class="relative px-3 pb-3 pt-0.5">
-        <div class="mob-trust grid grid-cols-2">
-            <div class="pr-3 border-r border-[rgba(227,163,61,.35)]">
-                <p class="mob-trust-h">{{ $isFr ? 'INDICE DE CONFIANCE' : 'TRUST SCORE' }}</p>
+    <div class="relative px-4 pb-4 pt-1">
+        <div class="mob-trust grid grid-cols-2 text-center">
+            <div class="pr-3 border-r border-[rgba(237,168,23,.25)]">
+                <p class="mob-trust-h">{{ mb_strtoupper($mTrust['label'] ?? ($isFr ? 'Niveau de vérification' : 'Verification standing')) }}</p>
                 @if($mTrustKnown)
-                    <p class="mt-1 text-[24px] font-extrabold text-white leading-none">{{ $mTrust['value'] }}<span class="text-[13px] font-semibold text-[#CFC7B4]">/100</span></p>
-                    <p class="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#E8E3D8]"><i data-lucide="shield-check" class="w-4 h-4 text-[var(--mob-gold)]"></i>{{ $mTrust['basis'] }}</p>
+                    <p class="mt-1.5 text-[30px] font-extrabold text-white leading-none">{{ $mTrust['value'] }}@if(($mTrust['max'] ?? null)) <span class="text-[14px] font-semibold text-[#CFC7B4]">/{{ $mTrust['max'] }}</span>@endif</p>
+                    <p class="mt-2 flex items-start justify-center gap-1.5 text-[11.5px] leading-snug text-[#EFEADF]" title="{{ $mTrust['basis'] }}">
+                        <i data-lucide="shield-check" class="w-4 h-4 flex-none text-[var(--mob-gold)]"></i>
+                        <span class="min-w-0" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ $mTrust['basis'] }}</span>
+                    </p>
                 @else
-                    <p class="mt-1.5 text-[12px] leading-snug text-[#CFC7B4]">{{ $isFr ? 'Non suivi — la plateforme ne calcule pas d’indice de confiance.' : 'Not tracked — the platform computes no trust score.' }}</p>
+                    <p class="mt-2 text-[12px] leading-snug text-[#CFC7B4]">{{ $isFr ? 'Non suivi — la plateforme ne calcule pas d’indice de confiance.' : 'Not tracked — the platform computes no trust score.' }}</p>
                 @endif
             </div>
             <div class="pl-3">
                 <p class="mob-trust-h">{{ $isFr ? 'AVIS CLIENTS' : 'CUSTOMER RATING' }}</p>
                 @if($mReviewCount > 0)
-                    <p class="mt-1 text-[24px] font-extrabold text-white leading-none">{{ $mRating }}<span class="text-[13px] font-semibold text-[#CFC7B4]">/5</span></p>
-                    <p class="mt-1.5 text-[12px] text-[#E8E3D8]">{{ $mReviewCount }} {{ $isFr ? 'avis' : ($mReviewCount === 1 ? 'review' : 'reviews') }}</p>
+                    <p class="mt-1.5 text-[30px] font-extrabold text-white leading-none">{{ $mRating }} <span class="text-[14px] font-semibold text-[#CFC7B4]">/5</span></p>
+                    <p class="mt-2 flex items-center justify-center gap-0.5" aria-hidden="true">
+                        @for($s = 1; $s <= 5; $s++)
+                            <svg class="mob-star" viewBox="0 0 24 24" @if($s > round($mReviews->avg('rating'))) style="opacity:.25" @endif><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+                        @endfor
+                    </p>
+                    <p class="mt-1 text-[11.5px] text-[#CFC7B4]">({{ $mReviewCount }} {{ $isFr ? 'avis' : ($mReviewCount === 1 ? 'Review' : 'Reviews') }})</p>
                 @else
-                    <p class="mt-1.5 text-[12px] leading-snug text-[#CFC7B4]">{{ $isFr ? 'Aucun avis publié pour cet atelier.' : 'No reviews published for this workshop yet.' }}</p>
+                    <p class="mt-2 text-[12px] leading-snug text-[#CFC7B4]">{{ $isFr ? 'Aucun avis publié pour cet atelier.' : 'No reviews published for this workshop yet.' }}</p>
                 @endif
             </div>
         </div>
@@ -469,8 +580,8 @@
                 </form>
             @else
                 <a href="{{ $href }}">
-                    <i data-lucide="{{ $icon }}" class="w-[21px] h-[21px] {{ $gold ? 'text-[#C9942E]' : 'text-[var(--mob-green)]' }}"></i>
-                    <span class="{{ $gold ? 'text-[#8A6D1F]' : '' }}">{{ $label }}</span>
+                    <i data-lucide="{{ $icon }}" class="w-[22px] h-[22px] {{ $gold ? 'text-[#C8860B]' : 'text-[var(--mob-green)]' }}"></i>
+                    <span class="{{ $gold ? 'text-[#C8860B] font-semibold' : '' }}">{{ $label }}</span>
                 </a>
             @endif
         @endforeach
@@ -503,16 +614,16 @@
             @foreach($mCerts->take(8) as $c)
                 @php $cNo = is_array($c) ? ($c['no'] ?? null) : ($c->no ?? null); @endphp
                 <a class="mob-cert" href="{{ route('certificate.verify', ['ref' => $cNo]) }}">
-                    <i data-lucide="shield" class="w-9 h-9 mx-auto text-[#C9942E]"></i>
-                    <p class="mt-1.5 text-[15px] font-extrabold text-[#1B1B18]">{{ is_array($c) ? $c['code'] : $c->code }}</p>
+                    <span class="mob-shield" aria-hidden="true">
+                        <img src="{{ brand_asset('mark') }}" alt="">
+                    </span>
+                    <p class="mt-2 text-[16px] font-extrabold text-[#1B1B18]">{{ is_array($c) ? $c['code'] : $c->code }}</p>
                     <p class="mt-0.5 text-[10.5px] leading-tight text-[#3B382F]">{{ is_array($c) ? $c['name'] : $c->name }}</p>
                     @php $cAt = is_array($c) ? ($c['issued_at'] ?? null) : ($c->issued_at ?? null); @endphp
                     @if($cAt)
-                        <p class="mt-1 text-[10px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($cAt)->format('d/m/Y') }}</p>
+                        <p class="mt-1.5 text-[10.5px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($cAt)->format('d/m/Y') }}</p>
                     @endif
-                    <p class="mt-1.5 inline-flex items-center gap-1 text-[10.5px] font-semibold text-[#157A43]">
-                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Vérifié' : 'Verified' }}
-                    </p>
+                    <p class="mt-2"><span class="mob-vpill"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Vérifié' : 'Verified' }}</span></p>
                 </a>
             @endforeach
         </div>
@@ -539,7 +650,7 @@
             {{ $isFr ? 'Cet atelier n’a pas encore publié de produit.' : 'This workshop has not published a product yet.' }}
         </p>
     @else
-        <div class="mob-scroll">
+        <div class="mob-prods">
             @foreach($mProducts->take(8) as $prod)
                 @php
                     /*
@@ -552,37 +663,42 @@
                     $pName  = $pArr ? ($prod['name'] ?? '') : ($isFr ? $prod->name_fr : ($prod->name_en ?? $prod->name_fr));
                     $pSlug  = $pArr ? ($prod['slug'] ?? '') : $prod->slug;
                     $pImage = $pArr ? ($prod['image'] ?? null) : ($prod->primaryImage?->file_path);
-                    $pPrice = $pArr ? ($prod['price'] ?? null) : $prod->price_amount;
-                    $pCur   = $pArr ? ($prod['currency'] ?? null) : $prod->price_currency;
+                    /* The register wraps price as ['amount','currency','basis'];
+                       casting that array to float printed "FCFA 1" on a piece
+                       priced at 85 000 — the most misleading pixel on the page. */
+                    $pPrice = $pArr ? ($prod['price']['amount'] ?? null) : $prod->price_amount;
+                    $pCur   = $pArr ? ($prod['price']['currency'] ?? null) : $prod->price_currency;
                     $pCert  = $pArr ? (bool) ($prod['has_authenticity_certificate'] ?? false) : false;
                     $pCat   = $pArr
                         ? $mIndustry
                         : ($prod->category ? ($isFr ? $prod->category->name_fr : ($prod->category->name_en ?? $prod->category->name_fr)) : $mIndustry);
                 @endphp
                 <div class="mob-prod">
-                    <a href="{{ route('products.show', ['slug' => $pSlug, 'lang' => $lang]) }}" class="block relative">
+                    <a href="{{ route('products.show', ['slug' => $pSlug, 'lang' => $lang]) }}" class="mob-prod-img">
                         @if($pImage)
                             <img src="{{ asset('storage/' . $pImage) }}" alt="{{ $pName }}">
                         @else
-                            <span class="block w-[99px] h-[99px] rounded-[9px] bg-[#F8F4EC] flex items-center justify-center">
-                                <i data-lucide="image" class="w-6 h-6 text-[#B8B2A4]"></i>
+                            <span class="absolute inset-0 flex items-center justify-center">
+                                <i data-lucide="image" class="w-7 h-7 text-[#B8B2A4]"></i>
                             </span>
                         @endif
+                        <span class="mob-heart" aria-hidden="true"><i data-lucide="heart" class="w-4 h-4"></i></span>
                     </a>
-                    <p class="mt-1.5 text-[11px] font-semibold leading-tight text-[#1B1B18]">{{ \Illuminate\Support\Str::limit($pName, 28) }}</p>
+                    <p class="mt-2 text-[12px] font-bold leading-tight text-[#1B1B18]">{{ \Illuminate\Support\Str::limit($pName, 34) }}</p>
                     @if($pCat)
-                        <p class="text-[10.5px] text-[#8A857A]">{{ \Illuminate\Support\Str::limit($pCat, 26) }}</p>
+                        <p class="mt-0.5 text-[10.5px] text-[#8A857A]">{{ \Illuminate\Support\Str::limit($pCat, 30) }}</p>
                     @endif
-                    <div class="mt-1 flex items-center justify-between gap-1">
+                    {{-- No star line: reviews attach to a business, never a product. --}}
+                    <div class="mt-1.5 flex items-center justify-between gap-1">
                         @if($pPrice)
-                            <span class="text-[10px] font-extrabold text-[#1B1B18] whitespace-nowrap">{{ in_array($pCur, [null, '', 'XAF'], true) ? 'FCFA' : $pCur }} {{ number_format((float) $pPrice, 0, ',', ' ') }}</span>
+                            <span class="text-[12.5px] font-extrabold text-[#1B1B18] whitespace-nowrap">{{ in_array($pCur, [null, '', 'XAF'], true) ? 'FCFA' : $pCur }} {{ number_format((float) $pPrice, 0, ',', ' ') }}</span>
                         @else
-                            <span class="text-[10.5px] text-[#8A857A]">{{ $isFr ? 'Sur devis' : 'On quote' }}</span>
+                            <span class="text-[11px] text-[#8A857A]">{{ $isFr ? 'Sur devis' : 'On quote' }}</span>
                         @endif
                         <a href="{{ route('products.show', ['slug' => $pSlug, 'lang' => $lang]) }}"
                            aria-label="{{ $isFr ? 'Demander un devis' : 'Request a quote' }}"
-                           class="flex-none w-6 h-6 rounded-md bg-[#157A43] text-white flex items-center justify-center">
-                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                           class="mob-cartsq">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
@@ -617,14 +733,17 @@
                 </p>
             @endif
         </div>
-        <dl class="rounded-[10px] border border-[var(--mob-line)] p-2.5 divide-y divide-[#F5F1E8] self-start">
-            @forelse($mFacts as [$k, $v])
-                <div class="py-1.5 first:pt-0 last:pb-0">
-                    <dt class="text-[10.5px] text-[#8A857A]">{{ $k }}</dt>
-                    <dd class="text-[12px] font-semibold text-[#1B1B18] leading-snug">{{ $v }}</dd>
+        <dl class="rounded-[12px] border border-[var(--mob-line)] bg-[#FDFBF7] px-3 py-1.5 self-start">
+            @forelse($mFacts as [$ic, $k, $v])
+                <div class="mob-fact">
+                    <span class="mob-fact-ic"><i data-lucide="{{ $ic }}"></i></span>
+                    <span class="min-w-0">
+                        <dt class="text-[10.5px] text-[#8A857A]">{{ $k }}</dt>
+                        <dd class="text-[12px] font-semibold text-[#1B1B18] leading-snug">{{ $v }}</dd>
+                    </span>
                 </div>
             @empty
-                <p class="text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Fiche à compléter par l’artisan.' : 'The artisan has not filled this in.' }}</p>
+                <p class="py-2 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Fiche à compléter par l’artisan.' : 'The artisan has not filled this in.' }}</p>
             @endforelse
         </dl>
     </div>
@@ -720,7 +839,7 @@
     <a href="{{ route('home', ['lang' => $lang]) }}"><i data-lucide="home"></i>{{ $isFr ? 'Accueil' : 'Home' }}</a>
     <a href="{{ route('industries.index', ['lang' => $lang]) }}"><i data-lucide="layout-grid"></i>{{ $isFr ? 'Catégories' : 'Categories' }}</a>
     <a href="{{ route('certificate.verify') }}" class="mob-nav-mid">
-        <span class="mob-disc"><i data-lucide="shield-check" class="w-6 h-6 text-[var(--mob-gold)]"></i></span>
+        <span class="mob-disc"><img src="{{ brand_asset('mark') }}" alt=""></span>
         {{ $isFr ? 'Vérifier' : 'Verify' }}
     </a>
     <a href="{{ route('products.index', ['lang' => $lang]) }}"><i data-lucide="store"></i>{{ $isFr ? 'Marché' : 'Marketplace' }}</a>
