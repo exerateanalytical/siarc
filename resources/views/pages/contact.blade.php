@@ -48,21 +48,21 @@
          'lines' => array_values(array_filter([config('legal.company.phone')]))],
         ['icon' => 'mail', 'title' => 'Email',
          'lines' => array_values(array_filter([config('legal.company.email')]))],
-        ['icon' => 'contact-info-4.png', 'title' => $isFr ? "Heures d'ouverture" : 'Opening hours',
+        ['icon' => 'clock', 'title' => $isFr ? "Heures d'ouverture" : 'Opening hours',
          'lines' => $isFr ? ['Lundi - Vendredi : 8h00 - 17h00', 'Samedi : 9h00 - 13h00']
                           : ['Monday - Friday: 8am - 5pm', 'Saturday: 9am - 1pm']],
     ], fn ($c) => $c['lines'] !== []));
 
     $helpCards = [
-        ['contact-help-1.png', $isFr ? 'Partenariats' : 'Partnerships',
+        ['handshake', $isFr ? 'Partenariats' : 'Partnerships',
          $isFr ? "Collaborations, sponsoring\net projets communs" : "Collaborations, sponsoring\nand joint projects"],
-        ['contact-help-2.png', $isFr ? 'Exposer vos produits' : 'Showcase your products',
+        ['store', $isFr ? 'Exposer vos produits' : 'Showcase your products',
          $isFr ? "Devenez artisan ou entreprise\nréférencée sur notre plateforme" : "Become an artisan or business\nlisted on our platform"],
-        ['contact-help-3.png', $isFr ? 'Assistance' : 'Assistance',
+        ['circle-help', $isFr ? 'Assistance' : 'Assistance',
          $isFr ? "Besoin d'aide ? Notre équipe\nvous accompagne" : "Need help? Our team\nis here for you"],
-        ['contact-help-4.png', $isFr ? 'Presse et médias' : 'Press and media',
+        ['megaphone', $isFr ? 'Presse et médias' : 'Press and media',
          $isFr ? "Demandes d'interview,\ncommuniqués et ressources" : "Interview requests,\npress releases and resources"],
-        ['contact-help-5.png', $isFr ? 'Autres demandes' : 'Other requests',
+        ['file-text', $isFr ? 'Autres demandes' : 'Other requests',
          $isFr ? "Toute autre demande\nou suggestion" : "Any other request\nor suggestion"],
     ];
 @endphp
@@ -145,7 +145,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.05fr_1fr_0.95fr_1.25fr_1fr] gap-y-10 lg:divide-x lg:divide-[#E9E4DB] lg:dark:divide-[#262B21]">
             @foreach($infoCards as $card)
             <div class="flex flex-col items-center text-center px-3">
-                <img src="{{ asset('images/landing/' . $card['icon']) }}" alt="" class="h-[38px] w-auto object-contain">
+                <i data-lucide="{{ $card['icon'] }}" class="w-[38px] h-[38px] text-[#14472B] dark:text-[#EDB33A]" stroke-width="1.5" aria-hidden="true"></i>
                 <h3 class="mt-4 text-[16.5px] font-semibold text-[#20211D] dark:text-[#F3EFE7]">{{ $card['title'] }}</h3>
                 <div class="mt-3 space-y-1.5 text-[12.5px] text-[#4A4840] dark:text-[#B4B5A6] leading-relaxed">
                     @foreach($card['lines'] as $line)
@@ -157,7 +157,7 @@
             @endforeach
             <!-- Suivez-nous -->
             <div class="flex flex-col items-center text-center px-3">
-                <img src="{{ asset('images/landing/contact-info-5.png') }}" alt="" class="h-[38px] w-auto object-contain">
+                <i data-lucide="share-2" class="w-[38px] h-[38px] text-[#14472B] dark:text-[#EDB33A]" stroke-width="1.5" aria-hidden="true"></i>
                 <h3 class="mt-4 text-[16.5px] font-semibold text-[#20211D] dark:text-[#F3EFE7]">{{ $isFr ? 'Suivez-nous' : 'Follow us' }}</h3>
                 <div class="mt-5 flex items-center gap-3">
                     @foreach(array_intersect_key($followIcons, $socialProfileUrls) as $socialName => $socialPath)
@@ -251,7 +251,7 @@
         <div class="mt-11 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-y-9 lg:divide-x lg:divide-[#E5DFD3] lg:dark:divide-[#262B21]">
             @foreach($helpCards as [$helpIcon, $helpTitle, $helpSub])
             <div class="flex flex-col items-center text-center px-4">
-                <img src="{{ asset('images/landing/' . $helpIcon) }}" alt="" class="h-[46px] w-auto object-contain">
+                <i data-lucide="{{ $helpIcon }}" class="w-[46px] h-[46px] text-[#C08A16] dark:text-[#EDB33A]" stroke-width="1.4" aria-hidden="true"></i>
                 <h3 class="mt-5 text-[15.5px] font-semibold text-[#20211D] dark:text-[#F3EFE7]">{{ $helpTitle }}</h3>
                 <p class="mt-2.5 text-[12.5px] text-[#5D5A51] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $helpSub }}</p>
             </div>

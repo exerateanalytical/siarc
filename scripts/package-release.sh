@@ -14,7 +14,18 @@
 #  Whatever comes out of here is safe to upload, and nothing else is.
 #
 #  USAGE (from the project root, Git Bash on Windows or any Linux shell):
-#      bash scripts/package-release.sh
+#      bash scripts/package-release.sh                 # VPS layout (default)
+#      RELEASE_LAYOUT=shared bash scripts/package-release.sh
+#      bash scripts/build-release.sh                   # same as the line above
+#
+#  LAYOUTS
+#      root    (default) one tree with public/ inside it. Point the vhost's
+#              DocumentRoot at <app>/public. Right for a VPS or a container.
+#
+#      shared  two trees: an application directory and a public_html. For hosts
+#              that own the document root and will not let you move it —
+#              Namecheap shared hosting, which is what artisanhub237.com runs
+#              on. See scripts/build-release.sh for the full layout.
 #
 #  OUTPUT
 #      build/release/                                    <- inspect or rsync this
@@ -24,6 +35,15 @@
 #  `unzip release.zip -d /var/www/artisanhub` drops the app straight in.
 # =============================================================================
 set -euo pipefail
+
+# 'root' | 'shared' — see LAYOUTS above.
+RELEASE_LAYOUT="${RELEASE_LAYOUT:-root}"
+# Name of the application directory beside public_html in the shared layout.
+APP_DIR_NAME="${APP_DIR_NAME:-artisanhub237}"
+case "$RELEASE_LAYOUT" in
+  root|shared) ;;
+  *) echo "RELEASE_LAYOUT must be 'root' or 'shared', got '$RELEASE_LAYOUT'" >&2; exit 2 ;;
+esac
 
 # --- locate the project root regardless of where the script was called from ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

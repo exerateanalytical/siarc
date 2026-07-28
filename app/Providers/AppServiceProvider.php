@@ -11,13 +11,58 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    /**
+     * Point public_path() at the host-imposed document root, if there is one.
+     *
+     * Done in register() rather than boot() so it is in place before any other
+     * provider resolves a path from it. See ah_resolve_public_path() in
+     * app/Support/route_helpers.php for why this exists; when APP_PUBLIC_PATH
+     * is unset — every environment except shared hosting — this is a no-op and
+     * Laravel's `<app>/public` default stands.
+     */
+    public function register(): void
+    {
+        if ($publicPath = ah_resolve_public_path()) {
+            $this->app->usePublicPath($publicPath);
+        }
+    }
 
     public function boot(): void
     {
+        $this->forceHttpsUrls();
         $this->configureRateLimiting();
         $this->shareNavTaxonomy();
         $this->lockDocumentsToLightTheme();
+    }
+
+    /**
+     * Make every generated URL absolute against APP_URL, over https.
+     *
+     * Two separate problems, one fix.
+     *
+     * The site is served through a TLS terminator that forwards plain HTTP to
+     * the origin. Without forceScheme, asset() and url() emit http:// on an
+     * https page and the browser blocks the stylesheet, the scripts and the
+     * images as mixed content — a site that renders as unstyled text with no
+     * error anywhere to explain it.
+     *
+     * And because the trusted-proxy configuration accepts X-Forwarded-Host,
+     * the request host is attacker-influenceable; forceRootUrl takes the host
+     * out of URL generation altogether, so a poisoned header cannot end up in
+     * a password-reset link, a certificate verification URL or a printed QR
+     * code.
+     *
+     * Guarded by config('app.force_https'), which is off outside production,
+     * so nothing changes locally or under test.
+     */
+    private function forceHttpsUrls(): void
+    {
+        if (! config('app.force_https')) {
+            return;
+        }
+
+        \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+        \Illuminate\Support\Facades\URL::forceScheme('https');
     }
 
     /**

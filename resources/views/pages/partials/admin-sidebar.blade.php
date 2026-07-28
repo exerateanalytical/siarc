@@ -15,41 +15,47 @@
         ];
     });
 
-    // [key, icon crop, label, url, badge] — every item maps onto a real route.
+    // [key, lucide icon, label, url, badge] — every item maps onto a real route.
+    // The rail used cropped gold PNG glyphs (side-ic-*.png). Two of them —
+    // Régions and Notifications — had already been switched to lucide *names*
+    // while still being rendered through asset('images/landing/'.$icon.'.png'),
+    // so they were requesting map-pin.png / bell.png, which do not exist: those
+    // two rows shipped a broken image. Everything is a real lucide glyph now,
+    // which also means the rail inherits its text colour instead of baking gold.
     $adGroups = [
         [null, [
-            ['dashboard', 'side-ic-dashboard', $isFr ? 'TABLEAU DE BORD' : 'DASHBOARD', route('dashboard.admin'), null],
+            ['dashboard', 'layout-dashboard', $isFr ? 'TABLEAU DE BORD' : 'DASHBOARD', route('dashboard.admin'), null],
         ]],
         [$isFr ? 'Gestion du contenu' : 'Content management', [
-            ['artisans',    'side-ic-artisans',    'Artisans',                                              route('admin.artisans'), null],
-            ['products',    'side-ic-products',    $isFr ? 'Produits & Services' : 'Products & Services',   route('admin.products'), null],
-            ['industries',  'side-ic-industries',  $isFr ? 'Catégories d\'Artisanat' : 'Craft Categories',  route('admin.industries'), null],
-            ['regions',     'map-pin',     $isFr ? 'Régions & Centres' : 'Regions & Centres',       route('admin.regions'), null],
-            ['collections', 'side-ic-collections', 'Collections',                                           route('admin.collections'), null],
-            ['news',        'side-ic-news',        $isFr ? 'Actualités & Annonces' : 'News & Announcements', route('admin.news'), null],
-            ['media',       'side-ic-media',       $isFr ? 'Médias & Ressources' : 'Media & Resources',     route('admin.media'), null],
-            ['events',      'side-ic-events',      $isFr ? 'Événements' : 'Events',                         route('admin.events'), null],
-            ['documents',   'side-ic-documents',   'Documents',                                             route('admin.media', ['type' => 'document']), null],
+            ['artisans',    'user',          'Artisans',                                              route('admin.artisans'), null],
+            ['products',    'package',       $isFr ? 'Produits & Services' : 'Products & Services',   route('admin.products'), null],
+            ['industries',  'shapes',        $isFr ? 'Catégories d\'Artisanat' : 'Craft Categories',  route('admin.industries'), null],
+            ['regions',     'map-pin',       $isFr ? 'Régions & Centres' : 'Regions & Centres',       route('admin.regions'), null],
+            ['collections', 'layers',        'Collections',                                           route('admin.collections'), null],
+            ['news',        'newspaper',     $isFr ? 'Actualités & Annonces' : 'News & Announcements', route('admin.news'), null],
+            ['media',       'image',         $isFr ? 'Médias & Ressources' : 'Media & Resources',     route('admin.media'), null],
+            ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',                         route('admin.events'), null],
+            ['documents',   'file-text',     'Documents',                                             route('admin.media', ['type' => 'document']), null],
         ]],
         [$isFr ? 'Gestion des utilisateurs' : 'User management', [
-            ['users',       'side-ic-users',       $isFr ? 'Utilisateurs' : 'Users',                        route('admin.users'), null],
-            ['roles',       'side-ic-roles',       $isFr ? 'Rôles & Permissions' : 'Roles & Permissions',   route('admin.roles'), null],
-            ['pending-art', 'side-ic-inscription', $isFr ? 'Demandes d\'Inscription' : 'Registration Requests', route('admin.artisans') . '?statut=en-attente', null],
-            ['businesses',  'side-ic-boutiques',   $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), (string) $sideBadges['businesses']],
-            ['kyc',         'side-ic-kyc',         $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), (string) $sideBadges['kyc']],
-            ['certificates','side-ic-kyc',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
+            ['users',       'users',         $isFr ? 'Utilisateurs' : 'Users',                        route('admin.users'), null],
+            ['roles',       'shield-check',  $isFr ? 'Rôles & Permissions' : 'Roles & Permissions',   route('admin.roles'), null],
+            ['pending-art', 'user-plus',     $isFr ? 'Demandes d\'Inscription' : 'Registration Requests', route('admin.artisans') . '?statut=en-attente', null],
+            ['businesses',  'store',         $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), (string) $sideBadges['businesses']],
+            ['kyc',         'badge-check',   $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), (string) $sideBadges['kyc']],
+            ['certificates','award',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
         ]],
         [$isFr ? 'Commercial & Finance' : 'Commercial & Finance', [
-            ['commissions',   'side-ic-commissions',   'Commissions',                                       route('admin.reports'), null],
-            ['orders',        'side-ic-factures',      'Factures',                                          route('admin.orders'), null],
-            ['reports',       'side-ic-rapports',      $isFr ? 'Rapports' : 'Reports',                      route('admin.reports'), null],
+            ['commissions',   'percent',        'Commissions',                                       route('admin.reports'), null],
+            ['orders',        'receipt',        'Factures',                                          route('admin.orders'), null],
+            ['reports',       'chart-column',   $isFr ? 'Rapports' : 'Reports',                      route('admin.reports'), null],
         ]],
         [$isFr ? 'Système' : 'System', [
-            ['settings',      'side-ic-settings',      $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
-            ['logs',          'side-ic-journal',       $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
-            ['notifications', 'bell', 'Notifications',                                     route('admin.notifications'), (string) $sideBadges['notifications']],
-            ['exports',       'side-ic-exports',       'Data Export Centre',                                route('admin.exports'), null],
-            ['pages',         'side-ic-outils',        $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
+            ['settings',      'settings',       $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
+            ['logs',          'scroll-text',    $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
+            ['notifications', 'bell',           'Notifications',                                     route('admin.notifications'), (string) $sideBadges['notifications']],
+            ['exports',       'download',       'Data Export Centre',                                route('admin.exports'), null],
+            ['pages',         'wrench',         $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
         ]],
     ];
     $adSideQuote = $adSideQuote ?? ($isFr ? 'Valorisons l\'artisanat, développons nos communautés, préservons notre héritage.' : 'Let\'s value craftsmanship, grow our communities, preserve our heritage.');

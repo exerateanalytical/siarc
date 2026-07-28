@@ -16,6 +16,35 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        /*
+         * Trust the hosting proxy's forwarded headers.
+         *
+         * artisanhub237.com is served through Namecheap's edge, which
+         * terminates TLS and forwards plain HTTP to the origin carrying
+         * X-Forwarded-Proto: https. Untrusted, Symfony ignores that header,
+         * so request()->secure() is false, url()/asset() emit http:// links
+         * on an https page — which the browser then blocks as mixed content —
+         * and request()->ip() reports the proxy rather than the visitor,
+         * which quietly collapses every per-IP rate limiter in
+         * AppServiceProvider onto a single bucket.
+         *
+         * `at: '*'` (the default when TRUSTED_PROXIES is unset) is the right
+         * setting for shared hosting: the origin is not reachable except
+         * through the host's own front end, so there is no path by which an
+         * attacker could present a forged X-Forwarded-For to it. On a server
+         * with a public IP, name the proxy CIDRs instead.
+         *
+         * The header mask is left at the framework default (the full
+         * X-Forwarded-* set). Only `at` needs stating.
+         *
+         * Trusting X-Forwarded-Host from '*' would ordinarily let a visitor
+         * dictate the host used to build absolute URLs — the classic
+         * password-reset-link poisoning. It cannot here, because
+         * AppServiceProvider pins the URL generator's root to config('app.url')
+         * in production, so generated links ignore the request host entirely.
+         */
+        $middleware->trustProxies(at: '*');
+
         // Security response headers on every request (web + API)
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 

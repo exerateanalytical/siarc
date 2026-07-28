@@ -134,7 +134,7 @@
                         @foreach($cards as [$cIcon, $cValue, $cLabel, $cSub])
                         <div class="sub-card px-4 py-4">
                             <div class="flex items-start gap-3">
-                                <img src="{{ asset('images/landing/' . $cIcon) }}" alt="" class="w-[46px] h-[46px] shrink-0">
+                                <span class="w-[46px] h-[46px] shrink-0 rounded-xl grid place-items-center text-white" style="background:{{ $cIcon[1] }}" aria-hidden="true"><i data-lucide="{{ $cIcon[0] }}" class="w-[23px] h-[23px]" stroke-width="1.9"></i></span>
                                 <div class="min-w-0">
                                     <p class="text-[20px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $cValue }}</p>
                                     <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
@@ -206,7 +206,8 @@
                                     <tr>
                                         <td>
                                             <div class="flex items-center gap-3">
-                                                <img src="{{ asset('images/landing/' . ($fileIcon[$e->format] ?? 'dex-file-csv.png')) }}" alt="" class="w-[26px] h-[28px] object-contain shrink-0">
+                                                @php [$fiName, $fiLight, $fiDark] = $fileIcon[$e->format] ?? $fileIcon['csv']; @endphp
+                                                <i data-lucide="{{ $fiName }}" class="w-[26px] h-[26px] shrink-0 text-[{{ $fiLight }}] dark:text-[{{ $fiDark }}]" stroke-width="1.7" role="img" aria-label="{{ strtoupper($e->format) }}"></i>
                                                 <span class="min-w-0">
                                                     <span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] truncate">{{ $e->name }}</span>
                                                     <span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ number_format($e->records) }} {{ $e->counts_files ? ($isFr ? 'fichiers' : 'files') : ($isFr ? 'enregistrements' : 'records') }}</span>
@@ -320,7 +321,7 @@
                             @forelse($typeBars as [$tIcon, $tLabel, $tValue, $tColor, $tPct])
                             <div>
                                 <div class="flex items-center justify-between gap-2">
-                                    <span class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] dark:text-[#B4B5A6]"><img src="{{ asset('images/landing/' . $tIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0">{{ $tLabel }}</span>
+                                    <span class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="{{ $tIcon }}" class="w-[18px] h-[18px] shrink-0" style="color:{{ $tColor }}" aria-hidden="true"></i>{{ $tLabel }}</span>
                                     <span class="text-[11.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $tValue }}</span>
                                 </div>
                                 <div class="mt-1.5 h-[6px] rounded-full bg-[#F3E9DA] dark:bg-[#1A1E16] overflow-hidden"><span class="block h-full rounded-full" style="width: {{ $tPct }}%; background-color: {{ $tColor }}"></span></div>
@@ -336,7 +337,7 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
-                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0"><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
+                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><i data-lucide="{{ $qIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#8A5A16] dark:text-[#EDB33A]" stroke-width="1.9" aria-hidden="true"></i><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
                             @endforeach
                         </div>
                     </section>

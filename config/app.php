@@ -75,6 +75,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Force HTTPS in generated URLs
+    |--------------------------------------------------------------------------
+    |
+    | The production site sits behind the host's TLS terminator and the origin
+    | itself only ever sees plain HTTP. Trusting the forwarded headers (see
+    | bootstrap/app.php) fixes request()->secure(); this fixes the other half,
+    | URL generation, and pins the root to APP_URL so that a spoofed Host or
+    | X-Forwarded-Host header cannot appear in a password-reset link, a
+    | certificate verification URL or a QR code.
+    |
+    | Defaults on in production and off everywhere else, so the local checkout
+    | and the test suite are unaffected. FORCE_HTTPS overrides either way.
+    |
+    */
+
+    'force_https' => (bool) env('FORCE_HTTPS', env('APP_ENV') === 'production'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

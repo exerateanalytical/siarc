@@ -65,16 +65,76 @@ else
     fail "PHP $PHP_VER is below the required 8.3"
   fi
 
-  # The exact list DEPLOY.md promises the server will have.
+  # ---------------------------------------------------------------------------
+  # Extensions. This list is derived from what the code actually calls, not
+  # from a generic Laravel checklist — each entry names the file that breaks
+  # without it, so a future reader can re-verify the claim instead of trusting
+  # it. `grep -rhoE 'sodium_[a-z_]+' app/` and friends reproduce the derivation.
+  # ---------------------------------------------------------------------------
+  ext_missing() { ! "$PHP_BIN" -r "exit(extension_loaded('$1') ? 0 : 1);"; }
+
+  # HARD — the site is broken, or a whole module is, without these.
+  #   sodium     app/Support/CertificationAuthority.php signs every certificate
+  #              with Ed25519 (sodium_crypto_sign_detached / _keypair /
+  #              _verify_detached). No sodium, no certificate module at all —
+  #              issuing, the public verification page and revocation all fail.
+  #   gd         app/Support/ImageWatermark.php, ImageFingerprint.php,
+  #              ProductCertificate.php and the two upload services
+  #              (imagecreatetruecolor, imagecopyresampled, imagecolorat …).
+  #   bcmath     app/Support/PlatformFees.php uses bccomp for money comparison.
+  #   pdo_mysql  the only database driver configured.
+  #   mbstring   Laravel framework baseline; used throughout for UTF-8 slugs.
+  #   openssl    APP_KEY encryption, HTTPS clients, and SMTP over SSL/TLS.
+  #   fileinfo   UploadedFile::getMimeType() — every image upload is validated
+  #              through it, so without fileinfo no member can upload anything.
+  #   iconv      used directly in app/ for transliteration.
+  #   ctype/json/tokenizer/dom/xml/curl  framework baseline.
+  HARD_EXT="sodium gd bcmath pdo_mysql mbstring openssl fileinfo iconv ctype json tokenizer dom xml curl"
   MISSING=""
-  for ext in pdo_mysql mbstring openssl gd fileinfo zip bcmath; do
-    "$PHP_BIN" -r "exit(extension_loaded('$ext') ? 0 : 1);" || MISSING="$MISSING $ext"
-  done
+  for ext in $HARD_EXT; do ext_missing "$ext" && MISSING="$MISSING $ext"; done
   if [ -z "$MISSING" ]; then
-    pass "extensions: pdo_mysql mbstring openssl gd fileinfo zip bcmath"
+    pass "required extensions present ($(echo $HARD_EXT | tr ' ' ','))"
   else
-    fail "missing PHP extensions:$MISSING" "Install them, then restart php-fpm / Apache."
+    fail "MISSING REQUIRED PHP EXTENSIONS:$MISSING" \
+         "cPanel → Select PHP Version → Extensions, tick them, then wait ~1 min for php-fpm to recycle."
   fi
+
+  # Called out separately because it is the one people forget and the failure
+  # is not a 500 — certificates simply stop being issuable, quietly.
+  if ext_missing sodium; then
+    fail "sodium is NOT loaded — the certificate module cannot work" \
+         "Ed25519 signing (CertificationAuthority) has no fallback. Enable ext-sodium before launch."
+  else
+    "$PHP_BIN" -r 'exit(function_exists("sodium_crypto_sign_detached") ? 0 : 1);' \
+      && pass "sodium loaded and sodium_crypto_sign_detached callable" \
+      || fail "sodium is loaded but sodium_crypto_sign_detached is missing" "Unusual build; certificates will fail."
+  fi
+
+  # Uploads are re-encoded to .webp (ImageUploadService), so a GD without WebP
+  # support passes extension_loaded('gd') and then throws on every single image.
+  if ! ext_missing gd; then
+    GD_CAPS="$("$PHP_BIN" -r '$i=gd_info(); $m=[]; foreach(["WebP Support"=>"webp","JPEG Support"=>"jpeg","PNG Support"=>"png"] as $k=>$v){ if(empty($i[$k])) $m[]=$v; } echo implode(" ", $m);' 2>/dev/null)"
+    if [ -z "$GD_CAPS" ]; then
+      pass "gd has webp, jpeg and png support"
+    else
+      fail "gd is missing:$GD_CAPS support" \
+           "Uploads are stored as .webp — without WebP support every logo, cover and product photo fails to save."
+    fi
+  fi
+
+  # SOFT — real dependencies, but nothing a launched site needs on the hot path.
+  #   zip   only app/Console/Commands/ImportSiarcArtisans.php (reads the .xlsx).
+  #         The 510 artisans ship in the SQL import, so production does not need
+  #         it unless the roster is ever re-imported from a spreadsheet.
+  #   intl  NOTE: grepped for and NOT found — no NumberFormatter, IntlDateFormatter,
+  #         Collator or \Locale call exists anywhere in app/, routes/, database/
+  #         or config/. Listed as a nicety (Carbon can use it for localised dates)
+  #         and never as a requirement, because claiming otherwise would send the
+  #         owner chasing an extension nothing reads.
+  for pair in "zip:re-importing the SIARC roster from .xlsx" "intl:nothing in this codebase calls it; Carbon uses it for localised dates if present"; do
+    e="${pair%%:*}"; why="${pair#*:}"
+    ext_missing "$e" && warn "$e not loaded — optional ($why)" || pass "$e loaded (optional)"
+  done
 
   # Publishing a product is the one thing the platform exists for, and a 2M
   # default silently discards phone photos before Laravel ever sees them — the
@@ -191,9 +251,32 @@ for dir in storage bootstrap/cache; do
     fail "$dir/ is not writable" "chmod -R 775 $dir && chown -R <web-user>:<web-group> $dir"
   fi
 done
-[ -e "$ROOT/public/storage" ] \
-  && pass "public/storage link exists" \
-  || warn "public/storage missing" "php artisan storage:link — uploaded images will 404 without it."
+# public/storage is where every uploaded logo, cover and product photo is
+# served from. `storage:link` makes it a symlink; some shared hosts disable
+# symlink() entirely, in which case the accepted fallback is a real directory
+# bind-mounted or rsynced from storage/app/public. Either is fine — what
+# matters is that a file written to storage/app/public is readable through
+# public/storage. So prove it end-to-end rather than checking for a symlink.
+mkdir -p "$ROOT/storage/app/public" 2>/dev/null
+PROBE=".preflight-storage-probe"
+if printf 'ok' > "$ROOT/storage/app/public/$PROBE" 2>/dev/null; then
+  if [ ! -e "$ROOT/public/storage" ]; then
+    fail "public/storage does not exist" \
+         "php artisan storage:link. If the host forbids symlinks, see docs/DEPLOYMENT.md step 9 for the directory fallback."
+  elif [ "$(cat "$ROOT/public/storage/$PROBE" 2>/dev/null)" = "ok" ]; then
+    if [ -L "$ROOT/public/storage" ]; then
+      pass "public/storage -> storage/app/public (symlink, verified by round-trip)"
+    else
+      pass "public/storage resolves to storage/app/public (directory fallback, verified by round-trip)"
+    fi
+  else
+    fail "public/storage exists but does not resolve to storage/app/public" \
+         "A file written to storage/app/public was not readable through public/storage. Every uploaded image will 404. Delete public/storage and re-run php artisan storage:link."
+  fi
+  rm -f "$ROOT/storage/app/public/$PROBE"
+else
+  fail "storage/app/public is not writable" "Uploads cannot be saved at all."
+fi
 
 # -----------------------------------------------------------------------------
 section "Database"
@@ -216,6 +299,157 @@ else
     fi
   else
     fail "migrate:status failed" "$(printf '%s' "$MIG_OUT" | tr -d '\r' | head -2 | tail -1)"
+  fi
+
+  # Did the production import actually land? Each of these is a table the app
+  # reads on a path a visitor hits within the first minute, and each of them is
+  # silently empty-able: an empty taxonomy renders a browse page with zero
+  # tiles and an "industry" dropdown nobody can submit; PlatformFees THROWS
+  # (DomainException, by design — it refuses to invent a price) if no active
+  # subscription plan exists, which takes down signup entirely.
+  dbq() { "$PHP_BIN" -r '
+      require "vendor/autoload.php";
+      $app = require "bootstrap/app.php";
+      $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+      try { echo (int) Illuminate\Support\Facades\DB::selectOne($argv[1])->c; }
+      catch (Throwable $e) { echo "ERR"; }
+    ' "$1" 2>/dev/null; }
+
+  N_IND="$(dbq 'SELECT COUNT(*) c FROM industries')"
+  [ "${N_IND:-0}" -ge 400 ] 2>/dev/null \
+    && pass "craft taxonomy loaded ($N_IND rows)" \
+    || fail "craft taxonomy has ${N_IND:-0} rows, expected 413" \
+            "Import database/production/artisanhub237-production.sql. Browse pages and the trade picker are empty without it."
+
+  N_PLAN="$(dbq 'SELECT COUNT(*) c FROM subscription_plans WHERE is_active = 1')"
+  [ "${N_PLAN:-0}" -ge 1 ] 2>/dev/null \
+    && pass "$N_PLAN active subscription plan(s)" \
+    || fail "no active subscription plan" \
+            "app/Support/PlatformFees.php throws rather than inventing a price — signup and every payment page will 500."
+
+  N_REG="$(dbq 'SELECT COUNT(*) c FROM regions')"
+  [ "${N_REG:-0}" -ge 10 ] 2>/dev/null \
+    && pass "regions loaded ($N_REG)" || fail "regions table has ${N_REG:-0} rows, expected 10"
+
+  N_SIARC="$(dbq 'SELECT COUNT(*) c FROM businesses WHERE siarc_code IS NOT NULL')"
+  [ "${N_SIARC:-0}" -ge 1 ] 2>/dev/null \
+    && pass "SIARC founding directory present ($N_SIARC artisans)" \
+    || warn "no SIARC artisans" "The directory will be empty on launch day."
+
+  # The one thing that must never be true on a live marketplace.
+  N_DEMO="$(dbq 'SELECT COUNT(*) c FROM businesses WHERE is_demo = 1')"
+  N_REV="$(dbq 'SELECT COUNT(*) c FROM business_reviews')"
+  if [ "${N_DEMO:-0}" = "0" ] && [ "${N_REV:-0}" = "0" ]; then
+    pass "no demo artisan, no fabricated reviews"
+  else
+    fail "found $N_DEMO demo business(es) and $N_REV review(s)" \
+         "Fabricated reviews on a live marketplace are a consumer-deception problem. Re-import from the production export."
+  fi
+
+  # An admin account is created on the server, not shipped in the export.
+  N_ADMIN="$(dbq "SELECT COUNT(*) c FROM model_has_roles m JOIN roles r ON r.id = m.role_id WHERE r.name = 'super_admin'")"
+  [ "${N_ADMIN:-0}" -ge 1 ] 2>/dev/null \
+    && pass "$N_ADMIN administrator account(s)" \
+    || fail "no super_admin account exists" \
+            "Set ADMIN_EMAIL/ADMIN_PASSWORD in .env, then: php artisan db:seed --class=\"Database\\Seeders\\Siac\\SiacAdminSeeder\""
+
+  # A database queue with nothing draining it swallows every notification.
+  N_FAILED="$(dbq 'SELECT COUNT(*) c FROM failed_jobs')"
+  [ "${N_FAILED:-0}" = "0" ] \
+    && pass "no failed queue jobs" \
+    || warn "$N_FAILED failed queue job(s)" "php artisan queue:failed to inspect. A growing count means the worker cron is misconfigured."
+fi
+
+# -----------------------------------------------------------------------------
+section "Mail (real SMTP handshake)"
+# -----------------------------------------------------------------------------
+# Signup issues a 6-digit OTP by email and the `verified.email` middleware
+# blocks business creation, publishing and messaging until it is confirmed. If
+# SMTP is wrong, nobody who registers can ever do anything — and the failure is
+# invisible from the browser. So actually open the socket, speak EHLO, and (if
+# credentials are configured) authenticate. Nothing is sent.
+if [ ! -f "$ROOT/.env" ] || ! command -v "$PHP_BIN" >/dev/null 2>&1; then
+  warn "mail checks skipped (no .env or no php)"
+else
+  M_MAILER="$(env_get MAIL_MAILER)"
+  M_HOST="$(env_get MAIL_HOST)"
+  M_PORT="$(env_get MAIL_PORT)"
+  M_ENC="$(env_get MAIL_SCHEME)"; [ -z "$M_ENC" ] && M_ENC="$(env_get MAIL_ENCRYPTION)"
+  M_USER="$(env_get MAIL_USERNAME)"
+  M_PASS="$(env_get MAIL_PASSWORD)"
+  M_FROM="$(env_get MAIL_FROM_ADDRESS)"
+
+  if [ "$M_MAILER" != "smtp" ]; then
+    warn "MAIL_MAILER=${M_MAILER:-unset} — SMTP handshake skipped" \
+         "With 'log', verification codes go to storage/logs/laravel.log and no member ever receives one."
+  elif [ -z "$M_HOST" ]; then
+    fail "MAIL_MAILER=smtp but MAIL_HOST is empty"
+  else
+    [ -z "$M_PORT" ] && M_PORT=465
+    # Port 465 is implicit TLS from the first byte (ssl://). 587 is plaintext
+    # then STARTTLS. Getting this backwards is the usual cause of a hang.
+    case "$M_PORT" in 465) SCHEME="ssl" ;; *) SCHEME="tcp" ;; esac
+
+    # Credentials go in via the environment, never argv — argv is world-readable
+    # through `ps` on a shared host, which is exactly where this runs.
+    SMTP_OUT="$(SMTP_HOST="$M_HOST" SMTP_PORT="$M_PORT" SMTP_SCHEME="$SCHEME" \
+                SMTP_USER="$M_USER" SMTP_PASS="$M_PASS" \
+      "$PHP_BIN" -r '
+      $host = getenv("SMTP_HOST"); $port = (int) getenv("SMTP_PORT");
+      $scheme = getenv("SMTP_SCHEME"); $user = getenv("SMTP_USER"); $pass = getenv("SMTP_PASS");
+      $ctx = stream_context_create(["ssl" => ["verify_peer" => true, "verify_peer_name" => true]]);
+      $fp = @stream_socket_client("$scheme://$host:$port", $errno, $errstr, 12,
+              STREAM_CLIENT_CONNECT, $ctx);
+      if (! $fp) { echo "CONNECT_FAIL|$errstr ($errno)"; exit; }
+      stream_set_timeout($fp, 12);
+      $read = function () use ($fp) {
+          $out = "";
+          while (($l = fgets($fp, 1024)) !== false) { $out .= $l; if (! isset($l[3]) || $l[3] !== "-") break; }
+          return trim($out);
+      };
+      $say = function ($c) use ($fp, $read) { fwrite($fp, $c . "\r\n"); return $read(); };
+      $greet = $read();
+      if (strncmp($greet, "220", 3) !== 0) { echo "GREET_FAIL|$greet"; exit; }
+      $ehlo = $say("EHLO artisanhub237.com");
+      if (strncmp($ehlo, "250", 3) !== 0) { echo "EHLO_FAIL|$ehlo"; exit; }
+      if ($scheme === "tcp" && stripos($ehlo, "STARTTLS") !== false) {
+          $r = $say("STARTTLS");
+          if (strncmp($r, "220", 3) !== 0) { echo "STARTTLS_FAIL|$r"; exit; }
+          if (! @stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) { echo "TLS_FAIL|handshake refused"; exit; }
+          $ehlo = $say("EHLO artisanhub237.com");
+      }
+      if ($user === "" || $pass === "") { $say("QUIT"); echo "OK_NOAUTH|$greet"; exit; }
+      if (stripos($ehlo, "AUTH") === false) { $say("QUIT"); echo "NOAUTH_OFFERED|server advertises no AUTH"; exit; }
+      $r = $say("AUTH LOGIN");
+      if (strncmp($r, "334", 3) !== 0) { $say("QUIT"); echo "AUTH_UNSUPPORTED|$r"; exit; }
+      $r = $say(base64_encode($user));
+      if (strncmp($r, "334", 3) !== 0) { $say("QUIT"); echo "AUTH_FAIL|$r"; exit; }
+      $r = $say(base64_encode($pass));
+      $say("QUIT"); fclose($fp);
+      echo (strncmp($r, "235", 3) === 0) ? "OK_AUTH|authenticated as $user" : "AUTH_FAIL|$r";
+    ' 2>&1)"
+
+    SMTP_CODE="${SMTP_OUT%%|*}"; SMTP_MSG="${SMTP_OUT#*|}"
+    case "$SMTP_CODE" in
+      OK_AUTH)   pass "SMTP $SCHEME://$M_HOST:$M_PORT — connected and authenticated" ;;
+      OK_NOAUTH) warn "SMTP $SCHEME://$M_HOST:$M_PORT — connected, but MAIL_USERNAME/MAIL_PASSWORD are empty" \
+                      "The relay will almost certainly reject the send. Fill them in and re-run." ;;
+      CONNECT_FAIL)
+        fail "cannot open $SCHEME://$M_HOST:$M_PORT" \
+             "$SMTP_MSG — check the host name, the port (465 = SSL, 587 = STARTTLS), and that outbound SMTP is not firewalled." ;;
+      AUTH_FAIL|AUTH_UNSUPPORTED|NOAUTH_OFFERED)
+        fail "SMTP authentication failed at $M_HOST:$M_PORT" \
+             "$SMTP_MSG — no member will ever receive a verification code. Re-check MAIL_USERNAME (usually the full address) and MAIL_PASSWORD." ;;
+      *)
+        fail "SMTP handshake failed at $M_HOST:$M_PORT" "$SMTP_CODE: $SMTP_MSG" ;;
+    esac
+
+    # cPanel mail servers reject a From: that is not a mailbox they host.
+    case "$M_FROM" in
+      ""|REPLACE*) fail "MAIL_FROM_ADDRESS is not set" "Every send will be rejected." ;;
+      *@*) pass "MAIL_FROM_ADDRESS=$M_FROM" ;;
+      *)   fail "MAIL_FROM_ADDRESS=$M_FROM is not an address" ;;
+    esac
   fi
 fi
 

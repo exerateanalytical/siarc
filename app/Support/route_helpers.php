@@ -16,6 +16,51 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+if (! function_exists('ah_resolve_public_path')) {
+    /**
+     * Where the document root actually is.
+     *
+     * On a normal install that is `<app>/public` and this returns null, meaning
+     * "leave Laravel's default alone". On shared hosting the host dictates a
+     * document root it will not let you move — Namecheap's is `public_html` —
+     * so the application sits above it and only the contents of `public/` are
+     * placed inside it. APP_PUBLIC_PATH then names that directory.
+     *
+     * It matters because public_path() is not decoration: `brand_asset()` above
+     * probes it to choose a logo, the email layout embeds the letterhead image
+     * from it, and config/filesystems.php builds the storage:link target from
+     * it. Left pointing at a `public/` that is not the document root, the logo
+     * silently falls back, the mail embed fails, and `php artisan storage:link`
+     * cheerfully creates a symlink nobody will ever request.
+     *
+     * A relative value is resolved against the application root, so
+     * `APP_PUBLIC_PATH=../public_html` is portable across cPanel accounts
+     * whose home directory names differ.
+     *
+     * Lives in this file — rather than a service provider — because
+     * config/filesystems.php needs it too, and config files are evaluated
+     * before any provider registers. Composer's "files" autoload makes it
+     * available that early.
+     */
+    function ah_resolve_public_path(?string $configured = null): ?string
+    {
+        $configured ??= env('APP_PUBLIC_PATH');
+        $configured = is_string($configured) ? trim($configured) : '';
+
+        if ($configured === '') {
+            return null;
+        }
+
+        $isAbsolute = str_starts_with($configured, '/')
+            || str_starts_with($configured, '\\')
+            || (bool) preg_match('/^[A-Za-z]:[\\\\\/]/', $configured);
+
+        $path = $isAbsolute ? $configured : base_path($configured);
+
+        return rtrim(realpath($path) ?: $path, '/\\');
+    }
+}
+
 if (! function_exists('webUser')) {
     function webUser(): ?object
     {

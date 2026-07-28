@@ -235,7 +235,9 @@
     <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
         <div class="bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm p-6">
             <div class="flex items-center gap-3.5">
-                <img src="{{ asset('images/landing/cert-card-icon-1.png') }}" alt="" class="w-[46px] h-[46px]" aria-hidden="true">
+                <span class="w-[46px] h-[46px] rounded-full bg-[#F4F7F1] dark:bg-[#1B2016] flex items-center justify-center shrink-0" aria-hidden="true">
+                    <i data-lucide="shield-check" class="w-[24px] h-[24px] text-[#157A43] dark:text-[#339B56]" stroke-width="1.6"></i>
+                </span>
                 <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity' }}</h3>
             </div>
             <p class="mt-3.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
@@ -250,7 +252,9 @@
         </div>
         <div class="bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm p-6">
             <div class="flex items-center gap-3.5">
-                <img src="{{ asset('images/landing/cert-card-icon-2.png') }}" alt="" class="w-[46px] h-[46px]" aria-hidden="true">
+                <span class="w-[46px] h-[46px] rounded-full bg-[#FBF3E6] dark:bg-[#1B2016] flex items-center justify-center shrink-0" aria-hidden="true">
+                    <i data-lucide="lock" class="w-[24px] h-[24px] text-[#C08A16] dark:text-[#EDB33A]" stroke-width="1.6"></i>
+                </span>
                 <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Éléments de sécurité' : 'Security features' }}</h3>
             </div>
             <ul class="mt-3.5 space-y-2">
