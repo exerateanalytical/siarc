@@ -421,7 +421,9 @@
     </nav>
 
     <div class="coa-fit shadow-[0_4px_28px_rgba(0,0,0,0.14)] rounded-[6px]">
-    <article class="coa-page">
+    <article class="coa-page cert-band-host">
+    {{-- The family's classification band, over the frame margin. --}}
+    @include('pages.partials.certificate-band', ['code' => 'OTC'])
     <div class="otc-frame">
         {{-- The band itself is painted by .otc-frame and simply covered in the
              middle by the opaque sheet, which is what makes it meet cleanly at
@@ -434,14 +436,14 @@
             <g transform="translate(480,1080) scale(.8)" opacity=".1"><use href="#otcRosette"/></g>
         </svg>
 
-        {{-- ══ Spine: the issuer's name set vertically down the binding edge,
-                 x 31–61 / y 33–430 in the artwork. ══ --}}
-        <div style="position:absolute;left:0;top:2px;width:30px;height:399px;border-radius:6px;
-                    background:linear-gradient(180deg,#0F3E24,#062615);z-index:2;
-                    display:flex;align-items:center;justify-content:center;">
-            <span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;font-weight:700;
-                         letter-spacing:.34em;color:#E9CE8B;">ARTISANHUB237</span>
-        </div>
+        {{-- ══ Spine ══
+             The artwork sets the issuer's name vertically down the binding edge
+             at x 31–61 / y 33–430. The classification band now occupies that
+             edge and carries vertical type of its own, so the spine is gone
+             rather than stacked behind it: two vertical strips a few pixels
+             apart is not what the artwork draws, and the band is the one that
+             tells the reader something they cannot get elsewhere on the sheet.
+             The issuer's name is still set, in full, in the header below. --}}
 
         {{-- ══ Header ══ --}}
         <div style="padding:10px 109px 0;text-align:center;">

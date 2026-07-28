@@ -203,7 +203,11 @@
     </nav>
 
     <div class="coa-fit shadow-[0_4px_28px_rgba(0,0,0,0.12)] rounded-[4px]">
-    <article class="coa-page">
+    <article class="coa-page cert-band-host">
+    {{-- The family's classification band, over the frame margin. It is placed
+         on the page rather than inside the cream sheet so it can sit across the
+         bezel and the gutter without touching the measured column at x 45. --}}
+    @include('pages.partials.certificate-band', ['code' => 'COA'])
     <div class="coa-gold">
     <div class="coa-cream">
 

@@ -415,15 +415,15 @@
     </nav>
 
     <div class="coa-fit shadow-[0_4px_28px_rgba(0,0,0,0.14)] rounded-[4px]">
-    <article class="prc-page">
+    <article class="prc-page cert-band-host">
+    {{-- The family's classification band. It replaces the artwork's left kente
+         strip rather than sitting beside it: the two occupy the same 47px
+         gutter, and a sheet carrying both would have a vertical wordmark and a
+         vertical document name a few pixels apart, which reads as a mistake.
+         The right-hand strip stays, so the frame is still a frame. --}}
+    @include('pages.partials.certificate-band', ['code' => 'PRC'])
     <div class="prc-frame">
 
-        {{-- The two side bands: kente lattice in gold on green, and the registry
-             wordmark set vertically down the left edge, as in the artwork. --}}
-        <div class="prc-band l">
-            <svg width="47" height="1522" aria-hidden="true"><rect width="47" height="1522" fill="url(#coaKenteDark)" opacity=".55"/></svg>
-            <span class="prc-vtext">{{ $isFr ? 'REGISTRE ARTISANHUB237' : 'ARTISANHUB237 REGISTRY' }}</span>
-        </div>
         <div class="prc-band r">
             <svg width="47" height="1522" aria-hidden="true"><rect width="47" height="1522" fill="url(#coaKenteDark)" opacity=".55"/></svg>
         </div>

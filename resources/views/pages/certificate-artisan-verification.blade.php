@@ -322,14 +322,18 @@
     </nav>
 
     <div class="coa-fit shadow-[0_4px_28px_rgba(0,0,0,0.14)] rounded-[4px]">
-    <article class="av-page">
+    <article class="av-page cert-band-host">
+    {{-- The family's classification band. The artwork's own left band — kente
+         lattice under the authority wordmark, set vertically — filled this same
+         gutter, and the two cannot both be here: the reader would get two
+         columns of vertical type in 58px. The kente stays as the ground the
+         band sits on, the wordmark goes, and the authority is named in full in
+         the body of the sheet where it can actually be read. --}}
+    @include('pages.partials.certificate-band', ['code' => 'AVC'])
     <div class="av-frame">
 
-        {{-- The left band: kente lattice in gold on green, with the authority
-             wordmark set vertically, as in the artwork. --}}
         <div class="av-band">
             <svg width="58" height="3000" aria-hidden="true"><rect width="58" height="3000" fill="url(#coaKenteDark)" opacity=".5"/></svg>
-            <span class="av-vtext">{{ $isFr ? 'AUTORITÉ DE CERTIFICATION ARTISANHUB237' : 'ARTISANHUB237 CERTIFICATION AUTHORITY' }}</span>
         </div>
 
     <div class="av-cream">
