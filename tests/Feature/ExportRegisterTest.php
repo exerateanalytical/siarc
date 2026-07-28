@@ -277,7 +277,17 @@ class ExportRegisterTest extends TestCase
 
         $withPapers = ExportRegister::readiness($c->id);
         $this->assertGreaterThan(0, $withPapers['categories']['documentation']['score']);
-        $this->assertStringContainsString('permit', strtolower($withPapers['categories']['documentation']['basis']));
+        // Named in both languages rather than in whichever one the app locale
+        // happens to be. The basis is written for the reader now, and a check
+        // that only ever saw English would not notice the French going missing.
+        $this->assertStringContainsString(
+            'permit',
+            strtolower(ExportRegister::readiness($c->id, 'en')['categories']['documentation']['basis'])
+        );
+        $this->assertStringContainsString(
+            'permis d\'exportation',
+            strtolower(ExportRegister::readiness($c->id, 'fr')['categories']['documentation']['basis'])
+        );
 
         // Still short of full marks: nobody has inspected the object.
         $this->assertLessThan(
@@ -299,7 +309,14 @@ class ExportRegisterTest extends TestCase
             $withPapers['categories']['documentation']['score'],
             $withReport['categories']['documentation']['score']
         );
-        $this->assertStringContainsString('condition report', $withReport['categories']['documentation']['basis']);
+        $this->assertStringContainsString(
+            'condition report',
+            ExportRegister::readiness($c->id, 'en')['categories']['documentation']['basis']
+        );
+        $this->assertStringContainsString(
+            'constat d\'état',
+            ExportRegister::readiness($c->id, 'fr')['categories']['documentation']['basis']
+        );
     }
 
     /* ────────────────────────────── Risk ───────────────────────────────── */
@@ -379,5 +396,147 @@ class ExportRegisterTest extends TestCase
 
         // Never verified on creation: the platform has checked no licence.
         $this->assertNull($a->verified_at);
+    }
+
+    /* ────────────────────────────── Language ───────────────────────────── */
+
+    /*
+     * Readiness and risk both print a sentence per line explaining themselves,
+     * and those sentences were English on a French certificate. The tests
+     * below hold the translation to two conditions: that the French is French,
+     * and that none of it moved a number. The second is the one that would do
+     * real damage — a consignment whose readiness percentage or risk level
+     * depended on which language the page was requested in would be a document
+     * that says two different things about the same crate.
+     */
+
+    /** A shipped consignment, so every readiness category has something to judge. */
+    private function shippedConsignment(): int
+    {
+        $product = $this->certifiedProduct();
+
+        $c = ExportRegister::open($product, $this->importer(), [
+            'origin_certificate_ref'        => 'CO-2026-1',
+            'export_permit_no'              => 'PERM-9',
+            'customs_declaration_no'        => 'DEC-4',
+            'cultural_heritage_declaration' => 'compliant',
+            'ethical_sourcing_declaration'  => 'compliant',
+            'protected_materials'           => 'none',
+        ]);
+
+        ExportRegister::recordCondition($product, ['inspector_name' => 'A. Mbarga', 'overall' => 'good']);
+        ExportRegister::approve($c->id);
+        ExportRegister::ship($c->id, [
+            'carrier' => 'DHL', 'awb_no' => '123-45678901', 'tracking_no' => 'TRK-1',
+            'port_of_exit' => 'Douala', 'crate_ref' => 'CR-1',
+            'shock_protection' => true, 'climate_protection' => true,
+        ]);
+
+        return (int) $c->id;
+    }
+
+    public function test_every_readiness_basis_is_written_in_the_readers_language(): void
+    {
+        $id = $this->shippedConsignment();
+
+        $fr = ExportRegister::readiness($id, 'fr');
+        $en = ExportRegister::readiness($id, 'en');
+
+        foreach ($fr['categories'] as $key => $cat) {
+            $this->assertNotSame(
+                $en['categories'][$key]['basis'],
+                $cat['basis'],
+                "The {$key} basis is identical in both languages, so one of them is untranslated."
+            );
+
+            foreach ([' the ', ' has been ', ' no '] as $marker) {
+                $this->assertStringNotContainsString(
+                    $marker,
+                    ' ' . $cat['basis'] . ' ',
+                    "The French {$key} basis still contains the English fragment [{$marker}]."
+                );
+            }
+        }
+    }
+
+    public function test_every_risk_basis_is_written_in_the_readers_language(): void
+    {
+        $id = $this->shippedConsignment();
+
+        $fr = ExportRegister::risk($id, 'fr');
+        $en = ExportRegister::risk($id, 'en');
+
+        foreach ($fr as $key => $line) {
+            $this->assertNotSame($en[$key]['basis'], $line['basis'], "The {$key} risk basis is untranslated.");
+
+            foreach ([' the ', ' has been ', ' no '] as $marker) {
+                $this->assertStringNotContainsString(
+                    $marker,
+                    ' ' . $line['basis'] . ' ',
+                    "The French {$key} risk basis still contains the English fragment [{$marker}]."
+                );
+            }
+        }
+    }
+
+    public function test_translating_the_reasoning_does_not_move_a_single_number(): void
+    {
+        $id = $this->shippedConsignment();
+
+        $fr = ExportRegister::readiness($id, 'fr');
+        $en = ExportRegister::readiness($id, 'en');
+
+        // The important one. Same crate, same score, same rating, whichever
+        // sheet the border officer is holding.
+        $this->assertSame($en['total'], $fr['total']);
+        $this->assertSame($en['max'], $fr['max']);
+        $this->assertSame($en['rating'], $fr['rating']);
+
+        foreach ($en['categories'] as $key => $cat) {
+            $this->assertSame($cat['score'], $fr['categories'][$key]['score'], "The {$key} score moved with the language.");
+            $this->assertSame($cat['max'], $fr['categories'][$key]['max'], "The {$key} maximum moved with the language.");
+        }
+
+        $frRisk = ExportRegister::risk($id, 'fr');
+        foreach (ExportRegister::risk($id, 'en') as $key => $line) {
+            $this->assertSame($line['level'], $frRisk[$key]['level'], "The {$key} risk level moved with the language.");
+        }
+    }
+
+    public function test_an_unassessed_category_is_unassessed_in_both_languages(): void
+    {
+        // A bare draft: nothing packed, no carrier, no cover declared — the
+        // three categories that drop out of the denominator.
+        $c = ExportRegister::open($this->certifiedProduct(), $this->importer());
+
+        $fr = ExportRegister::readiness($c->id, 'fr');
+        $en = ExportRegister::readiness($c->id, 'en');
+
+        foreach (['packaging', 'insurance', 'logistics'] as $key) {
+            $this->assertSame(0, $en['categories'][$key]['max'], "{$key} was assessed in English on a bare draft.");
+            $this->assertSame(0, $fr['categories'][$key]['max'], "{$key} was assessed in French on a bare draft.");
+            $this->assertSame(0, $fr['categories'][$key]['score']);
+        }
+
+        $this->assertSame($en['max'], $fr['max']);
+        $this->assertSame($en['rating'], $fr['rating']);
+
+        // And the risk lines that cannot be judged stay unassessed, never low.
+        $frRisk = ExportRegister::risk($c->id, 'fr');
+        foreach (['transit', 'environmental', 'insurance'] as $key) {
+            $this->assertSame('unassessed', $frRisk[$key]['level'], "{$key} risk was judged in French with nothing to judge.");
+        }
+    }
+
+    public function test_omitting_the_language_returns_what_it_returned_before(): void
+    {
+        $id = $this->shippedConsignment();
+
+        $this->assertSame(ExportRegister::readiness($id, app()->getLocale()), ExportRegister::readiness($id));
+        $this->assertSame(ExportRegister::risk($id, app()->getLocale()), ExportRegister::risk($id));
+
+        // The rating is a key the views translate themselves, so it must not
+        // follow the language under any circumstances.
+        $this->assertSame(ExportRegister::rating(19, 20), ExportRegister::rating(19, 20, 'fr'));
     }
 }

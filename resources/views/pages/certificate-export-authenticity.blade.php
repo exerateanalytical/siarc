@@ -4,6 +4,14 @@
 
     $isFr = $lang === 'fr';
 
+    /* Rebuilt in the reader's language. Both carry a "basis" sentence per line
+       — the working behind the readiness score and behind each risk level —
+       and those sentences are the part a customs officer or an exporter is
+       meant to be able to challenge. The numbers, the rating and the risk
+       levels are unchanged by the language; only the reasoning is translated. */
+    $readiness = \App\Support\ExportRegister::readiness($consignment->id, $lang);
+    $risk      = \App\Support\ExportRegister::risk($consignment->id, $lang);
+
     // Consumed by the shared directory header and footer partials; without them
     // those partials fatal, so they are set before anything else happens.
     $siacUser   = session('siac_user');

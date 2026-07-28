@@ -169,7 +169,7 @@ class ExportCertificateTest extends TestCase
         $c    = $this->draft();
         $html = $this->certificate($c, 'en')->assertOk()->getContent();
 
-        $readiness = ExportRegister::readiness($c->id);
+        $readiness = ExportRegister::readiness($c->id, 'en');
         $this->assertSame(0, $readiness['categories']['packaging']['max']);
 
         // Anchored to the start of the score cell, because a legitimate
@@ -183,7 +183,7 @@ class ExportCertificateTest extends TestCase
     public function test_an_unassessed_risk_is_not_rendered_as_a_low_one(): void
     {
         $c    = $this->shipped();
-        $risk = ExportRegister::risk($c->id);
+        $risk = ExportRegister::risk($c->id, 'en');
 
         $this->assertSame('unassessed', $risk['insurance']['level']);
 
@@ -203,7 +203,7 @@ class ExportCertificateTest extends TestCase
     public function test_the_readiness_categories_all_show_their_working(): void
     {
         $c         = $this->shipped();
-        $readiness = ExportRegister::readiness($c->id);
+        $readiness = ExportRegister::readiness($c->id, 'en');
         $html      = $this->certificate($c, 'en')->assertOk()->getContent();
 
         foreach ($readiness['categories'] as $key => $cat) {

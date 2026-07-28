@@ -269,6 +269,72 @@ Route::get('/certificats/{slug}', function (Request $request, string $slug) {
         'lang'    => $lang,
     ]);
 })->middleware('throttle:60,1')->name('certificate.hub');
+
+/*
+ * The workshop verification certificate. Keyed on the workshop's own permanent
+ * number rather than a slug, because a workshop can be renamed and the document
+ * must keep resolving.
+ */
+Route::get('/certificat-atelier/{gwn}', function (Request $request, string $gwn) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $workshop = \Illuminate\Support\Facades\DB::table('workshops')->where('gwn', $gwn)->first();
+    abort_unless($workshop, 404);
+
+    $certificate = \Illuminate\Support\Facades\DB::table('workshop_certificates')
+        ->where('workshop_id', $workshop->id)->whereNull('revoked_reason')
+        ->orderByDesc('id')->first();
+    abort_unless($certificate, 404);
+
+    $business = \App\Modules\Businesses\Models\Business::with(['region', 'city', 'user'])
+        ->find($workshop->business_id);
+
+    return view('pages.certificate-workshop-verification', [
+        'lang'        => $lang,
+        'workshop'    => $workshop,
+        'certificate' => $certificate,
+        'business'    => $business,
+        'inspection'  => \App\Support\WorkshopRegister::latestInspection($workshop->id),
+        'equipment'   => \Illuminate\Support\Facades\DB::table('workshop_equipment')->where('workshop_id', $workshop->id)->orderBy('category')->get()->all(),
+        'compliance'  => \Illuminate\Support\Facades\DB::table('workshop_compliance')->where('workshop_id', $workshop->id)->orderBy('kind')->get()->all(),
+        'assessment'  => \App\Support\WorkshopRegister::assessment($workshop->id),
+        'exportReady' => \App\Support\WorkshopRegister::exportReadiness($workshop->id),
+        'checks'      => \App\Support\WorkshopRegister::checks($workshop->id),
+        'trail'       => \App\Support\ProvenanceRegistry::trail('wvc', $certificate->id),
+        'gwn'         => \App\Support\WorkshopRegister::gwnFor($workshop->id),
+    ]);
+})->where('gwn', '[A-Za-z0-9\-]+')->middleware('throttle:60,1')->name('workshop.certificate');
+
+/*
+ * The digital product passport: the living record the certificates are
+ * snapshots of. Public, but only for a published product, and it shows the
+ * record's current state rather than a document frozen at issue.
+ */
+Route::get('/passeport/{slug}', function (Request $request, string $slug) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $product = \App\Modules\Products\Models\Product::with([
+        'business.region', 'business.city', 'business.user', 'category', 'images', 'attributes.template',
+    ])->where('slug', $slug)->first();
+
+    abort_unless($product && $product->status === 'published' && $product->business_id, 404);
+
+    return view('pages.product-passport', ['lang' => $lang, 'product' => $product]);
+})->middleware('throttle:60,1')->name('product.passport');
+
+/* The public revocation list. A revocation nobody can look up is not a revocation. */
+Route::get('/certificats-revoques', function (Request $request) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    return view('pages.revocation-list', ['lang' => $lang]);
+})->middleware('throttle:60,1')->name('revocation.list');
+
+/* An artisan's own certificates, and the place to request workshop verification. */
+Route::get('/tableau-de-bord/certificats', function (Request $request) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    return view('pages.dashboard.certificates', ['lang' => $lang]);
+})->name('dashboard.certificates')->middleware('verified.email');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;

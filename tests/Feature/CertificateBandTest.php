@@ -35,7 +35,12 @@ class CertificateBandTest extends TestCase
     use BuildsGalleryData, RefreshDatabase;
 
     /** Every code the scheme declares, in the order the config lists them. */
-    private const CODES = ['COA', 'PRC', 'OTC', 'AVC', 'PPC', 'EAC', 'EC', 'RC', 'VAC', 'DPP'];
+    /*
+     * Workshop verification joined the family after the first ten were drawn,
+     * inserted before the passport so the list stays in dependency order:
+     * a workshop underwrites the artisan, who underwrites the product.
+     */
+    private const CODES = ['COA', 'PRC', 'OTC', 'AVC', 'PPC', 'EAC', 'EC', 'RC', 'VAC', 'WVC', 'DPP'];
 
     /** The codes that have a live page today, and the rest, which do not. */
     private const LIVE = ['COA', 'PRC', 'OTC', 'AVC'];
@@ -86,12 +91,12 @@ class CertificateBandTest extends TestCase
 
     /* ─────────────────────────── The scheme itself ─────────────────────── */
 
-    public function test_all_ten_types_are_declared_with_a_colour_an_icon_and_both_languages(): void
+    public function test_all_declared_types_are_complete_with_a_colour_an_icon_and_both_languages(): void
     {
         $types = config('certificate_types');
 
         $this->assertIsArray($types);
-        $this->assertSame(self::CODES, array_keys($types), 'The scheme declares exactly the ten documented types.');
+        $this->assertSame(self::CODES, array_keys($types), 'The scheme declares exactly the documented types, in order.');
 
         foreach ($types as $code => $type) {
             $this->assertMatchesRegularExpression('/^#[0-9A-Fa-f]{6}$/', $type['colour'] ?? '', $code . ' needs a colour.');

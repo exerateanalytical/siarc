@@ -130,6 +130,31 @@ return [
         ],
     ],
 
+    /*
+     * The workshop verification certificate. The eleventh type, and the first
+     * one about a place rather than an object, which is why it takes the deep
+     * emerald of its artwork rather than another value of the burgundy-navy
+     * range the object documents share: a reader holding a WVC beside an OTC
+     * should see two different colours, and the darker green is far enough from
+     * OTC's emerald to stay legible as its own.
+     *
+     * The icon is the museum front — a building — reused deliberately rather
+     * than invented. certificate-band.blade.php draws the ten icons itself and
+     * is not a file this pass may edit, so a new key would render an empty ring,
+     * which tells a reader less than a shared building glyph does. The colour
+     * still separates the two, and the day someone draws a bench-and-tools
+     * glyph, only this line changes.
+     */
+    'WVC' => [
+        'colour' => '#0E4D2A',   // deep emerald
+        'accent' => '#E7C878',
+        'icon'   => 'museum',
+        'name'   => [
+            'fr' => "Certificat de vérification d'atelier",
+            'en' => 'Workshop Verification Certificate',
+        ],
+    ],
+
     'DPP' => [
         // Black and gold. The band body is the near-black; the gold is the
         // accent, so this one reads as the darkest member of the set without

@@ -65,6 +65,31 @@ class ExportRegister
         'deliver' => ['shipped'],
     ];
 
+    /* ─────────────────────────────── Language ──────────────────────────── */
+
+    /**
+     * The language the basis phrases are written in.
+     *
+     * These sentences are the working behind a printed score, and a customs
+     * officer or an exporter in Douala reading a French certificate should not
+     * have to decode an English explanation of why their consignment scored
+     * what it did. Resolution is explicit argument, then the request's locale,
+     * then French — so a caller that passes nothing keeps whatever behaviour it
+     * had, and no existing page changes language on its own.
+     */
+    private static function lang(?string $lang): string
+    {
+        $lang ??= app()->getLocale();
+
+        return in_array($lang, ['fr', 'en'], true) ? $lang : 'fr';
+    }
+
+    /** Picks one of the two written forms. Nothing is generated or guessed. */
+    private static function t(string $lang, string $en, string $fr): string
+    {
+        return $lang === 'fr' ? $fr : $en;
+    }
+
     /* ─────────────────────────────── Parties ───────────────────────────── */
 
     /**
@@ -492,20 +517,21 @@ class ExportRegister
      *
      * @return array{categories:array<string,array{score:int,max:int,basis:string}>, total:int, max:int, rating:string}
      */
-    public static function readiness(int $id): array
+    public static function readiness(int $id, ?string $lang = null): array
     {
         $c         = self::require($id);
         $productId = (int) $c->product_id;
+        $lang      = self::lang($lang);
 
         $categories = [
-            'authenticity'  => self::scoreAuthenticity($productId),
-            'provenance'    => self::scoreProvenance($productId),
-            'documentation' => self::scoreDocumentation($c, $productId),
-            'ownership'     => self::scoreOwnership($c, $productId),
-            'packaging'     => self::scorePackaging($id),
-            'insurance'     => self::scoreInsurance($productId),
-            'compliance'    => self::scoreCompliance($c),
-            'logistics'     => self::scoreLogistics($id),
+            'authenticity'  => self::scoreAuthenticity($productId, $lang),
+            'provenance'    => self::scoreProvenance($productId, $lang),
+            'documentation' => self::scoreDocumentation($c, $productId, $lang),
+            'ownership'     => self::scoreOwnership($c, $productId, $lang),
+            'packaging'     => self::scorePackaging($id, $lang),
+            'insurance'     => self::scoreInsurance($productId, $lang),
+            'compliance'    => self::scoreCompliance($c, $lang),
+            'logistics'     => self::scoreLogistics($id, $lang),
         ];
 
         $total = array_sum(array_column($categories, 'score'));
@@ -525,8 +551,16 @@ class ExportRegister
      * "unassessed" when nothing at all could be judged — a rating of "poor" for
      * a consignment we know nothing about would be a claim we cannot support in
      * the other direction.
+     *
+     * The returned word is a key and is deliberately never translated, which is
+     * why $lang is accepted and ignored rather than absent: the certificate
+     * views hold their own vocabulary for these five words and choose the chip
+     * colour by matching on them, so a rating that changed language would take
+     * both the label and the colour with it. It also means the French and
+     * English sheets of one consignment cannot disagree about the verdict,
+     * which is the whole reason for translating the reasoning underneath it.
      */
-    public static function rating(int $total, int $max): string
+    public static function rating(int $total, int $max, ?string $lang = null): string
     {
         if ($max <= 0) {
             return 'unassessed';
@@ -551,36 +585,40 @@ class ExportRegister
      * and "none issued" is a finding rather than an unknown, so it scores zero
      * out of the full maximum.
      */
-    private static function scoreAuthenticity(int $productId): array
+    private static function scoreAuthenticity(int $productId, string $lang = 'en'): array
     {
         $coa = self::coaFor($productId);
 
         if (! $coa) {
-            return self::cat(0, 20, 'no Certificate of Authenticity has been issued for this piece');
+            return self::cat(0, 20, self::t(
+                $lang,
+                'no Certificate of Authenticity has been issued for this piece',
+                'aucun certificat d\'authenticité n\'a été délivré pour cette pièce'
+            ));
         }
 
         $score = 10;
-        $notes = ['certificate of authenticity on record'];
+        $notes = [self::t($lang, 'certificate of authenticity on record', 'certificat d\'authenticité au registre')];
 
         $product = Product::find($productId);
         $current = $product && ProductCertificate::hashFor($product) === $coa->content_hash;
 
         if ($current) {
             $score += 4;
-            $notes[] = 'its content hash still matches the live record';
+            $notes[] = self::t($lang, 'its content hash still matches the live record', 'son empreinte de contenu correspond toujours au registre en vigueur');
         } else {
-            $notes[] = 'the product record changed after the certificate was issued';
+            $notes[] = self::t($lang, 'the product record changed after the certificate was issued', 'la fiche du produit a changé après la délivrance du certificat');
         }
 
         $state = ProductCertificate::signatureState($coa)['state'];
 
         if ($state === 'valid') {
             $score += 6;
-            $notes[] = 'the authority signature verifies';
+            $notes[] = self::t($lang, 'the authority signature verifies', 'la signature de l\'autorité est vérifiée');
         } elseif ($state === 'unsigned') {
-            $notes[] = 'it carries no authority signature';
+            $notes[] = self::t($lang, 'it carries no authority signature', 'il ne porte aucune signature d\'autorité');
         } else {
-            $notes[] = 'the authority signature does not verify';
+            $notes[] = self::t($lang, 'the authority signature does not verify', 'la signature de l\'autorité n\'est pas vérifiée');
         }
 
         return self::cat($score, 20, implode('; ', $notes));
@@ -590,12 +628,16 @@ class ExportRegister
      * Provenance: does the chain start at the maker, is it unbroken, and is the
      * holder at the far end anything more than self-declared.
      */
-    private static function scoreProvenance(int $productId): array
+    private static function scoreProvenance(int $productId, string $lang = 'en'): array
     {
         $rows = DB::table('product_ownerships')->where('product_id', $productId)->orderBy('sequence')->get();
 
         if ($rows->isEmpty()) {
-            return self::cat(0, 15, 'no ownership record exists for this piece');
+            return self::cat(0, 15, self::t(
+                $lang,
+                'no ownership record exists for this piece',
+                'aucun enregistrement de propriété n\'existe pour cette pièce'
+            ));
         }
 
         $score = 0;
@@ -603,9 +645,9 @@ class ExportRegister
 
         if ((bool) $rows->first()->is_original_creator) {
             $score += 8;
-            $notes[] = 'the chain begins with the maker';
+            $notes[] = self::t($lang, 'the chain begins with the maker', 'la chaîne commence par l\'artisan');
         } else {
-            $notes[] = 'the chain does not begin with the maker';
+            $notes[] = self::t($lang, 'the chain does not begin with the maker', 'la chaîne ne commence pas par l\'artisan');
         }
 
         // Contiguous sequence numbers and exactly one open end. Either failing
@@ -615,18 +657,18 @@ class ExportRegister
 
         if ($contiguous && $open === 1) {
             $score += 4;
-            $notes[] = 'unbroken with a single current holder';
+            $notes[] = self::t($lang, 'unbroken with a single current holder', 'ininterrompue avec un seul détenteur actuel');
         } else {
-            $notes[] = 'the chain is broken or has more than one open holder';
+            $notes[] = self::t($lang, 'the chain is broken or has more than one open holder', 'la chaîne est rompue ou compte plus d\'un détenteur ouvert');
         }
 
         $current = $rows->firstWhere('owned_until', null);
 
         if ($current && in_array($current->verification_level, ['verified', 'institution'], true)) {
             $score += 3;
-            $notes[] = 'the current holder is verified';
+            $notes[] = self::t($lang, 'the current holder is verified', 'le détenteur actuel est vérifié');
         } else {
-            $notes[] = 'the current holder is self-declared';
+            $notes[] = self::t($lang, 'the current holder is self-declared', 'le détenteur actuel est auto-déclaré');
         }
 
         return self::cat($score, 15, implode('; ', $notes));
@@ -641,16 +683,18 @@ class ExportRegister
      * Always assessable: their absence is exactly what a customs officer needs
      * to be told, not something we should decline to judge.
      */
-    private static function scoreDocumentation(object $c, int $productId): array
+    private static function scoreDocumentation(object $c, int $productId, string $lang = 'en'): array
     {
         $held   = [];
         $absent = [];
 
         foreach ([
-            'origin_certificate_ref' => 'certificate of origin',
-            'export_permit_no'       => 'export permit',
-            'customs_declaration_no' => 'customs declaration',
-        ] as $column => $label) {
+            'origin_certificate_ref' => ['certificate of origin', 'certificat d\'origine'],
+            'export_permit_no'       => ['export permit', 'permis d\'exportation'],
+            'customs_declaration_no' => ['customs declaration', 'déclaration en douane'],
+        ] as $column => [$en, $fr]) {
+            $label = self::t($lang, $en, $fr);
+
             $c->$column ? $held[] = $label : $absent[] = $label;
         }
 
@@ -666,15 +710,17 @@ class ExportRegister
 
         if ($report) {
             $score += 5;
-            $held[] = 'a condition report by ' . $report->inspector_name;
+            $held[] = self::t($lang, 'a condition report by ', 'un constat d\'état établi par ') . $report->inspector_name;
         } else {
-            $absent[] = 'an inspected condition report';
+            $absent[] = self::t($lang, 'an inspected condition report', 'un constat d\'état après inspection');
         }
 
-        $basis = $held ? 'holds ' . implode(', ', $held) : 'no export paperwork is on file';
+        $basis = $held
+            ? self::t($lang, 'holds ', 'détient ') . implode(', ', $held)
+            : self::t($lang, 'no export paperwork is on file', 'aucun document d\'exportation n\'est au dossier');
 
         if ($absent) {
-            $basis .= '; missing ' . implode(', ', $absent);
+            $basis .= self::t($lang, '; missing ', ' ; il manque : ') . implode(', ', $absent);
         }
 
         return self::cat($score, 20, $basis);
@@ -684,30 +730,50 @@ class ExportRegister
      * Ownership: does the consignment name a sender the ownership chain agrees
      * with, and is that sender still the current holder.
      */
-    private static function scoreOwnership(object $c, int $productId): array
+    private static function scoreOwnership(object $c, int $productId, string $lang = 'en'): array
     {
         if (! DB::table('product_ownerships')->where('product_id', $productId)->exists()) {
-            return self::cat(0, 10, 'no ownership record exists to check the sender against');
+            return self::cat(0, 10, self::t(
+                $lang,
+                'no ownership record exists to check the sender against',
+                'aucun enregistrement de propriété n\'existe pour contrôler l\'expéditeur'
+            ));
         }
 
         if (! $c->owner_ownership_id) {
-            return self::cat(0, 10, 'the consignment names no holder from the ownership chain');
+            return self::cat(0, 10, self::t(
+                $lang,
+                'the consignment names no holder from the ownership chain',
+                'l\'envoi ne désigne aucun détenteur issu de la chaîne de propriété'
+            ));
         }
 
         $row = DB::table('product_ownerships')->find($c->owner_ownership_id);
 
         if (! $row || (int) $row->product_id !== $productId) {
-            return self::cat(0, 10, 'the named holder does not belong to this piece');
+            return self::cat(0, 10, self::t(
+                $lang,
+                'the named holder does not belong to this piece',
+                'le détenteur désigné n\'appartient pas à cette pièce'
+            ));
         }
 
         if ($row->owned_until !== null) {
             // The sender held the piece once but no longer does. Not necessarily
             // fraud — a consignment left open through a sale does this — but it
             // is precisely the discrepancy an importing registrar must see.
-            return self::cat(5, 10, 'the named holder is a past owner, not the current one');
+            return self::cat(5, 10, self::t(
+                $lang,
+                'the named holder is a past owner, not the current one',
+                'le détenteur désigné est un ancien propriétaire, non le propriétaire actuel'
+            ));
         }
 
-        return self::cat(10, 10, 'the sender is the current holder in the ownership chain');
+        return self::cat(10, 10, self::t(
+            $lang,
+            'the sender is the current holder in the ownership chain',
+            'l\'expéditeur est le détenteur actuel dans la chaîne de propriété'
+        ));
     }
 
     /**
@@ -715,12 +781,16 @@ class ExportRegister
      * there is no crate to judge, and scoring it out of ten would penalise a
      * consignment for a step it has not reached yet.
      */
-    private static function scorePackaging(int $id): array
+    private static function scorePackaging(int $id, string $lang = 'en'): array
     {
         $s = self::shipment($id);
 
         if (! $s) {
-            return self::cat(0, 0, 'nothing has been packed yet, so there is no crate to assess');
+            return self::cat(0, 0, self::t(
+                $lang,
+                'nothing has been packed yet, so there is no crate to assess',
+                'rien n\'a encore été emballé : il n\'y a donc aucune caisse à évaluer'
+            ));
         }
 
         $score = 0;
@@ -728,10 +798,12 @@ class ExportRegister
         $not   = [];
 
         foreach ([
-            'shock_protection'    => 'shock protection',
-            'climate_protection'  => 'climate control',
-            'humidity_protection' => 'humidity control',
-        ] as $column => $label) {
+            'shock_protection'    => ['shock protection', 'une protection contre les chocs'],
+            'climate_protection'  => ['climate control', 'une régulation climatique'],
+            'humidity_protection' => ['humidity control', 'une régulation de l\'humidité'],
+        ] as $column => [$en, $fr]) {
+            $label = self::t($lang, $en, $fr);
+
             if ($s->$column) {
                 $score += 3;
                 $has[] = $label;
@@ -742,13 +814,15 @@ class ExportRegister
 
         if ($s->crate_ref) {
             $score += 1;
-            $has[] = 'an identified crate';
+            $has[] = self::t($lang, 'an identified crate', 'une caisse identifiée');
         }
 
-        $basis = $has ? 'crate provides ' . implode(', ', $has) : 'the crate records no protective measures';
+        $basis = $has
+            ? self::t($lang, 'crate provides ', 'la caisse offre ') . implode(', ', $has)
+            : self::t($lang, 'the crate records no protective measures', 'la caisse ne consigne aucune mesure de protection');
 
         if ($not) {
-            $basis .= '; no ' . implode(', ', $not);
+            $basis .= self::t($lang, '; no ', ' ; il manque : ') . implode(', ', $not);
         }
 
         return self::cat($score, 10, $basis);
@@ -763,7 +837,7 @@ class ExportRegister
      * the same as uninsured: a shipper may hold a blanket policy we never see.
      * Saying so is the honest report.
      */
-    private static function scoreInsurance(int $productId): array
+    private static function scoreInsurance(int $productId, string $lang = 'en'): array
     {
         $cover = DB::table('ownership_transfers')
             ->where('product_id', $productId)
@@ -772,24 +846,28 @@ class ExportRegister
             ->first();
 
         if (! $cover) {
-            return self::cat(0, 0, 'no insurance cover has been recorded with the platform');
+            return self::cat(0, 0, self::t(
+                $lang,
+                'no insurance cover has been recorded with the platform',
+                'aucune couverture d\'assurance n\'a été enregistrée auprès de la plateforme'
+            ));
         }
 
         $score = 3;
-        $notes = ['cover declared with ' . $cover->insurer_name];
+        $notes = [self::t($lang, 'cover declared with ', 'couverture déclarée auprès de ') . $cover->insurer_name];
 
         if ($cover->insurance_policy_no) {
             $score += 3;
-            $notes[] = 'under a stated policy number';
+            $notes[] = self::t($lang, 'under a stated policy number', 'sous un numéro de police indiqué');
         } else {
-            $notes[] = 'with no policy number given';
+            $notes[] = self::t($lang, 'with no policy number given', 'sans numéro de police indiqué');
         }
 
         if ($cover->insurance_value) {
             $score += 2;
-            $notes[] = 'for a stated value';
+            $notes[] = self::t($lang, 'for a stated value', 'pour une valeur indiquée');
         } else {
-            $notes[] = 'for no stated value';
+            $notes[] = self::t($lang, 'for no stated value', 'sans valeur indiquée');
         }
 
         // A policy whose window does not span today covers nothing today, so it
@@ -799,9 +877,9 @@ class ExportRegister
 
         if ($inForce) {
             $score += 2;
-            $notes[] = 'in force today';
+            $notes[] = self::t($lang, 'in force today', 'en vigueur aujourd\'hui');
         } else {
-            $notes[] = 'with no in-force coverage window on record';
+            $notes[] = self::t($lang, 'with no in-force coverage window on record', 'sans période de couverture en vigueur au registre');
         }
 
         return self::cat($score, 10, implode(', ', $notes));
@@ -819,34 +897,39 @@ class ExportRegister
      * full five points — "we never checked whether this is ivory" cannot be
      * allowed to read the same as "we checked and it is not".
      */
-    private static function scoreCompliance(object $c): array
+    private static function scoreCompliance(object $c, string $lang = 'en'): array
     {
         $score = 0;
         $notes = [];
 
         foreach ([
-            'cultural_heritage_declaration' => 'cultural heritage',
-            'ethical_sourcing_declaration'  => 'ethical sourcing',
-        ] as $column => $label) {
+            'cultural_heritage_declaration' => ['cultural heritage', 'patrimoine culturel'],
+            'ethical_sourcing_declaration'  => ['ethical sourcing', 'approvisionnement éthique'],
+        ] as $column => [$en, $fr]) {
+            $label = self::t($lang, $en, $fr);
             $value = $c->$column;
 
             if (in_array($value, ['compliant', 'not_applicable'], true)) {
                 $score += 5;
-                $notes[] = "{$label} declared {$value}";
+                $notes[] = self::t($lang, "{$label} declared {$value}", "{$label} déclaré : " . self::declarationWord($value, $lang));
             } elseif ($value === null) {
-                $notes[] = "no {$label} declaration has been made";
+                $notes[] = self::t($lang, "no {$label} declaration has been made", "aucune déclaration de {$label} n'a été faite");
             } else {
-                $notes[] = "{$label} is {$value}";
+                $notes[] = self::t($lang, "{$label} is {$value}", "{$label} : " . self::declarationWord($value, $lang));
             }
         }
 
         if ($c->protected_materials === 'none') {
             $score += 5;
-            $notes[] = 'assessed as containing no protected materials';
+            $notes[] = self::t($lang, 'assessed as containing no protected materials', 'évalué comme ne contenant aucun matériau protégé');
         } elseif ($c->protected_materials === 'unassessed') {
-            $notes[] = 'protected materials have never been assessed';
+            $notes[] = self::t($lang, 'protected materials have never been assessed', 'les matériaux protégés n\'ont jamais été évalués');
         } else {
-            $notes[] = "protected materials are {$c->protected_materials}";
+            $notes[] = self::t(
+                $lang,
+                "protected materials are {$c->protected_materials}",
+                'matériaux protégés : ' . self::declarationWord($c->protected_materials, $lang)
+            );
         }
 
         return self::cat($score, 15, implode('; ', $notes));
@@ -856,12 +939,12 @@ class ExportRegister
      * Logistics. Unassessable with no shipment booked, for the same reason as
      * packaging: there is no carrier to judge.
      */
-    private static function scoreLogistics(int $id): array
+    private static function scoreLogistics(int $id, string $lang = 'en'): array
     {
         $s = self::shipment($id);
 
         if (! $s) {
-            return self::cat(0, 0, 'no carrier has been booked yet');
+            return self::cat(0, 0, self::t($lang, 'no carrier has been booked yet', 'aucun transporteur n\'a encore été réservé'));
         }
 
         $score = 0;
@@ -869,28 +952,28 @@ class ExportRegister
 
         if ($s->carrier) {
             $score += 3;
-            $notes[] = 'booked with ' . $s->carrier;
+            $notes[] = self::t($lang, 'booked with ', 'réservé auprès de ') . $s->carrier;
         } else {
-            $notes[] = 'no carrier named';
+            $notes[] = self::t($lang, 'no carrier named', 'aucun transporteur nommé');
         }
 
         // Either document is the consignment's legal identity in transit; one is
         // enough, and which one depends on air versus sea.
         if ($s->awb_no || $s->bill_of_lading_no) {
             $score += 3;
-            $notes[] = 'under a transport document';
+            $notes[] = self::t($lang, 'under a transport document', 'sous un document de transport');
         } else {
-            $notes[] = 'with no air waybill or bill of lading';
+            $notes[] = self::t($lang, 'with no air waybill or bill of lading', 'sans lettre de transport aérien ni connaissement');
         }
 
         if ($s->port_of_exit) {
             $score += 2;
-            $notes[] = 'leaving via ' . $s->port_of_exit;
+            $notes[] = self::t($lang, 'leaving via ', 'sortie par ') . $s->port_of_exit;
         }
 
         if ($s->tracking_no || $s->expected_at) {
             $score += 2;
-            $notes[] = 'trackable to an expected arrival';
+            $notes[] = self::t($lang, 'trackable to an expected arrival', 'suivi jusqu\'à une arrivée prévue');
         }
 
         return self::cat($score, 10, implode(', ', $notes));
@@ -914,136 +997,230 @@ class ExportRegister
      *
      * @return array<string,array{level:string, basis:string}>
      */
-    public static function risk(int $id): array
+    public static function risk(int $id, ?string $lang = null): array
     {
         $c         = self::require($id);
         $productId = (int) $c->product_id;
         $flags     = array_column(ProductFlags::active($productId), 'flag');
         $s         = self::shipment($id);
+        $lang      = self::lang($lang);
 
         return [
-            'counterfeit'   => self::riskCounterfeit($productId, $flags),
-            'ownership'     => self::riskOwnership($c, $productId, $flags),
-            'compliance'    => self::riskCompliance($c, $flags),
-            'transit'       => self::riskTransit($s),
-            'environmental' => self::riskEnvironmental($s),
-            'insurance'     => self::riskInsurance($productId),
+            'counterfeit'   => self::riskCounterfeit($productId, $flags, $lang),
+            'ownership'     => self::riskOwnership($c, $productId, $flags, $lang),
+            'compliance'    => self::riskCompliance($c, $flags, $lang),
+            'transit'       => self::riskTransit($s, $lang),
+            'environmental' => self::riskEnvironmental($s, $lang),
+            'insurance'     => self::riskInsurance($productId, $lang),
         ];
     }
 
-    private static function riskCounterfeit(int $productId, array $flags): array
+    private static function riskCounterfeit(int $productId, array $flags, string $lang = 'en'): array
     {
         if (in_array('reported_stolen', $flags, true)) {
-            return self::level('high', 'the piece is the subject of an active theft report');
+            return self::level('high', self::t(
+                $lang,
+                'the piece is the subject of an active theft report',
+                'la pièce fait l\'objet d\'une déclaration de vol active'
+            ));
         }
 
         $coa = self::coaFor($productId);
 
         if (! $coa) {
-            return self::level('high', 'nothing certifies this piece: no Certificate of Authenticity exists');
+            return self::level('high', self::t(
+                $lang,
+                'nothing certifies this piece: no Certificate of Authenticity exists',
+                'rien ne certifie cette pièce : aucun certificat d\'authenticité n\'existe'
+            ));
         }
 
         $product = Product::find($productId);
 
         if (! $product || ProductCertificate::hashFor($product) !== $coa->content_hash) {
-            return self::level('medium', 'the product record has changed since its certificate was issued');
+            return self::level('medium', self::t(
+                $lang,
+                'the product record has changed since its certificate was issued',
+                'la fiche du produit a changé depuis la délivrance de son certificat'
+            ));
         }
 
         if (ProductCertificate::signatureState($coa)['state'] !== 'valid') {
-            return self::level('medium', 'the certificate carries no verifying authority signature');
+            return self::level('medium', self::t(
+                $lang,
+                'the certificate carries no verifying authority signature',
+                'le certificat ne porte aucune signature d\'autorité vérifiable'
+            ));
         }
 
-        return self::level('low', 'a signed certificate of authenticity matches the current record');
+        return self::level('low', self::t(
+            $lang,
+            'a signed certificate of authenticity matches the current record',
+            'un certificat d\'authenticité signé correspond au registre actuel'
+        ));
     }
 
-    private static function riskOwnership(object $c, int $productId, array $flags): array
+    private static function riskOwnership(object $c, int $productId, array $flags, string $lang = 'en'): array
     {
         if (in_array('disputed_ownership', $flags, true)) {
-            return self::level('high', 'ownership of this piece is under active dispute');
+            return self::level('high', self::t(
+                $lang,
+                'ownership of this piece is under active dispute',
+                'la propriété de cette pièce fait l\'objet d\'un litige en cours'
+            ));
         }
 
         if (in_array('under_investigation', $flags, true)) {
-            return self::level('high', 'the piece is under investigation');
+            return self::level('high', self::t($lang, 'the piece is under investigation', 'la pièce fait l\'objet d\'une enquête'));
         }
 
         $rows = DB::table('product_ownerships')->where('product_id', $productId)->get();
 
         if ($rows->isEmpty()) {
-            return self::level('unassessed', 'no ownership chain has been recorded for this piece');
+            return self::level('unassessed', self::t(
+                $lang,
+                'no ownership chain has been recorded for this piece',
+                'aucune chaîne de propriété n\'a été enregistrée pour cette pièce'
+            ));
         }
 
         if (! $c->owner_ownership_id) {
-            return self::level('unassessed', 'the consignment names no holder to check against the chain');
+            return self::level('unassessed', self::t(
+                $lang,
+                'the consignment names no holder to check against the chain',
+                'l\'envoi ne désigne aucun détenteur à confronter à la chaîne'
+            ));
         }
 
         $row = $rows->firstWhere('id', $c->owner_ownership_id);
 
         if (! $row || $row->owned_until !== null) {
-            return self::level('medium', 'the sender is not the chain\'s current holder');
+            return self::level('medium', self::t(
+                $lang,
+                'the sender is not the chain\'s current holder',
+                'l\'expéditeur n\'est pas le détenteur actuel de la chaîne'
+            ));
         }
 
         return in_array($row->verification_level, ['verified', 'institution'], true)
-            ? self::level('low', 'the sender is the verified current holder')
-            : self::level('medium', 'the sender is the current holder but self-declared');
+            ? self::level('low', self::t(
+                $lang,
+                'the sender is the verified current holder',
+                'l\'expéditeur est le détenteur actuel vérifié'
+            ))
+            : self::level('medium', self::t(
+                $lang,
+                'the sender is the current holder but self-declared',
+                'l\'expéditeur est le détenteur actuel mais auto-déclaré'
+            ));
     }
 
-    private static function riskCompliance(object $c, array $flags): array
+    private static function riskCompliance(object $c, array $flags, string $lang = 'en'): array
     {
         if (in_array('export_restricted', $flags, true)) {
-            return self::level('high', 'an export restriction has been raised against this piece');
+            return self::level('high', self::t(
+                $lang,
+                'an export restriction has been raised against this piece',
+                'une restriction à l\'exportation a été signalée contre cette pièce'
+            ));
         }
 
         // Restricted or CITES-listed material with no permit is the concrete
         // high case: the export is unlawful as it stands, not merely unproven.
         if (in_array($c->protected_materials, ['cites_listed', 'restricted'], true) && ! $c->export_permit_no) {
-            return self::level('high', "the piece contains {$c->protected_materials} material and no export permit is on file");
+            return self::level('high', self::t(
+                $lang,
+                "the piece contains {$c->protected_materials} material and no export permit is on file",
+                'la pièce contient un matériau ' . self::declarationWord($c->protected_materials, $lang)
+                    . ' et aucun permis d\'exportation n\'est au dossier'
+            ));
         }
 
         if (in_array($c->cultural_heritage_declaration, ['restricted'], true)) {
-            return self::level('high', 'the cultural heritage declaration records a restriction');
+            return self::level('high', self::t(
+                $lang,
+                'the cultural heritage declaration records a restriction',
+                'la déclaration de patrimoine culturel fait état d\'une restriction'
+            ));
         }
 
         // The honest default. Nobody has looked, so nothing can be said — and
         // saying "low" here would be the platform inventing a clearance.
         if ($c->protected_materials === 'unassessed') {
-            return self::level('unassessed', 'the piece has never been assessed for protected or CITES-listed materials');
+            return self::level('unassessed', self::t(
+                $lang,
+                'the piece has never been assessed for protected or CITES-listed materials',
+                'la pièce n\'a jamais été évaluée quant aux matériaux protégés ou inscrits à la CITES'
+            ));
         }
 
         if ($c->cultural_heritage_declaration === null || $c->ethical_sourcing_declaration === null) {
-            return self::level('unassessed', 'the cultural heritage or ethical sourcing declaration has not been made');
+            return self::level('unassessed', self::t(
+                $lang,
+                'the cultural heritage or ethical sourcing declaration has not been made',
+                'la déclaration de patrimoine culturel ou d\'approvisionnement éthique n\'a pas été faite'
+            ));
         }
 
         if ($c->cultural_heritage_declaration === 'pending' || $c->ethical_sourcing_declaration === 'pending') {
-            return self::level('medium', 'a compliance declaration is still pending');
+            return self::level('medium', self::t(
+                $lang,
+                'a compliance declaration is still pending',
+                'une déclaration de conformité est toujours en attente'
+            ));
         }
 
-        return self::level('low', 'declarations are complete and no protected materials were found');
+        return self::level('low', self::t(
+            $lang,
+            'declarations are complete and no protected materials were found',
+            'les déclarations sont complètes et aucun matériau protégé n\'a été relevé'
+        ));
     }
 
-    private static function riskTransit(?object $s): array
+    private static function riskTransit(?object $s, string $lang = 'en'): array
     {
         if (! $s) {
-            return self::level('unassessed', 'no shipment has been booked, so no route can be judged');
+            return self::level('unassessed', self::t(
+                $lang,
+                'no shipment has been booked, so no route can be judged',
+                'aucune expédition n\'a été réservée : aucun itinéraire ne peut donc être apprécié'
+            ));
         }
 
         $documented = (bool) ($s->awb_no || $s->bill_of_lading_no);
         $traceable  = (bool) $s->tracking_no;
 
         if ($s->carrier && $documented && $traceable) {
-            return self::level('low', 'a named carrier, a transport document and live tracking are all on record');
+            return self::level('low', self::t(
+                $lang,
+                'a named carrier, a transport document and live tracking are all on record',
+                'un transporteur nommé, un document de transport et un suivi en temps réel figurent tous au registre'
+            ));
         }
 
         if ($s->carrier || $documented) {
-            return self::level('medium', 'the booking is only partly documented');
+            return self::level('medium', self::t(
+                $lang,
+                'the booking is only partly documented',
+                'la réservation n\'est que partiellement documentée'
+            ));
         }
 
-        return self::level('high', 'a shipment exists with no carrier and no transport document');
+        return self::level('high', self::t(
+            $lang,
+            'a shipment exists with no carrier and no transport document',
+            'une expédition existe sans transporteur ni document de transport'
+        ));
     }
 
-    private static function riskEnvironmental(?object $s): array
+    private static function riskEnvironmental(?object $s, string $lang = 'en'): array
     {
         if (! $s) {
-            return self::level('unassessed', 'nothing has been packed, so no handling conditions are known');
+            return self::level('unassessed', self::t(
+                $lang,
+                'nothing has been packed, so no handling conditions are known',
+                'rien n\'a été emballé : aucune condition de manutention n\'est donc connue'
+            ));
         }
 
         $protections = (int) (bool) $s->shock_protection
@@ -1051,13 +1228,25 @@ class ExportRegister
             + (int) (bool) $s->humidity_protection;
 
         return match (true) {
-            $protections === 3 => self::level('low', 'the crate records shock, climate and humidity protection'),
-            $protections > 0   => self::level('medium', "the crate records only {$protections} of three protective measures"),
-            default            => self::level('high', 'the crate records no shock, climate or humidity protection'),
+            $protections === 3 => self::level('low', self::t(
+                $lang,
+                'the crate records shock, climate and humidity protection',
+                'la caisse consigne une protection contre les chocs, une régulation climatique et une régulation de l\'humidité'
+            )),
+            $protections > 0   => self::level('medium', self::t(
+                $lang,
+                "the crate records only {$protections} of three protective measures",
+                "la caisse ne consigne que {$protections} des trois mesures de protection"
+            )),
+            default            => self::level('high', self::t(
+                $lang,
+                'the crate records no shock, climate or humidity protection',
+                'la caisse ne consigne aucune protection contre les chocs, le climat ou l\'humidité'
+            )),
         };
     }
 
-    private static function riskInsurance(int $productId): array
+    private static function riskInsurance(int $productId, string $lang = 'en'): array
     {
         $cover = DB::table('ownership_transfers')
             ->where('product_id', $productId)
@@ -1068,24 +1257,66 @@ class ExportRegister
         if (! $cover) {
             // Explicitly not "high": the platform holds no cover details, which
             // does not mean none exists. Unassessed is the only true answer.
-            return self::level('unassessed', 'no insurance cover has been declared to the platform');
+            return self::level('unassessed', self::t(
+                $lang,
+                'no insurance cover has been declared to the platform',
+                'aucune couverture d\'assurance n\'a été déclarée à la plateforme'
+            ));
         }
 
         $inForce = $cover->coverage_start && $cover->coverage_end
             && now()->betweenIncluded(Carbon::parse($cover->coverage_start), Carbon::parse($cover->coverage_end));
 
         if ($inForce && $cover->insurance_policy_no && $cover->insurance_value) {
-            return self::level('low', 'a valued policy is in force for the shipping window');
+            return self::level('low', self::t(
+                $lang,
+                'a valued policy is in force for the shipping window',
+                'une police avec valeur déclarée est en vigueur pour la période d\'expédition'
+            ));
         }
 
         if (! $inForce) {
-            return self::level('high', 'the declared cover has no in-force window covering today');
+            return self::level('high', self::t(
+                $lang,
+                'the declared cover has no in-force window covering today',
+                'la couverture déclarée n\'a aucune période en vigueur couvrant aujourd\'hui'
+            ));
         }
 
-        return self::level('medium', 'cover is declared but incompletely specified');
+        return self::level('medium', self::t(
+            $lang,
+            'cover is declared but incompletely specified',
+            'la couverture est déclarée mais incomplètement précisée'
+        ));
     }
 
     /* ────────────────────────────── Internals ──────────────────────────── */
+
+    /**
+     * The reading of one stored declaration value.
+     *
+     * An unknown value is returned untouched rather than guessed at. A column
+     * that has grown a state this method has not been taught should print the
+     * raw word a reader can quote back to us, not a translation we invented for
+     * it.
+     */
+    private static function declarationWord(string $value, string $lang): string
+    {
+        if ($lang !== 'fr') {
+            return $value;
+        }
+
+        return [
+            'compliant'      => 'conforme',
+            'not_applicable' => 'sans objet',
+            'pending'        => 'en attente',
+            'restricted'     => 'restreint',
+            'non_compliant'  => 'non conforme',
+            'none'           => 'aucun',
+            'unassessed'     => 'non évalué',
+            'cites_listed'   => 'inscrit à la CITES',
+        ][$value] ?? $value;
+    }
 
     private static function cat(int $score, int $max, string $basis): array
     {

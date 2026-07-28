@@ -52,7 +52,10 @@
     $chain   = \App\Support\ProvenanceRegistry::chain($product);
     $owner   = \App\Support\ProvenanceRegistry::currentOwner($product);
     $summary = \App\Support\ProvenanceDossier::summary($product);
-    $legacy  = \App\Support\ProvenanceDossier::legacyIndex($product);
+    // $lang is passed through because the Legacy Index explains itself in
+    // prose, and an explanation the reader cannot read is not an explanation.
+    // The scores and the band word are the same either way.
+    $legacy  = \App\Support\ProvenanceDossier::legacyIndex($product, $lang);
     $flags   = \App\Support\ProductFlags::checks($product);
 
     /*

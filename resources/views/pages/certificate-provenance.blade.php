@@ -4,6 +4,17 @@
 
     $isFr = $lang === 'fr';
 
+    /* The route builds these three without knowing the reader's language, so
+       they arrive in the platform default. They are rebuilt here in $lang
+       because they are the only parts of the dossier written as sentences —
+       the timeline's labels, the journey's reasons and every "basis" line
+       under the Legacy Index. Nothing else about them changes: the scores,
+       the maxima and the band word are identical in both languages, which is
+       what lets a French and an English printout of one dossier be compared. */
+    $timeline = \App\Support\ProvenanceDossier::timeline($product, $lang);
+    $journey  = \App\Support\ProvenanceDossier::journey($product, $lang);
+    $legacy   = \App\Support\ProvenanceDossier::legacyIndex($product, $lang);
+
     // The shared directory header and footer read these two. They are set first
     // because those partials fatal without them, and a fatal here would take
     // down the one document a reader may already be holding a printout of.

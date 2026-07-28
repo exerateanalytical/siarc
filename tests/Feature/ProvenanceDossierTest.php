@@ -163,7 +163,18 @@ class ProvenanceDossierTest extends TestCase
         foreach (['public_record', 'conservation', 'valuation'] as $key) {
             $this->assertSame(0, $index['categories'][$key]['max'], "{$key} was scored despite having nothing to score.");
             $this->assertSame(0, $index['categories'][$key]['score']);
-            $this->assertStringContainsStringIgnoringCase('not', $index['categories'][$key]['basis']);
+
+            // Asserted in both languages rather than in whichever one the app
+            // locale happens to be, because the basis is now written for the
+            // reader: "not assessed" has to survive being said in French, and
+            // a check that only ever saw one language would not notice if it
+            // did not.
+            $this->assertStringContainsStringIgnoringCase(
+                'not', ProvenanceDossier::legacyIndex($product, 'en')['categories'][$key]['basis']
+            );
+            $this->assertStringContainsStringIgnoringCase(
+                'pas évalué', ProvenanceDossier::legacyIndex($product, 'fr')['categories'][$key]['basis']
+            );
         }
 
         $this->assertSame(0, $index['categories']['evidence']['score']);
@@ -281,6 +292,151 @@ class ProvenanceDossierTest extends TestCase
         foreach ($journey as $leg) {
             $this->assertArrayHasKey('reason', $leg);
             $this->assertNotSame('', (string) $leg['reason']);
+        }
+    }
+
+    /* ────────────────────────────── Language ───────────────────────────── */
+
+    /*
+     * The Legacy Index and the timeline are the two places on a provenance
+     * certificate where the register writes sentences rather than values, and
+     * a French reader was being handed English ones. What follows guards the
+     * translation from both directions: that the French really is French, and
+     * that translating the reasoning did not move a single number underneath
+     * it. The second half matters more — a score that differs between two
+     * printouts of the same dossier is worse than a score nobody can read.
+     */
+
+    /** A dossier with something in every category, so both languages produce prose. */
+    private function documentedProduct()
+    {
+        $product = $this->product();
+
+        ProvenanceRegistry::transfer($product->fresh(), [
+            'legal_name' => 'Galerie de Paris', 'entity_type' => 'gallery', 'country_code' => 'FR',
+        ], ['transferred_at' => '2026-03-01']);
+
+        ProvenanceDossier::record($product, 'exhibition', [
+            'title' => 'Biennale', 'organisation' => 'Museu', 'country' => 'PT', 'started_on' => '2026-04-01',
+            'reference_no' => 'CAT-9',
+        ]);
+        ProvenanceDossier::record($product, 'restoration', [
+            'title' => 'Consolidation', 'started_on' => '2026-05-01',
+            'restorer' => 'Atelier Nkolo', 'description' => 'Reglued base', 'materials_used' => 'Hide glue',
+        ]);
+        ProvenanceDossier::record($product, 'valuation', [
+            'title' => 'Insurance appraisal', 'valued_on' => '2026-06-01',
+            'appraiser' => 'M. Etoa', 'appraiser_ref' => 'EXP-4', 'amount' => '1200000', 'currency' => 'XAF',
+        ]);
+
+        return $product->fresh();
+    }
+
+    public function test_every_legacy_basis_is_written_in_the_readers_language(): void
+    {
+        $product = $this->documentedProduct();
+
+        $fr = ProvenanceDossier::legacyIndex($product, 'fr');
+        $en = ProvenanceDossier::legacyIndex($product, 'en');
+
+        foreach ($fr['categories'] as $key => $cat) {
+            $this->assertNotSame(
+                $en['categories'][$key]['basis'],
+                $cat['basis'],
+                "The {$key} basis is identical in both languages, so one of them is untranslated."
+            );
+
+            // Not a grammar check. These three fragments are the ones that were
+            // actually appearing untranslated on the French certificate, so
+            // they are the ones worth naming.
+            foreach ([' the ', ' has been ', ' and '] as $marker) {
+                $this->assertStringNotContainsString(
+                    $marker,
+                    ' ' . $cat['basis'] . ' ',
+                    "The French {$key} basis still contains the English fragment [{$marker}]."
+                );
+            }
+        }
+    }
+
+    public function test_translating_the_reasoning_does_not_move_a_single_number(): void
+    {
+        $product = $this->documentedProduct();
+
+        $fr = ProvenanceDossier::legacyIndex($product, 'fr');
+        $en = ProvenanceDossier::legacyIndex($product, 'en');
+
+        // The important one. A holder comparing the French and English sheets
+        // of their own dossier must see the same verdict on both, or the index
+        // is not measuring anything.
+        $this->assertSame($en['total'], $fr['total']);
+        $this->assertSame($en['max'], $fr['max']);
+        $this->assertSame($en['band'], $fr['band']);
+
+        foreach ($en['categories'] as $key => $cat) {
+            $this->assertSame($cat['score'], $fr['categories'][$key]['score'], "The {$key} score moved with the language.");
+            $this->assertSame($cat['max'], $fr['categories'][$key]['max'], "The {$key} maximum moved with the language.");
+        }
+    }
+
+    public function test_an_unassessed_category_is_unassessed_in_both_languages(): void
+    {
+        // Nothing exhibited, nothing restored, nothing appraised: the three
+        // categories that drop out of the denominator rather than score zero.
+        $product = $this->product();
+
+        $fr = ProvenanceDossier::legacyIndex($product, 'fr');
+        $en = ProvenanceDossier::legacyIndex($product, 'en');
+
+        foreach (['public_record', 'conservation', 'valuation'] as $key) {
+            $this->assertSame(0, $en['categories'][$key]['max'], "{$key} was assessed in English on a bare product.");
+            $this->assertSame(0, $fr['categories'][$key]['max'], "{$key} was assessed in French on a bare product.");
+            $this->assertSame(0, $fr['categories'][$key]['score']);
+        }
+
+        $this->assertSame($en['max'], $fr['max']);
+        $this->assertSame($en['band'], $fr['band']);
+    }
+
+    public function test_omitting_the_language_returns_what_it_returned_before(): void
+    {
+        $product = $this->documentedProduct();
+
+        // The guard against a silent default change: a caller that passes
+        // nothing must keep getting the language the request is being served
+        // in, which is what every existing call site relies on.
+        $this->assertSame(
+            ProvenanceDossier::legacyIndex($product, app()->getLocale()),
+            ProvenanceDossier::legacyIndex($product)
+        );
+        $this->assertSame(
+            ProvenanceDossier::timeline($product, app()->getLocale()),
+            ProvenanceDossier::timeline($product)
+        );
+        $this->assertSame(
+            ProvenanceDossier::journey($product, app()->getLocale()),
+            ProvenanceDossier::journey($product)
+        );
+    }
+
+    public function test_the_timeline_and_journey_speak_the_readers_language(): void
+    {
+        $product = $this->documentedProduct();
+
+        $frLabels = array_column(ProvenanceDossier::timeline($product, 'fr'), 'label');
+        $enLabels = array_column(ProvenanceDossier::timeline($product, 'en'), 'label');
+
+        $this->assertContains('Enregistré sur ArtisanHub237', $frLabels);
+        $this->assertContains('Registered on ArtisanHub237', $enLabels);
+
+        foreach ($frLabels as $label) {
+            $this->assertStringNotContainsString('Created and first held by', $label);
+            $this->assertStringNotContainsString('Acquired by', $label);
+        }
+
+        foreach (array_column(ProvenanceDossier::journey($product, 'fr'), 'reason') as $reason) {
+            $this->assertStringNotContainsString('Made and first held by', $reason);
+            $this->assertStringNotContainsString('Held by ', $reason);
         }
     }
 }

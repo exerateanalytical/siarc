@@ -633,4 +633,52 @@ class CertificateFamilyTest extends TestCase
             }
         }
     }
+
+    /* ─────────────── Rule 9 — a French document is French throughout ────── */
+
+    /**
+     * The regression guard for the defect this rule was written after: two
+     * support classes built the "show your working" sentences under the
+     * provenance and export scores, neither took a language, and a French
+     * reader was handed English reasoning in the middle of a French document.
+     *
+     * The markers below are not a spell-check. Each is a fragment that was
+     * actually printing on ?lang=fr, so a failure here means a specific
+     * sentence has gone back to being built without the reader in mind. They
+     * are matched inside <main> for the same reason every other rule is: it is
+     * the document that has to be readable, not the page around it.
+     */
+    public function test_no_french_document_prints_english_reasoning(): void
+    {
+        $markers = [
+            'has been recorded',
+            'No supporting document',
+            'is not assessed',
+            'Created and first held',
+            'no insurance cover',
+            'the sender is',
+            'the chain begins',
+        ];
+
+        $urls = array_column($this->documents('fr'), 'url');
+
+        // The hub prints the Legacy Index and its basis lines too, and it is
+        // not part of the document sweep because it is an index rather than a
+        // certificate. It regresses in exactly the same way, so it is checked
+        // here explicitly.
+        $urls[] = '/certificats/' . $this->publishedProduct()->slug . '?lang=fr';
+
+        foreach ($urls as $url) {
+            [$html] = $this->fetch($url);
+            $text   = $this->documentText($html);
+
+            foreach ($markers as $marker) {
+                $this->assertStringNotContainsStringIgnoringCase(
+                    $marker,
+                    $text,
+                    $url . ' prints the English fragment "' . $marker . '" to a French reader.'
+                );
+            }
+        }
+    }
 }

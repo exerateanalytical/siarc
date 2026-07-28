@@ -59,6 +59,10 @@ class CertificateDirectory
         // officer reading off the crate paperwork has that one, not the
         // certificate number.
         'eac' => ['table' => 'export_consignments',   'columns' => ['certificate_no', 'gecn', 'uuid']],
+        // Added after the revocation register found that a revoked workshop
+        // certificate resolved as notfound here — the same answer a forgery
+        // gets. A revocation nobody can look up is not a revocation.
+        'wvc' => ['table' => 'workshop_certificates', 'columns' => ['certificate_no', 'uuid']],
     ];
 
     /**
@@ -70,6 +74,7 @@ class CertificateDirectory
         'otc' => '/^AH237-OTC-[A-Z]{2}-\d{4}-\d{4,}(-V\d+)?$/i',
         'avc' => '/^AH237-AVC-[A-Z]{2}-\d{4}-\d{4,}(-V\d+)?$/i',
         'eac' => '/^AH237-(EAC|GECN)-[A-Z]{2}-\d{4}-\d{4,}(-V\d+)?$/i',
+        'wvc' => '/^AH237-WVC-[A-Z]{2}-\d{4}-\d{4,}(-V\d+)?$/i',
     ];
 
     /** Plain names, because "OTC" on a verification page tells a buyer nothing. */
@@ -78,6 +83,7 @@ class CertificateDirectory
         'otc' => ['en' => 'Ownership Transfer Certificate',    'fr' => 'Certificat de transfert de propriété'],
         'avc' => ['en' => 'Artisan Verification Certificate',  'fr' => "Certificat de vérification d'artisan"],
         'eac' => ['en' => 'Export Authenticity Certificate',   'fr' => "Certificat d'authenticité à l'export"],
+        'wvc' => ['en' => 'Workshop Verification Certificate', 'fr' => "Certificat de vérification d'atelier"],
     ];
 
     /**
@@ -115,6 +121,7 @@ class CertificateDirectory
                 'otc' => self::resolveOtc($row),
                 'avc' => self::resolveAvc($row),
                 'eac' => self::resolveEac($row),
+                'wvc' => self::resolveWvc($row),
             };
         }
 
@@ -293,6 +300,36 @@ class CertificateDirectory
                 : ['label' => null, 'url' => null],
             'document_url' => $business
                 ? route('artisan.verification.certificate', ['slug' => $business->slug])
+                : null,
+        ]);
+    }
+
+    /**
+     * The workshop verification certificate.
+     *
+     * Keyed on the workshop's permanent number rather than a slug in its
+     * document URL, because a workshop can be renamed and the certificate has
+     * to keep resolving to the same record.
+     */
+    private static function resolveWvc(object $row): array
+    {
+        $result = WorkshopRegister::verifyCertificate($row->certificate_no, null);
+
+        $cert = $result['certificate'] ?? null;
+
+        if (! $cert) {
+            return self::miss('notfound', 'wvc');
+        }
+
+        $workshop = DB::table('workshops')->find($cert->workshop_id);
+
+        return self::shape('wvc', self::withExpiry($result['status'], $cert), $cert, [
+            'signature'    => WorkshopRegister::signatureState($cert),
+            'subject'      => $workshop
+                ? ['label' => $workshop->name, 'url' => null]
+                : ['label' => null, 'url' => null],
+            'document_url' => $workshop?->gwn
+                ? route('workshop.certificate', ['gwn' => $workshop->gwn])
                 : null,
         ]);
     }

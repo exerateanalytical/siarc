@@ -198,7 +198,7 @@ class ProvenanceCertificateTest extends TestCase
         // the printed number against that stale reading would fail the view for
         // being up to date.
         $html   = $this->certificate($product, 'en')->assertOk()->getContent();
-        $legacy = ProvenanceDossier::legacyIndex($product->fresh());
+        $legacy = ProvenanceDossier::legacyIndex($product->fresh(), 'en');
 
         // The mockup designs in "96/100". The denominator here is whatever the
         // assessable categories add up to, and it must be the printed one.
@@ -213,7 +213,7 @@ class ProvenanceCertificateTest extends TestCase
     public function test_an_unassessed_category_is_not_printed_as_a_zero_score(): void
     {
         $product = $this->documented();
-        $legacy  = ProvenanceDossier::legacyIndex($product->fresh());
+        $legacy  = ProvenanceDossier::legacyIndex($product->fresh(), 'en');
 
         // The fixture has no valuation and no conservation, so both come back
         // with max 0 — the exact case the mockup would have rendered as 0/20.
@@ -243,7 +243,7 @@ class ProvenanceCertificateTest extends TestCase
         // Read after the request, for the reason given above: the basis
         // sentences describe the file as it stood when the sheet was drawn.
         $html   = $this->certificate($product, 'en')->assertOk()->getContent();
-        $legacy = ProvenanceDossier::legacyIndex($product->fresh());
+        $legacy = ProvenanceDossier::legacyIndex($product->fresh(), 'en');
 
         foreach ($legacy['categories'] as $key => $category) {
             $this->assertStringContainsString(

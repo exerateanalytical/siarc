@@ -3,6 +3,8 @@
 namespace App\Support;
 
 use App\Modules\Products\Models\Product;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -30,6 +32,17 @@ use Illuminate\Support\Str;
  */
 class ProductCertificate
 {
+    /**
+     * Number of times a cover photograph has actually been decoded in this
+     * process. Public so a test can assert the decode happens once per product
+     * per request rather than once per caller; nothing in the application reads
+     * it, and it is never persisted.
+     */
+    public static int $phashComputations = 0;
+
+    /** Per-process memo of perceptual hashes, keyed on path, size and mtime. */
+    private static array $phashMemo = [];
+
     /** Facts covered by the hash. A change to any of these supersedes the certificate. */
     private static function certifiedFacts(Product $product): array
     {
@@ -72,6 +85,21 @@ class ProductCertificate
      *
      * Returns null when there is no cover image or the file cannot be read —
      * never a placeholder, because a fabricated fingerprint is worse than none.
+     *
+     * The result is memoised twice over, because the arithmetic is the single
+     * most expensive thing a certificate page does: decoding and resampling a
+     * phone-sized photograph costs roughly half a second, and issuance, then
+     * verification, then the page itself all ask for the same value.
+     *
+     * The two layers answer different questions. The per-process memo is keyed
+     * on the file's path, size and modification time, and only saves re-reading
+     * a file that has not moved during one request. The cross-request cache is
+     * keyed on a digest of the file's actual bytes, so it can never go stale:
+     * a photograph swapped in place — the exact case this hash exists to catch
+     * — produces different bytes and therefore a different key, never a cached
+     * answer describing the old picture. Reading and digesting the file costs a
+     * few milliseconds against the hundreds the decode costs, which is what
+     * makes content-addressing affordable rather than merely correct.
      */
     public static function perceptualHash(Product $product): ?string
     {
@@ -90,12 +118,40 @@ class ProductCertificate
             return null;
         }
 
+        $stamp = $path . '|' . @filesize($path) . '|' . @filemtime($path);
+
+        if (array_key_exists($stamp, self::$phashMemo)) {
+            return self::$phashMemo[$stamp];
+        }
+
         $raw = @file_get_contents($path);
-        $src = $raw === false ? false : @imagecreatefromstring($raw);
+
+        if ($raw === false) {
+            return self::$phashMemo[$stamp] = null;
+        }
+
+        // Content-addressed, so the cached value can only ever belong to these
+        // exact bytes. xxh128 is not a security hash and is not used as one —
+        // it is a cache key over a file we just read ourselves.
+        $key    = 'coa:phash:' . hash('xxh128', $raw);
+        $cached = Cache::get($key);
+
+        if ($cached !== null) {
+            return self::$phashMemo[$stamp] = ($cached === '' ? null : $cached);
+        }
+
+        $src = @imagecreatefromstring($raw);
 
         if (! $src) {
-            return null;
+            // Cached as "no fingerprint" too: an undecodable file is a stable
+            // fact about those bytes, and re-attempting it on every view of a
+            // corrupt upload is the same waste in a slower form.
+            Cache::put($key, '', now()->addDay());
+
+            return self::$phashMemo[$stamp] = null;
         }
+
+        self::$phashComputations++;
 
         $small = imagecreatetruecolor(9, 8);
         imagecopyresampled($small, $src, 0, 0, 0, 0, 9, 8, imagesx($src), imagesy($src));
@@ -118,7 +174,9 @@ class ProductCertificate
             $hex .= str_pad(dechex((int) bindec($byte)), 2, '0', STR_PAD_LEFT);
         }
 
-        return $hex;
+        Cache::put($key, $hex, now()->addDay());
+
+        return self::$phashMemo[$stamp] = $hex;
     }
 
     /** Rec. 601 luma of one pixel, used by the difference hash. */
@@ -154,6 +212,16 @@ class ProductCertificate
      * Issued lazily rather than on product creation: a certificate for a
      * half-finished draft would be superseded within minutes, and the number
      * sequence would fill with documents nobody ever saw.
+     *
+     * Two visitors opening the same never-before-seen product at the same
+     * instant both find nothing and both proceed to issue. That race was real:
+     * the lookup and the insert had nothing between them. It is closed here in
+     * two places at once, on purpose. A short lock means the ordinary case
+     * costs one issuance rather than two; the unique index on (product_id,
+     * version) means that even if the lock is unavailable — a cache outage, a
+     * second application server — the database itself refuses the duplicate,
+     * and the loser of the race re-reads the winner's certificate instead of
+     * returning a 500 to a buyer standing in a market.
      */
     public static function forProduct(Product $product): ?object
     {
@@ -162,17 +230,49 @@ class ProductCertificate
             return null;
         }
 
-        $existing = DB::table('product_certificates')
+        if ($existing = self::liveCertificate($product)) {
+            return $existing;
+        }
+
+        $lock = Cache::lock('coa:issue:' . $product->id, 15);
+
+        try {
+            // Waiting rather than failing: the wait is bounded by how long an
+            // issuance takes, and the alternative is showing a visitor nothing.
+            $lock->block(10);
+        } catch (\Throwable) {
+            // The lock is an optimisation, not the guarantee. Push on and let
+            // the unique index below be the thing that cannot be raced.
+            $lock = null;
+        }
+
+        try {
+            if ($existing = self::liveCertificate($product)) {
+                return $existing;
+            }
+
+            return self::issue($product);
+        } catch (UniqueConstraintViolationException $e) {
+            // Someone else got there between our check and our insert. Their
+            // certificate is as good as the one we were about to write.
+            if ($theirs = self::liveCertificate($product)) {
+                return $theirs;
+            }
+
+            throw $e;
+        } finally {
+            $lock?->release();
+        }
+    }
+
+    /** The current, unrevoked certificate for a product, if one has been issued. */
+    private static function liveCertificate(Product $product): ?object
+    {
+        return DB::table('product_certificates')
             ->where('product_id', $product->id)
             ->whereNull('revoked_at')
             ->orderByDesc('version')
             ->first();
-
-        if ($existing) {
-            return $existing;
-        }
-
-        return self::issue($product);
     }
 
     public static function issue(Product $product, int $version = 1): object

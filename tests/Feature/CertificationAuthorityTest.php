@@ -222,6 +222,47 @@ class CertificationAuthorityTest extends TestCase
         $this->assertSame('unsigned', ProductCertificate::signatureState($cert)['state']);
     }
 
+    /**
+     * The guard that should have existed from the start.
+     *
+     * Two test files called generate(true) without first pointing the config at
+     * a throwaway path, and running the suite silently rotated the installation's
+     * real signing key. Every certificate then reported a bad signature — the
+     * most alarming thing a certificate can say, and the hardest to diagnose,
+     * because nothing about the documents had changed and the tests all passed.
+     *
+     * A test run must not be able to do that, so the authority now refuses.
+     */
+    public function test_a_test_run_cannot_rotate_the_configured_signing_key(): void
+    {
+        config(['certificates.ca.key_path' => storage_path('app/ca/ah237-ca.key')]);
+        $this->refreshAuthorityCache();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/Refusing to generate a signing key/');
+
+        CertificationAuthority::generate(true);
+    }
+
+    /** A throwaway path under the testing directory is still allowed. */
+    public function test_a_disposable_key_path_is_still_permitted(): void
+    {
+        $path = storage_path('framework/testing/ah237-guard-test.key');
+        @unlink($path);
+        @unlink($path . '.pub');
+
+        config(['certificates.ca.key_path' => $path]);
+        $this->refreshAuthorityCache();
+
+        $result = CertificationAuthority::generate(true);
+
+        $this->assertNotEmpty($result['kid']);
+        $this->assertFileExists($path);
+
+        @unlink($path);
+        @unlink($path . '.pub');
+    }
+
     /** The in-process key cache has to be cleared when the path changes. */
     private function refreshAuthorityCache(): void
     {

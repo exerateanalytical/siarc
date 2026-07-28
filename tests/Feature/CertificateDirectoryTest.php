@@ -216,6 +216,10 @@ class CertificateDirectoryTest extends TestCase
 
     public function test_the_signature_state_matches_the_authority(): void
     {
+        // A throwaway key under the test's own path. Never the configured one:
+        // regenerating that would invalidate every certificate this
+        // installation has ever issued, which a test run must not be able to do.
+        config(['certificates.ca.key_path' => storage_path('framework/testing/ah237-test-ca.key')]);
         CertificationAuthority::generate(true);
 
         [, $coa] = $this->coa();

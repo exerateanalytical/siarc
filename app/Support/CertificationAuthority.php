@@ -61,6 +61,27 @@ class CertificationAuthority
             throw new RuntimeException("A signing key already exists at {$path}. Refusing to overwrite it — every certificate issued so far was signed with it.");
         }
 
+        /*
+         * A test run must never be able to rotate the real key.
+         *
+         * This is not hypothetical: two test files called generate(true) without
+         * first pointing the config at a throwaway path, and running the suite
+         * silently re-keyed the installation. Every certificate then reported a
+         * bad signature — the single most alarming thing a certificate can say,
+         * and the hardest to diagnose, because nothing about the documents had
+         * changed.
+         *
+         * Tests that need a key must set certificates.ca.key_path somewhere
+         * disposable first. Refusing here is what makes forgetting loud.
+         */
+        if (app()->environment('testing') && ! str_contains(strtr($path, '\\', '/'), '/framework/testing/')) {
+            throw new RuntimeException(
+                "Refusing to generate a signing key at {$path} from a test run. "
+                . "Point config('certificates.ca.key_path') at storage_path('framework/testing/…') first — "
+                . 'rotating the configured key invalidates every certificate this installation has issued.'
+            );
+        }
+
         if (! is_dir(dirname($path))) {
             mkdir(dirname($path), 0700, true);
         }

@@ -35,6 +35,35 @@ class ProvenanceDossier
     /** Event types that document physical care of the object. */
     private const CONSERVATION_TYPES = ['restoration', 'conservation', 'condition_report'];
 
+    /* ─────────────────────────────── Language ──────────────────────────── */
+
+    /**
+     * The language every prose string on this class is built in.
+     *
+     * The basis phrases are the part of a dossier a holder is meant to argue
+     * with, so they are worth more care than ordinary interface copy: a French
+     * reader who cannot read the sentence explaining why their piece scored
+     * twelve out of twenty has been handed a number and told to accept it.
+     *
+     * Resolution order is explicit argument, then the request's locale, then
+     * French. The middle step is what keeps the old call sites honest — a
+     * caller that passes nothing still gets whatever language the request is
+     * being served in, and nothing that used to print English starts printing
+     * French behind its author's back.
+     */
+    private static function lang(?string $lang): string
+    {
+        $lang ??= app()->getLocale();
+
+        return in_array($lang, ['fr', 'en'], true) ? $lang : 'fr';
+    }
+
+    /** Picks one of the two written forms. Nothing is generated or guessed. */
+    private static function t(string $lang, string $en, string $fr): string
+    {
+        return $lang === 'fr' ? $fr : $en;
+    }
+
     /* ─────────────────────────────── Recording ─────────────────────────── */
 
     /**
@@ -135,8 +164,9 @@ class ProvenanceDossier
      *
      * @return array<int,array{date:?string,type:string,label:string,organisation:?string,country:?string,reference:?string,verified:bool}>
      */
-    public static function timeline(Product $product): array
+    public static function timeline(Product $product, ?string $lang = null): array
     {
+        $lang    = self::lang($lang);
         $entries = [];
 
         $registeredAt = $product->registered_at ?? $product->created_at;
@@ -145,7 +175,7 @@ class ProvenanceDossier
             $entries[] = [
                 'date'         => Carbon::parse($registeredAt)->toDateString(),
                 'type'         => 'registration',
-                'label'        => 'Registered on ArtisanHub237',
+                'label'        => self::t($lang, 'Registered on ArtisanHub237', 'Enregistré sur ArtisanHub237'),
                 'organisation' => $product->business?->name_fr,
                 'country'      => null,
                 'reference'    => $product->prn,
@@ -158,8 +188,8 @@ class ProvenanceDossier
                 'date'         => $owner->owned_from ? Carbon::parse($owner->owned_from)->toDateString() : null,
                 'type'         => 'ownership',
                 'label'        => $owner->is_original_creator
-                    ? 'Created and first held by ' . $owner->legal_name
-                    : 'Acquired by ' . $owner->legal_name,
+                    ? self::t($lang, 'Created and first held by ', 'Créé et détenu à l\'origine par ') . $owner->legal_name
+                    : self::t($lang, 'Acquired by ', 'Acquis par ') . $owner->legal_name,
                 'organisation' => $owner->legal_name,
                 'country'      => $owner->country_code,
                 'reference'    => $owner->owner_ref,
@@ -211,8 +241,9 @@ class ProvenanceDossier
      *
      * @return array<int,array{country:string,date:?string,reason:string}>
      */
-    public static function journey(Product $product): array
+    public static function journey(Product $product, ?string $lang = null): array
     {
+        $lang = self::lang($lang);
         $legs = [];
 
         foreach (ProvenanceRegistry::chain($product) as $owner) {
@@ -221,8 +252,8 @@ class ProvenanceDossier
                     'country' => strtoupper($owner->country_code),
                     'date'    => $owner->owned_from ? Carbon::parse($owner->owned_from)->toDateString() : null,
                     'reason'  => $owner->is_original_creator
-                        ? 'Made and first held by ' . $owner->legal_name
-                        : 'Held by ' . $owner->legal_name,
+                        ? self::t($lang, 'Made and first held by ', 'Fabriqué et détenu à l\'origine par ') . $owner->legal_name
+                        : self::t($lang, 'Held by ', 'Détenu par ') . $owner->legal_name,
                 ];
             }
         }
@@ -322,8 +353,9 @@ class ProvenanceDossier
      *
      * @return array{categories:array<string,array{score:int,max:int,basis:string}>,total:int,max:int,band:string}
      */
-    public static function legacyIndex(Product $product): array
+    public static function legacyIndex(Product $product, ?string $lang = null): array
     {
+        $lang     = self::lang($lang);
         $events   = self::events($product);
         $chain    = ProvenanceRegistry::chain($product);
         $evidence = DB::table('provenance_evidence')->where('product_id', $product->id)->get()->all();
@@ -331,12 +363,12 @@ class ProvenanceDossier
         $of = fn (array $types) => array_values(array_filter($events, fn ($e) => in_array($e->type, $types, true)));
 
         $categories = [
-            'registration'    => self::scoreRegistration($product),
-            'ownership_chain' => self::scoreOwnership($chain),
-            'evidence'        => self::scoreEvidence($evidence),
-            'public_record'   => self::scorePublicRecord($of(self::PUBLIC_RECORD_TYPES)),
-            'conservation'    => self::scoreConservation($of(self::CONSERVATION_TYPES)),
-            'valuation'       => self::scoreValuation($of(['valuation'])),
+            'registration'    => self::scoreRegistration($product, $lang),
+            'ownership_chain' => self::scoreOwnership($chain, $lang),
+            'evidence'        => self::scoreEvidence($evidence, $lang),
+            'public_record'   => self::scorePublicRecord($of(self::PUBLIC_RECORD_TYPES), $lang),
+            'conservation'    => self::scoreConservation($of(self::CONSERVATION_TYPES), $lang),
+            'valuation'       => self::scoreValuation($of(['valuation']), $lang),
         ];
 
         $total = array_sum(array_column($categories, 'score'));
@@ -354,15 +386,15 @@ class ProvenanceDossier
      * Always assessable: every registered product has a registration to judge.
      * 20 points across the four facts that make the entry citable.
      */
-    private static function scoreRegistration(Product $product): array
+    private static function scoreRegistration(Product $product, string $lang = 'en'): array
     {
         $have = [];
         $miss = [];
 
-        $product->prn ? $have[] = 'registry number' : $miss[] = 'a registry number';
-        ($product->registered_at || $product->created_at) ? $have[] = 'registration date' : $miss[] = 'a registration date';
-        $product->business_id ? $have[] = 'an identified maker' : $miss[] = 'an identified maker';
-        $product->uuid ? $have[] = 'a permanent reference' : $miss[] = 'a permanent reference';
+        $product->prn ? $have[] = true : $miss[] = self::t($lang, 'a registry number', 'un numéro de registre');
+        ($product->registered_at || $product->created_at) ? $have[] = true : $miss[] = self::t($lang, 'a registration date', 'une date d\'enregistrement');
+        $product->business_id ? $have[] = true : $miss[] = self::t($lang, 'an identified maker', 'un artisan identifié');
+        $product->uuid ? $have[] = true : $miss[] = self::t($lang, 'a permanent reference', 'une référence permanente');
 
         $score = count($have) * 5;
 
@@ -370,8 +402,12 @@ class ProvenanceDossier
             'score' => $score,
             'max'   => 20,
             'basis' => $miss
-                ? 'The registry entry is missing ' . self::list($miss) . '.'
-                : 'The registry entry carries a number, a date, an identified maker and a permanent reference.',
+                ? self::t($lang, 'The registry entry is missing ', 'Il manque à l\'entrée de registre ') . self::list($miss, $lang) . '.'
+                : self::t(
+                    $lang,
+                    'The registry entry carries a number, a date, an identified maker and a permanent reference.',
+                    'L\'entrée de registre porte un numéro, une date, un artisan identifié et une référence permanente.'
+                ),
         ];
     }
 
@@ -381,37 +417,49 @@ class ProvenanceDossier
      * not on how many times the piece has changed hands — a work that has never
      * been sold has a perfect chain, not a thin one.
      */
-    private static function scoreOwnership(array $chain): array
+    private static function scoreOwnership(array $chain, string $lang = 'en'): array
     {
         if (! $chain) {
-            return ['score' => 0, 'max' => 20, 'basis' => 'No ownership row exists, so the chain begins nowhere.'];
+            return ['score' => 0, 'max' => 20, 'basis' => self::t(
+                $lang,
+                'No ownership row exists, so the chain begins nowhere.',
+                'Aucune ligne de propriété n\'existe, la chaîne ne commence donc nulle part.'
+            )];
         }
 
         $score = 8;                                     // an unbroken chain exists
-        $notes = [count($chain) . ' documented ' . (count($chain) === 1 ? 'holder' : 'holders')];
+        $notes = [count($chain) . self::t(
+            $lang,
+            ' documented ' . (count($chain) === 1 ? 'holder' : 'holders'),
+            ' détenteur' . (count($chain) === 1 ? '' : 's') . ' documenté' . (count($chain) === 1 ? '' : 's')
+        )];
 
         $creator = array_filter($chain, fn ($o) => (bool) $o->is_original_creator);
         if ($creator) {
             $score += 4;
-            $notes[] = 'the maker recorded as first holder';
+            $notes[] = self::t($lang, 'the maker recorded as first holder', 'l\'artisan enregistré comme premier détenteur');
         }
 
         $placed = count(array_filter($chain, fn ($o) => (bool) $o->country_code));
         if ($placed === count($chain)) {
             $score += 4;
-            $notes[] = 'every holder placed in a country';
+            $notes[] = self::t($lang, 'every holder placed in a country', 'chaque détenteur situé dans un pays');
         } elseif ($placed > 0) {
             $score += 2;
-            $notes[] = $placed . ' of ' . count($chain) . ' holders placed in a country';
+            $notes[] = self::t(
+                $lang,
+                $placed . ' of ' . count($chain) . ' holders placed in a country',
+                $placed . ' détenteurs sur ' . count($chain) . ' situés dans un pays'
+            );
         }
 
         $identified = count(array_filter($chain, fn ($o) => $o->verification_level !== 'unverified'));
         if ($identified === count($chain)) {
             $score += 4;
-            $notes[] = 'no anonymous holder';
+            $notes[] = self::t($lang, 'no anonymous holder', 'aucun détenteur anonyme');
         }
 
-        return ['score' => $score, 'max' => 20, 'basis' => ucfirst(self::list($notes)) . '.'];
+        return ['score' => $score, 'max' => 20, 'basis' => ucfirst(self::list($notes, $lang)) . '.'];
     }
 
     /**
@@ -419,26 +467,34 @@ class ProvenanceDossier
      * can be asked of any product, and the answer for a new one is honestly
      * "none yet".
      */
-    private static function scoreEvidence(array $evidence): array
+    private static function scoreEvidence(array $evidence, string $lang = 'en'): array
     {
         if (! $evidence) {
-            return ['score' => 0, 'max' => 20, 'basis' => 'No supporting document has been filed.'];
+            return ['score' => 0, 'max' => 20, 'basis' => self::t(
+                $lang,
+                'No supporting document has been filed.',
+                'Aucun document justificatif n\'a été déposé.'
+            )];
         }
 
         $score = min(12, count($evidence) * 4);
-        $notes = [count($evidence) . ' supporting ' . (count($evidence) === 1 ? 'document' : 'documents') . ' filed'];
+        $notes = [count($evidence) . self::t(
+            $lang,
+            ' supporting ' . (count($evidence) === 1 ? 'document' : 'documents') . ' filed',
+            ' document' . (count($evidence) === 1 ? '' : 's') . ' justificatif' . (count($evidence) === 1 ? '' : 's') . ' déposé' . (count($evidence) === 1 ? '' : 's')
+        )];
 
         if (array_filter($evidence, fn ($d) => (bool) $d->content_hash)) {
             $score += 4;
-            $notes[] = 'at least one fixed by content hash';
+            $notes[] = self::t($lang, 'at least one fixed by content hash', 'au moins un scellé par empreinte de contenu');
         }
 
         if (array_filter($evidence, fn ($d) => (bool) $d->provenance_event_id)) {
             $score += 4;
-            $notes[] = 'at least one tied to a specific event';
+            $notes[] = self::t($lang, 'at least one tied to a specific event', 'au moins un rattaché à un événement précis');
         }
 
-        return ['score' => $score, 'max' => 20, 'basis' => ucfirst(self::list($notes)) . '.'];
+        return ['score' => $score, 'max' => 20, 'basis' => ucfirst(self::list($notes, $lang)) . '.'];
     }
 
     /**
@@ -447,29 +503,37 @@ class ProvenanceDossier
      * be incomplete — scoring that absence would measure the artisan's career,
      * which this index has no business doing.
      */
-    private static function scorePublicRecord(array $events): array
+    private static function scorePublicRecord(array $events, string $lang = 'en'): array
     {
         if (! $events) {
-            return ['score' => 0, 'max' => 0, 'basis' => 'No exhibition, accession or publication has been recorded, so public history is not assessed.'];
+            return ['score' => 0, 'max' => 0, 'basis' => self::t(
+                $lang,
+                'No exhibition, accession or publication has been recorded, so public history is not assessed.',
+                'Aucune exposition, acquisition muséale ni publication n\'a été enregistrée : l\'histoire publique n\'est donc pas évaluée.'
+            )];
         }
 
         $score = 6;
-        $notes = [count($events) . ' public ' . (count($events) === 1 ? 'appearance' : 'appearances') . ' recorded'];
+        $notes = [count($events) . self::t(
+            $lang,
+            ' public ' . (count($events) === 1 ? 'appearance' : 'appearances') . ' recorded',
+            ' apparition' . (count($events) === 1 ? '' : 's') . ' publique' . (count($events) === 1 ? '' : 's') . ' enregistrée' . (count($events) === 1 ? '' : 's')
+        )];
 
         if (array_filter($events, fn ($e) => (bool) $e->organisation)) {
             $score += 3;
-            $notes[] = 'the hosting institution named';
+            $notes[] = self::t($lang, 'the hosting institution named', 'l\'institution d\'accueil nommée');
         }
         if (array_filter($events, fn ($e) => $e->reference_no || $e->certificate_ref)) {
             $score += 3;
-            $notes[] = 'a catalogue or accession reference given';
+            $notes[] = self::t($lang, 'a catalogue or accession reference given', 'une référence de catalogue ou d\'inventaire fournie');
         }
         if (array_filter($events, fn ($e) => (bool) $e->is_verified)) {
             $score += 3;
-            $notes[] = 'at least one confirmed against the institution';
+            $notes[] = self::t($lang, 'at least one confirmed against the institution', 'au moins une confirmée auprès de l\'institution');
         }
 
-        return ['score' => $score, 'max' => 15, 'basis' => ucfirst(self::list($notes)) . '.'];
+        return ['score' => $score, 'max' => 15, 'basis' => ucfirst(self::list($notes, $lang)) . '.'];
     }
 
     /**
@@ -477,61 +541,81 @@ class ProvenanceDossier
      * no conservation history, and an index that treated that as a gap would
      * score newer and better-kept pieces down.
      */
-    private static function scoreConservation(array $events): array
+    private static function scoreConservation(array $events, string $lang = 'en'): array
     {
         if (! $events) {
-            return ['score' => 0, 'max' => 0, 'basis' => 'No restoration or condition report has been recorded, so conservation history is not assessed.'];
+            return ['score' => 0, 'max' => 0, 'basis' => self::t(
+                $lang,
+                'No restoration or condition report has been recorded, so conservation history is not assessed.',
+                'Aucune restauration ni constat d\'état n\'a été enregistré : l\'histoire de conservation n\'est donc pas évaluée.'
+            )];
         }
 
         $ids  = array_column($events, 'id');
         $rows = DB::table('provenance_restorations')->whereIn('provenance_event_id', $ids)->get()->all();
 
         $score = 6;
-        $notes = [count($events) . ' conservation ' . (count($events) === 1 ? 'entry' : 'entries')];
+        $notes = [count($events) . self::t(
+            $lang,
+            ' conservation ' . (count($events) === 1 ? 'entry' : 'entries'),
+            ' entrée' . (count($events) === 1 ? '' : 's') . ' de conservation'
+        )];
 
         if (array_filter($rows, fn ($r) => (bool) $r->description)) {
             $score += 3;
-            $notes[] = 'the intervention described';
+            $notes[] = self::t($lang, 'the intervention described', 'l\'intervention décrite');
         }
         if (array_filter($rows, fn ($r) => (bool) $r->materials_used)) {
             $score += 3;
-            $notes[] = 'the materials used listed';
+            $notes[] = self::t($lang, 'the materials used listed', 'les matériaux employés listés');
         }
         if (array_filter($rows, fn ($r) => $r->before_images || $r->after_images)) {
             $score += 3;
-            $notes[] = 'before or after images attached';
+            $notes[] = self::t($lang, 'before or after images attached', 'des images avant ou après jointes');
         }
 
-        return ['score' => $score, 'max' => 15, 'basis' => ucfirst(self::list($notes)) . '.'];
+        return ['score' => $score, 'max' => 15, 'basis' => ucfirst(self::list($notes, $lang)) . '.'];
     }
 
     /**
      * Unassessable by default. Whether a work has been appraised depends on
      * whether its holder needed insurance, not on how well the file is kept.
      */
-    private static function scoreValuation(array $events): array
+    private static function scoreValuation(array $events, string $lang = 'en'): array
     {
         if (! $events) {
-            return ['score' => 0, 'max' => 0, 'basis' => 'No appraisal has been recorded, so valuation history is not assessed.'];
+            return ['score' => 0, 'max' => 0, 'basis' => self::t(
+                $lang,
+                'No appraisal has been recorded, so valuation history is not assessed.',
+                'Aucune expertise n\'a été enregistrée : l\'historique d\'estimation n\'est donc pas évalué.'
+            )];
         }
 
         $rows = DB::table('provenance_valuations')
             ->whereIn('provenance_event_id', array_column($events, 'id'))->get()->all();
 
         if (! $rows) {
-            return ['score' => 0, 'max' => 0, 'basis' => 'A valuation event exists with no appraisal behind it, so it is not assessed.'];
+            return ['score' => 0, 'max' => 0, 'basis' => self::t(
+                $lang,
+                'A valuation event exists with no appraisal behind it, so it is not assessed.',
+                'Un événement d\'estimation existe sans expertise derrière lui : il n\'est donc pas évalué.'
+            )];
         }
 
         $score = 4;
-        $notes = [count($rows) . ' recorded ' . (count($rows) === 1 ? 'appraisal' : 'appraisals')];
+        $notes = [count($rows) . self::t(
+            $lang,
+            ' recorded ' . (count($rows) === 1 ? 'appraisal' : 'appraisals'),
+            ' expertise' . (count($rows) === 1 ? '' : 's') . ' enregistrée' . (count($rows) === 1 ? '' : 's')
+        )];
 
         if (array_filter($rows, fn ($r) => (bool) $r->appraiser)) {
             $score += 2;
-            $notes[] = 'the appraiser named';
+            $notes[] = self::t($lang, 'the appraiser named', 'l\'expert nommé');
         }
         if (array_filter($rows, fn ($r) => (bool) $r->appraiser_ref)) {
             $score += 2;
-            $notes[] = 'the appraiser identified by reference';
+            $notes[] = self::t($lang, 'the appraiser identified by reference', 'l\'expert identifié par une référence');
         }
 
         // An appraisal older than five years no longer describes a market, so
@@ -539,16 +623,23 @@ class ProvenanceDossier
         $recent = array_filter($rows, fn ($r) => Carbon::parse($r->valued_on)->diffInYears(now()) < 5);
         if ($recent) {
             $score += 2;
-            $notes[] = 'at least one made within the last five years';
+            $notes[] = self::t($lang, 'at least one made within the last five years', 'au moins une réalisée au cours des cinq dernières années');
         }
 
-        return ['score' => $score, 'max' => 10, 'basis' => ucfirst(self::list($notes)) . '.'];
+        return ['score' => $score, 'max' => 10, 'basis' => ucfirst(self::list($notes, $lang)) . '.'];
     }
 
     /**
      * A word for the number, computed from the same ratio and never set by
      * hand. Bands are wide on purpose: a one-point difference between two
      * dossiers is not a difference worth naming.
+     *
+     * Deliberately not translated. The band is a key, not prose: the views look
+     * it up in their own vocabulary and pick a colour by matching it, so a band
+     * that changed word with the language would silently lose both. It is also
+     * the guarantee that a reader comparing the French and English sheets of the
+     * same dossier sees the same verdict, which is the point of translating the
+     * reasoning at all.
      */
     private static function band(int $total, int $max): string
     {
@@ -567,8 +658,8 @@ class ProvenanceDossier
         };
     }
 
-    /** "a, b and c" — the basis lines are read as prose, not as CSV. */
-    private static function list(array $items): string
+    /** "a, b and c" / "a, b et c" — the basis lines are read as prose, not as CSV. */
+    private static function list(array $items, string $lang = 'en'): string
     {
         if (count($items) <= 1) {
             return (string) ($items[0] ?? '');
@@ -576,6 +667,6 @@ class ProvenanceDossier
 
         $last = array_pop($items);
 
-        return implode(', ', $items) . ' and ' . $last;
+        return implode(', ', $items) . self::t($lang, ' and ', ' et ') . $last;
     }
 }
