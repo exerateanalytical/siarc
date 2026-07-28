@@ -240,6 +240,73 @@ Whatever the grade is derived from must be defensible in that light.
 
 ---
 
+## 9. Digital Product Passport (Part 8) — a privacy problem and three optimistic defaults
+
+### The passport is public by default, and it carries a lot
+
+`spec/80a-digital-product-passport.json` sets `status.public_visibility: true`,
+`history_retention: PERMANENT` and `soft_delete: false`. The same record holds:
+
+- the artisan's **village and GPS coordinates** (`creator.gps`, `creator.village`)
+- the **workshop's** location
+- in `spec/80b`, the current owner's **legal name, city and contact reference**
+- the origin site's GPS again, under `provenance.origin`
+
+A public, permanent record tying a named artisan to their home village
+coordinates is a safety question before it is a privacy one, and publishing a
+private collector's legal name and city alongside a valuation is how people get
+targeted. Neither party has consented to that by registering a product.
+
+The foundation's own principle GP005 says personal information is protected
+according to applicable law, and `spec/50` cites ISO/IEC 27018. Permanent
+retention with no deletion path and a public default contradicts both.
+
+**Recommendation:** `public_visibility` defaults to **false**; the public view is
+a projection that omits GPS, village, contact details and owner legal names
+unless that party has opted in. Institutional owners will often opt in — a museum
+is happy to be named. A private individual should have to choose it. Keep the
+full record internally, and separate "retained" from "published", which is the
+distinction the current fields collapse. `soft_delete: false` also needs an
+erasure path for personal data, distinct from the provenance record itself.
+
+### Three defaults are optimistic in the way this project keeps having to fix
+
+- `spec/80b` → `risk_assessment` defaults every domain to **LOW**.
+- `spec/80b` → `analytics.chain_integrity_percentage: 100` and
+  `provenance_completeness_percentage: 100`.
+- `spec/80d` → `compliance_engine.legal_compliance` defaults every flag to
+  **true**, including `not_stolen: true` and `ownership_verified: true`.
+
+A record that has never been assessed would report low risk, perfect chain
+integrity, complete provenance and verified non-stolen status. That is the exact
+failure the export register was built to avoid, and `spec/70c` already provides
+the fix by including **NONE** and requiring `UNASSESSED` semantics elsewhere.
+
+**Recommendation:** defaults become `UNASSESSED` / `null` / `0`, and a
+percentage is reported only over what was actually measured. `not_stolen`
+should read "no report on this register" rather than a boolean true — the
+absence of a theft report is not proof of clean title, and on a customs desk
+that difference matters.
+
+### Smaller Part 8 items
+
+- **`digital_twin.enabled: true` with `current_mode: "Real-Time"`.** Nothing of
+  the sort exists. `spec/80a` lists digital twin under `future_reserved: false`
+  while `spec/80d` enables it — the two parts contradict each other.
+- **`verifiable_credentials: true`** sits among `future_reserved` flags that are
+  all false. W3C VC is not implemented; if the intent is "planned", it belongs in
+  a roadmap field rather than a reserved-capability flag that reads as enabled.
+- **`environmental_monitoring.enabled: true`** implies sensors. There are none.
+- **`restoration_management.current_status.never_restored: true`** as a default
+  asserts a fact about an object's history from an empty table. It should be
+  "no restoration recorded".
+- **CIDOC CRM and Dublin Core** are named in `spec/80d`. Both are genuinely the
+  right vocabularies for museum interchange and worth doing — but nothing maps to
+  them yet, and claiming them on a document before the mapping exists would be
+  the same overstatement as the rest of this list.
+
+---
+
 ## How to close these
 
 Each item above is a one-line decision. Record the choice in `CHANGELOG.md`,

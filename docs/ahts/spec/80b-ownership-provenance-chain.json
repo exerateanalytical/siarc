@@ -1,0 +1,223 @@
+{
+  "ownership_provenance_chain": {
+    "metadata": {
+      "name": "Ownership, Provenance & Chain of Custody",
+      "abbreviation": "OPCC",
+      "version": "1.0.0",
+      "parent_standard": "ArtisanHub237 Digital Product Passport",
+      "description": "Defines the ownership lifecycle, provenance evidence, legal custody, transfer events, historical record and chain of custody for every registered product."
+    },
+    "ownership_profile": {
+      "current_owner": {
+        "owner_uuid": "",
+        "owner_number": "",
+        "owner_type": "PERSON",
+        "classification": ["ARTISAN", "COLLECTOR", "GALLERY", "MUSEUM", "AUCTION_HOUSE", "DEALER", "ORGANIZATION", "GOVERNMENT", "PRIVATE_COMPANY", "OTHER"],
+        "legal_name": "",
+        "display_name": "",
+        "country": "",
+        "region": "",
+        "city": "",
+        "contact_reference": "",
+        "verified": false,
+        "ownership_start_date": "",
+        "ownership_status": "ACTIVE"
+      },
+      "beneficial_owner": { "exists": false, "owner_uuid": "", "legal_relationship": "" },
+      "custodian": {
+        "exists": false,
+        "custodian_uuid": "",
+        "institution_name": "",
+        "custody_reason": "",
+        "custody_start": "",
+        "custody_end": ""
+      }
+    },
+    "ownership_history": {
+      "retain_permanently": true,
+      "immutable": true,
+      "entries": [
+        {
+          "ownership_event_uuid": "",
+          "sequence_number": 1,
+          "owner_uuid": "",
+          "owner_type": "",
+          "acquisition_method": "",
+          "acquisition_date": "",
+          "ownership_end_date": "",
+          "transfer_certificate": "",
+          "verification_status": "",
+          "supporting_documents": [],
+          "remarks": ""
+        }
+      ]
+    },
+    "ownership_methods": [
+      "CREATED", "PURCHASE", "SALE", "GIFT", "DONATION", "INHERITANCE", "AUCTION",
+      "EXCHANGE", "COMMISSION", "GOVERNMENT_TRANSFER", "MUSEUM_ACQUISITION",
+      "COURT_ORDER", "RECOVERY", "OTHER"
+    ],
+    "provenance": {
+      "provenance_uuid": "",
+      "provenance_status": ["COMPLETE", "PARTIAL", "UNDER_REVIEW", "DISPUTED", "UNKNOWN"],
+      "current_status": "PARTIAL",
+      "confidence_score": 0,
+      "verification_level": ["UNVERIFIED", "SELF_DECLARED", "DOCUMENT_VERIFIED", "EXPERT_VERIFIED", "FULLY_VERIFIED"],
+      "origin": {
+        "country": "",
+        "region": "",
+        "division": "",
+        "subdivision": "",
+        "village": "",
+        "gps": { "latitude": "", "longitude": "" },
+        "creation_site": "",
+        "creation_environment": ""
+      },
+      "historical_summary": "",
+      "research_notes": "",
+      "oral_history": "",
+      "traditional_context": "",
+      "academic_references": [],
+      "publication_references": []
+    },
+    "provenance_events": [
+      {
+        "event_uuid": "",
+        "event_number": 1,
+        "event_type": "",
+        "title": "",
+        "description": "",
+        "event_date": "",
+        "country": "",
+        "city": "",
+        "institution": "",
+        "participants": [],
+        "evidence": [],
+        "verified": false
+      }
+    ],
+    "event_types": [
+      "CREATED", "REGISTERED", "AUTHENTICATED", "VALUED", "EXHIBITED", "PURCHASED",
+      "SOLD", "TRANSFERRED", "GIFTED", "DONATED", "INHERITED", "INSURED", "SHIPPED",
+      "EXPORTED", "IMPORTED", "RESTORED", "CONSERVED", "LOST", "RECOVERED", "REVOKED", "ARCHIVED"
+    ],
+    "chain_of_custody": {
+      "enabled": true,
+      "immutable": true,
+      "continuous_validation": true,
+      "custody_records": [
+        {
+          "custody_uuid": "",
+          "sequence": 1,
+          "from_party": "",
+          "to_party": "",
+          "transfer_datetime": "",
+          "reason": "",
+          "location": "",
+          "condition_report": "",
+          "digital_signature": "",
+          "verification_status": "",
+          "supporting_documents": []
+        }
+      ],
+      "integrity_rules": {
+        "no_missing_links": true,
+        "chronological_order_required": true,
+        "all_transfers_signed": true,
+        "all_parties_verified": true,
+        "all_locations_recorded": true
+      }
+    },
+    "location_history": {
+      "track_complete_history": true,
+      "entries": [
+        {
+          "location_uuid": "",
+          "location_type": "",
+          "institution": "",
+          "country": "",
+          "city": "",
+          "gps": { "latitude": "", "longitude": "" },
+          "arrival_date": "",
+          "departure_date": "",
+          "reason": "",
+          "verified": true
+        }
+      ]
+    },
+    "ownership_documents": {
+      "accepted_documents": [
+        "Purchase Agreement", "Invoice", "Receipt", "Gift Declaration", "Donation Agreement",
+        "Inheritance Document", "Court Order", "Transfer Certificate", "Museum Acquisition Record",
+        "Auction Record", "Export Authorization", "Import Authorization", "Insurance Policy", "Gallery Agreement"
+      ]
+    },
+    "ownership_disputes": {
+      "enabled": true,
+      "status": ["NONE", "OPEN", "UNDER_INVESTIGATION", "RESOLVED", "COURT_PROCEEDINGS"],
+      "records": [
+        {
+          "case_uuid": "",
+          "opened_date": "",
+          "status": "",
+          "claimant": "",
+          "respondent": "",
+          "summary": "",
+          "decision": "",
+          "resolution_date": ""
+        }
+      ]
+    },
+    "verification": {
+      "ownership_verified": false,
+      "chain_verified": false,
+      "provenance_verified": false,
+      "last_verification_date": "",
+      "verified_by": "",
+      "verification_reference": ""
+    },
+    "risk_assessment": {
+      "ownership_risk": "LOW",
+      "provenance_risk": "LOW",
+      "custody_risk": "LOW",
+      "legal_risk": "LOW",
+      "risk_flags": [
+        "Ownership Gap", "Missing Transfer", "Unverified Owner", "Duplicate Claim",
+        "Forged Documentation", "Incomplete Provenance", "Unverified Export", "Chain Break"
+      ]
+    },
+    "analytics": {
+      "number_of_owners": 0,
+      "number_of_transfers": 0,
+      "number_of_countries": 0,
+      "number_of_exhibitions": 0,
+      "years_since_creation": 0,
+      "longest_owner_duration_days": 0,
+      "shortest_owner_duration_days": 0,
+      "chain_integrity_percentage": 100,
+      "provenance_completeness_percentage": 100
+    },
+    "automatic_triggers": [
+      {
+        "event": "Ownership Transfer",
+        "actions": ["Update Ownership Registry", "Create Chain of Custody Record", "Generate Transfer Certificate", "Recalculate Trust Score", "Generate Audit Event"]
+      },
+      {
+        "event": "Ownership Dispute",
+        "actions": ["Flag Passport", "Increase Risk Level", "Suspend Transfer Approval", "Notify Certification Authority"]
+      },
+      {
+        "event": "Missing Custody Link",
+        "actions": ["Create Risk Alert", "Reduce Chain Integrity Score", "Require Manual Review"]
+      }
+    ],
+    "future_reserved": {
+      "geospatial_journey_map": false,
+      "real_time_custody_tracking": false,
+      "iot_transport_monitoring": false,
+      "satellite_location_validation": false,
+      "blockchain_chain_of_custody": false,
+      "international_registry_exchange": false
+    }
+  }
+}

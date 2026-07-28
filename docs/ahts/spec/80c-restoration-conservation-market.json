@@ -1,0 +1,253 @@
+{
+  "restoration_conservation_exhibitions_valuations_insurance": {
+    "metadata": {
+      "name": "Restoration, Conservation, Exhibitions, Valuations & Insurance",
+      "abbreviation": "RCEVI",
+      "version": "1.0.0",
+      "parent_standard": "ArtisanHub237 Digital Product Passport",
+      "description": "Defines the complete lifecycle management of restoration, conservation, exhibitions, valuations and insurance for every registered product."
+    },
+    "restoration_management": {
+      "enabled": true,
+      "retain_history": true,
+      "immutable_records": true,
+      "current_status": {
+        "never_restored": true,
+        "currently_under_restoration": false,
+        "last_restoration_date": "",
+        "condition_after_restoration": ""
+      },
+      "restoration_records": [
+        {
+          "restoration_uuid": "",
+          "restoration_number": "",
+          "status": ["PLANNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+          "restoration_type": [
+            "Cleaning", "Structural Repair", "Material Replacement", "Surface Restoration",
+            "Color Restoration", "Stabilization", "Preventive Conservation",
+            "Emergency Restoration", "Digital Reconstruction", "Other"
+          ],
+          "reason": "",
+          "description": "",
+          "performed_by": {
+            "person_uuid": "",
+            "organization_uuid": "",
+            "name": "",
+            "qualification": "",
+            "license_number": ""
+          },
+          "institution": "",
+          "country": "",
+          "location": "",
+          "start_date": "",
+          "completion_date": "",
+          "duration_days": 0,
+          "materials_used": [],
+          "techniques_used": [],
+          "tools_used": [],
+          "estimated_cost": 0,
+          "currency": "XAF",
+          "documentation": [],
+          "before_images": [],
+          "during_images": [],
+          "after_images": [],
+          "videos": [],
+          "laboratory_reports": [],
+          "digital_signature": "",
+          "verified": false,
+          "verification_reference": ""
+        }
+      ]
+    },
+    "condition_management": {
+      "current_condition": {
+        "grade": ["Excellent", "Very Good", "Good", "Fair", "Poor", "Critical"],
+        "overall_score": 0,
+        "assessment_date": "",
+        "assessed_by": "",
+        "assessment_method": "",
+        "summary": ""
+      },
+      "condition_components": {
+        "structural_integrity": 0,
+        "surface_condition": 0,
+        "material_condition": 0,
+        "color_stability": 0,
+        "wear_level": 0,
+        "biological_damage": 0,
+        "environmental_damage": 0,
+        "previous_restoration_quality": 0
+      },
+      "known_damage": [],
+      "recommended_actions": [],
+      "inspection_schedule": { "frequency": "Annual", "next_inspection": "" }
+    },
+    "conservation_management": {
+      "conservation_status": ["Not Required", "Monitoring", "Preventive", "Active", "Critical"],
+      "preventive_measures": {
+        "temperature_range_celsius": { "minimum": 18, "maximum": 24 },
+        "humidity_range_percent": { "minimum": 45, "maximum": 55 },
+        "maximum_light_lux": 150,
+        "uv_protection_required": true,
+        "special_storage_required": false,
+        "special_transport_required": false
+      },
+      "environmental_monitoring": {
+        "enabled": true,
+        "last_measurement": "",
+        "temperature": 0,
+        "humidity": 0,
+        "light_level": 0,
+        "air_quality": ""
+      },
+      "conservation_history": [
+        {
+          "event_uuid": "",
+          "event_type": "",
+          "date": "",
+          "performed_by": "",
+          "description": "",
+          "result": "",
+          "documentation": []
+        }
+      ]
+    },
+    "exhibition_management": {
+      "currently_on_display": false,
+      "current_exhibition": {
+        "exhibition_uuid": "",
+        "title": "",
+        "institution": "",
+        "country": "",
+        "city": "",
+        "gallery": "",
+        "start_date": "",
+        "end_date": ""
+      },
+      "exhibition_history": [
+        {
+          "exhibition_uuid": "",
+          "title": "",
+          "type": ["Museum", "Gallery", "Trade Fair", "Government", "International", "Private", "Academic"],
+          "host": "",
+          "country": "",
+          "city": "",
+          "venue": "",
+          "opening_date": "",
+          "closing_date": "",
+          "curator": "",
+          "catalog_reference": "",
+          "visitor_count": 0,
+          "awards": [],
+          "media_coverage": [],
+          "photos": [],
+          "verification_status": ""
+        }
+      ]
+    },
+    "valuation_management": {
+      "current_market_value": {
+        "amount": 0,
+        "currency": "XAF",
+        "valuation_date": "",
+        "valuation_method": "",
+        "valuator_uuid": "",
+        "valuation_confidence": 0
+      },
+      "valuation_history": [
+        {
+          "valuation_uuid": "",
+          "date": "",
+          "market_value": 0,
+          "currency": "XAF",
+          "valuation_method": [
+            "Market Comparison", "Expert Opinion", "Auction Analysis",
+            "Insurance Assessment", "Museum Assessment", "Income Method", "Replacement Cost"
+          ],
+          "valuator": "",
+          "institution": "",
+          "confidence": 0,
+          "supporting_documents": [],
+          "digital_signature": ""
+        }
+      ],
+      "market_analytics": {
+        "highest_recorded_value": 0,
+        "lowest_recorded_value": 0,
+        "average_value": 0,
+        "last_12_month_change_percent": 0,
+        "market_demand": ["Very Low", "Low", "Moderate", "High", "Very High"],
+        "collector_interest": ["Low", "Medium", "High"]
+      }
+    },
+    "insurance_management": {
+      "insured": false,
+      "active_policy": {
+        "policy_uuid": "",
+        "policy_number": "",
+        "insurance_company": "",
+        "policy_holder": "",
+        "coverage_amount": 0,
+        "currency": "XAF",
+        "coverage_type": ["Full", "Partial", "Transit", "Exhibition", "Storage", "Restoration"],
+        "effective_date": "",
+        "expiry_date": "",
+        "deductible": 0,
+        "premium": 0,
+        "status": ["Active", "Expired", "Cancelled", "Suspended"]
+      },
+      "claims_history": [
+        {
+          "claim_uuid": "",
+          "claim_number": "",
+          "incident_date": "",
+          "claim_date": "",
+          "incident_type": "",
+          "claim_amount": 0,
+          "currency": "XAF",
+          "status": ["Submitted", "Under Review", "Approved", "Rejected", "Paid"],
+          "settlement_amount": 0,
+          "documentation": []
+        }
+      ]
+    },
+    "risk_monitoring": {
+      "restoration_risk": "LOW",
+      "conservation_risk": "LOW",
+      "display_risk": "LOW",
+      "transport_risk": "LOW",
+      "insurance_risk": "LOW",
+      "risk_alerts": [
+        "Overdue Inspection", "Insurance Expiring", "Environmental Threshold Exceeded",
+        "Restoration Required", "Valuation Outdated", "Exhibition Conflict"
+      ]
+    },
+    "automation": {
+      "automatic_revaluation": { "enabled": true, "frequency": "Every 24 Months" },
+      "automatic_condition_review": { "enabled": true, "frequency": "Annual" },
+      "insurance_expiry_notifications": { "days_before": [90, 60, 30, 7] },
+      "environmental_alerts": { "enabled": true }
+    },
+    "analytics": {
+      "total_restorations": 0,
+      "total_conservation_events": 0,
+      "total_exhibitions": 0,
+      "total_valuations": 0,
+      "total_insurance_policies": 0,
+      "total_claims": 0,
+      "average_market_value": 0,
+      "highest_market_value": 0,
+      "condition_trend": "Stable",
+      "market_trend": "Stable"
+    },
+    "future_reserved": {
+      "digital_condition_monitoring": false,
+      "iot_environmental_sensors": false,
+      "ai_condition_analysis": false,
+      "predictive_conservation": false,
+      "digital_restoration_simulation": false,
+      "international_museum_exchange": false,
+      "carbon_footprint_tracking": false
+    }
+  }
+}

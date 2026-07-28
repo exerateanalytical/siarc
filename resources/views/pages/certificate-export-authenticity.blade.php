@@ -75,6 +75,7 @@
         'exhibition'  => $isFr ? 'Exposition'              : 'Exhibition',
         'loan'        => $isFr ? 'Prêt'                    : 'Loan',
         'acquisition' => $isFr ? 'Acquisition muséale'     : 'Museum acquisition',
+        'museum_acquisition' => $isFr ? 'Acquisition muséale' : 'Museum acquisition',
         'donation'    => $isFr ? 'Donation'                : 'Donation',
         'personal'    => $isFr ? 'Usage personnel'         : 'Personal use',
         'restoration' => $isFr ? 'Restauration'            : 'Restoration',
@@ -245,7 +246,17 @@
         [$isFr ? 'Matériaux protégés' : 'Protected materials',
             $c->protected_materials ? ($materialLabels[$c->protected_materials] ?? $c->protected_materials) : null, false],
         [$isFr ? 'N° de permis d\'exportation' : 'Export permit number', $c->export_permit_no, true],
-        [$isFr ? 'Statut d\'inspection' : 'Inspection status', $c->inspection_status, false],
+        // The inspection status is a stored enum; it is mapped rather than
+        // printed raw, but an unmapped value falls through to itself instead of
+        // being blanked — a status we have not seen before is still a fact.
+        [$isFr ? 'Statut d\'inspection' : 'Inspection status', $c->inspection_status
+            ? ([
+                'pending'  => $isFr ? 'En attente' : 'Pending',
+                'approved' => $isFr ? 'Approuvée'  : 'Approved',
+                'passed'   => $isFr ? 'Satisfaisante' : 'Passed',
+                'failed'   => $isFr ? 'Non satisfaisante' : 'Failed',
+                'waived'   => $isFr ? 'Non requise' : 'Waived',
+            ][$c->inspection_status] ?? $c->inspection_status) : null, false],
         [$isFr ? 'Date d\'inspection' : 'Inspection date', $c->inspected_at ? Carbon::parse($c->inspected_at)->format('Y-m-d') : null, true],
     ]);
 

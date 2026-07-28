@@ -1,0 +1,195 @@
+{
+  "digital_product_passport": {
+    "metadata": {
+      "name": "ArtisanHub237 Digital Product Passport",
+      "abbreviation": "AHDPP",
+      "version": "1.0.0",
+      "status": "STANDARD",
+      "authority": "ArtisanHub237 Certification Authority",
+      "description": "The canonical digital identity and lifecycle record for every registered product within the ArtisanHub237 Trust Infrastructure.",
+      "canonical_record": true,
+      "immutable_identity": true,
+      "living_document": true
+    },
+    "objectives": [
+      "Provide one authoritative record per product",
+      "Maintain complete lifecycle history",
+      "Support traceability from creation to retirement",
+      "Enable interoperability",
+      "Support museums",
+      "Support collectors",
+      "Support insurers",
+      "Support customs",
+      "Support export",
+      "Support cultural preservation"
+    ],
+    "passport_configuration": {
+      "passport_number_format": "GPN",
+      "passport_uuid": "UUIDv4",
+      "language_support": ["English", "French"],
+      "default_language": "English",
+      "versioning_enabled": true,
+      "history_retention": "PERMANENT",
+      "soft_delete": false,
+      "archivable": true
+    },
+    "identity": {
+      "passport_uuid": "",
+      "passport_number": "",
+      "registry_number": "",
+      "certificate_number": "",
+      "product_uuid": "",
+      "barcode": "",
+      "qr_code": "",
+      "nfc_identifier": "",
+      "digital_signature": "",
+      "blockchain_anchor": null
+    },
+    "product_identity": {
+      "official_name": "",
+      "common_name": "",
+      "local_name": "",
+      "product_type": "",
+      "category": "",
+      "subcategory": "",
+      "classification_code": "",
+      "collection": "",
+      "series": "",
+      "edition": "",
+      "limited_edition": false,
+      "edition_number": "",
+      "quantity_produced": 1
+    },
+    "creator": {
+      "artisan_uuid": "",
+      "artisan_number": "",
+      "full_name": "",
+      "workshop_uuid": "",
+      "workshop_name": "",
+      "country": "",
+      "region": "",
+      "division": "",
+      "subdivision": "",
+      "village": "",
+      "gps": { "latitude": "", "longitude": "" }
+    },
+    "creation": {
+      "creation_date": "",
+      "completion_date": "",
+      "creation_period": "",
+      "commissioned": false,
+      "commission_reference": "",
+      "production_method": "",
+      "estimated_hours": 0,
+      "team_produced": false,
+      "team_members": []
+    },
+    "materials": {
+      "primary_materials": [],
+      "secondary_materials": [],
+      "natural_materials": [],
+      "recycled_materials": [],
+      "hazardous_materials": [],
+      "material_origin": [],
+      "material_certifications": []
+    },
+    "dimensions": {
+      "height_mm": 0,
+      "width_mm": 0,
+      "depth_mm": 0,
+      "diameter_mm": 0,
+      "weight_grams": 0,
+      "volume_cm3": 0
+    },
+    "appearance": {
+      "primary_colors": [],
+      "secondary_colors": [],
+      "patterns": [],
+      "texture": "",
+      "finish": "",
+      "style": "",
+      "shape": ""
+    },
+    "photography": {
+      "primary_image": "",
+      "gallery": [],
+      "macro_images": [],
+      "signature_images": [],
+      "material_images": [],
+      "process_images": [],
+      "workshop_images": [],
+      "archive_images": []
+    },
+    "multimedia": {
+      "videos": [],
+      "audio_interviews": [],
+      "creation_timelapse": [],
+      "three_d_models": [],
+      "virtual_tours": []
+    },
+    "cultural_context": {
+      "ethnic_group": "",
+      "language": "",
+      "tribe": "",
+      "traditional_use": "",
+      "ceremonial_use": "",
+      "historical_significance": "",
+      "cultural_significance": "",
+      "symbolism": "",
+      "oral_history": ""
+    },
+    "technical_description": {
+      "summary": "",
+      "detailed_description": "",
+      "manufacturing_process": "",
+      "techniques_used": [],
+      "tools_used": [],
+      "preservation_requirements": "",
+      "recommended_storage": ""
+    },
+    "registry_links": {
+      "artisan_registry": "",
+      "workshop_registry": "",
+      "product_registry": "",
+      "ownership_registry": "",
+      "certificate_registry": "",
+      "provenance_registry": "",
+      "valuation_registry": "",
+      "insurance_registry": "",
+      "shipment_registry": "",
+      "museum_registry": ""
+    },
+    "certificate_links": {
+      "certificate_of_authenticity": "",
+      "product_registration": "",
+      "provenance_certificate": "",
+      "ownership_certificate": "",
+      "valuation_certificate": "",
+      "restoration_certificate": "",
+      "export_certificate": "",
+      "museum_certificate": "",
+      "digital_passport_certificate": ""
+    },
+    "trust_summary": {
+      "overall_trust_score": 0,
+      "trust_grade": "",
+      "confidence": 0,
+      "risk_level": "",
+      "verification_status": "",
+      "last_evaluated": "",
+      "evaluation_reference": ""
+    },
+    "status": {
+      "passport_status": ["Draft", "Active", "Suspended", "Archived", "Retired"],
+      "current_status": "Draft",
+      "public_visibility": true
+    },
+    "future_reserved": {
+      "digital_twin": false,
+      "iot_sensor_link": false,
+      "ar_visualization": false,
+      "vr_museum": false,
+      "quantum_identity": false
+    }
+  }
+}

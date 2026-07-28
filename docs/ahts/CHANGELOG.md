@@ -64,3 +64,31 @@ recommendation. Summary:
    verified award record with an external reference; MR001 repeats the blocking
    problem; craftsmanship scoring needs an evidence basis or should be dropped,
    since the platform has no standing to grade an artisan's craft.
+
+## [1.0-draft] — 2026-07-28 (third intake: Part 8, Digital Product Passport)
+
+### Added
+- `spec/80a-digital-product-passport.json` — canonical product record (AHDPP)
+- `spec/80b-ownership-provenance-chain.json` — ownership, provenance, custody (OPCC)
+- `spec/80c-restoration-conservation-market.json` — restoration, conservation,
+  exhibitions, valuations, insurance (RCEVI)
+- `spec/80d-export-compliance-lifecycle.json` — export, compliance, APIs,
+  timeline, lifecycle, digital twin (ECVLDT)
+
+Fourteen specification files now recorded, all parsing as valid JSON.
+
+### Conflicts recorded — item 9 in `20-conflicts.md`
+- **The passport is public by default and carries the artisan's village and GPS,
+  the workshop location, and the owner's legal name, city and contact.** Combined
+  with permanent retention and no delete path, that contradicts the standard's own
+  privacy principle. Recommend defaulting to private with an opt-in public
+  projection, and separating "retained" from "published".
+- **Three optimistic defaults**: every risk domain defaults LOW; chain integrity
+  and provenance completeness default to 100%; legal compliance defaults every
+  flag true including `not_stolen`. An unassessed record would report itself
+  perfect. Recommend UNASSESSED/null defaults, and `not_stolen` reported as "no
+  report on this register" rather than a boolean.
+- `digital_twin` is `future_reserved: false` in 80a and `enabled: true` with
+  real-time sync in 80d — the two parts disagree, and neither is built.
+- `never_restored: true` as a default asserts a historical fact from an empty
+  table; should read "no restoration recorded".
