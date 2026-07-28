@@ -208,3 +208,43 @@ design shows:
    one forges a named person's hand.
 6. **Personal data is masked** — identity documents show the last four digits
    only, and are encrypted at rest.
+
+---
+
+## Artisan profile
+
+The supplied designs — `certificates/artisan profile v2 desktop.png` and
+`certificates/artisan mpbile profile v2.png` — carry roughly twenty figures and
+a trust bar. The table below is the ruling on each, and it is enforced by
+`tests/Feature/ArtisanProfileFamilyTest.php`, which sweeps both surfaces in both
+languages on visible text scoped to `<main>`.
+
+Three states are used. **Computed** means a query returns it and the page prints
+the answer with its basis. **Not tracked** means the schema cannot produce it and
+the page says so in words — never as a zero, because a zero is a measurement of
+nothing rather than an absence of measurement. **Refused** means the claim is not
+a statistic at all but an undertaking the platform has no power to give.
+
+| What the design asks for | State | Why |
+| --- | --- | --- |
+| Products created | Computed | Rows in `products` for the artisan. |
+| Products published | Computed | Same, filtered to `status = published`. |
+| Certificates issued | Computed | Numbered entries across the five issuing registers. |
+| Exhibitions (design: 12) | Computed | `provenance_events` of type `exhibition`. A zero here is a fact: this artisan has been shown nowhere yet. |
+| Countries reached (design: 18) | Computed | Distinct countries named by those events. |
+| Profile views | Computed | `businesses.views_count`. Counts views, not people, and says so. |
+| Reviews published | Computed | `business_reviews` with `status = published`. Currently zero rows platform-wide. |
+| Trust score (design: 92) | Computed, different number | `ArtisanProfile::trustScore()` scores the verification checks out of 85 and prints a per-check breakdown. The design's 92/100 is not that computation's output and stays banned. |
+| Response time | Optional | Stated by the artisan, not measured. Printed as a promise, labelled as one. |
+| Rating 4.9 / 128 reviews / star distribution | Not tracked | `business_reviews` is empty. A mean of an empty set is not zero, it is undefined. |
+| Products sold (design: 128) | Not tracked | There is no orders table. The platform introduces buyers to artisans and is not party to the transaction, so no quantity sold exists to count. |
+| Happy customers (design: 96) | Not tracked | No customer record exists, and no measure of satisfaction beyond published reviews. |
+| Response rate (design: 98%) | Not tracked | Replies are neither timed nor matched to enquiries. |
+| Repeat buyers | Not tracked | No orders exist, so no buyer can be seen to return. |
+| Last active: Today | Not tracked | Sign-ins are not recorded. The record's last edit is a change to a file, not evidence a person was present. |
+| Per-product star ratings | Not tracked | A review attaches to a business, never to a product. The column has never existed. |
+| Awards: 8, incl. SIARC Excellence / UNESCO / National Craft / ministry | Refused unless recorded | `business_awards` is empty. A row may name an issuing body, but only with a named issuer and a recorder who is not the beneficiary — `ArtisanAwards::record()` refuses anything less. No honour is printed that no row asserts. |
+| SECURE PAYMENTS — 100% secure transactions | Refused | The platform processes no payment for a sale. Corrected across every document already. |
+| BUYER PROTECTION — Money-back guarantee | Refused | The platform is not a party to the sale, holds no funds and offers no guarantee; `config/legal.php` states this. This is the most damaging line in either design, because unlike a decorative badge a buyer would rely on it, and would find out it was never real only once something had already gone wrong. |
+| WORLDWIDE SHIPPING — Safe & reliable delivery | Refused | The platform ships nothing. |
+| Exact workshop coordinates | Refused | `gps_lat`/`gps_lng` are collected to place a business in a city and to verify a visit. City and region are the public granularity; a decimal fix is a home address. |

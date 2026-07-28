@@ -4425,3 +4425,117 @@ Route::get('/tableau-de-bord/admin/paiements/{id}/preuve', function (Request $re
 
     return \Illuminate\Support\Facades\Storage::disk('local')->response($payment->proof_path);
 })->name('admin.payments.proof')->middleware('throttle:60,1');
+
+/* ── Reviews and distinctions: the moderator's desk ──────────────────────────
+   Same requireAdmin() guard as every other /tableau-de-bord/admin route:
+   guests to login, signed-in non-admins back to their own dashboard. Both the
+   queue and every decision on it are guarded in the route, not by hiding a
+   button — a hidden button is one curl away from not existing. */
+Route::get('/tableau-de-bord/admin/avis', function (Request $request) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $states = [
+        \App\Support\ArtisanReviews::PENDING,
+        \App\Support\ArtisanReviews::PUBLISHED,
+        \App\Support\ArtisanReviews::REJECTED,
+        \App\Support\ArtisanReviews::HIDDEN,
+    ];
+    $filter = in_array($request->query('status'), $states, true)
+        ? $request->query('status')
+        : \App\Support\ArtisanReviews::PENDING;
+
+    return view('pages.dashboard.admin.reviews', [
+        'lang'      => webLang($request),
+        'siacUser'  => session('siac_user'),
+        'rows'      => \App\Support\ArtisanReviews::queue($filter),
+        'counts'    => \App\Support\ArtisanReviews::queueCounts(),
+        'filter'    => $filter,
+        'states'    => $states,
+        'awards'    => DB::table('business_awards as a')
+            ->leftJoin('businesses as b', 'b.id', '=', 'a.business_id')
+            ->leftJoin('users as u', 'u.id', '=', 'a.recorded_by')
+            ->orderByDesc('a.id')->limit(50)
+            ->get(['a.*', 'b.name_fr as business_name', 'u.name as recorder_name']),
+        'businesses' => DB::table('businesses')->whereNull('deleted_at')
+            ->orderBy('name_fr')->limit(500)->get(['id', 'name_fr']),
+    ]);
+})->name('admin.reviews');
+
+Route::post('/tableau-de-bord/admin/avis/{id}/publier', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    try {
+        \App\Support\ArtisanReviews::publish((int) $id, (string) session('siac_user')['id']);
+    } catch (\DomainException $e) {
+        return back()->withErrors(['review' => $e->getMessage()]);
+    }
+
+    return back()->with('review_moderated', true);
+})->name('admin.reviews.publish')->middleware('throttle:60,1');
+
+/* Refusing and withdrawing both demand a reason in the route as well as in the
+   markup. `required` in HTML is advisory; the reason is what a colleague reads
+   months later when the reviewer asks why their words never appeared. */
+Route::post('/tableau-de-bord/admin/avis/{id}/rejeter', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $request->validate(['reason' => ['required', 'string', 'min:3', 'max:500']]);
+
+    try {
+        \App\Support\ArtisanReviews::reject((int) $id, (string) session('siac_user')['id'], $request->input('reason'));
+    } catch (\DomainException $e) {
+        return back()->withErrors(['reason' => $e->getMessage()]);
+    }
+
+    return back()->with('review_moderated', true);
+})->name('admin.reviews.reject')->middleware('throttle:60,1');
+
+Route::post('/tableau-de-bord/admin/avis/{id}/retirer', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $request->validate(['reason' => ['required', 'string', 'min:3', 'max:500']]);
+
+    try {
+        \App\Support\ArtisanReviews::hide((int) $id, (string) session('siac_user')['id'], $request->input('reason'));
+    } catch (\DomainException $e) {
+        return back()->withErrors(['reason' => $e->getMessage()]);
+    }
+
+    return back()->with('review_moderated', true);
+})->name('admin.reviews.hide')->middleware('throttle:60,1');
+
+/* Recording a distinction. The service refuses one the artisan recorded against
+   themselves and one with no named issuer; this route only carries the
+   reviewer's identity to it, and that identity is the whole point of the row. */
+Route::post('/tableau-de-bord/admin/distinctions', function (Request $request) {
+    if ($x = requireAdmin($request)) return $x;
+
+    $data = $request->validate([
+        'business_id'  => ['required', 'integer', 'exists:businesses,id'],
+        'title_fr'     => ['required', 'string', 'max:255'],
+        'title_en'     => ['nullable', 'string', 'max:255'],
+        'issuer'       => ['required', 'string', 'max:255'],
+        'year'         => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
+        'evidence_url' => ['nullable', 'url', 'max:500'],
+        'reference'    => ['nullable', 'string', 'max:120'],
+    ]);
+
+    try {
+        \App\Support\ArtisanAwards::record(
+            (int) $data['business_id'],
+            $data + ['recorded_by' => (string) session('siac_user')['id']]
+        );
+    } catch (\DomainException $e) {
+        return back()->withErrors(['issuer' => $e->getMessage()]);
+    }
+
+    return back()->with('award_recorded', true);
+})->name('admin.awards.store')->middleware('throttle:30,1');
+
+Route::post('/tableau-de-bord/admin/distinctions/{id}/supprimer', function (Request $request, $id) {
+    if ($x = requireAdmin($request)) return $x;
+
+    \App\Support\ArtisanAwards::remove((int) $id);
+
+    return back()->with('award_recorded', true);
+})->name('admin.awards.destroy')->middleware('throttle:30,1');

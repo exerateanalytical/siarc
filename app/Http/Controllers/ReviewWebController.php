@@ -6,6 +6,7 @@ use App\Modules\Auth\Models\User;
 use App\Modules\Businesses\Models\Business;
 use App\Modules\Businesses\Models\BusinessReview;
 use App\Modules\Messaging\Models\Conversation;
+use App\Support\ArtisanReviews;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -28,28 +29,63 @@ class ReviewWebController extends Controller
 
         $business = Business::where('slug', $data['business_slug'])->firstOrFail();
         $user     = User::findOrFail($siacUser['id']);
+        $lang     = webLang($request);
 
-        if ($business->user_id === $user->id) {
-            return back()->withErrors(['rating' => 'Vous ne pouvez pas évaluer votre propre entreprise.']);
+        /*
+         * Everything this method used to decide for itself now belongs to
+         * App\Support\ArtisanReviews. It published on write, which put a
+         * stranger's sentence on an artisan's livelihood with no moderator in
+         * between; and it set the contact badge from the mere existence of a
+         * conversation row, which is created the moment somebody clicks a
+         * button and proves nothing. Both were quiet claims the platform could
+         * not stand behind.
+         */
+        try {
+            ArtisanReviews::submit($business, $user, [
+                'rating' => $data['rating'],
+                'title'  => $data['title'] ?? null,
+                'body'   => $data['body'] ?? null,
+            ]);
+        } catch (\DomainException $e) {
+            return back()->withErrors(['rating' => $this->refusalMessage($e->getMessage(), $lang)]);
         }
 
-        $isVerifiedContact = Conversation::where('business_id', $business->id)
-            ->where('buyer_id', $user->id)
-            ->exists();
-
-        BusinessReview::updateOrCreate(
-            ['reviewer_id' => $user->id, 'business_id' => $business->id],
-            [
-                'rating'              => $data['rating'],
-                'title'               => $data['title'] ?? null,
-                'body'                => $data['body'] ?? null,
-                'is_verified_contact' => $isVerifiedContact,
-                'status'              => 'published',
-            ]
-        );
-
         return redirect($data['return_to'] ?? '/')
-            ->with('success', 'Merci pour votre avis.');
+            ->with('review_submitted', true)
+            ->with('success', $lang === 'fr'
+                ? "Merci. Votre avis a été transmis à la modération ; il paraîtra sur le profil une fois relu."
+                : 'Thank you. Your review has gone to moderation and will appear on the profile once it has been read.');
+    }
+
+    /**
+     * Turns a refusal code into a sentence the reader can act on.
+     *
+     * The service throws with the machine reason in it; a person reading the
+     * form needs to know which of "sign in", "confirm your address" and "this
+     * is your own workshop" applies, because only two of the three are
+     * something they can do anything about.
+     */
+    private function refusalMessage(string $raw, string $lang): string
+    {
+        $isFr = $lang === 'fr';
+
+        if (str_contains($raw, 'own_business')) {
+            return $isFr
+                ? "Vous ne pouvez pas évaluer votre propre atelier."
+                : 'You cannot review your own workshop.';
+        }
+        if (str_contains($raw, 'unverified')) {
+            return $isFr
+                ? "Confirmez d'abord votre adresse e-mail : un avis engage le nom d'un artisan."
+                : 'Confirm your email address first — a review carries weight against an artisan’s name.';
+        }
+        if (str_contains($raw, 'account_inactive')) {
+            return $isFr ? "Votre compte n'est pas actif." : 'Your account is not active.';
+        }
+
+        return $isFr
+            ? "La note doit être un nombre entier de 1 à 5."
+            : 'The rating must be a whole number from 1 to 5.';
     }
 
     public function markDeal(Request $request, int $conversationId): RedirectResponse
