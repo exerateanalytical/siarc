@@ -152,8 +152,11 @@
                 <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-4 flex gap-2">
                     @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
+                    {{-- On the kit, not hand-rolled: this field appears on 24 pages
+                         and its own 12px type meant iOS zoomed the page every time
+                         someone tapped it. --}}
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre email' : 'Your email' }}"
-                        class="flex-1 min-w-0 w-[120px] bg-transparent border border-[#2E5240] rounded-md px-3 py-2.5 text-[12px] text-white placeholder-[#8FA79A] focus:outline-none focus:border-gold">
+                        class="ui-field ui-field--invert flex-1 min-w-0">
                     <button type="submit" class="bg-[#EBA405] hover:bg-goldbt text-[#3A2E08] text-[12.5px] font-semibold px-4 py-2.5 rounded-md transition-colors shrink-0">
                         {{ $isFr ? 'S\'abonner' : 'Subscribe' }}
                     </button>

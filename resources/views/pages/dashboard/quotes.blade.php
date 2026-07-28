@@ -234,7 +234,7 @@
             <input type="hidden" name="lang" value="{{ $lang }}">
             <div class="flex items-center gap-3 border border-[#E7E7E5] rounded-xl bg-[#FBFBFA] px-4 h-[46px]">
                 <i data-lucide="search" class="w-[18px] h-[18px] shrink-0 text-[#8A857A]"></i>
-                <input type="text" name="q" id="qd-search" placeholder="{{ $isFr ? 'Rechercher dans la plateforme...' : 'Search the platform...' }}" class="flex-1 min-w-0 bg-transparent text-[13px] focus:outline-none placeholder-[#8A857A]">
+                <input type="text" name="q" id="qd-search" placeholder="{{ $isFr ? 'Rechercher dans la plateforme...' : 'Search the platform...' }}" class="ui-field-bare flex-1 min-w-0">
                 <span class="shrink-0 border border-[#E5E3E0] rounded-md bg-white px-2 py-0.5 text-[11.5px] text-[#55524A]">Ctrl + K</span>
             </div>
         </form>

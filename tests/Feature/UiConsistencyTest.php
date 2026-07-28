@@ -89,16 +89,57 @@ class UiConsistencyTest extends TestCase
                 // Inspect the control's OWN class attribute. A line can also hold
                 // siblings — the divider span inside a ui-field-group, or the
                 // visible label of an sr-only radio — whose borders are legitimate.
+                // Invisible controls have no appearance to be consistent about:
+                // a type="hidden" input, an sr-only control behind a custom
+                // widget, or one whose only class is Tailwind's `hidden`
+                // (used for file inputs driven by a styled label).
                 if (str_contains($tag, 'type="hidden"') || str_contains($tag, 'sr-only')) {
+                    continue;
+                }
+                if (preg_match('/class="\s*hidden\s*"/', $tag)) {
                     continue;
                 }
                 if (! preg_match('/class="([^"]*)"/', $tag, $m)) {
                     continue;
                 }
 
+                $classes = $m[1];
+                $line = substr_count(substr($source, 0, $offset), "\n") + 1;
+
+                // An allow-list, not a deny-list.
+                //
+                // This used to check the class string against a dozen known-bad
+                // border colours, which meant any *new* colour passed. That is
+                // exactly how the footer newsletter field — border-[#2E5240],
+                // 12px type, on 24 public pages — sat here unnoticed while
+                // making iOS zoom the page on every tap.
+                //
+                // The question worth asking is not "does this field avoid the
+                // colours we already found" but "is this field on the kit".
+                // A class built from a Blade variable ({{ $inputCls }}) is
+                // delegating to a shared recipe defined at the top of the view,
+                // so the literal source will not contain "ui-field". Those are
+                // covered by the banned-token check below instead.
+                $delegates = str_contains($classes, '{{') || str_contains($classes, '{!!');
+
+                $onTheKit = $delegates || (bool) preg_match(
+                    '/\b(ui-field|ui-field-bare|ui-check|ui-file|ui-dropzone|ui-toggle)\b/',
+                    $classes
+                );
+
+                if (! $onTheKit) {
+                    $offences[] = sprintf(
+                        '%s:%d — builds its own styling; expected a ui-field / ui-check / ui-file class',
+                        $rel,
+                        $line
+                    );
+                    continue;
+                }
+
+                // Still refuse a kit field that then overrides the kit's own
+                // border or height back to something bespoke.
                 foreach (self::BANNED_ON_FIELDS as $pattern => $why) {
-                    if (preg_match('/' . $pattern . '/', $m[1])) {
-                        $line = substr_count(substr($source, 0, $offset), "\n") + 1;
+                    if (preg_match('/' . $pattern . '/', $classes)) {
                         $offences[] = sprintf('%s:%d — %s', $rel, $line, $why);
                         continue 2;
                     }

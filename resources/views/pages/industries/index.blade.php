@@ -201,7 +201,7 @@
                         @if(!$current && $view === 'filieres')<input type="hidden" name="view" value="filieres">@endif
                         <label for="sort" class="text-[13.5px] text-[#6F6B60] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort" name="sort" onchange="this.form.submit()"
-                            class="bg-transparent text-[14px] font-semibold text-[#1D1B16] focus:outline-none cursor-pointer pr-1">
+                            class="ui-field-bare font-semibold cursor-pointer w-auto pr-1">
                             <option value="" @selected(empty($sort))>{{ $isFr ? 'Ordre officiel' : 'Official order' }}</option>
                             <option value="name" @selected(($sort ?? '') === 'name')>{{ $isFr ? 'Nom (A–Z)' : 'Name (A–Z)' }}</option>
                             <option value="products" @selected(($sort ?? '') === 'products')>{{ $isFr ? 'Produits' : 'Products' }}</option>

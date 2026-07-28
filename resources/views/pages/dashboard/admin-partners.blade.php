@@ -274,7 +274,7 @@
                     <textarea name="description_fr" rows="2" placeholder="{{ $isFr ? 'Description courte (français)' : 'Short description (French)' }}" class="ui-field ui-textarea w-full"></textarea>
                     <div>
                         <label class="ui-label">{{ $isFr ? 'Logo' : 'Logo' }}</label>
-                        <input type="file" name="logo" accept="image/*" class="w-full text-xs text-[#8A857A] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-[#E2F3E8] file:text-[#157A43] file:text-xs">
+                        <input type="file" name="logo" accept="image/*" class="ui-file">
                     </div>
                     <label class="ui-check-row items-center">
                         <input type="checkbox" name="is_active" value="1" checked class="ui-check">

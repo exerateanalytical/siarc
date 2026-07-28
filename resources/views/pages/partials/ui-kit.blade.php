@@ -129,6 +129,21 @@
     .ui-field--invalid:focus,
     .ui-field[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(180, 32, 37, 0.12); }
 
+    /* For fields sitting on a dark panel — the footer newsletter box, say.
+       Same geometry and the same mobile type size; only the colours invert.
+       Without this, such a field gets hand-rolled and quietly loses the 16px
+       rule below, which is what makes iOS zoom the page on focus. */
+    .ui-field--invert {
+        background: transparent;
+        border-color: rgba(255, 255, 255, 0.28);
+        color: #FFFFFF;
+    }
+    .ui-field--invert::placeholder { color: rgba(255, 255, 255, 0.55); }
+    .ui-field--invert:focus {
+        border-color: var(--ui-gold);
+        box-shadow: 0 0 0 3px rgba(229, 168, 46, 0.18);
+    }
+
     /* Select: same box, with a chevron drawn in so no extra markup is needed */
     .ui-select {
         padding-right: 32px;
@@ -192,6 +207,25 @@
     /* A textarea sizes to its content, so a height modifier must not cap it. */
     .ui-textarea.ui-field--sm,
     .ui-textarea.ui-field--lg { height: auto; }
+
+    /* A readable floor for body text on phones.
+
+       The design was drawn for desktop and uses 10px–11.5px for breadcrumbs,
+       card metadata, badges and captions — around 110 places across the public
+       pages. That is roughly half a comfortable mobile reading size, and on a
+       phone in daylight it is genuinely hard to read.
+
+       Raising it here rather than editing every occurrence keeps the desktop
+       density exactly as designed, and means a new 10px label inherits the fix
+       instead of reintroducing the problem. Headings, prices and anything
+       already at 12px or above are untouched, so nothing reflows.
+
+       Scoped to width alone, not (pointer: coarse): a desktop with a touch
+       screen should keep its designed density. */
+    @media (max-width: 767.98px) {
+        .text-\[10px\], .text-\[10\.5px\] { font-size: 12px !important; }
+        .text-\[11px\], .text-\[11\.5px\] { font-size: 12.5px !important; }
+    }
 
     /* iOS Safari zooms the page whenever a focused control's text is under 16px.
        The platform's density is deliberately compact on desktop, so raise the

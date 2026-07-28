@@ -205,7 +205,7 @@
                         @if($activeCat !== '')<input type="hidden" name="categorie" value="{{ $activeCat }}">@endif
                         <label for="sort-select" class="text-[12.5px] text-[#55524A] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort-select" name="sort" onchange="this.form.submit()"
-                            class="text-[12.5px] font-medium text-[#1D1B16] bg-transparent focus:outline-none cursor-pointer">
+                            class="ui-field-bare font-medium cursor-pointer w-auto">
                             <option value="recents" {{ ($sort ?? 'recents') === 'recents' ? 'selected' : '' }}>{{ $isFr ? 'Plus récents' : 'Most recent' }}</option>
                             <option value="name" {{ ($sort ?? '') === 'name' ? 'selected' : '' }}>{{ $isFr ? 'Nom (A–Z)' : 'Name (A–Z)' }}</option>
                         </select>

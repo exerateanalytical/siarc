@@ -42,7 +42,7 @@ $typeCls = ['principal' => 'bg-[#E2F3E8] text-[#157A43]', 'secondaire' => 'bg-[#
     <form method="GET" action="{{ route('centres.index') }}" class="flex flex-wrap items-center gap-2.5 mb-6">
         <input type="hidden" name="lang" value="{{ $lang }}">
         <div class="flex items-center gap-2 bg-white border border-[#E7E7E5] rounded-lg px-3.5 h-[42px] flex-1 min-w-[220px]">
-            <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un centre...' : 'Search a centre...' }}" class="flex-1 min-w-0 bg-transparent text-[13px] focus:outline-none">
+            <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un centre...' : 'Search a centre...' }}" class="ui-field-bare flex-1 min-w-0">
             <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i></button>
         </div>
         <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-auto">
