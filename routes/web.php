@@ -249,6 +249,26 @@ Route::get('/certificat-provenance/{slug}', function (Request $request, string $
         'transfers' => \Illuminate\Support\Facades\DB::table('ownership_transfers')->where('product_id', $product->id)->orderBy('id')->get()->all(),
     ]);
 })->middleware('throttle:60,1')->name('provenance.certificate');
+
+/*
+ * The certificate hub for a product: every document the registry holds for it,
+ * in one place, with its live status. A buyer handed one certificate needs a way
+ * to find the others without knowing they exist.
+ */
+Route::get('/certificats/{slug}', function (Request $request, string $slug) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $product = \App\Modules\Products\Models\Product::with(['business.region', 'business.user', 'images'])
+        ->where('slug', $slug)->first();
+
+    abort_unless($product && $product->status === 'published' && $product->business_id, 404);
+
+    return view('pages.certificate-hub', [
+        'lang'    => $lang,
+        'product' => $product,
+        'lang'    => $lang,
+    ]);
+})->middleware('throttle:60,1')->name('certificate.hub');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;
