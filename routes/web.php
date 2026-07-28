@@ -67,6 +67,19 @@ Route::get('/verifier', function (Request $request) {
         'result' => $result,
     ]);
 })->middleware('throttle:30,1')->name('product.certificate.verify');
+
+/*
+ * The certificate prints its own verification address, so that address has to
+ * be short enough to read off a printed sheet and type by hand. The query-string
+ * form above stays the canonical one for links; this is the readable alias that
+ * appears on the document and behind the QR code.
+ */
+Route::get('/verifier/{ref}', function (Request $request, string $ref) {
+    return redirect()->route('product.certificate.verify', array_filter([
+        'ref'  => $ref,
+        'lang' => in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : null,
+    ]));
+})->where('ref', '[A-Za-z0-9\-]+')->middleware('throttle:30,1')->name('product.certificate.verify.short');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;

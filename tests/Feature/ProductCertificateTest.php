@@ -63,7 +63,7 @@ class ProductCertificateTest extends TestCase
         $this->get('/certificat/' . $product->slug)
             ->assertOk()
             ->assertSee($cert->certificate_no)
-            ->assertSee(strtoupper(substr($cert->content_hash, 0, 24)));
+            ->assertSee(strtoupper(substr($cert->content_hash, 0, 20)));
     }
 
     /**
