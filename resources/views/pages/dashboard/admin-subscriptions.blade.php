@@ -31,13 +31,16 @@
     };
     // Stat cards — real counts from $subStats; card 5 lives in the rail. The design's
     // month-over-month deltas had no prior-period source, so they are not rendered.
+    // Icon chips: [lucide name, chip fill, glyph colour] — the design's raster
+    // tiles redrawn as stroked lucide glyphs so they stay crisp at any size and
+    // carry no baked-in white edge on the dark theme.
     $cards = [
-        ['sub-kpi-1.png', number_format($subStats['active']),   $isFr ? 'Abonnements Actifs' : 'Active Subscriptions',    'sub-spark-1.png'],
-        ['sub-kpi-2.png', number_format($subStats['pending']),  $isFr ? 'En Attente de Paiement' : 'Awaiting Payment',    'sub-spark-2.png'],
-        ['sub-kpi-3.png', number_format($subStats['expiring']), $isFr ? 'Expirent ce Mois' : 'Expiring This Month',       'sub-spark-3.png'],
-        ['sub-kpi-4.png', number_format($subStats['revenue']),  $isFr ? 'Revenus Totaux (FCFA)' : 'Total Revenue (FCFA)', 'sub-spark-4.png'],
+        [['users', '#033F21', '#FFFFFF'],              number_format($subStats['active']),   $isFr ? 'Abonnements Actifs' : 'Active Subscriptions',    'sub-spark-1.png'],
+        [['clock', '#FBE5C0', '#7A4A0C'],              number_format($subStats['pending']),  $isFr ? 'En Attente de Paiement' : 'Awaiting Payment',    'sub-spark-2.png'],
+        [['calendar-clock', '#753B05', '#FFFFFF'],     number_format($subStats['expiring']), $isFr ? 'Expirent ce Mois' : 'Expiring This Month',       'sub-spark-3.png'],
+        [['circle-dollar-sign', '#0B6234', '#FFFFFF'], number_format($subStats['revenue']),  $isFr ? 'Revenus Totaux (FCFA)' : 'Total Revenue (FCFA)', 'sub-spark-4.png'],
     ];
-    $railCard = ['sub-kpi-5.png', $subStats['renewal'] . '%', $isFr ? 'Taux de Renouvellement' : 'Renewal Rate', 'sub-spark-5.png'];
+    $railCard = [['refresh-cw', '#41136F', '#FFFFFF'], $subStats['renewal'] . '%', $isFr ? 'Taux de Renouvellement' : 'Renewal Rate', 'sub-spark-5.png'];
 
     // Donut + legend — real plan distribution ($planDist), plan colours from the plans table.
     $planTotal = max(1, (int) $planDist->sum('n'));

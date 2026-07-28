@@ -153,27 +153,35 @@
                 <svg viewBox="0 0 720 260" class="w-full h-auto" preserveAspectRatio="none" aria-hidden="true">
                     <defs>
                         <linearGradient id="anArea" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#14652F" stop-opacity="0.22"/>
-                            <stop offset="100%" stop-color="#14652F" stop-opacity="0.02"/>
+                            <stop offset="0%" style="stop-color: rgb(var(--t-brand))" stop-opacity="0.22"/>
+                            <stop offset="100%" style="stop-color: rgb(var(--t-brand))" stop-opacity="0.02"/>
                         </linearGradient>
                     </defs>
 
-                    {{-- Gridlines + Y labels --}}
+                    {{-- An SVG cannot carry a `dark:` class on a presentation
+                     attribute, so the chart reads the theme's own custom
+                     properties through `style`. Measured on the dark card
+                     (#12150F): gridlines 1.71:1 (light mode's #F0F1F0 on white
+                     is 1.10:1, so this is the more visible of the two), Y and X
+                     labels 5.04:1 and 8.86:1, the data line 4.69:1. The point
+                     marker fills with the card colour in both themes, which is
+                     what made it read as a ring in light mode. --}}
+                {{-- Gridlines + Y labels --}}
                     @foreach($anTicks as $tick)
-                    <line x1="{{ $anPL }}" y1="{{ $tick['y'] }}" x2="{{ 720 - $anPR }}" y2="{{ $tick['y'] }}" stroke="#F0F1F0" stroke-width="1"/>
-                    <text x="{{ $anPL - 8 }}" y="{{ $tick['y'] + 3 }}" text-anchor="end" font-size="10" fill="#8A857A" font-family="Poppins, sans-serif">{{ number_format($tick['val']) }}</text>
+                    <line x1="{{ $anPL }}" y1="{{ $tick['y'] }}" x2="{{ 720 - $anPR }}" y2="{{ $tick['y'] }}" style="stroke: rgb(var(--t-border-strong))" stroke-width="1"/>
+                    <text x="{{ $anPL - 8 }}" y="{{ $tick['y'] + 3 }}" text-anchor="end" font-size="10" style="fill: rgb(var(--t-ink-3))" font-family="Poppins, sans-serif">{{ number_format($tick['val']) }}</text>
                     @endforeach
 
                     {{-- Area + line --}}
                     @if($anArea)
                     <polygon points="{{ $anArea }}" fill="url(#anArea)"/>
-                    <polyline points="{{ $anLine }}" fill="none" stroke="#14652F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="{{ $anLine }}" fill="none" style="stroke: rgb(var(--t-brand))" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     @endif
 
                     {{-- Points + X labels --}}
                     @foreach($anPts as $p)
-                    <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="4" fill="#ffffff" stroke="#14652F" stroke-width="2.5"/>
-                    <text x="{{ $p['x'] }}" y="{{ 260 - 12 }}" text-anchor="middle" font-size="11" fill="#6F6B60" font-family="Poppins, sans-serif">{{ $p['label'] }}</text>
+                    <circle cx="{{ $p['x'] }}" cy="{{ $p['y'] }}" r="4" style="fill: rgb(var(--t-surface)); stroke: rgb(var(--t-brand))" stroke-width="2.5"/>
+                    <text x="{{ $p['x'] }}" y="{{ 260 - 12 }}" text-anchor="middle" font-size="11" style="fill: rgb(var(--t-ink-2))" font-family="Poppins, sans-serif">{{ $p['label'] }}</text>
                     @endforeach
                 </svg>
 

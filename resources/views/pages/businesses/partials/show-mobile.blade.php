@@ -568,6 +568,44 @@
         box-shadow: 0 3px 10px rgba(2,26,12,.4);
     }
     [data-mobile-profile] .mob-nav .mob-nav-mid span.mob-disc img { width: 44px; height: 44px; border-radius: 50%; }
+
+    /* ── Dark ──────────────────────────────────────────────────────────────
+       Most of this partial is already variable-driven, so the page, the card
+       and the hairline re-point once and everything built from them follows.
+       What does not follow is the handful of rules that name a colour inline;
+       each of those gets a counterpart below, and nothing else changes.
+
+       Deliberately NOT re-pointed:
+         --mob-dark / --mob-dark2 / --mob-panel  the hero and its trust panel
+              are already the near-black the artwork specifies. Dark mode is
+              that language extended, not inverted.
+         --mob-nav   the bottom bar is a dark-green rail in both themes. It is
+              also read as *text* by the active tab, which would then be
+              invisible on a dark card, so that one rule is overridden below
+              rather than the variable being changed.
+         --mob-gold / --mob-star / --mob-red   already legible on dark.
+
+       Ratios measured against the card fill #12150F unless stated. */
+    html.dark [data-mobile-profile] {
+        --mob-page:  #0A0C09;
+        --mob-card:  #12150F;
+        --mob-line:  #262B21;
+        --mob-green: #339B56;    /* 5.23:1 — the contract's brand-link */
+    }
+    html.dark [data-mobile-profile] .mob-sec-h { color: #339B56; }          /* 5.23:1 */
+    html.dark [data-mobile-profile] .mob-act > * { color: #F3EFE7; }        /* 16.06:1 */
+    html.dark [data-mobile-profile] .mob-tab { color: #868778; }            /* 5.04:1 */
+    html.dark [data-mobile-profile] .mob-tab[aria-selected="true"] {
+        color: #339B56; border-bottom-color: #339B56;                       /* 5.23:1 */
+    }
+    html.dark [data-mobile-profile] .mob-vpill {
+        border-color: #1B5E33; background: #0C3D1D; color: #8BDCA6;         /* 7.58:1 on the well */
+    }
+    html.dark [data-mobile-profile] .mob-fact-ic {
+        background: #0C3D1D; border-color: #1B5E33;                         /* icon 3.51:1 on the well */
+    }
+    html.dark [data-mobile-profile] .mob-prod .mob-prod-img { background: #1A1E16; }
+    html.dark [data-mobile-profile] .ap-absent { color: #868778; }          /* 5.04:1 */
 </style>
 
 {{-- ── Status bar ──────────────────────────────────────────────────────────
