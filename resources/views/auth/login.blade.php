@@ -66,7 +66,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F6F4F2] text-[#1D1B16] antialiased">
+<body class="bg-[#F6F4F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 <!-- Hero: brand panel + login card + photo -->
 <section class="pt-4 px-4 pb-2">
@@ -131,11 +131,11 @@
         </div>
 
         <!-- Login card -->
-        <div class="relative z-10 mx-3 -mt-3 mb-5 lg:m-0 lg:absolute lg:left-[44%] lg:top-1/2 lg:-translate-y-1/2 lg:w-[39.8%] bg-[#F9F6F1] rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.35)] px-5 py-6 lg:px-11 lg:py-10">
-            <h2 class="font-serif text-[28px] lg:text-[40px] text-[#1D1B16] leading-tight">
+        <div class="relative z-10 mx-3 -mt-3 mb-5 lg:m-0 lg:absolute lg:left-[44%] lg:top-1/2 lg:-translate-y-1/2 lg:w-[39.8%] bg-[#F9F6F1] dark:bg-[#0A0C09] rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.35)] px-5 py-6 lg:px-11 lg:py-10">
+            <h2 class="font-serif text-[28px] lg:text-[40px] text-[#1D1B16] dark:text-[#F3EFE7] leading-tight">
                 {{ $isFr ? 'Se connecter' : 'Sign in' }}
             </h2>
-            <p class="mt-1 text-[14.5px] lg:text-[18px] text-[#6F6B60]">
+            <p class="mt-1 text-[14.5px] lg:text-[18px] text-[#6F6B60] dark:text-[#868778]">
                 {{ $isFr ? 'Accédez à votre compte' : 'Access your account' }}
             </p>
 
@@ -169,7 +169,7 @@
                         placeholder="{{ $isFr ? 'Entrez votre email ou téléphone' : 'Enter your email or phone' }}"
                         class="ui-field ui-field--lg pr-11 {{ $errors->has('email') ? 'ui-field--invalid' : '' }}"
                         required autofocus>
-                    <i data-lucide="user" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A857A] pointer-events-none"></i>
+                    <i data-lucide="user" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A857A] dark:text-[#868778] pointer-events-none"></i>
                 </div>
 
                 <label class="mt-5 ui-label" for="password">
@@ -181,7 +181,7 @@
                         class="ui-field ui-field--lg pr-11 {{ $errors->has('password') ? 'ui-field--invalid' : '' }}"
                         required>
                     <button type="button" id="password-toggle" aria-label="{{ $isFr ? 'Afficher le mot de passe' : 'Show password' }}"
-                        class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A857A] hover:text-[#26251F] transition-colors">
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A857A] dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
                         <i data-lucide="eye" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -189,9 +189,9 @@
                 <div class="mt-5 flex items-center justify-between">
                     <label class="ui-check-row items-center cursor-pointer select-none">
                         <input type="checkbox" name="remember" value="1" class="ui-check">
-                        <span class="text-[13px] font-medium text-[#26251F]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
+                        <span class="text-[13px] font-medium text-[#26251F] dark:text-[#F3EFE7]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
                     </label>
-                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="text-[13px] font-semibold text-gold hover:text-goldlt transition-colors">
+                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="text-[13px] font-semibold text-gold dark:text-[#EDB33A] hover:text-goldlt transition-colors">
                         {{ $isFr ? 'Mot de passe oublié ?' : 'Forgot password?' }}
                     </a>
                 </div>
@@ -204,9 +204,9 @@
 
             @if(config('app.demo_login'))
             <div class="mt-7 flex items-center gap-4">
-                <span class="flex-1 h-px bg-[#E4E0D8]"></span>
-                <span class="text-[14.5px] text-muted">{{ $isFr ? 'comptes de démonstration' : 'demo accounts' }}</span>
-                <span class="flex-1 h-px bg-[#E4E0D8]"></span>
+                <span class="flex-1 h-px bg-[#E4E0D8] dark:bg-[#0A0C09]"></span>
+                <span class="text-[14.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'comptes de démonstration' : 'demo accounts' }}</span>
+                <span class="flex-1 h-px bg-[#E4E0D8] dark:bg-[#0A0C09]"></span>
             </div>
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 @foreach([
@@ -216,15 +216,15 @@
                 ] as [$key, $icon, $label, $who, $col])
                 <form method="POST" action="{{ url('/demo-login/'.$key) }}">
                     @csrf
-                    <button type="submit" class="w-full rounded-[12px] border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] px-3 py-3 text-center transition-colors">
+                    <button type="submit" class="w-full rounded-[12px] border border-[#E4E0D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] hover:bg-[#FBF9F6] hover:dark:bg-[#0A0C09] px-3 py-3 text-center transition-colors">
                         <i data-lucide="{{ $icon }}" class="w-5 h-5 mx-auto mb-1" style="color:{{ $col }}"></i>
-                        <span class="block text-[13.5px] font-bold text-[#26251F]">{{ $label }}</span>
-                        <span class="block text-[10.5px] text-muted leading-tight mt-0.5">{{ $who }}</span>
+                        <span class="block text-[13.5px] font-bold text-[#26251F] dark:text-[#F3EFE7]">{{ $label }}</span>
+                        <span class="block text-[10.5px] text-muted dark:text-[#868778] leading-tight mt-0.5">{{ $who }}</span>
                     </button>
                 </form>
                 @endforeach
             </div>
-            <p class="mt-2 text-center text-[11px] text-muted">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
+            <p class="mt-2 text-center text-[11px] text-muted dark:text-[#868778]">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
             @endif
 
             {{-- Google and Facebook sign-in removed for launch: neither provider
@@ -232,21 +232,21 @@
                  passkey option below is real and stays. --}}
 
             <button type="button" id="passkey-login"
-                class="mt-4 w-full h-[48px] rounded-[12px] border border-[#E4E0D8] bg-white hover:bg-[#FBF9F6] flex items-center justify-center gap-3 text-[15px] font-semibold text-[#26251F] transition-colors">
-                <i data-lucide="fingerprint" class="w-5 h-5 text-gold"></i>
+                class="mt-4 w-full h-[48px] rounded-[12px] border border-[#E4E0D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] hover:bg-[#FBF9F6] hover:dark:bg-[#0A0C09] flex items-center justify-center gap-3 text-[15px] font-semibold text-[#26251F] dark:text-[#F3EFE7] transition-colors">
+                <i data-lucide="fingerprint" class="w-5 h-5 text-gold dark:text-[#EDB33A]"></i>
                 {{ $isFr ? 'Se connecter avec une passkey' : 'Sign in with a passkey' }}
             </button>
-            <p id="passkey-login-error" class="hidden mt-2 text-[12.5px] text-red-600 text-center"></p>
+            <p id="passkey-login-error" class="hidden mt-2 text-[12.5px] text-red-600 dark:text-[#F0555C] text-center"></p>
 
-            <p class="mt-7 text-center text-[14.5px] text-[#26251F] lg:whitespace-nowrap">
+            <p class="mt-7 text-center text-[14.5px] text-[#26251F] dark:text-[#F3EFE7] lg:whitespace-nowrap">
                 {{ $isFr ? 'Vous n\'avez pas encore de compte ?' : 'Don\'t have an account yet?' }}
-                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="ml-1 font-semibold text-gold hover:text-goldlt transition-colors">
+                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="ml-1 font-semibold text-gold dark:text-[#EDB33A] hover:text-goldlt transition-colors">
                     {{ $isFr ? 'Créer un compte' : 'Create an account' }}
                 </a>
             </p>
 
             <p class="mt-4 text-center">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-[#26251F] transition-colors">
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] text-muted dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Continuer sans compte' : 'Browse as guest' }}
                 </a>

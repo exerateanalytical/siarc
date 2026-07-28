@@ -17,7 +17,7 @@ $docTypeLabels = [
 
     <div class="flex items-center gap-2 mb-6">
         <h2 class="ui-card-title">{{ $lang === 'fr' ? 'File d\'attente' : 'Queue' }}</h2>
-        <span class="text-xs font-medium bg-amber-100 text-amber-700 px-2 py-1 rounded-full">{{ $applications->total() }}</span>
+        <span class="text-xs font-medium bg-amber-100 dark:bg-[#3A2B06] text-amber-700 dark:text-[#EDB33A] px-2 py-1 rounded-full">{{ $applications->total() }}</span>
     </div>
 
     @if(session('success'))
@@ -36,18 +36,18 @@ $docTypeLabels = [
         <div class="ui-card">
             <div class="flex items-start justify-between mb-3">
                 <div>
-                    <p class="text-sm font-semibold text-[#1B1B18]">{{ $app->business->name_fr }}</p>
-                    <p class="ui-dt">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-medium text-[#55524A]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
+                    <p class="text-sm font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $app->business->name_fr }}</p>
+                    <p class="ui-dt">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-medium text-[#55524A] dark:text-[#B4B5A6]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
                 </div>
-                <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $app->business->slug]) }}" target="_blank" class="text-xs text-[#157A43] hover:underline flex items-center gap-1 shrink-0">
+                <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $app->business->slug]) }}" target="_blank" class="text-xs text-[#157A43] dark:text-[#339B56] hover:underline flex items-center gap-1 shrink-0">
                     <i data-lucide="external-link" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Voir profil' : 'View profile' }}
                 </a>
             </div>
 
             <div class="flex flex-wrap gap-2 mb-4">
                 @foreach($app->documents as $doc)
-                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs bg-[#F8F4EC] border border-[#EFEBE2] px-2.5 py-1.5 rounded-lg hover:bg-[#F1EDE3]">
-                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#B8B2A4]"></i>
+                <a href="{{ $doc->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs bg-[#F8F4EC] dark:bg-[#1A1E16] border border-[#EFEBE2] dark:border-[#262B21] px-2.5 py-1.5 rounded-lg hover:bg-[#F1EDE3] dark:hover:bg-[#242A1E]">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#B8B2A4] dark:text-[#868778]"></i>
                     {{ $docTypeLabels[$doc->type] ?? $doc->type }}
                 </a>
                 @endforeach
@@ -63,22 +63,22 @@ $docTypeLabels = [
                         <i data-lucide="check" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Approuver' : 'Approve' }}
                     </button>
                 </form>
-                <button type="button" onclick="document.getElementById('reject-{{ $app->id }}').classList.toggle('hidden')" class="flex-1 border border-red-200 text-red-600 text-sm font-medium py-2 rounded-lg flex items-center justify-center gap-1.5 hover:bg-red-50">
+                <button type="button" onclick="document.getElementById('reject-{{ $app->id }}').classList.toggle('hidden')" class="flex-1 border border-red-200 dark:border-[#5C2126] text-red-600 dark:text-[#F0555C] text-sm font-medium py-2 rounded-lg flex items-center justify-center gap-1.5 hover:bg-red-50 dark:hover:bg-[#3A1013]">
                     <i data-lucide="x" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Rejeter' : 'Reject' }}
                 </button>
             </div>
 
-            <div id="reject-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-[#F5F1E8]">
+            <div id="reject-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-[#F5F1E8] dark:border-[#262B21]">
                 <form method="POST" action="{{ route('admin.verifications.reject', ['id' => $app->id]) }}">
                     @csrf
                     <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="ui-field ui-textarea w-full mb-2"></textarea>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg">{{ $lang === 'fr' ? 'Confirmer le rejet' : 'Confirm rejection' }}</button>
+                    <button type="submit" class="bg-red-600 dark:bg-[#C0343B] hover:bg-red-700 dark:hover:bg-[#A62A31] text-white text-sm font-medium px-4 py-2 rounded-lg">{{ $lang === 'fr' ? 'Confirmer le rejet' : 'Confirm rejection' }}</button>
                 </form>
             </div>
         </div>
         @empty
         <div class="ui-card text-center">
-            <i data-lucide="inbox" class="w-10 h-10 text-[#DCD5C6] mx-auto mb-3"></i>
+            <i data-lucide="inbox" class="w-10 h-10 text-[#DCD5C6] dark:text-[#868778] mx-auto mb-3"></i>
             <p class="ui-card-sub">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
         </div>
         @endforelse

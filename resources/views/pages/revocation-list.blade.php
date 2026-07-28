@@ -39,24 +39,24 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F5F3EE] text-[#1D1B16] antialiased">
+<body class="bg-[#F5F3EE] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
 <main class="max-w-[880px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
     <nav class="flex items-center gap-2 text-[12.5px] mb-5" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
         <span>{{ $isFr ? 'Certificats révoqués' : 'Revoked certificates' }}</span>
     </nav>
 
     <header class="mb-7">
         <span class="ui-pill ui-pill-neutral">{{ $isFr ? 'Registre public' : 'Public register' }}</span>
-        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] leading-tight">
+        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] dark:text-[#339B56] leading-tight">
             {{ $isFr ? 'Certificats révoqués' : 'Revoked certificates' }}
         </h1>
-        <p class="mt-3 text-[13.5px] text-[#3A3A35] leading-relaxed max-w-[640px]">
+        <p class="mt-3 text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed max-w-[640px]">
             {{ $isFr
                ? "Un certificat révoqué est un certificat retiré : il ne doit plus être considéré comme valable, quelle que soit l'apparence du document imprimé. Cette liste est publique afin que toute personne détenant un numéro puisse le vérifier elle-même."
                : 'A revoked certificate has been withdrawn: it should no longer be relied on, however convincing the printed document looks. This list is public so that anyone holding a number can check it themselves.' }}
@@ -93,7 +93,7 @@
         <h2 class="ui-card-title">
             {{ $isFr ? 'Certificats retirés' : 'Withdrawn certificates' }}
             @if($total > 0)
-                <span class="text-[#8A857A] font-normal">({{ $total }})</span>
+                <span class="text-[#8A857A] dark:text-[#868778] font-normal">({{ $total }})</span>
             @endif
         </h2>
 
@@ -149,12 +149,12 @@
     {{-- ── What it means, and what to do ── --}}
     <section class="ui-card p-5 sm:p-6 mt-4">
         <h2 class="ui-card-title">{{ $isFr ? 'Que signifie une révocation ?' : 'What a revocation means' }}</h2>
-        <p class="mt-2 text-[13px] text-[#3A3A35] leading-relaxed">
+        <p class="mt-2 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? "Une révocation annule le certificat à compter de la date indiquée. Le document imprimé reste ce qu'il est — du papier — mais l'enregistrement auquel il renvoie ne le confirme plus. Les motifs vont de l'erreur administrative, qui n'implique aucune faute, à la fraude ou à la falsification, qui sont graves."
                : 'A revocation cancels the certificate from the date shown. The printed document remains what it is — paper — but the record it points at no longer stands behind it. Reasons range from an administrative error, which implies no wrongdoing at all, to fraud or forgery, which are serious.' }}
         </p>
-        <p class="mt-3 text-[13px] text-[#3A3A35] leading-relaxed">
+        <p class="mt-3 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? "Si le numéro que vous détenez figure ci-dessus : ne vous fondez pas sur ce certificat pour un achat, une assurance, une expédition ou une expertise, et contactez la partie qui vous l'a remis. Si vous pensez que la révocation est une erreur, écrivez-nous — une révocation prononcée à tort est réversible, et la réversion est elle aussi consignée."
                : 'If the number you hold appears above: do not rely on that certificate for a purchase, an insurance claim, a shipment or an appraisal, and go back to whoever gave it to you. If you believe the revocation is a mistake, write to us — a revocation entered in error can be reversed, and the reversal is recorded too.' }}

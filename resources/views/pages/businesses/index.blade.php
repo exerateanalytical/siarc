@@ -100,7 +100,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
+<body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -110,9 +110,9 @@
 
 <div class="relative max-w-[1440px] mx-auto px-4 sm:px-6 pt-4 pb-10">
     <nav class="flex items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <span class="text-[#1D1B16]">{{ $isFr ? 'Annuaire des artisans & entreprises' : 'Artisans & businesses directory' }}</span>
+        <span class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Annuaire des artisans & entreprises' : 'Artisans & businesses directory' }}</span>
     </nav>
 
     <div class="mt-4 flex flex-col lg:flex-row gap-8">
@@ -122,7 +122,7 @@
             <!-- Browse by official sector -->
             <div class="mb-5">@include('pages.partials.sector-browser')</div>
             <!-- Search & filter -->
-            <div class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
+            <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl overflow-hidden">
                 <div class="flex items-center gap-2.5 bg-[#04291A] px-4 h-[38px]">
                     <i data-lucide="sliders-horizontal" class="w-4 h-4 text-white"></i>
                     <span class="text-[11.5px] font-bold tracking-[0.1em] text-white uppercase">{{ $isFr ? 'Rechercher & Filtrer' : 'Search & Filter' }}</span>
@@ -130,14 +130,14 @@
                 <form method="GET" action="{{ route('businesses.index') }}" class="p-4">
                     <input type="hidden" name="lang" value="{{ $lang }}">
 
-                    <p class="text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Recherche' : 'Search' }}</p>
+                    <p class="text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Recherche' : 'Search' }}</p>
                     <div class="relative mt-2">
                         <input name="q" type="search" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Nom, entreprise, spécialité...' : 'Name, business, specialty...' }}"
                             class="ui-field ui-field--sm pr-8">
-                        <i data-lucide="search" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[#6F6B60]"></i>
+                        <i data-lucide="search" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[#6F6B60] dark:text-[#868778]"></i>
                     </div>
 
-                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Catégorie' : 'Category' }}</p>
+                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Catégorie' : 'Category' }}</p>
                     <select name="industry" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</option>
                         @foreach($searchCats as [$scSlug, $scLabel])
@@ -145,7 +145,7 @@
                         @endforeach
                     </select>
 
-                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Région' : 'Region' }}</p>
+                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Région' : 'Region' }}</p>
                     <select name="region" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les régions' : 'All regions' }}</option>
                         @foreach($regions as $regionRow)
@@ -153,40 +153,40 @@
                         @endforeach
                     </select>
 
-                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Type de profil' : 'Profile type' }}</p>
+                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Type de profil' : 'Profile type' }}</p>
                     <div class="mt-2.5 space-y-2.5">
                         <label class="flex items-center justify-between cursor-pointer">
                             <span class="flex items-center gap-2.5">
                                 <input type="checkbox" name="type[]" value="artisan" class="ui-check">
-                                <span class="text-[12px] text-[#3A3A35]">Artisan</span>
+                                <span class="text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">Artisan</span>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60]">({{ $vendorTypeCounts['artisan'] ?? 0 }})</span>
+                            <span class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">({{ $vendorTypeCounts['artisan'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center justify-between cursor-pointer">
                             <span class="flex items-center gap-2.5">
                                 <input type="checkbox" name="type[]" value="entreprise" class="ui-check">
-                                <span class="text-[12px] text-[#3A3A35]">{{ $isFr ? 'Entreprise' : 'Business' }}</span>
+                                <span class="text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Entreprise' : 'Business' }}</span>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60]">({{ $vendorTypeCounts['entreprise'] ?? 0 }})</span>
+                            <span class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">({{ $vendorTypeCounts['entreprise'] ?? 0 }})</span>
                         </label>
                         <label class="flex items-center justify-between cursor-pointer">
                             <span class="flex items-center gap-2.5">
                                 <input type="checkbox" name="type[]" value="cooperative" class="ui-check">
-                                <span class="text-[12px] text-[#3A3A35]">{{ $isFr ? 'Coopérative' : 'Cooperative' }}</span>
+                                <span class="text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Coopérative' : 'Cooperative' }}</span>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60]">({{ $vendorTypeCounts['cooperative'] ?? 0 }})</span>
+                            <span class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">({{ $vendorTypeCounts['cooperative'] ?? 0 }})</span>
                         </label>
                     </div>
 
-                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Spécialité / Métier' : 'Specialty / Trade' }}</p>
+                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Spécialité / Métier' : 'Specialty / Trade' }}</p>
                     <select name="specialite" class="ui-field ui-select ui-field--sm mt-2">
                         <option value="">{{ $isFr ? 'Toutes les spécialités' : 'All specialties' }}</option>
                     </select>
 
-                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16]">Certification</p>
+                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">Certification</p>
                     <label class="mt-2.5 flex items-center gap-2.5 cursor-pointer">
                         <input type="checkbox" name="tier" value="certified" class="ui-check">
-                        <span class="text-[12px] text-[#3A3A35]">{{ $isFr ? 'Artisanat Authentique' : 'Authentic Craftsmanship' }}</span>
+                        <span class="text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Artisanat Authentique' : 'Authentic Craftsmanship' }}</span>
                         <img src="{{ asset('images/landing/vendor-cert-icon.png') }}" alt="" class="w-[15px] h-[14px] object-contain">
                     </label>
 
@@ -202,7 +202,7 @@
                 <img src="{{ asset('images/landing/vendor-cta-mask.png') }}" alt="" class="absolute right-0 top-0 h-full w-auto object-cover" aria-hidden="true">
                 <p class="text-[13px] font-bold text-white leading-snug">{{ $isFr ? 'Vous êtes artisan ou entreprise ?' : 'Are you an artisan or a business?' }}</p>
                 <p class="mt-2 text-[11px] text-[#B9C4BC] leading-relaxed">{{ $isFr ? 'Rejoignez notre plateforme pour promouvoir vos créations et développer votre activité.' : 'Join our platform to promote your creations and grow your activity.' }}</p>
-                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="relative z-10 mt-4 inline-flex items-center gap-2 bg-[#EBA51D] hover:bg-goldbt text-[#3A2E08] text-[12px] font-semibold px-3.5 py-2.5 rounded-lg transition-colors">
+                <a href="{{ route('inscription', ['lang' => $lang]) }}" class="relative z-10 mt-4 inline-flex items-center gap-2 bg-[#EBA51D] hover:bg-goldbt hover:dark:bg-[#3A2B06] text-[#3A2E08] dark:text-[#EDB33A] text-[12px] font-semibold px-3.5 py-2.5 rounded-lg transition-colors">
                     {{ $isFr ? 'S\'inscrire maintenant' : 'Sign up now' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
@@ -213,21 +213,21 @@
         <section class="flex-1 min-w-0">
             <div class="flex flex-wrap items-start justify-between gap-6">
                 <div class="max-w-[560px]">
-                    <h1 class="font-serif text-[28px] sm:text-[32px] leading-tight text-[#12432A] font-semibold">{{ $isFr ? 'Annuaire des Artisans & Entreprises' : 'Artisans & Businesses Directory' }}</h1>
+                    <h1 class="font-serif text-[28px] sm:text-[32px] leading-tight text-[#12432A] dark:text-[#339B56] font-semibold">{{ $isFr ? 'Annuaire des Artisans & Entreprises' : 'Artisans & Businesses Directory' }}</h1>
                     <p class="mt-1.5 text-[13.5px] font-semibold text-[#C9862B]">{{ $isFr ? 'Trouvez des partenaires de confiance et soutenez l\'économie locale' : 'Find trusted partners and support the local economy' }}</p>
-                    <p class="mt-3 text-[13px] text-[#55524A] leading-relaxed">
+                    <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                         {{ $isFr ? 'Parcourez notre répertoire d\'artisans et d\'entreprises authentiques du Cameroun.' : 'Browse our directory of authentic Cameroonian artisans and businesses.' }}<br>
                         {{ $isFr ? 'Entre en contact direct, collaborez et soutenez le savoir-faire local.' : 'Get in direct contact, collaborate and support local know-how.' }}
                     </p>
                 </div>
                 <img src="{{ asset('images/landing/vendor-hero-map.png') }}" alt="" class="hidden xl:block w-[96px] shrink-0 mt-2" aria-hidden="true">
-                <div class="bg-white border border-[#ECECEA] rounded-xl px-5 py-4 shrink-0">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 sm:divide-x sm:divide-[#EFEDEA]">
+                <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4 shrink-0">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 sm:divide-x sm:divide-[#EFEDEA] sm:dark:divide-[#262B21]">
                         @foreach($statItems as $statIdx => [$statIcon, $statValue, $statLabel])
                         <div class="{{ $statIdx > 0 ? 'sm:pl-6' : '' }}">
                             <i data-lucide="{{ $statIcon }}" class="w-[22px] h-[22px] text-[#E08A21]" stroke-width="1.8"></i>
-                            <p class="mt-2.5 text-[15px] font-bold text-[#1D1B16] leading-none">{{ $statValue }}</p>
-                            <p class="mt-1.5 text-[10.5px] text-[#6F6B60] whitespace-nowrap">{{ $statLabel }}</p>
+                            <p class="mt-2.5 text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ $statValue }}</p>
+                            <p class="mt-1.5 text-[10.5px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $statLabel }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -235,23 +235,23 @@
             </div>
 
             <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
-                <p class="text-[13px] font-semibold text-[#1D1B16]">{{ $isFr ? '2,548 artisans & entreprises trouvés' : '2,548 artisans & businesses found' }}</p>
+                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? '2,548 artisans & entreprises trouvés' : '2,548 artisans & businesses found' }}</p>
                 <div class="flex items-center gap-3">
-                    <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[38px] bg-white border border-[#E3E3E1] rounded-lg px-3.5">
+                    <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <label for="sort-select" class="text-[12px] text-[#55524A] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
+                        <label for="sort-select" class="text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort-select" name="sort" onchange="this.form.submit()"
                             class="ui-field-bare font-medium cursor-pointer w-auto">
                             <option value="recents" {{ request('sort', 'recents') === 'recents' ? 'selected' : '' }}>{{ $isFr ? 'Plus récents' : 'Most recent' }}</option>
                             <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>{{ $isFr ? 'Nom (A–Z)' : 'Name (A–Z)' }}</option>
                         </select>
                     </form>
-                    <div class="flex items-center h-[38px] bg-white border border-[#E3E3E1] rounded-lg overflow-hidden">
-                        <button type="button" id="view-grid" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}" class="w-[38px] h-full flex items-center justify-center bg-[#F2F5F2] text-[#0B3D28]">
+                    <div class="flex items-center h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg overflow-hidden">
+                        <button type="button" id="view-grid" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}" class="w-[38px] h-full flex items-center justify-center bg-[#F2F5F2] dark:bg-[#0A0C09] text-[#0B3D28] dark:text-[#339B56]">
                             <i data-lucide="layout-grid" class="w-4 h-4"></i>
                         </button>
-                        <span class="h-[20px] w-px bg-[#E3E3E1]"></span>
-                        <button type="button" id="view-list" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}" class="w-[38px] h-full flex items-center justify-center text-[#8A857A]">
+                        <span class="h-[20px] w-px bg-[#E3E3E1] dark:bg-[#0A0C09]"></span>
+                        <button type="button" id="view-list" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}" class="w-[38px] h-full flex items-center justify-center text-[#8A857A] dark:text-[#868778]">
                             <i data-lucide="list" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -264,7 +264,7 @@
                  fold on every device. --}}
             <div id="vendor-grid" class="mt-4 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5">
                 @forelse($designVendors as $vendor)
-                <article class="vend-card bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+                <article class="vend-card bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
                     <div class="vend-media relative">
                         <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}">
                             <img src="{{ $vendor['img'] }}" alt="{{ $vendor['name'] }}" class="vend-img w-full h-[140px] object-cover">
@@ -274,8 +274,8 @@
                             class="absolute top-1 right-1 w-10 h-10 rounded-full"></a>
                     </div>
                     <div class="p-3.5">
-                        <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16]">
-                            <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}" class="truncate hover:text-leaf transition-colors">{{ $vendor['name'] }}</a>
+                        <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
+                            <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}" class="truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $vendor['name'] }}</a>
                             @if($vendor['verified'])
                             <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0" aria-label="{{ $isFr ? 'Vérifié' : 'Verified' }}">
                                 <circle cx="8" cy="8" r="8" fill="#17A34A"/>
@@ -283,30 +283,30 @@
                             </svg>
                             @endif
                         </h3>
-                        <p class="mt-1 text-[11.5px] text-[#55524A]">{{ $vendor['cat'] }}</p>
-                        <p class="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-[#6F6B60]">
+                        <p class="mt-1 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $vendor['cat'] }}</p>
+                        <p class="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
                             <i data-lucide="map-pin" class="w-[12px] h-[12px]"></i>
                             {{ $vendor['loc'] }}
                         </p>
-                        <p class="mt-2 text-[11.5px] text-[#55524A] leading-relaxed whitespace-pre-line">{{ $vendor['desc'] }}</p>
+                        <p class="mt-2 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $vendor['desc'] }}</p>
                         <div class="mt-3 flex items-center gap-2">
                             <img src="{{ asset('images/landing/' . $vendor['av']) }}" alt="" class="h-[26px] w-auto">
-                            <span class="text-[11px] font-semibold text-[#55524A]">{{ $vendor['plus'] }}</span>
+                            <span class="text-[11px] font-semibold text-[#55524A] dark:text-[#B4B5A6]">{{ $vendor['plus'] }}</span>
                         </div>
                         <div class="mt-3.5 flex items-center gap-2">
                             <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}"
-                                class="flex-1 h-[34px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] transition-colors">
+                                class="flex-1 h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                                 {{ $isFr ? 'Voir le profil' : 'View profile' }}
                             </a>
                             <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Envoyer un message' : 'Send a message' }}"
-                                class="w-[38px] h-[34px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center text-[#55524A] transition-colors">
+                                class="w-[38px] h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] transition-colors">
                                 <i data-lucide="message-square" class="w-[15px] h-[15px]"></i>
                             </a>
                         </div>
                     </div>
                 </article>
                 @empty
-                <p class="col-span-full py-10 text-center text-[13px] text-[#6F6B60]">
+                <p class="col-span-full py-10 text-center text-[13px] text-[#6F6B60] dark:text-[#868778]">
                     {{ $isFr ? 'Aucune entreprise ne correspond à ces critères.' : 'No business matches these criteria.' }}
                 </p>
                 @endforelse
@@ -318,19 +318,19 @@
                 @if($businesses->onFirstPage())
                 <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                 @else
-                <a href="{{ $businesses->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                <a href="{{ $businesses->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                 @endif
 
                 @foreach(range(1, $businesses->lastPage()) as $pageNum)
                 @if($pageNum === $businesses->currentPage())
                 <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
                 @else
-                <a href="{{ $businesses->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pageNum }}</a>
+                <a href="{{ $businesses->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
                 @endif
                 @endforeach
 
                 @if($businesses->hasMorePages())
-                <a href="{{ $businesses->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                <a href="{{ $businesses->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                 @else
                 <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                 @endif
@@ -341,15 +341,15 @@
 </div>
 
 <!-- Trust strip -->
-<div class="relative bg-[#FAF7F3] border-t border-[#EEEBE4]">
+<div class="relative bg-[#FAF7F3] dark:bg-[#0A0C09] border-t border-[#EEEBE4] dark:border-[#262B21]">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-4">
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             @foreach($trustItems as [$trustIcon, $trustTitle, $trustSub])
             <div class="flex items-start gap-3">
                 <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[40px] h-[42px] object-contain shrink-0">
                 <div class="leading-tight">
-                    <p class="text-[12px] font-bold text-[#1D1B16]">{{ $trustTitle }}</p>
-                    <p class="mt-1 text-[11px] text-[#6F6B60] whitespace-pre-line leading-relaxed">{{ $trustSub }}</p>
+                    <p class="text-[12px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
+                    <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line leading-relaxed">{{ $trustSub }}</p>
                 </div>
             </div>
             @endforeach
@@ -389,12 +389,12 @@
         grid.querySelectorAll('.vend-img').forEach(i => {
             i.classList.toggle('sm:h-full', isList);
         });
-        btnGrid.classList.toggle('bg-[#F2F5F2]', !isList);
-        btnGrid.classList.toggle('text-[#0B3D28]', !isList);
-        btnGrid.classList.toggle('text-[#8A857A]', isList);
-        btnList.classList.toggle('bg-[#F2F5F2]', isList);
-        btnList.classList.toggle('text-[#0B3D28]', isList);
-        btnList.classList.toggle('text-[#8A857A]', !isList);
+        btnGrid.classList.toggle('bg-[#F2F5F2] dark:bg-[#0A0C09]', !isList);
+        btnGrid.classList.toggle('text-[#0B3D28] dark:text-[#339B56]', !isList);
+        btnGrid.classList.toggle('text-[#8A857A] dark:text-[#868778]', isList);
+        btnList.classList.toggle('bg-[#F2F5F2] dark:bg-[#0A0C09]', isList);
+        btnList.classList.toggle('text-[#0B3D28] dark:text-[#339B56]', isList);
+        btnList.classList.toggle('text-[#8A857A] dark:text-[#868778]', !isList);
         localStorage.setItem('vendView', view);
     }
     btnGrid.addEventListener('click', () => setView('grid'));

@@ -299,7 +299,7 @@ $stateLabels = [
         <div class="ui-card-head">
             <p class="ui-card-title">{{ $isFr ? 'Distinctions enregistrées' : 'Recorded distinctions' }}</p>
         </div>
-        <ul class="divide-y divide-[#F0F1F0]">
+        <ul class="divide-y divide-[#F0F1F0] dark:divide-[#262B21]">
             @foreach($awards as $a)
             <li class="px-4 py-3 flex items-start justify-between gap-4" data-award="{{ $a->id }}">
                 <div class="min-w-0">

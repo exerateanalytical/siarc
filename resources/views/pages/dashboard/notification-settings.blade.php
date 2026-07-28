@@ -27,10 +27,10 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
     <form method="POST" action="{{ route('notifications.settings.save') }}">
         @csrf
         <div class="ui-card ui-card--flush">
-            <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4]">
+            <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                        <i data-lucide="bell-ring" class="w-4 h-4 text-forest-600"></i>
+                    <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                        <i data-lucide="bell-ring" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
                     </div>
                     <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Canaux par type de notification' : 'Channels per notification type' }}</h2>
                 </div>
@@ -42,20 +42,20 @@ $isOn = fn (string $cat, string $ch) => !isset($stored[$cat . '.' . $ch]) || $st
             </div>
 
             @foreach($categories as $catKey => $cat)
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-[#FBF9F4] last:border-0">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-[#FBF9F4] dark:border-[#262B21] last:border-0">
                 <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <div class="w-8 h-8 rounded-lg bg-[#FBF9F4] flex items-center justify-center shrink-0">
-                        <i data-lucide="{{ $cat['icon'] }}" class="w-4 h-4 text-[#8A857A]"></i>
+                    <div class="w-8 h-8 rounded-lg bg-[#FBF9F4] dark:bg-[#12150F] flex items-center justify-center shrink-0">
+                        <i data-lucide="{{ $cat['icon'] }}" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-sm font-medium text-[#1B1B18]">{{ $cat[$lang] }}</p>
-                        <p class="text-xs text-[#A8A296] truncate">{{ $cat['desc_' . $lang] }}</p>
+                        <p class="text-sm font-medium text-[#1B1B18] dark:text-[#F3EFE7]">{{ $cat[$lang] }}</p>
+                        <p class="text-xs text-[#A8A296] dark:text-[#868778] truncate">{{ $cat['desc_' . $lang] }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-6 pl-11 sm:pl-0">
                     @foreach($channels as $chKey => $chLabel)
                     <label class="flex flex-col items-center gap-1 w-10 cursor-pointer">
-                        <span class="sm:hidden text-[9px] font-semibold text-[#A8A296] uppercase">{{ $chLabel }}</span>
+                        <span class="sm:hidden text-[9px] font-semibold text-[#A8A296] dark:text-[#868778] uppercase">{{ $chLabel }}</span>
                         <input type="checkbox" name="prefs[{{ $catKey }}][{{ $chKey }}]" value="1"
                             {{ $isOn($catKey, $chKey) ? 'checked' : '' }}
                             class="ui-check">

@@ -22,7 +22,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -36,20 +36,20 @@
 <main class="max-w-[820px] mx-auto px-5 py-10 pb-20">
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
         @foreach($careerValues as [$cvIcon, $cvTitle, $cvDesc])
-        <div class="bg-white border border-[#ECECEA] rounded-2xl p-5 text-center">
-            <span class="w-[44px] h-[44px] mx-auto rounded-xl bg-[#E4F1E8] flex items-center justify-center">
-                <i data-lucide="{{ $cvIcon }}" class="w-[20px] h-[20px] text-[#14652F]" style="stroke-width:1.7"></i>
+        <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-5 text-center">
+            <span class="w-[44px] h-[44px] mx-auto rounded-xl bg-[#E4F1E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="{{ $cvIcon }}" class="w-[20px] h-[20px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i>
             </span>
-            <h2 class="mt-3 text-[13.5px] font-bold text-[#1B1B18]">{{ $cvTitle }}</h2>
-            <p class="mt-1.5 text-[12px] text-[#55524A] leading-relaxed">{{ $cvDesc }}</p>
+            <h2 class="mt-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $cvTitle }}</h2>
+            <p class="mt-1.5 text-[12px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $cvDesc }}</p>
         </div>
         @endforeach
     </div>
 
-    <div class="mt-6 bg-white border border-[#ECECEA] rounded-2xl px-6 py-8 text-center">
+    <div class="mt-6 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl px-6 py-8 text-center">
         <i data-lucide="briefcase" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aucune offre ouverte pour le moment' : 'No open positions at the moment' }}</h2>
-        <p class="mt-2 text-[13px] text-[#55524A] max-w-[480px] mx-auto leading-relaxed">
+        <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Aucune offre ouverte pour le moment' : 'No open positions at the moment' }}</h2>
+        <p class="mt-2 text-[13px] text-[#55524A] dark:text-[#B4B5A6] max-w-[480px] mx-auto leading-relaxed">
             {{ $isFr
                 ? 'Nous publions ici nos offres d\'emploi et de stage. Vous pouvez néanmoins nous envoyer une candidature spontanée : nous étudions chaque profil avec attention.'
                 : 'Job and internship offers are published here. You can still send us a spontaneous application: we review every profile carefully.'

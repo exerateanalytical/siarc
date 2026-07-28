@@ -141,7 +141,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
+<body class="bg-[#F7F8F7] dark:bg-[#12150F] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @php $qbSearchPlaceholder = $isFr ? 'Rechercher (produits, artisans, demandes, devis...)' : 'Search (products, artisans, requests, quotes...)'; $qbCompanyFirst = true; @endphp
 @include('pages.partials.quotes-buyer-header')
@@ -161,8 +161,8 @@
         <!-- Title row -->
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
-                <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr ? 'Mes Demandes & Propositions' : 'My Requests & Proposals' }}</h1>
-                <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Gérez toutes vos demandes de devis et propositions reçues.' : 'Manage all your quote requests and received proposals.' }}</p>
+                <h1 class="text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Mes Demandes & Propositions' : 'My Requests & Proposals' }}</h1>
+                <p class="mt-1 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Gérez toutes vos demandes de devis et propositions reçues.' : 'Manage all your quote requests and received proposals.' }}</p>
             </div>
             <div class="shrink-0 flex items-center gap-3">
                 <button type="button" onclick="window.print()" class="ui-btn ui-btn-secondary">
@@ -182,13 +182,13 @@
             <div class="flex-1 min-w-0 w-full">
                 <div class="ui-card ui-card--flush">
                     <!-- Tabs -->
-                    <div class="px-5 pt-1 border-b border-[#F0F1F0] overflow-x-auto">
+                    <div class="px-5 pt-1 border-b border-[#F0F1F0] dark:border-[#262B21] overflow-x-auto">
                         <div class="flex items-center gap-7 min-w-max">
                             @foreach($tabs as [$tKey, $tLabel, $tCount])
                             <a href="{{ route('quotes.index', array_merge(['lang' => $lang, 'tab' => $tKey], $q !== '' ? ['q' => $q] : [])) }}"
-                               class="relative py-4 text-[13px] whitespace-nowrap {{ $tab === $tKey ? 'font-bold text-[#14652F]' : 'text-[#55524A] hover:text-[#1B1B18]' }}">
+                               class="relative py-4 text-[13px] whitespace-nowrap {{ $tab === $tKey ? 'font-bold text-[#14652F] dark:text-[#339B56] ' : 'text-[#55524A] dark:text-[#B4B5A6] hover:text-[#1B1B18] dark:hover:text-[#F3EFE7] ' }}">
                                 {{ $tLabel }} ({{ $tCount }})
-                                @if($tab === $tKey)<span class="absolute left-0 right-0 -bottom-px h-[3px] rounded-t bg-[#14652F]"></span>@endif
+                                @if($tab === $tKey)<span class="absolute left-0 right-0 -bottom-px h-[3px] rounded-t bg-[#14652F] dark:bg-[#2E9250]"></span>@endif
                             </a>
                             @endforeach
                         </div>
@@ -201,7 +201,7 @@
                         <div class="flex-1 min-w-[240px]">
                             <div class="ui-field-group">
                                 <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher par référence, produit, artisan, etc...' : 'Search by reference, product, artisan, etc...' }}" class="ui-field-bare">
-                                <button type="submit" class="shrink-0 text-[#3B382F]"><i data-lucide="search" class="w-[18px] h-[18px]"></i></button>
+                                <button type="submit" class="shrink-0 text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="search" class="w-[18px] h-[18px]"></i></button>
                             </div>
                         </div>
                         <div class="w-[170px]">
@@ -251,16 +251,16 @@
                                 <tr>
                                     <td class="align-top"><input type="checkbox" class="ui-check mt-1"></td>
                                     <td class="align-top whitespace-nowrap">
-                                        <p class="font-bold text-[#1B1B18]">{{ $ref }}</p>
-                                        <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $refDate }}</p>
+                                        <p class="font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $ref }}</p>
+                                        <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $refDate }}</p>
                                     </td>
                                     <td class="align-top">
                                         <div class="flex items-start gap-3">
                                             <img src="{{ asset('images/landing/' . $thumb) }}" alt="" class="w-[34px] h-[44px] shrink-0 rounded-md object-cover">
                                             <div class="min-w-0">
-                                                <p class="font-bold text-[#1B1B18] whitespace-nowrap">{{ $product }}</p>
-                                                <p class="mt-0.5 text-[12px] text-[#6F6B60] whitespace-nowrap">{{ $artisan }}</p>
-                                                <p class="mt-0.5 text-[12px] text-[#6F6B60] whitespace-nowrap">{{ $place }}</p>
+                                                <p class="font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $product }}</p>
+                                                <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $artisan }}</p>
+                                                <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $place }}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -268,16 +268,16 @@
                                         <span class="ui-pill {{ $typePills[$type][1] }}">{{ $typePills[$type][0] }}</span>
                                     </td>
                                     <td class="align-top whitespace-nowrap">
-                                        <p class="font-bold text-[#1B1B18]">{{ $amount }}</p>
-                                        <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $amountSub }}</p>
+                                        <p class="font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $amount }}</p>
+                                        <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $amountSub }}</p>
                                     </td>
                                     <td class="align-top">
                                         <span class="ui-pill {{ $statusPills[$status][1] }}">{{ $statusPills[$status][0] }}</span>
-                                        @if($statusSub)<p class="mt-1.5 text-[12px] text-[#55524A] whitespace-nowrap">{{ $statusSub }}</p>@endif
+                                        @if($statusSub)<p class="mt-1.5 text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $statusSub }}</p>@endif
                                     </td>
                                     <td class="align-top whitespace-nowrap">
-                                        <p class="font-semibold text-[#1B1B18]">{{ $dateCol }}</p>
-                                        <p class="mt-1 text-[12px] {{ $expiry === '-' ? 'text-[#6F6B60]' : 'font-semibold text-[#E8890C]' }}">{{ $expiry }}</p>
+                                        <p class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $dateCol }}</p>
+                                        <p class="mt-1 text-[12px] {{ $expiry === '-' ? 'text-[#6F6B60] dark:text-[#868778] ' : 'font-semibold text-[#E8890C] dark:text-[#EDB33A] ' }}">{{ $expiry }}</p>
                                     </td>
                                     <td class="align-top">
                                         <div class="flex items-center gap-2">
@@ -300,7 +300,7 @@
 
                 <!-- Pagination -->
                 <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p class="text-[12.5px] text-[#55524A]">{{ $isFr ? 'Affichage de 1 à 8 sur 18 résultats' : 'Showing 1 to 8 of 18 results' }}</p>
+                    <p class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Affichage de 1 à 8 sur 18 résultats' : 'Showing 1 to 8 of 18 results' }}</p>
                     <div class="flex items-center gap-2">
                         <a href="{{ $selfUrl() }}" class="ui-btn ui-btn-secondary">{{ $isFr ? 'Précédent' : 'Previous' }}</a>
                         <a href="{{ $selfUrl(['page' => 1]) }}" class="ui-btn ui-btn-primary w-[38px] px-0">1</a>
@@ -316,7 +316,7 @@
                 <section class="ui-card">
                     <div class="ui-card-head">
                         <h2 class="ui-card-title">{{ $isFr ? 'Résumé de mes activités' : 'Summary of my activities' }}</h2>
-                        <span class="shrink-0 inline-flex items-center gap-1.5 border border-[#E5E7E5] rounded-lg px-2.5 py-1.5 text-[11.5px] text-[#3B382F]">
+                        <span class="shrink-0 inline-flex items-center gap-1.5 border border-[#E5E7E5] dark:border-[#262B21] rounded-lg px-2.5 py-1.5 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]">
                             {{ $isFr ? '30 derniers jours' : 'Last 30 days' }}
                         </span>
                     </div>
@@ -325,7 +325,7 @@
                         <div class="rounded-xl p-3.5" style="background:{{ $rcBg }}">
                             <p class="text-[11.5px] font-semibold leading-snug" style="color:{{ $rcLabelColor }}">{{ $rcLabel }}</p>
                             <div class="mt-1.5 flex items-end justify-between gap-2">
-                                <p class="text-[19px] font-bold text-[#1B1B18] leading-tight {{ strlen($rcValue) > 5 ? 'text-[15px]' : '' }}">{{ $rcValue }}</p>
+                                <p class="text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight {{ strlen($rcValue) > 5 ? 'text-[15px]' : '' }}">{{ $rcValue }}</p>
                                 <i data-lucide="{{ $rcIcon }}" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.7;color:{{ $rcIconColor }}"></i>
                             </div>
                         </div>
@@ -337,32 +337,32 @@
                     <h2 class="ui-card-title">{{ $isFr ? 'Répartition des statuts' : 'Status breakdown' }}</h2>
                     <div class="mt-5 flex items-center gap-5">
                         <div class="relative w-[118px] h-[118px] shrink-0 rounded-full" style="background:{{ $donutCss }}">
-                            <div class="absolute inset-[17px] rounded-full bg-white"></div>
+                            <div class="absolute inset-[17px] rounded-full bg-white dark:bg-[#12150F]"></div>
                         </div>
                         <ul class="flex-1 min-w-0 space-y-2.5">
                             @foreach($donutParts as [$dpLabel, $dpPct, $dpCount, $dpColor])
                             <li class="flex items-center gap-2.5">
                                 <span class="w-[11px] h-[11px] shrink-0 rounded-sm" style="background:{{ $dpColor }}"></span>
-                                <span class="flex-1 text-[11.5px] text-[#3B382F] whitespace-nowrap">{{ $dpLabel }}</span>
-                                <span class="shrink-0 text-[11.5px] font-bold text-[#1B1B18]">{{ $dpPct }} ({{ $dpCount }})</span>
+                                <span class="flex-1 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] whitespace-nowrap">{{ $dpLabel }}</span>
+                                <span class="shrink-0 text-[11.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $dpPct }} ({{ $dpCount }})</span>
                             </li>
                             @endforeach
                         </ul>
                     </div>
-                    <div class="mt-5 border-t border-[#F0F1F0] pt-3.5 flex items-center justify-between">
-                        <span class="text-[13px] font-bold text-[#1B1B18]">Total</span>
-                        <span class="text-[13px] font-bold text-[#1B1B18]">{{ count($rows) }}</span>
+                    <div class="mt-5 border-t border-[#F0F1F0] dark:border-[#262B21] pt-3.5 flex items-center justify-between">
+                        <span class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">Total</span>
+                        <span class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ count($rows) }}</span>
                     </div>
                 </section>
 
                 <section class="ui-card">
                     <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
-                    <div class="mt-2 divide-y divide-[#F1F2F1]">
+                    <div class="mt-2 divide-y divide-[#F1F2F1] dark:divide-[#262B21]">
                         @foreach($quickActions as [$qaIcon, $qaLabel, $qaUrl, $qaArrow])
                         <a href="{{ $qaUrl }}" class="flex items-center gap-3.5 py-3.5 group">
-                            <i data-lucide="{{ $qaIcon }}" class="w-[19px] h-[19px] shrink-0 text-[#3B382F]" style="stroke-width:1.7"></i>
-                            <span class="flex-1 text-[13px] text-[#3B382F] group-hover:text-[#14652F]">{{ $qaLabel }}</span>
-                            @if($qaArrow)<i data-lucide="arrow-right" class="w-4 h-4 shrink-0 text-[#3B382F]"></i>@endif
+                            <i data-lucide="{{ $qaIcon }}" class="w-[19px] h-[19px] shrink-0 text-[#3B382F] dark:text-[#B4B5A6]" style="stroke-width:1.7"></i>
+                            <span class="flex-1 text-[13px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qaLabel }}</span>
+                            @if($qaArrow)<i data-lucide="arrow-right" class="w-4 h-4 shrink-0 text-[#3B382F] dark:text-[#B4B5A6]"></i>@endif
                         </a>
                         @endforeach
                     </div>

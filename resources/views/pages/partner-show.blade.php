@@ -48,7 +48,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FBF8F2] text-[#1D1B16] antialiased">
+<body class="bg-[#FBF8F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 @include('pages.partials.directory-header')
 
 {{-- Hero --}}
@@ -57,9 +57,9 @@
     <div class="relative max-w-[1240px] mx-auto px-4 sm:px-6 py-8">
         <nav class="flex items-center gap-2 text-[12px] text-[#CFE3D5]"><a href="{{ route('home', ['lang'=>$lang]) }}" class="hover:text-white">{{ $isFr?'Accueil':'Home' }}</a><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i><a href="{{ route('partners.index', ['lang'=>$lang]) }}" class="hover:text-white">{{ $isFr?'Partenaires':'Partners' }}</a><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i><span class="text-[#E9C25A]">{{ $pName }}</span></nav>
         <div class="mt-5 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 items-center">
-            <div class="bg-white rounded-2xl p-5 flex items-center justify-center h-[200px]">
+            <div class="bg-white dark:bg-[#12150F] rounded-2xl p-5 flex items-center justify-center h-[200px]">
                 @if($logoFile)<img src="{{ asset('images/landing/'.$logoFile) }}" alt="{{ $pName }}" class="max-h-[150px] object-contain">
-                @else<span class="text-[40px] font-bold text-[#14652F]">{{ mb_strtoupper(mb_substr($pName,0,2)) }}</span>@endif
+                @else<span class="text-[40px] font-bold text-[#14652F] dark:text-[#339B56]">{{ mb_strtoupper(mb_substr($pName,0,2)) }}</span>@endif
             </div>
             <div>
                 <h1 class="flex flex-wrap items-center gap-3 font-serif text-[30px] sm:text-[38px] font-bold text-[#F3E7C9] leading-tight">{{ $pName }} @if($partner->partnership_type)<span class="inline-flex items-center gap-1.5 bg-[#0A3B22] border border-[#E9C25A]/40 rounded-lg px-3 py-1 text-[11px] font-semibold text-[#E9C25A]"><i data-lucide="award" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Partenaire '.$partner->partnership_type : $partner->partnership_type.' Partner' }}</span>@endif</h1>
@@ -82,13 +82,13 @@
 
 {{-- Stat band --}}
 <div class="max-w-[1240px] mx-auto px-4 sm:px-6 -mt-6 relative z-10">
-    <div class="bg-white border border-[#EDE6D6] rounded-2xl shadow-sm grid grid-cols-2 md:grid-cols-5 divide-x divide-[#F1EDE2]">
+    <div class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl shadow-sm grid grid-cols-2 md:grid-cols-5 divide-x divide-[#F1EDE2] dark:divide-[#262B21]">
         @foreach($statBand as [$sIcon, $sVal, $sLabel, $sSub])
         <div class="px-5 py-4 flex items-center gap-3">
-            <i data-lucide="{{ $sIcon }}" class="w-6 h-6 {{ in_array($sIcon, ['star','badge-check'], true)?'text-[#C9942E]':'text-[#157A43]' }} shrink-0"></i>
-            <div class="min-w-0"><p class="text-[11px] text-[#6F6B60]">{{ $sLabel }}</p><p class="text-[15px] font-bold text-[#1D1B16] leading-tight">{{ $sVal }}</p>
+            <i data-lucide="{{ $sIcon }}" class="w-6 h-6 {{ in_array($sIcon, ['star','badge-check'], true)?'text-[#C9942E]':'text-[#157A43] dark:text-[#339B56]' }} shrink-0"></i>
+            <div class="min-w-0"><p class="text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $sLabel }}</p><p class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-tight">{{ $sVal }}</p>
                 @if($sSub==='stars')<span class="flex text-[#C9942E]">@for($i=0;$i<5;$i++)<i data-lucide="star" class="w-3 h-3 {{ $i < round((float) $partner->reliability) ? 'fill-current' : 'opacity-30' }}"></i>@endfor</span>
-                @elseif($sSub)<p class="text-[10px] text-[#157A43]">{{ $sSub }}</p>@endif
+                @elseif($sSub)<p class="text-[10px] text-[#157A43] dark:text-[#339B56]">{{ $sSub }}</p>@endif
             </div>
         </div>
         @endforeach
@@ -96,24 +96,24 @@
 </div>
 
 <div class="max-w-[1240px] mx-auto px-4 sm:px-6 py-8">
-    <div class="flex items-center gap-6 border-b border-[#EDE6D6] overflow-x-auto">@foreach($tabs as [$tLabel, $tActive])<span class="pb-3 whitespace-nowrap text-[13px] font-semibold {{ $tActive ? 'text-[#14652F] border-b-2 border-[#14652F]' : 'text-[#8A857A]' }}">{{ $tLabel }}</span>@endforeach</div>
+    <div class="flex items-center gap-6 border-b border-[#EDE6D6] dark:border-[#262B21] overflow-x-auto">@foreach($tabs as [$tLabel, $tActive])<span class="pb-3 whitespace-nowrap text-[13px] font-semibold {{ $tActive ? 'text-[#14652F] dark:text-[#339B56] border-b-2 border-[#14652F]' : 'text-[#8A857A] dark:text-[#868778]' }}">{{ $tLabel }}</span>@endforeach</div>
 
     <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-            <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] uppercase">{{ $isFr?'À propos du partenaire':'About the partner' }}</h2>
-            <p class="mt-3 text-[12.5px] text-[#55524A] leading-relaxed">{{ $isFr ? ($partner->description_fr ?? '') : ($partner->description_en ?? $partner->description_fr ?? '') }}</p>
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-6 py-5">
+            <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr?'À propos du partenaire':'About the partner' }}</h2>
+            <p class="mt-3 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? ($partner->description_fr ?? '') : ($partner->description_en ?? $partner->description_fr ?? '') }}</p>
             {{-- The "Objectif du partenariat" paragraph stated the same objective for
                  every partner and has no per-partner column behind it — dropped. --}}
             @if($partner->website)
-            <a href="{{ $partner->website }}" target="_blank" rel="noopener" class="mt-3 inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#157A43]">{{ $isFr?'En savoir plus':'Learn more' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            <a href="{{ $partner->website }}" target="_blank" rel="noopener" class="mt-3 inline-flex items-center gap-1.5 text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr?'En savoir plus':'Learn more' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
             @endif
         </section>
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-            <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] uppercase">{{ $isFr?'Informations clés':'Key information' }}</h2>
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-6 py-5">
+            <h2 class="text-[13px] font-bold tracking-[0.05em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr?'Informations clés':'Key information' }}</h2>
             <dl class="mt-3.5 space-y-2.5 text-[12px]">
                 @foreach($infosCles as [$l, $v, $kind])
-                <div class="flex items-center justify-between gap-3 border-b border-[#F1EDE2] pb-2"><dt class="text-[#6F6B60]">{{ $l }}</dt>
-                    <dd class="text-right">@if($kind==='level')<span class="inline-flex items-center gap-1 font-semibold text-[#C9942E]"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>{{ $v }}</span>@elseif($kind==='yes')<span class="inline-flex items-center gap-1 font-semibold text-[#157A43]"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>{{ $v }}</span>@else<span class="font-semibold text-[#1D1B16]">{{ $v }}</span>@endif</dd>
+                <div class="flex items-center justify-between gap-3 border-b border-[#F1EDE2] dark:border-[#262B21] pb-2"><dt class="text-[#6F6B60] dark:text-[#868778]">{{ $l }}</dt>
+                    <dd class="text-right">@if($kind==='level')<span class="inline-flex items-center gap-1 font-semibold text-[#C9942E]"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>{{ $v }}</span>@elseif($kind==='yes')<span class="inline-flex items-center gap-1 font-semibold text-[#157A43] dark:text-[#339B56]"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>{{ $v }}</span>@else<span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $v }}</span>@endif</dd>
                 </div>
                 @endforeach
             </dl>
@@ -130,7 +130,7 @@
     {{-- CTA --}}
     <section class="mt-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0E3D22] to-[#123D24] px-6 py-6 flex flex-wrap items-center justify-between gap-4">
         <div><h2 class="text-[18px] font-bold text-white">{{ $isFr?'Vous souhaitez devenir partenaire ?':'Want to become a partner?' }}</h2><p class="mt-1 text-[12.5px] text-[#CFE3D5]">{{ $isFr?'Rejoignez notre réseau et contribuons ensemble à la valorisation de l\'artisanat camerounais.':'Join our network and together let\'s promote Cameroonian craftsmanship.' }}</p></div>
-        <a href="{{ route('contact', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-[#F5EEDD] text-[#1D1B16] text-[13px] font-semibold px-5 h-[46px] rounded-lg"><i data-lucide="handshake" class="w-4 h-4"></i>{{ $isFr?'Devenir partenaire':'Become a partner' }}</a>
+        <a href="{{ route('contact', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-[#F5EEDD] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] text-[13px] font-semibold px-5 h-[46px] rounded-lg"><i data-lucide="handshake" class="w-4 h-4"></i>{{ $isFr?'Devenir partenaire':'Become a partner' }}</a>
     </section>
 </div>
 

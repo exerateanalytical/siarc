@@ -46,8 +46,8 @@ $fileCls = 'ui-file';
     <!-- Current tier -->
     <div class="ui-card mb-5">
         <p class="ui-dt">{{ $lang === 'fr' ? 'Niveau actuel' : 'Current tier' }}</p>
-        <p class="text-lg font-bold text-[#1B1B18] flex items-center gap-2 mt-1">
-            <i data-lucide="shield" class="w-5 h-5 text-forest-600"></i>
+        <p class="text-lg font-bold text-[#1B1B18] dark:text-[#F3EFE7] flex items-center gap-2 mt-1">
+            <i data-lucide="shield" class="w-5 h-5 text-forest-600 dark:text-[#339B56]"></i>
             {{ $tierLabels[$business->verification_tier] ?? $business->verification_tier }}
         </p>
     </div>
@@ -58,10 +58,10 @@ $fileCls = 'ui-file';
         <h2 class="ui-card-title mb-3">{{ $lang === 'fr' ? 'Historique des demandes' : 'Application history' }}</h2>
         <div class="space-y-2">
             @foreach($applications->sortByDesc('submitted_at') as $app)
-            <div class="flex items-center justify-between p-3 bg-[#FBF9F4] rounded-lg">
+            <div class="flex items-center justify-between p-3 bg-[#FBF9F4] dark:bg-[#12150F] rounded-lg">
                 <div>
-                    <p class="text-sm font-medium text-[#262521]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</p>
-                    <p class="text-xs text-[#A8A296]">{{ $app->submitted_at?->format('d/m/Y') }} — {{ $app->documents->count() }} {{ $lang === 'fr' ? 'document(s)' : 'document(s)' }}</p>
+                    <p class="text-sm font-medium text-[#262521] dark:text-[#F3EFE7]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</p>
+                    <p class="text-xs text-[#A8A296] dark:text-[#868778]">{{ $app->submitted_at?->format('d/m/Y') }} — {{ $app->documents->count() }} {{ $lang === 'fr' ? 'document(s)' : 'document(s)' }}</p>
                 </div>
                 <span @class([
                     'ui-pill',
@@ -100,7 +100,7 @@ $fileCls = 'ui-file';
         <p class="ui-hint">{{ $lang === 'fr' ? 'Téléversez au moins un document justificatif (formats PDF, JPG, PNG).' : 'Upload at least one supporting document (PDF, JPG, PNG).' }}</p>
 
         @for($i = 0; $i < 3; $i++)
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[#FBF9F4] rounded-lg">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[#FBF9F4] dark:bg-[#12150F] rounded-lg">
             <div>
                 <label class="ui-label">{{ $lang === 'fr' ? 'Type de document' : 'Document type' }}</label>
                 <select name="documents[{{ $i }}][type]" class="ui-field ui-select">

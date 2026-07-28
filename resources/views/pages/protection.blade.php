@@ -147,7 +147,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -169,10 +169,10 @@
 
     {{-- Part 1 — verified, working today --}}
     <div class="flex items-center gap-2.5">
-        <i data-lucide="circle-check" class="w-5 h-5 shrink-0 text-[#157A43]"></i>
+        <i data-lucide="circle-check" class="w-5 h-5 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Ce que nous faisons aujourd\'hui' : 'What we do today' }}</h2>
     </div>
-    <p class="mt-1.5 text-[12.5px] text-[#55524A]">
+    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
         {{ $isFr ? 'Chacun de ces points fonctionne dès maintenant sur la plateforme.' : 'Every point below works on the platform right now.' }}
     </p>
 
@@ -180,12 +180,12 @@
         @foreach($today as [$icon, $title, $body])
         <section class="ui-card">
             <div class="flex items-start gap-3">
-                <span class="shrink-0 w-9 h-9 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
-                    <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px] text-[#157A43]"></i>
+                <span class="shrink-0 w-9 h-9 rounded-lg bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                    <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px] text-[#157A43] dark:text-[#339B56]"></i>
                 </span>
                 <div class="min-w-0">
                     <h3 class="ui-card-title">{{ $title }}</h3>
-                    <p class="mt-1.5 text-[13px] text-[#55524A] leading-relaxed">{{ $body }}</p>
+                    <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $body }}</p>
                 </div>
             </div>
         </section>
@@ -206,7 +206,7 @@
         <i data-lucide="hammer" class="w-5 h-5 shrink-0 text-[#C9942E]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'En développement' : 'Planned' }}</h2>
     </div>
-    <p class="mt-1.5 text-[12.5px] text-[#55524A] leading-relaxed">
+    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
         {{ $isFr
            ? 'Ces protections sont à notre feuille de route. Aucune n\'est disponible aujourd\'hui : ne comptez sur aucune d\'entre elles pour une pièce que vous vendez maintenant.'
            : 'These protections are on our roadmap. None of them is available today: do not rely on any of them for a piece you are selling now.' }}
@@ -214,28 +214,28 @@
 
     <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2.5">
         @foreach($planned as $item)
-        <div class="bg-white border border-dashed border-[#E3DECF] rounded-xl px-3.5 py-3 flex items-start gap-2">
+        <div class="bg-white dark:bg-[#12150F] border border-dashed border-[#E3DECF] dark:border-[#262B21] rounded-xl px-3.5 py-3 flex items-start gap-2">
             <i data-lucide="clock" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#B8B2A4]"></i>
-            <span class="text-[12.5px] text-[#8A857A] leading-snug">{{ $item }}</span>
+            <span class="text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-snug">{{ $item }}</span>
         </div>
         @endforeach
     </div>
 
     {{-- Part 3 — the limits. Verbatim in substance from the source copy. --}}
     <div class="mt-12 flex items-center gap-2.5">
-        <i data-lucide="triangle-alert" class="w-5 h-5 shrink-0 text-[#B42025]"></i>
+        <i data-lucide="triangle-alert" class="w-5 h-5 shrink-0 text-[#B42025] dark:text-[#F0555C]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Ce qu\'aucune plateforme ne peut garantir' : 'What no platform can guarantee' }}</h2>
     </div>
     <section class="mt-4 ui-card">
-        <p class="text-[13px] text-[#55524A] leading-relaxed">
+        <p class="text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
             {{ $isFr
                ? 'Soyons clairs, parce que d\'autres ne le sont pas : une fois qu\'une image est en ligne, elle peut être vue, et ce qui peut être vu peut être copié. Aucune technologie ne change cela. Voici ce que nous ne pouvons pas faire :'
                : 'Let us be clear, because others are not: once an image is online it can be seen, and what can be seen can be copied. No technology changes that. Here is what we cannot do:' }}
         </p>
         <ul class="mt-4 space-y-2.5">
             @foreach($cannot as $item)
-            <li class="flex items-start gap-2.5 text-[13px] text-[#3B382F] leading-relaxed">
-                <i data-lucide="x" class="w-4 h-4 mt-0.5 shrink-0 text-[#B42025]"></i>
+            <li class="flex items-start gap-2.5 text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+                <i data-lucide="x" class="w-4 h-4 mt-0.5 shrink-0 text-[#B42025] dark:text-[#F0555C]"></i>
                 <span>{{ $item }}</span>
             </li>
             @endforeach
@@ -244,16 +244,16 @@
 
     {{-- Part 4 — the IP note. The single point artisans most often misread. --}}
     <div class="mt-12 flex items-center gap-2.5">
-        <i data-lucide="scale" class="w-5 h-5 shrink-0 text-[#14652F]"></i>
+        <i data-lucide="scale" class="w-5 h-5 shrink-0 text-[#14652F] dark:text-[#339B56]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Enregistrer ici n\'est pas déposer un droit' : 'Registering here is not filing a right' }}</h2>
     </div>
     <section class="mt-4 ui-card">
-        <p class="text-[13px] text-[#3B382F] leading-relaxed">
+        <p class="text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'L\'enregistrement de votre travail sur Artisan Hub 237 ne remplace pas le droit d\'auteur, une marque déposée, un dessin ou modèle industriel, ni aucune autre protection légale. Il ne vous confère aucun droit de propriété intellectuelle.'
                : 'Registering your work on Artisan Hub 237 does not replace copyright, a registered trademark, an industrial design, or any other legal protection. It grants you no intellectual property right.' }}
         </p>
-        <p class="mt-3 text-[13px] text-[#3B382F] leading-relaxed">
+        <p class="mt-3 text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'Ce qu\'il crée est autre chose : un enregistrement indépendant et horodaté de votre qualité d\'auteur, de la date de création, des métadonnées de la pièce et de l\'historique de son enregistrement. Cet enregistrement peut servir d\'élément à l\'appui d\'une revendication future — il ne la remplace pas.'
                : 'What it does create is something else: an independent, time-stamped record of your authorship, the creation date, the piece\'s metadata and its registration history. That record may support a future claim — it does not replace one.' }}
@@ -268,28 +268,28 @@
 
     {{-- Part 5 — data handling, in the artisan's terms rather than a lawyer's --}}
     <div class="mt-12 flex items-center gap-2.5">
-        <i data-lucide="database" class="w-5 h-5 shrink-0 text-[#14652F]"></i>
+        <i data-lucide="database" class="w-5 h-5 shrink-0 text-[#14652F] dark:text-[#339B56]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Vos données : qui voit quoi' : 'Your data: who sees what' }}</h2>
     </div>
     <div class="mt-4 space-y-3">
         @foreach($dataFacts as [$icon, $title, $body])
         <section class="ui-card">
             <div class="flex items-start gap-3">
-                <span class="shrink-0 w-9 h-9 rounded-lg bg-[#FBF1DD] flex items-center justify-center">
+                <span class="shrink-0 w-9 h-9 rounded-lg bg-[#FBF1DD] dark:bg-[#3A2B06] flex items-center justify-center">
                     <i data-lucide="{{ $icon }}" class="w-[18px] h-[18px] text-[#C9942E]"></i>
                 </span>
                 <div class="min-w-0">
                     <h3 class="ui-card-title">{{ $title }}</h3>
-                    <p class="mt-1.5 text-[13px] text-[#55524A] leading-relaxed">{{ $body }}</p>
+                    <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $body }}</p>
                 </div>
             </div>
         </section>
         @endforeach
     </div>
 
-    <div class="mt-8 bg-[#EFF5F0] rounded-2xl px-5 sm:px-6 py-5">
-        <h3 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Demander vos données, ou signaler une copie' : 'Request your data, or report a copy' }}</h3>
-        <p class="mt-2 text-[13px] text-[#3B382F] leading-relaxed">
+    <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-5 sm:px-6 py-5">
+        <h3 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Demander vos données, ou signaler une copie' : 'Request your data, or report a copy' }}</h3>
+        <p class="mt-2 text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'Écrivez-nous en précisant ce que vous demandez : une copie de vos données, une correction, la fermeture de votre compte, ou l\'URL d\'une fiche qui copie votre travail. Nous répondons dans un délai raisonnable.'
                : 'Write to us saying what you want: a copy of your data, a correction, the closure of your account, or the URL of a listing that copies your work. We reply within a reasonable time.' }}

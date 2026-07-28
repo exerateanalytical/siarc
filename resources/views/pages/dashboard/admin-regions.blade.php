@@ -31,9 +31,9 @@
                 <div class="ui-card flex items-center gap-4">
                     <span class="w-[52px] h-[52px] rounded-xl flex items-center justify-center shrink-0" style="background-color: {{ $cTile }}"><i data-lucide="{{ $cIcon }}" class="w-[24px] h-[24px]" style="color: {{ $cColor }};stroke-width:1.7"></i></span>
                     <div class="min-w-0">
-                        <p class="text-[22px] font-bold text-[#1B1B18] leading-none">{{ $fmt($cValue) }}</p>
-                        <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F]">{{ $cLabel }}</p>
-                        <p class="text-[11px] text-[#6F6B60]">{{ $cSub }}</p>
+                        <p class="text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $fmt($cValue) }}</p>
+                        <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $cLabel }}</p>
+                        <p class="text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $cSub }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -43,16 +43,16 @@
                 {{-- Map --}}
                 <section class="ui-card">
                     <h2 class="ui-card-title">{{ $isFr ? 'Carte des Régions & Centres' : 'Map of Regions & Centres' }}</h2>
-                    <div class="relative mt-3 rounded-xl bg-[#F7F8F7] overflow-hidden">
+                    <div class="relative mt-3 rounded-xl bg-[#F7F8F7] dark:bg-[#12150F] overflow-hidden">
                         <img src="{{ asset('images/landing/rg-map.png') }}" alt="{{ $isFr ? 'Carte du Cameroun' : 'Map of Cameroon' }}" class="w-full h-auto object-contain">
                         <div class="absolute top-3 left-3 flex flex-col gap-1">
-                            <span class="w-8 h-8 rounded-lg bg-white border border-[#EAE5D8] flex items-center justify-center text-[#3B382F]"><i data-lucide="plus" class="w-4 h-4"></i></span>
-                            <span class="w-8 h-8 rounded-lg bg-white border border-[#EAE5D8] flex items-center justify-center text-[#3B382F]"><i data-lucide="minus" class="w-4 h-4"></i></span>
+                            <span class="w-8 h-8 rounded-lg bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="plus" class="w-4 h-4"></i></span>
+                            <span class="w-8 h-8 rounded-lg bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="minus" class="w-4 h-4"></i></span>
                         </div>
                     </div>
-                    <div class="mt-3 flex flex-wrap items-center gap-4 text-[11px] text-[#55524A]">
-                        <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#157A43]"></i>{{ $isFr ? 'Centre Principal' : 'Main centre' }}</span>
-                        <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $isFr ? 'Centre Secondaire' : 'Secondary centre' }}</span>
+                    <div class="mt-3 flex flex-wrap items-center gap-4 text-[11px] text-[#55524A] dark:text-[#B4B5A6]">
+                        <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#157A43] dark:text-[#339B56]"></i>{{ $isFr ? 'Centre Principal' : 'Main centre' }}</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Centre Secondaire' : 'Secondary centre' }}</span>
                     </div>
                 </section>
 
@@ -60,11 +60,11 @@
                 <section class="ui-card">
                     <div class="flex items-center justify-between">
                         <h2 class="ui-card-title">{{ $isFr ? 'Liste des Régions' : 'Regions List' }}</h2>
-                        <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir toutes les régions' : 'View all regions' }}</a>
+                        <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir toutes les régions' : 'View all regions' }}</a>
                     </div>
                     <div class="ui-table-wrap mt-3">
                         <table class="ui-table min-w-[520px]">
-                            <thead><tr class="border-b border-[#EFEBE2]">
+                            <thead><tr class="border-b border-[#EFEBE2] dark:border-[#262B21]">
                                 <th>{{ $isFr ? 'Région' : 'Region' }}</th>
                                 <th class="text-center">Centres</th>
                                 <th class="text-center">Artisans</th>
@@ -78,17 +78,17 @@
                                     <td>
                                         <a href="{{ route('admin.regions', ['lang' => $lang, 'region' => $r->code]) }}" class="flex items-center gap-2.5 group">
                                             <span class="w-6 h-6 rounded-full text-white text-[11px] font-bold flex items-center justify-center shrink-0" style="background-color: {{ $dotColors[$i % 10] }}">{{ $i + 1 }}</span>
-                                            <span class="text-[12.5px] font-semibold text-[#1B1B18] group-hover:text-[#157A43]">{{ $isFr ? $r->name_fr : ($r->name_en ?? $r->name_fr) }}</span>
+                                            <span class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] group-hover:text-[#157A43] dark:group-hover:text-[#339B56]">{{ $isFr ? $r->name_fr : ($r->name_en ?? $r->name_fr) }}</span>
                                         </a>
                                     </td>
-                                    <td class="text-center font-semibold text-[#1B1B18]">{{ $r->centres }}</td>
+                                    <td class="text-center font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $r->centres }}</td>
                                     <td class="text-center">{{ $fmt($r->artisans) }}</td>
                                     <td class="text-center">{{ $fmt($r->products) }}</td>
                                     <td><span class="ui-pill ui-pill-ok">{{ $isFr ? 'Actif' : 'Active' }}</span></td>
                                     <td>
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <a href="{{ route('admin.regions', ['lang' => $lang, 'region' => $r->code]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
-                                            <a href="{{ route('admin.regions', ['lang' => $lang, 'region' => $r->code]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
+                                            <a href="{{ route('admin.regions', ['lang' => $lang, 'region' => $r->code]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
+                                            <a href="{{ route('admin.regions', ['lang' => $lang, 'region' => $r->code]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -111,10 +111,10 @@
                         </div>
                         <img src="{{ asset('images/landing/sd-region-map.png') }}" alt="" class="mt-3 w-full h-[120px] object-cover rounded-xl" aria-hidden="true">
                         <div class="mt-3 flex items-center justify-between">
-                            <h3 class="text-[16px] font-bold text-[#1B1B18]">{{ $isFr ? $selected->name_fr : ($selected->name_en ?? $selected->name_fr) }}</h3>
+                            <h3 class="text-[16px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? $selected->name_fr : ($selected->name_en ?? $selected->name_fr) }}</h3>
                             <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Actif' : 'Active' }}</span>
                         </div>
-                        <p class="mt-1.5 text-[12px] text-[#6F6B60] leading-relaxed">{{ $isFr ? $selected->description_fr : ($selected->description_en ?? $selected->description_fr) }}</p>
+                        <p class="mt-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? $selected->description_fr : ($selected->description_en ?? $selected->description_fr) }}</p>
                         <dl class="mt-3.5 space-y-2.5 text-[12px]">
                             @foreach([
                                 ['map-pin', $isFr ? 'Chef-lieu' : 'Capital', $selected->chef_lieu],
@@ -126,27 +126,27 @@
                                 ['calendar', $isFr ? 'Date de création' : 'Created', $selected->created_year],
                                 ['user-cog', $isFr ? 'Coordonnateur Régional' : 'Regional Coordinator', $selected->coordinator],
                             ] as [$dIcon, $dLabel, $dVal])
-                            <div class="flex items-center justify-between gap-3"><dt class="flex items-center gap-2 text-[#6F6B60]"><i data-lucide="{{ $dIcon }}" class="w-3.5 h-3.5"></i>{{ $dLabel }}</dt><dd class="font-semibold text-[#1B1B18] text-right">{{ $dVal }}</dd></div>
+                            <div class="flex items-center justify-between gap-3"><dt class="flex items-center gap-2 text-[#6F6B60] dark:text-[#868778]"><i data-lucide="{{ $dIcon }}" class="w-3.5 h-3.5"></i>{{ $dLabel }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] text-right">{{ $dVal }}</dd></div>
                             @endforeach
                         </dl>
-                        <a href="{{ route('businesses.index', ['lang' => $lang, 'region' => $selected->code]) }}" class="mt-4 block text-center bg-[#0F4824] hover:bg-[#14652F] rounded-lg py-2.5 text-[12.5px] font-semibold text-white transition-colors">{{ $isFr ? 'Voir le profil complet' : 'View full profile' }}</a>
+                        <a href="{{ route('businesses.index', ['lang' => $lang, 'region' => $selected->code]) }}" class="mt-4 block text-center bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] rounded-lg py-2.5 text-[12.5px] font-semibold text-white dark:text-[#04150A] transition-colors">{{ $isFr ? 'Voir le profil complet' : 'View full profile' }}</a>
                     </section>
 
                     <section class="ui-card">
                         <div class="flex items-center justify-between">
                             <h2 class="ui-card-title">{{ $isFr ? 'Statistiques Nationales' : 'National statistics' }}</h2>
-                            <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11px] font-semibold text-[#157A43]">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
+                            <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                         </div>
                         <div class="mt-3 grid grid-cols-3 gap-2 text-center">
-                            <div class="rounded-lg bg-[#EFF6F1] py-2.5"><p class="text-[16px] font-bold text-[#157A43]">{{ $fmt($stats['centres']) }}</p><p class="text-[10px] text-[#6F6B60]">Centres</p></div>
-                            <div class="rounded-lg bg-[#FDF3E0] py-2.5"><p class="text-[16px] font-bold text-[#C97A16]">{{ $fmt($stats['artisans']) }}</p><p class="text-[10px] text-[#6F6B60]">Artisans</p></div>
-                            <div class="rounded-lg bg-[#F0EAFB] py-2.5"><p class="text-[16px] font-bold text-[#7C4FE0]">{{ $fmt($stats['products']) }}</p><p class="text-[10px] text-[#6F6B60]">{{ $isFr ? 'Produits' : 'Products' }}</p></div>
+                            <div class="rounded-lg bg-[#EFF6F1] dark:bg-[#1A1E16] py-2.5"><p class="text-[16px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $fmt($stats['centres']) }}</p><p class="text-[10px] text-[#6F6B60] dark:text-[#868778]">Centres</p></div>
+                            <div class="rounded-lg bg-[#FDF3E0] dark:bg-[#3A2B06] py-2.5"><p class="text-[16px] font-bold text-[#C97A16] dark:text-[#EDB33A]">{{ $fmt($stats['artisans']) }}</p><p class="text-[10px] text-[#6F6B60] dark:text-[#868778]">Artisans</p></div>
+                            <div class="rounded-lg bg-[#F0EAFB] dark:bg-[#1E1733] py-2.5"><p class="text-[16px] font-bold text-[#7C4FE0] dark:text-[#BCA4F0]">{{ $fmt($stats['products']) }}</p><p class="text-[10px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Produits' : 'Products' }}</p></div>
                         </div>
                     </section>
 
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions Rapides' : 'Quick Actions' }}</h2>
-                        <div class="mt-2 divide-y divide-[#F5F1E8]">
+                        <div class="mt-2 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                             @foreach([
                                 ['plus', $isFr ? 'Ajouter une Région' : 'Add a Region', route('admin.industries', ['lang'=>$lang])],
                                 ['building-2', $isFr ? 'Ajouter un Centre d\'Artisanat' : 'Add a Craft Centre', route('admin.industries', ['lang'=>$lang])],
@@ -154,7 +154,7 @@
                                 ['map', $isFr ? 'Carte Interactive' : 'Interactive Map', route('businesses.index', ['lang'=>$lang])],
                                 ['download', $isFr ? 'Exporter les Données' : 'Export Data', route('admin.exports', ['lang'=>$lang])],
                             ] as [$qIcon, $qLabel, $qUrl])
-                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="{{ $qIcon }}" class="w-[16px] h-[16px] text-[#157A43]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] group-hover:text-[#14652F]">{{ $qLabel }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i></a>
+                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="{{ $qIcon }}" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></a>
                             @endforeach
                         </div>
                     </section>
@@ -165,11 +165,11 @@
             <section class="ui-card mt-5">
                 <div class="flex items-center justify-between">
                     <h2 class="ui-card-title">{{ $isFr ? 'Centres d\'Artisanat Récents' : 'Recent Craft Centres' }}</h2>
-                    <a href="{{ route('admin.regions', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43]">{{ $isFr ? 'Voir tous les centres' : 'View all centres' }}</a>
+                    <a href="{{ route('admin.regions', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir tous les centres' : 'View all centres' }}</a>
                 </div>
                 <div class="ui-table-wrap mt-3">
                     <table class="ui-table min-w-[820px]">
-                        <thead><tr class="border-b border-[#EFEBE2]">
+                        <thead><tr class="border-b border-[#EFEBE2] dark:border-[#262B21]">
                             <th>Centre</th>
                             <th>{{ $isFr ? 'Région' : 'Region' }}</th>
                             <th>Type</th>
@@ -183,19 +183,19 @@
                             <tr>
                                 <td>
                                     <a href="{{ route('admin.centres.detail', ['id' => $c->id, 'lang' => $lang]) }}" class="flex items-center gap-2.5 group">
-                                        <span class="w-8 h-8 rounded-full bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="{{ $c->type === 'principal' ? 'landmark' : 'home' }}" class="w-4 h-4 text-[#14652F]"></i></span>
-                                        <span class="text-[12.5px] font-semibold text-[#1B1B18] group-hover:text-[#157A43]">{{ $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr) }}</span>
+                                        <span class="w-8 h-8 rounded-full bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center shrink-0"><i data-lucide="{{ $c->type === 'principal' ? 'landmark' : 'home' }}" class="w-4 h-4 text-[#14652F] dark:text-[#339B56]"></i></span>
+                                        <span class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] group-hover:text-[#157A43] dark:group-hover:text-[#339B56]">{{ $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr) }}</span>
                                     </a>
                                 </td>
-                                <td class="text-[#157A43] font-medium">{{ $isFr ? $c->region_fr : ($c->region_en ?? $c->region_fr) }}</td>
-                                <td><span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold {{ $c->type === 'principal' ? 'bg-[#E2F3E8] text-[#157A43]' : 'bg-[#FDF3E0] text-[#C97A16]' }}">{{ $c->type === 'principal' ? ($isFr ? 'Principal' : 'Main') : ($isFr ? 'Secondaire' : 'Secondary') }}</span></td>
-                                <td class="text-center font-semibold text-[#1B1B18]">{{ $fmt($c->artisans_count) }}</td>
+                                <td class="text-[#157A43] dark:text-[#339B56] font-medium">{{ $isFr ? $c->region_fr : ($c->region_en ?? $c->region_fr) }}</td>
+                                <td><span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold {{ $c->type === 'principal' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' }}">{{ $c->type === 'principal' ? ($isFr ? 'Principal' : 'Main') : ($isFr ? 'Secondaire' : 'Secondary') }}</span></td>
+                                <td class="text-center font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $fmt($c->artisans_count) }}</td>
                                 <td>{{ $c->specialties_fr }}</td>
                                 <td><span class="ui-pill ui-pill-ok">{{ $isFr ? 'Actif' : 'Active' }}</span></td>
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route('admin.centres.detail', ['id' => $c->id, 'lang' => $lang]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
-                                        <a href="{{ route('admin.centres.detail', ['id' => $c->id, 'lang' => $lang]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
+                                        <a href="{{ route('admin.centres.detail', ['id' => $c->id, 'lang' => $lang]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>
+                                        <a href="{{ route('admin.centres.detail', ['id' => $c->id, 'lang' => $lang]) }}" class="w-7 h-7 rounded-md border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -205,20 +205,20 @@
                 </div>
                 @if($centres->hasPages())
                 <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $centres->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $centres->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $centres->total() }} centres</p>
+                    <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $centres->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $centres->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $centres->total() }} centres</p>
                     <div class="flex items-center gap-1.5">
-                        @if($centres->onFirstPage())<span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
-                        @else<a href="{{ $centres->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>@endif
+                        @if($centres->onFirstPage())<span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                        @else<a href="{{ $centres->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>@endif
                         @foreach($centres->getUrlRange(1, $centres->lastPage()) as $pn => $url)
-                        @if($pn === $centres->currentPage())<span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
-                        @else<a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pn }}</a>@endif
+                        @if($pn === $centres->currentPage())<span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
+                        @else<a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pn }}</a>@endif
                         @endforeach
-                        @if($centres->hasMorePages())<a href="{{ $centres->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
-                        @else<span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>@endif
+                        @if($centres->hasMorePages())<a href="{{ $centres->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                        @else<span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>@endif
                     </div>
                 </div>
                 @endif
             </section>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

@@ -25,7 +25,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -38,27 +38,27 @@
 
 <main class="max-w-[1024px] mx-auto px-5 py-10 pb-20">
     @if($articles->isEmpty())
-    <div class="bg-white border border-[#ECECEA] rounded-2xl text-center py-14 px-5">
+    <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl text-center py-14 px-5">
         <i data-lucide="newspaper" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="text-[13.5px] text-[#55524A]">{{ $isFr ? 'Aucune actualité pour le moment. Revenez bientôt !' : 'No news for now. Come back soon!' }}</p>
+        <p class="text-[13.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Aucune actualité pour le moment. Revenez bientôt !' : 'No news for now. Come back soon!' }}</p>
     </div>
     @else
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         @foreach($articles as $a)
-        <article class="bg-white border border-[#ECECEA] rounded-2xl p-5 flex flex-col">
-            <p class="flex items-center gap-2 text-[11.5px] font-semibold text-[#14652F]">
+        <article class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-5 flex flex-col">
+            <p class="flex items-center gap-2 text-[11.5px] font-semibold text-[#14652F] dark:text-[#339B56]">
                 <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
                 {{ $newsDate($a->published_at) }}
             </p>
-            <h2 class="mt-2.5 text-[14.5px] font-bold text-[#1B1B18] leading-snug">
-                <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="hover:text-leaf transition-colors">{{ $isFr ? $a->title_fr : ($a->title_en ?? $a->title_fr) }}</a>
+            <h2 class="mt-2.5 text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">
+                <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? $a->title_fr : ($a->title_en ?? $a->title_fr) }}</a>
             </h2>
             @if($a->excerpt_fr)
-            <p class="mt-2.5 text-[12.5px] text-[#55524A] leading-relaxed line-clamp-3" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+            <p class="mt-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed line-clamp-3" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
                 {{ $isFr ? $a->excerpt_fr : ($a->excerpt_en ?? $a->excerpt_fr) }}
             </p>
             @endif
-            <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="mt-auto pt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#14652F] hover:text-[#14532D]">
+            <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="mt-auto pt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
                 {{ $isFr ? 'Lire la suite' : 'Read more' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>

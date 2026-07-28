@@ -1,43 +1,55 @@
-{{-- Directory replica header (product/vendor directory design): thin tricolor with one
-     centered star + white header with search + category select + icon links.
+{{-- Canonical platform chrome — header.
+     Brought up to `certificates/artisan profile v2 desktop.png` (2026-07-28):
+     white topbar with the logo lockup, a centred search carrying a category
+     select and a green search button, then icon-with-label utility links and an
+     account avatar; below it the deep-green section bar with the gold
+     "SELL ON ARTISANHUB237" call to action on the right.
+
      Expects: $lang, $isFr, $siacUser
      Optional: $dirSearchCategories (slug/label pairs for the select),
-               $dirSearchPlaceholder, $dirIconVariant ('products': Favoris+Demandes |
-               'vendors': Favoris+Messages+Panier(3)), $dirNavActive (override which
-               key is highlighted — auto-detected from the current route if omitted).
-     The nav item list below (desktop bar + mobile menu) is the single canonical
+               $dirSearchPlaceholder, $dirIconVariant ('products'|'vendors'|…,
+               kept for callers — the utility row is the same on every page now),
+               $dirNavActive (override which key is highlighted — auto-detected
+               from the current route if omitted), $dirTopBar (tricolor strip
+               carries its links).
+
+     The nav item list below (green bar + mobile menu) is the single canonical
      platform menu: every page that includes this header gets the identical set,
      in the identical order — this partial must not be forked per page. --}}
 
 @php
     $dirIconVariant = $dirIconVariant ?? 'products';
     $dirSearchPlaceholder = $dirSearchPlaceholder
-        ?? ($isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...');
+        ?? ($isFr ? 'Rechercher artisans, produits, catégories...' : 'Search artisans, products, categories...');
 
-    // Canonical platform menu — one array, shared by the desktop bar and the
-    // mobile menu below, so they can never drift apart again.
+    // Canonical platform menu — one array, shared by the green section bar and
+    // the mobile menu below, so they can never drift apart again.
     // [key, icon, label, route]
-    // Collections, Centres and FAQ live in the footer menu, not here.
+    // Ordered as the artwork reads it: ARTISANS · PRODUCTS · CATEGORIES ·
+    // COLLECTIONS · STORIES · EXHIBITIONS · MARKETPLACE · ABOUT US. The last two
+    // sections the platform really has (Partners, Contact) follow, because the
+    // artwork's single "MARKETPLACE" entry has no route of its own here — the
+    // marketplace *is* the products/artisans gallery already listed.
     $dirNavItems = [
-        ['home',        'home',          $isFr ? 'Accueil' : 'Home',                    route('home', ['lang' => $lang])],
-        ['products',    'package',       $isFr ? 'Produits' : 'Products',               route('products.index', ['lang' => $lang])],
-        ['categories',  'layout-grid',   $isFr ? 'Catégories' : 'Categories',           route('industries.index', ['lang' => $lang])],
-        ['businesses',  'users',         $isFr ? 'Artisans & Entreprises' : 'Artisans & Businesses', route('businesses.index', ['lang' => $lang])],
-        ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',               route('events.index', ['lang' => $lang])],
-        ['partners',    'handshake',    $isFr ? 'Partenaires' : 'Partners',             route('partners.index', ['lang' => $lang])],
-        ['news',        'newspaper',    $isFr ? 'Actualités' : 'News',                  route('news.index', ['lang' => $lang])],
-        ['about',       'info',         $isFr ? 'À propos' : 'About',                   route('about', ['lang' => $lang])],
-        ['contact',     'message-circle', $isFr ? 'Contact' : 'Contact',                route('contact', ['lang' => $lang])],
+        ['businesses',  'users',         $isFr ? 'Artisans' : 'Artisans',            route('businesses.index', ['lang' => $lang])],
+        ['products',    'package',       $isFr ? 'Produits' : 'Products',            route('products.index', ['lang' => $lang])],
+        ['categories',  'layout-grid',   $isFr ? 'Catégories' : 'Categories',        route('industries.index', ['lang' => $lang])],
+        ['collections', 'gallery-vertical-end', 'Collections',                       route('collections.index', ['lang' => $lang])],
+        ['news',        'newspaper',     $isFr ? 'Actualités' : 'Stories',           route('news.index', ['lang' => $lang])],
+        ['events',      'calendar-days', $isFr ? 'Événements' : 'Exhibitions',       route('events.index', ['lang' => $lang])],
+        ['centres',     'store',         $isFr ? 'Centres' : 'Craft centres',        route('centres.index', ['lang' => $lang])],
+        ['about',       'info',          $isFr ? 'À propos' : 'About us',            route('about', ['lang' => $lang])],
+        ['partners',    'handshake',     $isFr ? 'Partenaires' : 'Partners',         route('partners.index', ['lang' => $lang])],
+        ['contact',     'message-circle', $isFr ? 'Contact' : 'Contact',             route('contact', ['lang' => $lang])],
     ];
 
     // Auto-detect the active item from the current route when the including
     // page doesn't force one — no page should have to remember to set this.
     if (! isset($dirNavActive)) {
-        // Collections/Centres/FAQ aren't header items (they live in the footer),
-        // so pages under those routes simply have no highlighted header item.
         $dirRouteMap = [
             'home' => 'home', 'products.*' => 'products', 'industries.*' => 'categories',
-            'businesses.*' => 'businesses', 'events.*' => 'events',
+            'businesses.*' => 'businesses', 'events.*' => 'events', 'collections.*' => 'collections',
+            'centres.*' => 'centres',
             'partners.*' => 'partners', 'news.*' => 'news',
             'about' => 'about', 'contact' => 'contact',
         ];
@@ -55,6 +67,20 @@
         ['produits-naturels',        $isFr ? 'Produits Naturels' : 'Natural Products'],
         ['agroalimentaire',          $isFr ? 'Agroalimentaire' : 'Agri-food'],
         ['technologies-innovation',  $isFr ? 'Technologies & Innovation' : 'Technology & Innovation'],
+    ];
+
+    // Utility row, as the artwork draws it: Explore · Map · Verify · Wishlist ·
+    // Cart. Every destination below is a route this platform actually serves.
+    //   Map  → the craft-centres directory, the only geographic browse there is.
+    //   Cart → there is no basket on this platform; buyers request quotes, so
+    //          the fifth slot is the quote/inquiry desk instead.
+    $dhLoginHref = route('login', ['lang' => $lang]);
+    $dirUtility = [
+        ['compass',      $isFr ? 'Explorer' : 'Explore',  route('businesses.index', ['lang' => $lang])],
+        ['map',          $isFr ? 'Carte' : 'Map',         route('centres.index', ['lang' => $lang])],
+        ['badge-check',  $isFr ? 'Vérifier' : 'Verify',   route('certificate.verify', ['lang' => $lang])],
+        ['heart',        $isFr ? 'Favoris' : 'Wishlist',  $siacUser ? route('saved.index') : $dhLoginHref],
+        ['shopping-bag', $isFr ? 'Demandes' : 'Inquiries', $siacUser ? route('quotes.index') : $dhLoginHref],
     ];
 @endphp
 
@@ -92,115 +118,82 @@
 </div>
 @endif
 
-<!-- Header -->
-<header class="bg-[#FEFEFE] border-b border-[#EFEDEA]">
-    <div class="max-w-[1472px] mx-auto px-4 sm:px-6">
-        <div class="flex items-center justify-between gap-4 xl:gap-6 py-3.5">
-            <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-                <img src="{{ brand_asset('mark') }}" alt="" class="w-[48px] h-[48px] object-contain">
-                <span class="leading-tight">
-                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-                    <span class="block text-[12.5px] font-bold tracking-[0.03em] text-[#1D1B16] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
-                    <span class="block text-[10px] text-[#6F6B60] mt-0.5 whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+<!-- Topbar — measured off the artwork: 64px band at 1024 = 80px at 1280,
+     cream #FBF6EF, content 1230 wide inside a 25px page margin. -->
+<header class="bg-[#FBF6EF] border-b border-[#EFE4D5]">
+    <div class="max-w-[1280px] mx-auto px-[25px]">
+        <div class="flex items-center justify-between gap-4 xl:gap-8 lg:h-[80px] py-3 lg:py-0">
+            <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-[15px] shrink-0">
+                <img src="{{ brand_asset('mark') }}" alt="" class="w-[56px] h-[56px] lg:w-[68px] lg:h-[68px] object-contain shrink-0">
+                <span class="leading-none">
+                    <span class="block text-[24px] lg:text-[29px] font-bold tracking-[-0.005em] text-[#0F3D24] whitespace-nowrap">Artisan<span class="text-[#0F3D24]">Hub</span><span class="text-[#B8891F]">237</span></span>
+                    <span class="block mt-[10px] text-[9px] font-semibold tracking-[0.16em] text-[#3C4A3E] uppercase whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
             </a>
 
-            <!-- Search + category select -->
-            <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:flex items-center gap-2.5 flex-1 max-w-[575px]">
+            <!-- Search + category select + green search button -->
+            <form action="{{ route('gallery.search') }}" method="GET" class="hidden lg:flex items-center flex-1 min-w-0 max-w-[459px]">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <div class="ui-field-group flex-1 gap-0 overflow-hidden px-0">
-                    <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}" class="ui-field-bare px-4">
+                <div class="ui-field-group flex-1 min-w-0 gap-0 overflow-hidden px-0 rounded-r-none border-r-0">
+                    <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}" class="ui-field-bare px-4 min-w-0">
                     <span class="h-[22px] w-px bg-[var(--ui-border-field)] shrink-0"></span>
-                    <select name="categorie" class="ui-field-bare h-full pl-3 pr-7 cursor-pointer appearance-none w-auto bg-no-repeat bg-[right_0.6rem_center]"
+                    <select name="categorie" aria-label="{{ $isFr ? 'Catégorie' : 'Category' }}"
+                        {{-- Fixed width on purpose. Left to size itself the select
+                             takes the width of its longest option ("Bijouterie &
+                             Accessoires") and eats 190px of a 459px search bar,
+                             truncating the placeholder. --}}
+                        class="ui-field-bare h-full pl-3 pr-7 cursor-pointer appearance-none w-[86px] shrink-0 bg-no-repeat bg-[right_0.6rem_center]"
                         style="background-image:url('data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;10&quot; height=&quot;6&quot; viewBox=&quot;0 0 10 6&quot;><path d=&quot;M1 1l4 4 4-4&quot; stroke=&quot;%236F6B60&quot; stroke-width=&quot;1.5&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/></svg>')">
-                        <option value="">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</option>
+                        <option value="">{{ $isFr ? 'Toutes' : 'All' }}</option>
                         @foreach($dhCategories as [$dhSlug, $dhLabel])
                         <option value="{{ $dhSlug }}">{{ $dhLabel }}</option>
                         @endforeach
                     </select>
                 </div>
                 <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"
-                    class="w-[38px] h-[38px] shrink-0 bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center transition-colors">
-                    <i data-lucide="search" class="w-[16px] h-[16px]"></i>
+                    class="w-[46px] shrink-0 self-stretch bg-[#0F4227] hover:bg-[#155F35] text-white rounded-r-lg flex items-center justify-center transition-colors">
+                    <i data-lucide="search" class="w-[17px] h-[17px]"></i>
                 </button>
             </form>
 
-            <div class="flex items-center gap-4 xl:gap-6 shrink-0">
-                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
-                    <i data-lucide="heart" class="w-[17px] h-[17px]"></i>
-                    {{ $isFr ? 'Favoris' : 'Saved' }}
+            <!-- Utility icon links + account avatar -->
+            <div class="flex items-center gap-[22px] shrink-0">
+                @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
+                <a href="{{ $duHref }}" class="hidden md:flex flex-col items-center gap-[7px] text-[#1D1B16] hover:text-leaf transition-colors">
+                    <i data-lucide="{{ $duIcon }}" class="w-[17.5px] h-[17.5px]"></i>
+                    <span class="text-[10px] font-medium leading-none whitespace-nowrap">{{ $duLabel }}</span>
                 </a>
-                @php
-                    // Badge counts come from the signed-in member's own records.
-                    // The design shipped fixed numbers here (3 messages, 2 or 3 in
-                    // the cart) which rendered on the site-wide header for every
-                    // visitor, including signed-out ones with no cart at all.
-                    $dirShowMessages = in_array($dirIconVariant, ['vendors', 'vdetail']);
-                    $dirMsgBadge = $siacUser
-                        ? (\App\Modules\Messaging\Models\Conversation::where('buyer_id', $siacUser['id'])
-                            ->orWhereHas('business', fn ($q) => $q->where('user_id', $siacUser['id']))
-                            ->where('last_message_at', '>', now()->subDays(30))->count() ?: null)
-                        : null;
-                    $dirShowCart = $siacUser && in_array($dirIconVariant, ['vendors', 'detail', 'vdetail']);
-                    // There is no basket on this platform — buyers request quotes.
-                    // The icon links to saved items, so it counts those.
-                    $dirCartBadge = $siacUser
-                        ? ((\Illuminate\Support\Facades\DB::table('saved_products')->where('user_id', $siacUser['id'])->count()
-                            + \Illuminate\Support\Facades\DB::table('saved_businesses')->where('user_id', $siacUser['id'])->count()) ?: null)
-                        : null;
-                @endphp
-                @if($dirShowMessages || $dirShowCart)
-                @if($dirShowMessages)
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
-                    <span class="relative">
-                        <i data-lucide="mail" class="w-[17px] h-[17px]"></i>
-                        @if($dirMsgBadge)
-                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] text-white text-[9px] font-bold rounded-full flex items-center justify-center" style="background-color: {{ $dirMsgBadgeColor ?? '#02301B' }}">{{ $dirMsgBadge }}</span>
-                        @endif
-                    </span>
-                    Messages
-                </a>
-                @endif
-                @if($dirShowCart)
-                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
-                    <span class="relative">
-                        <i data-lucide="shopping-cart" class="w-[17px] h-[17px]"></i>
-                        @if($dirCartBadge)
-                        <span class="absolute -top-2 -right-2.5 w-[15px] h-[15px] bg-[#02301B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">{{ $dirCartBadge }}</span>
-                        @endif
-                    </span>
-                    {{ $isFr ? 'Panier' : 'Cart' }}
-                </a>
-                @endif
-                @else
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="hidden md:flex items-center gap-2 text-[13px] font-medium text-[#1D1B16] hover:text-leaf transition-colors">
-                    <i data-lucide="shopping-bag" class="w-[17px] h-[17px]"></i>
-                    {{ $isFr ? 'Demandes' : 'Inquiries' }}
-                </a>
-                @endif
+                @endforeach
 
-                <!-- Language -->
+                <!-- Account -->
                 <div class="relative group hidden sm:block">
-                    <button class="flex items-center gap-1.5 py-2 text-[13px] font-medium text-[#1D1B16]">
-                        <i data-lucide="globe" class="w-[16px] h-[16px]"></i>
-                        {{ strtoupper($lang) }}
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
-                    </button>
-                    <div class="absolute right-0 top-full w-28 bg-white rounded-lg shadow-lg border border-[#E7E1D4] py-1 hidden group-hover:block z-50">
-                        <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="block px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf' : 'text-[#262521] hover:bg-[#F8F3ED]' }}">FR — Français</a>
-                        <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf' : 'text-[#262521] hover:bg-[#F8F3ED]' }}">EN — English</a>
+                    @if($siacUser)
+                    <a href="{{ route('dashboard.siac') }}" aria-label="{{ $isFr ? 'Mon compte' : 'My account' }}"
+                        class="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#0F4227] text-white text-[13px] font-bold ring-2 ring-[#E3D6B0]">
+                        {{ mb_strtoupper(mb_substr($siacUser['name'] ?? 'A', 0, 1)) }}
+                    </a>
+                    <div class="absolute right-0 top-full w-52 pt-2 hidden group-hover:block z-50">
+                        <div class="bg-white rounded-lg shadow-lg border border-[#E7E1D4] py-1">
+                            <a href="{{ route('dashboard.siac') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
+                            <a href="{{ route('profile.show') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
+                            <a href="{{ route('messages.inbox') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">Messages</a>
+                            <a href="{{ route('saved.index') }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Favoris' : 'Wishlist' }}</a>
+                        </div>
                     </div>
+                    @else
+                    <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Se connecter' : 'Sign in' }}"
+                        class="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#EFEDE6] text-[#0F4227] ring-2 ring-[#E3D6B0]">
+                        <i data-lucide="user" class="w-[19px] h-[19px]"></i>
+                    </a>
+                    <div class="absolute right-0 top-full w-52 pt-2 hidden group-hover:block z-50">
+                        <div class="bg-white rounded-lg shadow-lg border border-[#E7E1D4] py-1">
+                            <a href="{{ route('login', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                            <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Créer mon compte' : 'Create an account' }}</a>
+                            <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="block px-3 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
+                        </div>
+                    </div>
+                    @endif
                 </div>
-
-                @if($siacUser)
-                <a href="{{ route('dashboard.siac') }}" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
-                    {{ $isFr ? 'Tableau de bord' : 'Dashboard' }}
-                </a>
-                @else
-                <a href="{{ route('login', ['lang' => $lang]) }}" class="hidden sm:inline-flex items-center whitespace-nowrap bg-[#02301B] hover:bg-leaf text-white text-[13px] font-semibold px-5 h-[40px] rounded-lg transition-colors">
-                    {{ $isFr ? 'Se connecter' : 'Sign in' }}
-                </a>
-                @endif
 
                 <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4]/50" aria-label="Menu">
                     <i data-lucide="menu" class="w-5 h-5 text-[#262521]"></i>
@@ -212,35 +205,39 @@
         <div id="mobile-menu" class="hidden lg:hidden pb-4 border-t border-[#E7E1D4] pt-3">
             <form action="{{ route('gallery.search') }}" method="GET" class="relative mb-3">
                 <input type="hidden" name="lang" value="{{ $lang }}">
-                <input name="q" type="search" placeholder="{{ $isFr ? 'Rechercher un produit, artisan, catégorie...' : 'Search a product, artisan, category...' }}"
+                <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}"
                     class="ui-field pr-9">
                 <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#55524A]">
                     <i data-lucide="search" class="w-4 h-4"></i>
                 </button>
             </form>
-            <div class="flex items-center gap-4 px-1 mb-2">
-                <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16]">
-                    <i data-lucide="heart" class="w-4 h-4"></i>{{ $isFr ? 'Favoris' : 'Saved' }}
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 px-1 mb-2">
+                @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
+                <a href="{{ $duHref }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16]">
+                    <i data-lucide="{{ $duIcon }}" class="w-4 h-4"></i>{{ $duLabel }}
                 </a>
-                <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16]">
-                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>{{ $isFr ? 'Demandes' : 'Inquiries' }}
-                </a>
+                @endforeach
             </div>
-            {{-- Main page links — same $dirNavItems array as the desktop bar below --}}
+            {{-- Main page links — same $dirNavItems array as the green bar below --}}
             <div class="mb-2">
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $dirNavActive === 'home' ? 'font-semibold text-leaf' : 'text-[#1D1B16] hover:text-leaf' }}">
+                    <i data-lucide="home" class="w-4 h-4 text-[#55524A]"></i>{{ $isFr ? 'Accueil' : 'Home' }}
+                </a>
                 @foreach($dirNavItems as [$mmKey, $mmIcon, $mmLabel, $mmHref])
                 <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $mmKey === $dirNavActive ? 'font-semibold text-leaf' : 'text-[#1D1B16] hover:text-leaf' }}">
                     <i data-lucide="{{ $mmIcon }}" class="w-4 h-4 text-[#55524A]"></i>{{ $mmLabel }}
                 </a>
                 @endforeach
             </div>
-            <div class="border-t border-[#E7E1D4] pt-2 flex items-center justify-between px-1">
+            <div class="border-t border-[#E7E1D4] pt-3 flex flex-wrap items-center justify-between gap-2 px-1">
                 @if($siacUser)
                 <a href="{{ route('dashboard.siac') }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
                 @else
                 <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
-                <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 border border-[#02301B] text-[#02301B] text-[13px] font-semibold px-4 py-2 rounded-lg"><i data-lucide="zap" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
                 @endif
+                <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#231903] text-[12.5px] font-bold px-4 py-2 rounded-lg uppercase tracking-[0.04em]">
+                    {{ $isFr ? 'Vendre sur ArtisanHub237' : 'Sell on ArtisanHub237' }}
+                </a>
                 <span class="flex items-center gap-2 text-[13px] font-semibold">
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">FR</a>
                     <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ !$isFr ? 'text-leaf underline' : 'text-[#8A857A]' }}">EN</a>
@@ -250,53 +247,73 @@
     </div>
 </header>
 
-{{-- Secondary icon nav bar — always rendered, same $dirNavItems as the mobile menu above --}}
-<div class="hidden lg:block bg-[#FEFEFE] border-b border-[#EFEDEA]">
-    <div class="max-w-[1472px] mx-auto px-4 sm:px-6 overflow-x-auto">
-        <nav class="flex items-center justify-center gap-6 xl:gap-9 w-max mx-auto">
-            @foreach($dirNavItems as [$dnKey, $dnIcon, $dnLabel, $dnHref])
-            @if($dnKey === 'categories' && !empty($navSectors) && $navSectors->count())
-            {{-- Categories megamenu: official sectors → filières --}}
-            <div class="relative group">
-                <a href="{{ $dnHref }}" class="relative flex items-center gap-2 py-3 text-[13px] {{ $dnKey === $dirNavActive ? 'font-semibold text-[#14532D]' : 'font-medium text-[#3A3A35] hover:text-leaf' }} transition-colors whitespace-nowrap">
-                    <i data-lucide="{{ $dnIcon }}" class="w-[15px] h-[15px]"></i>
+{{-- Deep-green section bar — always rendered, same $dirNavItems as the mobile
+     menu above. `min-w-0` on the nav plus the shrink-0 button keeps the row
+     inside the viewport at every width instead of pushing the page sideways. --}}
+<div class="hidden lg:block bg-[#002A0D]">
+    <div class="max-w-[1280px] mx-auto px-[25px]">
+        <div class="flex items-center justify-between gap-4 h-[40px]">
+            <nav class="flex items-center gap-[18px] min-w-0 flex-1">
+                @foreach($dirNavItems as [$dnKey, $dnIcon, $dnLabel, $dnHref])
+                @if($dnKey === 'categories' && !empty($navSectors) && $navSectors->count())
+                {{-- Categories megamenu: official sectors → filières --}}
+                <div class="relative group shrink-0">
+                    <a href="{{ $dnHref }}" class="relative flex items-center gap-1 h-[40px] text-[12.5px] font-semibold uppercase tracking-[0.06em] {{ $dnKey === $dirNavActive ? 'text-[#E29A08]' : 'text-white hover:text-[#E29A08]' }} transition-colors whitespace-nowrap">
+                        {{ $dnLabel }}
+                        <i data-lucide="chevron-down" class="w-3 h-3 opacity-70"></i>
+                        @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
+                    </a>
+                    <div class="absolute left-0 top-full pt-1 hidden group-hover:block z-50">
+                        <div class="w-[600px] max-w-[92vw] bg-white rounded-xl shadow-xl border border-[#EFEDEA] p-5">
+                            <div class="grid grid-cols-3 gap-x-5 gap-y-4">
+                                @foreach($navSectors as $sec)
+                                <div class="min-w-0">
+                                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="flex items-center gap-1.5 text-[12.5px] font-bold text-[#14532D] hover:underline mb-2">
+                                        <i data-lucide="layers" class="w-3.5 h-3.5 shrink-0"></i>
+                                        <span class="truncate">{{ $isFr ? $sec->name_fr : ($sec->name_en ?? $sec->name_fr) }}</span>
+                                    </a>
+                                    <div class="space-y-1">
+                                        @foreach($sec->filieres as $fil)
+                                        @php $filName = $isFr ? $fil->name_fr : ($fil->name_en ?? $fil->name_fr); @endphp
+                                        <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $fil->slug]) }}" title="{{ $filName }}" class="block text-[11.5px] text-[#55524A] hover:text-leaf truncate">{{ $filName }}</a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <a href="{{ $dnHref }}" class="mt-4 pt-3 border-t border-[#F1F0EC] flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] hover:underline">
+                                {{ $isFr ? 'Explorer toute la nomenclature officielle' : 'Explore the full official nomenclature' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <a href="{{ $dnHref }}" class="relative shrink-0 flex items-center h-[40px] text-[12.5px] font-semibold uppercase tracking-[0.06em] {{ $dnKey === $dirNavActive ? 'text-[#E29A08]' : 'text-white hover:text-[#E29A08]' }} transition-colors whitespace-nowrap">
                     {{ $dnLabel }}
-                    <i data-lucide="chevron-down" class="w-3 h-3 text-[#8A857A]"></i>
                     @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
                 </a>
-                <div class="absolute left-1/2 -translate-x-1/2 top-full pt-2 hidden group-hover:block z-50">
-                    <div class="w-[600px] max-w-[92vw] bg-white rounded-xl shadow-xl border border-[#EFEDEA] p-5">
-                        <div class="grid grid-cols-3 gap-x-5 gap-y-4">
-                            @foreach($navSectors as $sec)
-                            <div class="min-w-0">
-                                <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="flex items-center gap-1.5 text-[12.5px] font-bold text-[#14532D] hover:underline mb-2">
-                                    <i data-lucide="layers" class="w-3.5 h-3.5 shrink-0"></i>
-                                    <span class="truncate">{{ $isFr ? $sec->name_fr : ($sec->name_en ?? $sec->name_fr) }}</span>
-                                </a>
-                                <div class="space-y-1">
-                                    @foreach($sec->filieres as $fil)
-                                    @php $filName = $isFr ? $fil->name_fr : ($fil->name_en ?? $fil->name_fr); @endphp
-                                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $fil->slug]) }}" title="{{ $filName }}" class="block text-[11.5px] text-[#55524A] hover:text-leaf truncate">{{ $filName }}</a>
-                                    @endforeach
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <a href="{{ $dnHref }}" class="mt-4 pt-3 border-t border-[#F1F0EC] flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] hover:underline">
-                            {{ $isFr ? 'Explorer toute la nomenclature officielle' : 'Explore the full official nomenclature' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                        </a>
+                @endif
+                @endforeach
+            </nav>
+
+            {{-- Gold call to action. Points at the real become-a-member route;
+                 the chevron opens the other two real ways in. --}}
+            <div class="relative group shrink-0 flex items-center h-[40px]">
+                <a href="{{ route('onboarding', ['lang' => $lang]) }}"
+                    class="flex items-center justify-center gap-2 bg-gradient-to-b from-[#A2700F] to-[#925104] hover:from-[#B37D14] hover:to-[#A25C08] text-white text-[12.5px] font-bold uppercase tracking-[0.06em] min-w-[206px] px-3 h-[30px] rounded-md transition-colors whitespace-nowrap">
+                    {{ $isFr ? 'Vendre sur ArtisanHub237' : 'Sell on ArtisanHub237' }}
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </a>
+                <div class="absolute right-0 top-full w-60 pt-1.5 hidden group-hover:block z-50">
+                    <div class="bg-white rounded-lg shadow-xl border border-[#E7E1D4] py-1">
+                        <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Créer mon compte artisan' : 'Create my artisan account' }}</a>
+                        <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? 'Inscription rapide' : 'Quick signup' }}</a>
+                        <a href="{{ route('guide.artisan', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED]">{{ $isFr ? "Guide de l'artisan" : 'Artisan guide' }}</a>
+                        <a href="{{ route('login', ['lang' => $lang]) }}" class="block px-3.5 py-2 text-[12.5px] text-[#262521] hover:bg-[#F8F3ED] border-t border-[#F1F0EC]">{{ $isFr ? 'J\'ai déjà un compte' : 'I already have an account' }}</a>
                     </div>
                 </div>
             </div>
-            @else
-            <a href="{{ $dnHref }}" class="relative flex items-center gap-2 py-3 text-[13px] {{ $dnKey === $dirNavActive ? 'font-semibold text-[#14532D]' : 'font-medium text-[#3A3A35] hover:text-leaf' }} transition-colors whitespace-nowrap">
-                <i data-lucide="{{ $dnIcon }}" class="w-[15px] h-[15px]"></i>
-                {{ $dnLabel }}
-                @if($dnKey === $dirNavActive)<span class="absolute left-0 right-0 bottom-0 h-[3px] bg-[#E7A320]"></span>@endif
-            </a>
-            @endif
-            @endforeach
-        </nav>
+        </div>
     </div>
 </div>
 

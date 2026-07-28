@@ -38,7 +38,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -52,13 +52,13 @@
 <main class="max-w-[1024px] mx-auto px-5 py-10 pb-20">
     <div class="grid grid-cols-2 md:grid-cols-2 gap-5">
         @foreach($guideSteps as [$gsIcon, $gsTitle, $gsDesc, $gsCta, $gsHref])
-        <article class="bg-white border border-[#ECECEA] rounded-2xl p-6 flex flex-col">
-            <span class="w-[46px] h-[46px] rounded-xl bg-[#E4F1E8] flex items-center justify-center">
-                <i data-lucide="{{ $gsIcon }}" class="w-[22px] h-[22px] text-[#14652F]" style="stroke-width:1.7"></i>
+        <article class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-6 flex flex-col">
+            <span class="w-[46px] h-[46px] rounded-xl bg-[#E4F1E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="{{ $gsIcon }}" class="w-[22px] h-[22px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i>
             </span>
-            <h2 class="mt-4 text-[15px] font-bold text-[#1B1B18]">{{ $gsTitle }}</h2>
-            <p class="mt-2 text-[13px] text-[#55524A] leading-relaxed flex-1">{{ $gsDesc }}</p>
-            <a href="{{ $gsHref }}" class="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#14652F] hover:text-[#14532D]">
+            <h2 class="mt-4 text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $gsTitle }}</h2>
+            <p class="mt-2 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed flex-1">{{ $gsDesc }}</p>
+            <a href="{{ $gsHref }}" class="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
                 {{ $gsCta }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -66,9 +66,9 @@
         @endforeach
     </div>
 
-    <div class="mt-8 bg-[#EFF5F0] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
-        <i data-lucide="headphones" class="w-[30px] h-[30px] shrink-0 text-[#14652F]" style="stroke-width:1.6"></i>
-        <p class="flex-1 min-w-[240px] text-[13px] text-[#3B382F]">
+    <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
+        <i data-lucide="headphones" class="w-[30px] h-[30px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
+        <p class="flex-1 min-w-[240px] text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
             <span class="font-bold">{{ $isFr ? 'Besoin d\'aide pour démarrer ?' : 'Need help getting started?' }}</span>
             {{ $isFr ? 'Notre équipe vous accompagne à chaque étape.' : 'Our team supports you at every step.' }}
         </p>

@@ -127,7 +127,7 @@ $pillClass = [
         @else
         <div>
             @foreach($outstanding as $p)
-            <div class="px-4 py-3.5 border-b border-[#F0F1F0] last:border-0"
+            <div class="px-4 py-3.5 border-b border-[#F0F1F0] dark:border-[#262B21] last:border-0"
                  data-payment="{{ $p->reference }}" data-payment-status="{{ $p->status }}">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <p class="text-[13px] font-semibold ui-ink min-w-0">
@@ -189,7 +189,7 @@ $pillClass = [
                    the person who is answerable for the decision. */
                 $reallyConfirmed = $p->status === 'confirmed' && $p->reviewed_by && $p->reviewed_at;
             @endphp
-            <div class="px-4 py-3.5 border-b border-[#F0F1F0] last:border-0"
+            <div class="px-4 py-3.5 border-b border-[#F0F1F0] dark:border-[#262B21] last:border-0"
                  data-history="{{ $p->reference }}" data-payment-status="{{ $p->status }}">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <p class="text-[13px] font-semibold ui-ink min-w-0">

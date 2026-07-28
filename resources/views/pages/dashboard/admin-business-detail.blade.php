@@ -15,9 +15,9 @@ $statusLabels = [
 
     <div class="flex items-center gap-2 mb-4">
         <a href="{{ route('admin.businesses') }}" class="ui-btn ui-btn-ghost ui-btn-sm -ml-2">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A]"></i>
+            <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
         </a>
-        <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $business->slug]) }}" target="_blank" class="text-xs text-[#157A43] hover:underline flex items-center gap-1 ml-auto">
+        <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $business->slug]) }}" target="_blank" class="text-xs text-[#157A43] dark:text-[#339B56] hover:underline flex items-center gap-1 ml-auto">
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Voir le profil public' : 'View public profile' }}
         </a>
     </div>
@@ -32,14 +32,14 @@ $statusLabels = [
     <div class="ui-card mb-4">
         <div class="flex items-start justify-between gap-3 mb-3">
             <div>
-                <h1 class="text-lg font-bold text-[#1B1B18]">{{ $business->name_fr }}</h1>
+                <h1 class="text-lg font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $business->name_fr }}</h1>
                 <p class="ui-card-sub">{{ $business->industry?->name_fr }} — {{ $business->city?->name_fr ?? $business->region?->name_fr }}</p>
             </div>
             <span @class([
                 'text-xs font-medium px-2 py-1 rounded-full shrink-0',
-                'bg-green-100 text-green-700' => $business->status === 'published',
-                'bg-[#F1EDE3] text-[#8A857A]' => $business->status === 'draft',
-                'bg-red-100 text-red-700' => in_array($business->status, ['suspended', 'rejected']),
+                'bg-green-100 dark:bg-[#0C3D1D] text-green-700 dark:text-[#339B56]' => $business->status === 'published',
+                'bg-[#F1EDE3] dark:bg-[#1A1E16] text-[#8A857A] dark:text-[#868778]' => $business->status === 'draft',
+                'bg-red-100 dark:bg-[#3A1013] text-red-700 dark:text-[#F0555C]' => in_array($business->status, ['suspended', 'rejected']),
             ])>{{ $statusLabels[$business->status] ?? $business->status }}</span>
         </div>
 
@@ -58,7 +58,7 @@ $statusLabels = [
             @endif
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm border-t border-[#F5F1E8] pt-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm border-t border-[#F5F1E8] dark:border-[#262B21] pt-4">
             <div><p class="ui-dt">{{ $lang === 'fr' ? 'Propriétaire' : 'Owner' }}</p><p class="ui-dd">{{ $business->user?->name }}</p></div>
             <div><p class="ui-dt">Email</p><p class="ui-dd truncate">{{ $business->user?->email }}</p></div>
             <div><p class="ui-dt">{{ $lang === 'fr' ? 'Niveau' : 'Tier' }}</p><p class="ui-dd capitalize">{{ $business->verification_tier }}</p></div>
@@ -68,25 +68,25 @@ $statusLabels = [
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <div class="ui-card text-center">
-            <p class="text-[21px] font-bold text-[#1B1B18] leading-tight">{{ $business->products->count() }}</p>
+            <p class="text-[21px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $business->products->count() }}</p>
             <p class="ui-dt">{{ $lang === 'fr' ? 'Produits' : 'Products' }}</p>
         </div>
         <div class="ui-card text-center">
-            <p class="text-[21px] font-bold text-[#1B1B18] leading-tight">{{ $business->reviews->count() }}</p>
+            <p class="text-[21px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $business->reviews->count() }}</p>
             <p class="ui-dt">{{ $lang === 'fr' ? 'Avis' : 'Reviews' }}</p>
         </div>
         <div class="ui-card text-center">
-            <p class="text-[21px] font-bold text-[#1B1B18] leading-tight">{{ $business->certifications->count() }}</p>
+            <p class="text-[21px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $business->certifications->count() }}</p>
             <p class="ui-dt">{{ $lang === 'fr' ? 'Certifications' : 'Certifications' }}</p>
         </div>
     </div>
 
     <!-- Products -->
     <div class="ui-card ui-card--flush mb-4">
-        <div class="px-5 py-3.5 border-b border-[#F5F1E8]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Produits' : 'Products' }}</h2></div>
+        <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Produits' : 'Products' }}</h2></div>
         @forelse($business->products->take(8) as $product)
-        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] last:border-0">
-            <span class="flex-1 truncate text-[12.5px] text-[#3B382F]">{{ $product->name_fr }}</span>
+        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
+            <span class="flex-1 truncate text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $product->name_fr }}</span>
             <span class="ui-dt">{{ $product->status }}</span>
         </div>
         @empty
@@ -97,10 +97,10 @@ $statusLabels = [
     <!-- Verification history -->
     @if($business->verificationApplications->isNotEmpty())
     <div class="ui-card ui-card--flush mb-4">
-        <div class="px-5 py-3.5 border-b border-[#F5F1E8]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Historique de vérification' : 'Verification history' }}</h2></div>
+        <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Historique de vérification' : 'Verification history' }}</h2></div>
         @foreach($business->verificationApplications as $app)
-        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] last:border-0">
-            <span class="flex-1 text-[12.5px] text-[#3B382F]">{{ $lang === 'fr' ? 'Demande' : 'Request' }}: {{ $app->tier_requested }}</span>
+        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
+            <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $lang === 'fr' ? 'Demande' : 'Request' }}: {{ $app->tier_requested }}</span>
             <span class="ui-dt">{{ $app->status }} — {{ $app->created_at->format('d/m/Y') }}</span>
         </div>
         @endforeach
@@ -110,10 +110,10 @@ $statusLabels = [
     <!-- Audit trail -->
     @if($auditEntries->isNotEmpty())
     <div class="ui-card ui-card--flush">
-        <div class="px-5 py-3.5 border-b border-[#F5F1E8]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Actions administratives' : 'Admin actions' }}</h2></div>
+        <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Actions administratives' : 'Admin actions' }}</h2></div>
         @foreach($auditEntries as $entry)
-        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] last:border-0">
-            <span class="flex-1 text-[12.5px] text-[#3B382F]">{{ $entry->action }} — {{ $entry->user?->name }}</span>
+        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
+            <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $entry->action }} — {{ $entry->user?->name }}</span>
             <span class="ui-dt">{{ $entry->created_at->diffForHumans() }}</span>
         </div>
         @endforeach

@@ -33,12 +33,12 @@ $actionLabels = [
     <div class="ui-card ui-card--flush">
         @forelse($logs as $log)
         @php $meta = $actionIcons[$log->action] ?? ['icon' => 'activity', 'color' => 'gray']; @endphp
-        <div class="flex items-start gap-3 px-4 py-3.5 border-b border-[#F5F1E8] last:border-0">
+        <div class="flex items-start gap-3 px-4 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
             <div class="w-8 h-8 rounded-lg bg-{{ $meta['color'] }}-50 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="{{ $meta['icon'] }}" class="w-4 h-4 text-{{ $meta['color'] }}-600"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#1B1B18]">{{ $actionLabels[$log->action] ?? $log->action }}</p>
+                <p class="text-sm font-medium text-[#1B1B18] dark:text-[#F3EFE7]">{{ $actionLabels[$log->action] ?? $log->action }}</p>
                 <p class="ui-dt">
                     {{ $log->user?->name ?? ($lang === 'fr' ? 'Système' : 'System') }}
                     @if($log->new_values)
@@ -46,7 +46,7 @@ $actionLabels = [
                     @endif
                 </p>
             </div>
-            <span class="text-xs text-[#B8B2A4] shrink-0">{{ $log->created_at->diffForHumans() }}</span>
+            <span class="text-xs text-[#B8B2A4] dark:text-[#868778] shrink-0">{{ $log->created_at->diffForHumans() }}</span>
         </div>
         @empty
         <div class="ui-empty">{{ $lang === 'fr' ? 'Aucune activité enregistrée.' : 'No activity recorded.' }}</div>

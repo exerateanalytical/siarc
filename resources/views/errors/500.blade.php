@@ -23,6 +23,15 @@ nav{background:#0A2C1D;padding:.85rem 1.5rem;display:flex;align-items:center;gap
 .tricolor span:nth-child(1){width:46%;background:#094F2B;}
 .tricolor span:nth-child(2){width:26%;background:#B61012;}
 .tricolor span:nth-child(3){flex:1;background:#E9A411;}
+/* Dark mode. These two pages carry no Tailwind at all, so the palette from
+   docs/DARK-MODE-CONTRACT.md is written out by hand. The tricolor and the nav
+   are brand marks and stay exactly as they are in both themes. */
+html.dark body{background:#0A0C09;color:#F3EFE7;}
+html.dark .code{color:#262B21;}
+html.dark h1{color:#339B56;}
+html.dark p{color:#B4B5A6;}
+html.dark .btn{background:#2E9250;color:#04150A;}
+html.dark .btn-sec{background:#12150F;color:#339B56;border-color:#68715B;}
 </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')

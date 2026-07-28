@@ -28,17 +28,17 @@ $channelMeta = [
 
     {{-- Fresh recovery codes — shown exactly once --}}
     @if($freshRecoveryCodes)
-    <div class="bg-[#FBF1DD] border border-[#EFD08A] rounded-xl p-5">
+    <div class="bg-[#FBF1DD] dark:bg-[#3A2B06] border border-[#EFD08A] dark:border-[#4A3A12] rounded-xl p-5">
         <div class="flex items-center gap-2 mb-2">
-            <i data-lucide="life-buoy" class="w-4 h-4 text-[#C9942E]"></i>
-            <h2 class="text-sm font-bold text-[#8A6D1F]">{{ $lang === 'fr' ? 'Codes de récupération — copiez-les maintenant' : 'Recovery codes — copy them now' }}</h2>
+            <i data-lucide="life-buoy" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>
+            <h2 class="text-sm font-bold text-[#8A6D1F] dark:text-[#EDB33A]">{{ $lang === 'fr' ? 'Codes de récupération — copiez-les maintenant' : 'Recovery codes — copy them now' }}</h2>
         </div>
-        <p class="text-xs text-[#8A6D1F] mb-3">
+        <p class="text-xs text-[#8A6D1F] dark:text-[#EDB33A] mb-3">
             {{ $lang === 'fr'
                 ? 'Chaque code ne fonctionne qu\'une fois. Ils ne seront plus jamais affichés. Conservez-les en lieu sûr.'
                 : 'Each code works only once. They will never be shown again. Store them somewhere safe.' }}
         </p>
-        <div class="grid grid-cols-2 gap-2 font-mono text-sm text-[#6B5318] bg-white border border-[#F6E4BE] rounded-lg p-4">
+        <div class="grid grid-cols-2 gap-2 font-mono text-sm text-[#6B5318] dark:text-[#EDB33A] bg-white dark:bg-[#12150F] border border-[#F6E4BE] dark:border-[#4A3A12] rounded-lg p-4">
             @foreach($freshRecoveryCodes as $code)
             <span>{{ $code }}</span>
             @endforeach
@@ -48,10 +48,10 @@ $channelMeta = [
 
     {{-- Passkeys --}}
     <div class="ui-card ui-card--flush">
-        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4]">
+        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                    <i data-lucide="fingerprint" class="w-4 h-4 text-forest-600"></i>
+                <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                    <i data-lucide="fingerprint" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
                 </div>
                 <div>
                     <h2 class="ui-card-title">Passkeys</h2>
@@ -63,13 +63,13 @@ $channelMeta = [
                 {{ $lang === 'fr' ? 'Ajouter' : 'Add passkey' }}
             </button>
         </div>
-        <div id="passkey-error" class="hidden px-5 py-3 text-[11.5px] text-[#B42025] border-b border-[#FBF9F4]"></div>
+        <div id="passkey-error" class="hidden px-5 py-3 text-[11.5px] text-[#B42025] dark:text-[#F0555C] border-b border-[#FBF9F4] dark:border-[#262B21]"></div>
         @forelse($passkeys as $pk)
-        <div class="flex items-center gap-3 px-5 py-3 border-b border-[#FBF9F4] last:border-0">
-            <i data-lucide="key-round" class="w-4 h-4 text-[#A8A296] shrink-0"></i>
+        <div class="flex items-center gap-3 px-5 py-3 border-b border-[#FBF9F4] dark:border-[#262B21] last:border-0">
+            <i data-lucide="key-round" class="w-4 h-4 text-[#A8A296] dark:text-[#868778] shrink-0"></i>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#1B1B18] truncate">{{ $pk->name }}</p>
-                <p class="text-[11px] text-[#A8A296]">
+                <p class="text-sm font-medium text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $pk->name }}</p>
+                <p class="text-[11px] text-[#A8A296] dark:text-[#868778]">
                     {{ $lang === 'fr' ? 'Créée' : 'Created' }} {{ \Carbon\Carbon::parse($pk->created_at)->diffForHumans() }}
                     @if($pk->last_used_at) · {{ $lang === 'fr' ? 'utilisée' : 'used' }} {{ \Carbon\Carbon::parse($pk->last_used_at)->diffForHumans() }}@endif
                 </p>
@@ -89,10 +89,10 @@ $channelMeta = [
 
     {{-- Authenticator app (TOTP) --}}
     <div class="ui-card ui-card--flush">
-        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4]">
+        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-forest-600"></i>
+                <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
                 </div>
                 <div>
                     <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Application d\'authentification' : 'Authenticator app' }}</h2>
@@ -120,8 +120,8 @@ $channelMeta = [
             @elseif($pendingTotpSecret)
                 <div class="grid sm:grid-cols-2 gap-5 items-start">
                     <div class="text-center">
-                        <div id="totp-qr" class="inline-block bg-white p-2 border border-[#EFEBE2] rounded-lg"></div>
-                        <p class="text-[11px] text-[#A8A296] mt-2 font-mono break-all">{{ $pendingTotpSecret }}</p>
+                        <div id="totp-qr" class="inline-block bg-white dark:bg-[#12150F] p-2 border border-[#EFEBE2] dark:border-[#262B21] rounded-lg"></div>
+                        <p class="text-[11px] text-[#A8A296] dark:text-[#868778] mt-2 font-mono break-all">{{ $pendingTotpSecret }}</p>
                     </div>
                     <div>
                         <p class="ui-hint mt-0 mb-3">
@@ -153,10 +153,10 @@ $channelMeta = [
 
     {{-- OTP channel --}}
     <div class="ui-card ui-card--flush">
-        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4]">
+        <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                    <i data-lucide="message-square-lock" class="w-4 h-4 text-forest-600"></i>
+                <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                    <i data-lucide="message-square-lock" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
                 </div>
                 <div>
                     <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Code à usage unique (OTP)' : 'One-time code (OTP)' }}</h2>
@@ -188,7 +188,7 @@ $channelMeta = [
                         ? 'Un code vous a été envoyé via ' . ($channelMeta[$pendingChannel][$lang] ?? $pendingChannel) . '. Saisissez-le pour confirmer.'
                         : 'A code was sent via ' . ($channelMeta[$pendingChannel][$lang] ?? $pendingChannel) . '. Enter it to confirm.' }}
                     @if($pendingChannel === 'whatsapp' && ! config('services.twilio.sid'))
-                    <span class="block mt-1 text-[#C9942E]">{{ $lang === 'fr' ? '(Twilio non configuré : le code est visible dans storage/logs/laravel.log)' : '(Twilio not configured yet: the code is written to storage/logs/laravel.log)' }}</span>
+                    <span class="block mt-1 text-[#C9942E] dark:text-[#EDB33A]">{{ $lang === 'fr' ? '(Twilio non configuré : le code est visible dans storage/logs/laravel.log)' : '(Twilio not configured yet: the code is written to storage/logs/laravel.log)' }}</span>
                     @endif
                 </p>
                 <form method="POST" action="{{ route('security.channel.confirm') }}" class="flex items-center gap-2">
@@ -204,10 +204,10 @@ $channelMeta = [
                     @csrf
                     <div class="grid grid-cols-2 gap-2">
                         @foreach($channels as $ch)
-                        <label class="channel-option flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-[#EFEBE2] has-[:checked]:border-forest-400 has-[:checked]:bg-forest-50 cursor-pointer transition-all">
+                        <label class="channel-option flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 border-[#EFEBE2] dark:border-[#262B21] has-[:checked]:border-forest-400 has-[:checked]:bg-forest-50 cursor-pointer transition-all">
                             <input type="radio" name="channel" value="{{ $ch }}" class="sr-only" required>
-                            <i data-lucide="{{ $channelMeta[$ch]['icon'] ?? 'send' }}" class="w-4 h-4 text-[#8A857A]"></i>
-                            <span class="text-xs font-semibold text-[#3B382F]">{{ $channelMeta[$ch][$lang] ?? $ch }}</span>
+                            <i data-lucide="{{ $channelMeta[$ch]['icon'] ?? 'send' }}" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
+                            <span class="text-xs font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $channelMeta[$ch][$lang] ?? $ch }}</span>
                         </label>
                         @endforeach
                     </div>
@@ -227,9 +227,9 @@ $channelMeta = [
     {{-- Recovery codes --}}
     @if($totpEnabled || $channel)
     <div class="ui-card ui-card--flush">
-        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F1EDE4]">
-            <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                <i data-lucide="life-buoy" class="w-4 h-4 text-forest-600"></i>
+        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
+            <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="life-buoy" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
             </div>
             <div>
                 <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Codes de récupération' : 'Recovery codes' }}</h2>

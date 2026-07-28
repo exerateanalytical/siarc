@@ -38,11 +38,11 @@
 
 <div class="flex flex-wrap items-start justify-between gap-3">
     <div>
-        <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr ? 'Gestion des Utilisateurs' : 'User Management' }}</h1>
-        <p class="mt-0.5 text-[12px] text-[#6F6B60]">
-            <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-            <span class="mx-1 text-[#B8B2A4]">/</span>
-            <span class="text-[#3B382F]">{{ $isFr ? 'Utilisateurs' : 'Users' }}</span>
+        <h1 class="text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Gestion des Utilisateurs' : 'User Management' }}</h1>
+        <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778]">
+            <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43] dark:hover:text-[#339B56] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+            <span class="mx-1 text-[#B8B2A4] dark:text-[#868778]">/</span>
+            <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Utilisateurs' : 'Users' }}</span>
         </p>
     </div>
     <div class="flex items-center gap-2.5 shrink-0">
@@ -67,10 +67,10 @@
 @endif
 
 {{-- Role tabs (real counts) --}}
-<div class="mt-4 flex flex-wrap items-stretch gap-1 bg-[#F1EDE3] border border-[#EAE5D8] rounded-xl p-1 overflow-x-auto">
+<div class="mt-4 flex flex-wrap items-stretch gap-1 bg-[#F1EDE3] dark:bg-[#1A1E16] border border-[#EAE5D8] dark:border-[#262B21] rounded-xl p-1 overflow-x-auto">
     @foreach($tabs as $key => $label)
     <a href="{{ route('admin.users', array_merge(request()->except('page', 'role'), $key === 'tous' ? [] : ['role' => $key])) }}"
-       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white border border-[#EAE5D8] shadow-sm font-bold text-[#1B1B18]' : 'font-semibold text-[#C97A16] hover:bg-white/60' }}">
+       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] shadow-sm font-bold text-[#1B1B18] dark:text-[#F3EFE7] ' : 'font-semibold text-[#C97A16] dark:text-[#EDB33A] hover:bg-white dark:hover:bg-[#242A1E] dark:hover:bg-[#242A1E]/60' }}">
         {{ $label }} ({{ number_format($roleCounts[$key] ?? 0) }})
     </a>
     @endforeach
@@ -157,11 +157,11 @@
                             @if(!empty($u->avatar))
                             <img src="{{ asset($u->avatar) }}" alt="{{ $u->name }}" class="w-9 h-9 rounded-full object-cover shrink-0">
                             @else
-                            <div class="w-9 h-9 rounded-full bg-[#E2F3E8] text-[#157A43] flex items-center justify-center shrink-0 text-[13px] font-bold">{{ strtoupper(substr($u->name ?? '?', 0, 1)) }}</div>
+                            <div class="w-9 h-9 rounded-full bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] flex items-center justify-center shrink-0 text-[13px] font-bold">{{ strtoupper(substr($u->name ?? '?', 0, 1)) }}</div>
                             @endif
                             <div class="min-w-0">
-                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="block text-[12.5px] font-bold text-[#1B1B18] truncate hover:text-[#157A43] hover:underline">{{ $u->name }}</a>
-                                <p class="text-[11px] text-[#8A857A] truncate">{{ $u->email }}</p>
+                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="block text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate hover:text-[#157A43] dark:hover:text-[#339B56] hover:underline">{{ $u->name }}</a>
+                                <p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $u->email }}</p>
                             </div>
                         </div>
                     </td>
@@ -177,7 +177,7 @@
                     </td>
                     <td>
                         @if($isVisitor)
-                        <span class="text-[12px] text-[#8A857A]">-</span>
+                        <span class="text-[12px] text-[#8A857A] dark:text-[#868778]">-</span>
                         @elseif($kycVerified)
                         <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Vérifié' : 'Verified' }}</span>
                         @else
@@ -186,46 +186,46 @@
                     </td>
                     <td class="whitespace-nowrap">{{ $joinedLabel }}</td>
                     <td class="text-right whitespace-nowrap">
-                        <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[#6F6B60] hover:border-[#157A43] hover:text-[#157A43] transition-colors align-middle">
+                        <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56] transition-colors align-middle">
                             <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                         </a>
                         <details class="relative inline-block align-middle ml-1.5">
-                            <summary class="list-none cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[#6F6B60] hover:border-[#157A43] hover:text-[#157A43] transition-colors [&::-webkit-details-marker]:hidden">
+                            <summary class="list-none cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56] transition-colors [&::-webkit-details-marker]:hidden">
                                 <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
                             </summary>
-                            <div class="absolute right-0 top-9 z-20 w-64 bg-white border border-[#EAE5D8] rounded-xl shadow-lg p-3 text-left">
-                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#3B382F] hover:text-[#157A43] py-1.5">
+                            <div class="absolute right-0 top-9 z-20 w-64 bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] rounded-xl shadow-lg p-3 text-left">
+                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#157A43] dark:hover:text-[#339B56] py-1.5">
                                     <i data-lucide="user" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Voir le profil' : 'View profile' }}
                                 </a>
                                 @if($isSelf)
-                                <p class="text-[11px] text-[#B8B2A4] py-1.5">{{ $isFr ? '(vous) — actions désactivées' : '(you) — actions disabled' }}</p>
+                                <p class="text-[11px] text-[#B8B2A4] dark:text-[#868778] py-1.5">{{ $isFr ? '(vous) — actions désactivées' : '(you) — actions disabled' }}</p>
                                 @else
                                 @if($u->status !== 'suspended')
-                                <form method="POST" action="{{ route('admin.users.update-status', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-1">
+                                <form method="POST" action="{{ route('admin.users.update-status', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-1">
                                     @csrf
                                     <input type="hidden" name="status" value="suspended">
-                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#C0392B] hover:text-red-700 py-1.5">
+                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#C0392B] dark:text-[#F0555C] hover:text-red-700 dark:hover:text-[#F0555C] py-1.5">
                                         <i data-lucide="ban" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Suspendre' : 'Suspend' }}
                                     </button>
                                 </form>
                                 @else
-                                <form method="POST" action="{{ route('admin.users.update-status', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-1">
+                                <form method="POST" action="{{ route('admin.users.update-status', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-1">
                                     @csrf
                                     <input type="hidden" name="status" value="active">
-                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] hover:text-[#14532D] py-1.5">
+                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] py-1.5">
                                         <i data-lucide="check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Réactiver' : 'Reactivate' }}
                                     </button>
                                 </form>
                                 @endif
                                 @if(! ($u->is_email_verified ?? false))
-                                <form method="POST" action="{{ route('admin.users.verify-email', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-1">
+                                <form method="POST" action="{{ route('admin.users.verify-email', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-1">
                                     @csrf
-                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] hover:text-[#14532D] py-1.5">
+                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] py-1.5">
                                         <i data-lucide="mail-check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Marquer l\'email vérifié' : 'Mark email verified' }}
                                     </button>
                                 </form>
                                 @endif
-                                <form method="POST" action="{{ route('admin.users.update-role', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] mt-1 pt-2">
+                                <form method="POST" action="{{ route('admin.users.update-role', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-2">
                                     @csrf
                                     <p class="ui-eyebrow mb-1.5">{{ $isFr ? 'Changer le rôle' : 'Change role' }}</p>
                                     <select name="role" onchange="this.closest('form').querySelector('.region-select-wrap').classList.toggle('hidden', this.value !== 'regional_rep')" class="ui-field ui-select w-full mb-1.5">
@@ -241,7 +241,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <button type="submit" class="w-full bg-[#0F4824] hover:bg-[#14652F] text-white text-[12px] font-semibold rounded-lg py-1.5 transition-colors">{{ $isFr ? 'Appliquer' : 'Apply' }}</button>
+                                    <button type="submit" class="w-full bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] text-white dark:text-[#04150A] text-[12px] font-semibold rounded-lg py-1.5 transition-colors">{{ $isFr ? 'Appliquer' : 'Apply' }}</button>
                                 </form>
                                 @endif
                             </div>
@@ -256,8 +256,8 @@
     </div>
 
     {{-- Pagination --}}
-    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#F5F1E8] px-5 py-3.5">
-        <p class="text-[12px] text-[#6F6B60]">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#F5F1E8] dark:border-[#262B21] px-5 py-3.5">
+        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">
             {{ $isFr
                 ? 'Affichage de ' . ($users->firstItem() ?? 0) . ' à ' . ($users->lastItem() ?? 0) . ' sur ' . number_format($users->total()) . ' utilisateurs'
                 : 'Showing ' . ($users->firstItem() ?? 0) . ' to ' . ($users->lastItem() ?? 0) . ' of ' . number_format($users->total()) . ' users' }}
@@ -270,25 +270,25 @@
             $end = min($last, $start + 4);
         @endphp
         <div class="flex items-center gap-1.5">
-            <a href="{{ $cur > 1 ? $users->url($cur - 1) : '#' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[#6F6B60] {{ $cur > 1 ? 'hover:border-[#157A43] hover:text-[#157A43]' : 'opacity-40 pointer-events-none' }}">
+            <a href="{{ $cur > 1 ? $users->url($cur - 1) : '#' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778] {{ $cur > 1 ? 'hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]' : 'opacity-40 pointer-events-none' }}">
                 <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             </a>
             @if($start > 1)
-            <a href="{{ $users->url(1) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[12px] font-semibold text-[#3B382F] hover:border-[#157A43] hover:text-[#157A43]">1</a>
-            @if($start > 2)<span class="text-[12px] text-[#8A857A] px-0.5">...</span>@endif
+            <a href="{{ $users->url(1) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">1</a>
+            @if($start > 2)<span class="text-[12px] text-[#8A857A] dark:text-[#868778] px-0.5">...</span>@endif
             @endif
             @for($p = $start; $p <= $end; $p++)
             @if($p === $cur)
-            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#0F4824] text-[12px] font-bold text-white">{{ $p }}</span>
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#0F4824] dark:bg-[#2E9250] text-[12px] font-bold text-white dark:text-[#04150A]">{{ $p }}</span>
             @else
-            <a href="{{ $users->url($p) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[12px] font-semibold text-[#3B382F] hover:border-[#157A43] hover:text-[#157A43]">{{ $p }}</a>
+            <a href="{{ $users->url($p) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ $p }}</a>
             @endif
             @endfor
             @if($end < $last)
-            @if($end < $last - 1)<span class="text-[12px] text-[#8A857A] px-0.5">...</span>@endif
-            <a href="{{ $users->url($last) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[12px] font-semibold text-[#3B382F] hover:border-[#157A43] hover:text-[#157A43]">{{ number_format($last) }}</a>
+            @if($end < $last - 1)<span class="text-[12px] text-[#8A857A] dark:text-[#868778] px-0.5">...</span>@endif
+            <a href="{{ $users->url($last) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ number_format($last) }}</a>
             @endif
-            <a href="{{ $cur < $last ? $users->url($cur + 1) : '#' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] text-[#6F6B60] {{ $cur < $last ? 'hover:border-[#157A43] hover:text-[#157A43]' : 'opacity-40 pointer-events-none' }}">
+            <a href="{{ $cur < $last ? $users->url($cur + 1) : '#' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778] {{ $cur < $last ? 'hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]' : 'opacity-40 pointer-events-none' }}">
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
             </a>
         </div>
@@ -296,6 +296,6 @@
     </div>
 </section>
 
-<p class="mt-8 text-center text-[11.5px] text-[#8A857A]">© {{ date('Y') }} Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
+<p class="mt-8 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ date('Y') }} Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
 
 @endsection

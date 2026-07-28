@@ -42,7 +42,7 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
     @if($orders->isEmpty())
     <div class="ui-card text-center py-14 px-4">
         <i data-lucide="clipboard-list" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="text-[12.5px] text-[#8A857A]">
+        <p class="text-[12.5px] text-[#8A857A] dark:text-[#868778]">
             {{ $isSeller
                ? ($isFr ? 'Aucune commande pour le moment. Les commandes apparaissent ici quand un acheteur accepte une de vos propositions.'
                         : 'No orders yet. Orders appear here when a buyer accepts one of your proposals.')
@@ -64,12 +64,12 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
             $next  = ($idx !== false && $idx < count($flow) - 1) ? $flow[$idx + 1] : null;
             $paid  = $o->invoice && $o->invoice->status === 'paid';
         @endphp
-        <div class="px-4 py-4 border-b border-[#F0F1F0] last:border-0">
+        <div class="px-4 py-4 border-b border-[#F0F1F0] dark:border-[#262B21] last:border-0">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
 
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
-                        <a href="{{ route('quotes.po', ['po' => $o->id]) }}" class="text-[13.5px] font-semibold text-[#1B1B18] hover:text-[#14652F]">
+                        <a href="{{ route('quotes.po', ['po' => $o->id]) }}" class="text-[13.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] hover:text-[#14652F] dark:hover:text-[#339B56]">
                             {{ $o->reference }}
                         </a>
                         <span class="ui-pill {{ $meta[1] }}">{{ $meta[0] }}</span>
@@ -79,8 +79,8 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
                         </span>
                         @endif
                     </div>
-                    <p class="text-[12px] text-[#55524A] mt-1 truncate">{{ $req?->title }}</p>
-                    <p class="text-[11.5px] text-[#8A857A] mt-0.5">
+                    <p class="text-[12px] text-[#55524A] dark:text-[#B4B5A6] mt-1 truncate">{{ $req?->title }}</p>
+                    <p class="text-[11.5px] text-[#8A857A] dark:text-[#868778] mt-0.5">
                         {{ $isSeller
                            ? ($isFr ? 'Acheteur' : 'Buyer') . ' · ' . ($req?->buyer?->name ?? '—')
                            : ($isFr ? 'Vendeur' : 'Seller') . ' · ' . ($req?->business?->name_fr ?? '—') }}
@@ -92,7 +92,7 @@ $tabs = ['' => $isFr ? 'Toutes' : 'All'] + collect($flow)->mapWithKeys(fn ($s) =
                 </div>
 
                 <div class="text-left sm:text-right shrink-0">
-                    <p class="text-[14px] font-bold text-[#1B1B18] whitespace-nowrap">{{ number_format((int) $o->total, 0, ',', ' ') }} FCFA</p>
+                    <p class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ number_format((int) $o->total, 0, ',', ' ') }} FCFA</p>
                 </div>
             </div>
 

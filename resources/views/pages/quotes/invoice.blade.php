@@ -93,7 +93,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
+<body class="bg-[#F7F8F7] dark:bg-[#12150F] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.quotes-buyer-header')
 
@@ -111,20 +111,20 @@
 
         <!-- Breadcrumb + title -->
         <nav class="flex items-center gap-2 text-[12.5px]">
-            <a href="{{ route('orders.index', ['lang' => $lang]) }}" class="font-semibold text-[#3565DE] hover:text-[#14652F]">Factures</a>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#55524A]"></i>
-            <span class="font-semibold text-[#1B1B18]">{{ $isFr ? 'Détails de la facture' : 'Invoice details' }}</span>
+            <a href="{{ route('orders.index', ['lang' => $lang]) }}" class="font-semibold text-[#3565DE] dark:text-[#8FB6F5] hover:text-[#14652F] dark:hover:text-[#339B56]">Factures</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i>
+            <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Détails de la facture' : 'Invoice details' }}</span>
         </nav>
         <div class="mt-2 flex flex-wrap items-start justify-between gap-4">
             <div>
-                <h1 class="flex flex-wrap items-center gap-3 text-[24px] font-bold text-[#1B1B18]">
+                <h1 class="flex flex-wrap items-center gap-3 text-[24px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $isFr ? 'Facture' : 'Invoice' }}
                     <span id="inv-pill" class="rounded-md px-3 py-1 text-[11.5px] font-bold tracking-[0.03em] uppercase" style="background:{{ $realPaid ? '#E2F3E8' : '#FDE8E8' }};color:{{ $realPaid ? '#157A43' : '#E5484D' }}">{{ $realPaid ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</span>
                 </h1>
-                <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    {{ $isFr ? 'Facture' : 'Invoice' }} #: <span class="font-semibold text-[#1B1B18]">{{ $realInvRef }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Basée sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">{{ $realQuoRef }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Artisan' : 'Artisan' }}: <span class="font-semibold text-[#1B1B18]">{{ $realBizName }}</span>
+                <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
+                    {{ $isFr ? 'Facture' : 'Invoice' }} #: <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realInvRef }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Basée sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realQuoRef }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Artisan' : 'Artisan' }}: <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realBizName }}</span>
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -297,19 +297,19 @@
                         <img src="{{ $realBizLogo }}" alt="{{ $realBizName }}" class="w-[86px] shrink-0 object-contain">
                         <div class="min-w-0">
                             <p class="flex flex-wrap items-center gap-2">
-                                <span class="text-[14px] font-bold text-[#1B1B18]">{{ $realBizName }}</span>
+                                <span class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realBizName }}</span>
                                 @if(in_array($biz?->verification_tier, ['verified', 'certified'], true))
-                                <span class="inline-flex items-center gap-1 bg-[#E2F3E8] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
+                                <span class="inline-flex items-center gap-1 bg-[#E2F3E8] dark:bg-[#0C3D1D] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43] dark:text-[#339B56]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
                                 @endif
                             </p>
                             @if($biz?->address_fr)
-                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? $biz->address_fr : ($biz->address_en ?: $biz->address_fr) }}</p>
+                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $isFr ? $biz->address_fr : ($biz->address_en ?: $biz->address_fr) }}</p>
                             @endif
                             @if($biz?->phone)
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->phone }}</p>
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $biz->phone }}</p>
                             @endif
                             @if($biz?->email)
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->email }}</p>
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $biz->email }}</p>
                             @endif
                         </div>
                     </div>
@@ -317,19 +317,19 @@
                         <p class="ui-dt">{{ $isFr ? 'Facturé à' : 'Billed to' }}</p>
                         <p class="ui-dd text-[14px]">{{ $realBuyerName }}</p>
                         @if($buyer?->email)
-                        <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $buyer->email }}</p>
+                        <p class="mt-2 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">{{ $buyer->email }}</p>
                         @endif
                         @if($buyer?->phone)
-                        <p class="mt-2 text-[12.5px] text-[#3B382F]">{{ $buyer->phone }}</p>
+                        <p class="mt-2 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $buyer->phone }}</p>
                         @endif
                     </div>
                     <div class="flex items-start gap-3.5">
-                        <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
+                        <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] dark:bg-[#1A1E16] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i></span>
                         <div>
                             <p class="ui-dt">{{ $isFr ? 'Date de facture' : 'Invoice date' }}</p>
                             <p class="ui-dd">{{ $realInvDate }}</p>
                             <p class="mt-2.5 ui-dt">{{ $isFr ? 'Date d\'échéance' : 'Due date' }}</p>
-                            <p class="ui-dd text-[#E5484D]">{{ $realDueDate ?? '—' }} @if($realDueIn !== null)<span class="font-semibold">({{ $realDueIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
+                            <p class="ui-dd text-[#E5484D] dark:text-[#F0555C]">{{ $realDueDate ?? '—' }} @if($realDueIn !== null)<span class="font-semibold">({{ $realDueIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
                             <p class="mt-2.5 ui-dt">{{ $isFr ? 'Statut' : 'Status' }}</p>
                             <p id="inv-statut" class="text-[12.5px] font-bold tracking-[0.03em] uppercase" style="color:{{ $realPaid ? '#157A43' : '#E5484D' }}">{{ $realPaid ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</p>
                         </div>
@@ -355,34 +355,34 @@
                             <tbody>
                                 @foreach($invRows as $ri => [$vImg, $vName, $vDesc, $vQty, $vUnit, $vTotal])
                                 <tr>
-                                    <td class="align-top text-[#1B1B18]">{{ $ri + 1 }}</td>
+                                    <td class="align-top text-[#1B1B18] dark:text-[#F3EFE7]">{{ $ri + 1 }}</td>
                                     <td class="align-top">
                                         <div class="flex items-start gap-3">
                                             <img src="{{ asset('images/landing/' . $vImg) }}" alt="" class="w-[40px] h-[40px] shrink-0 rounded-lg object-cover">
-                                            <p class="text-[13px] font-bold text-[#1B1B18] max-w-[170px]">{{ $vName }}</p>
+                                            <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] max-w-[170px]">{{ $vName }}</p>
                                         </div>
                                     </td>
-                                    <td class="align-top text-[#3B382F] leading-relaxed max-w-[230px]">{{ $vDesc }}</td>
-                                    <td class="align-top text-center font-semibold text-[#1B1B18]">{{ $vQty }}</td>
-                                    <td class="align-top text-center text-[#3B382F]">{{ $isFr ? 'Pièces' : 'Pieces' }}</td>
-                                    <td class="align-top text-right font-semibold text-[#1B1B18] whitespace-nowrap">{{ $vUnit }}</td>
-                                    <td class="align-top text-right font-bold text-[#1B1B18] whitespace-nowrap">{{ $vTotal }}</td>
+                                    <td class="align-top text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed max-w-[230px]">{{ $vDesc }}</td>
+                                    <td class="align-top text-center font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $vQty }}</td>
+                                    <td class="align-top text-center text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Pièces' : 'Pieces' }}</td>
+                                    <td class="align-top text-right font-semibold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $vUnit }}</td>
+                                    <td class="align-top text-right font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $vTotal }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="mt-5 border-t border-[#F0F1F0] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="mt-5 border-t border-[#F0F1F0] dark:border-[#262B21] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div>
                             <h3 class="ui-card-title">Notes</h3>
-                            <p class="mt-2.5 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'Merci pour votre confiance.' : 'Thank you for your trust.' }}<br>{{ $isFr ? 'Paiement par virement bancaire ou mobile money.' : 'Payment by bank transfer or mobile money.' }}</p>
+                            <p class="mt-2.5 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? 'Merci pour votre confiance.' : 'Thank you for your trust.' }}<br>{{ $isFr ? 'Paiement par virement bancaire ou mobile money.' : 'Payment by bank transfer or mobile money.' }}</p>
                         </div>
                         <div>
                             <h3 class="ui-card-title">{{ $isFr ? 'Informations bancaires' : 'Bank information' }}</h3>
                             <dl class="mt-2.5 space-y-1.5">
                                 @foreach($bankRows as [$bkLabel, $bkValue])
-                                <div class="text-[12px] text-[#3B382F]"><span class="font-semibold">{{ $bkLabel }}:</span> {{ $bkValue }}</div>
+                                <div class="text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><span class="font-semibold">{{ $bkLabel }}:</span> {{ $bkValue }}</div>
                                 @endforeach
                             </dl>
                         </div>
@@ -390,14 +390,14 @@
                             <dl class="space-y-2.5">
                                 @foreach($invTotals as [$itLabel, $itValue, $itColor])
                                 <div class="flex items-center justify-between gap-3">
-                                    <dt class="text-[12.5px] text-[#3B382F]">{{ $itLabel }}</dt>
+                                    <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $itLabel }}</dt>
                                     <dd class="text-[12.5px] font-semibold" style="color:{{ $itColor }}">{{ $itValue }}</dd>
                                 </div>
                                 @endforeach
                             </dl>
-                            <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
-                                <span class="text-[14.5px] font-bold text-[#157A43]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
-                                <span class="text-[15.5px] font-bold text-[#157A43]">{{ $realTotal }}</span>
+                            <div class="mt-4 border-t border-[#F0F1F0] dark:border-[#262B21] pt-4 flex items-center justify-between gap-3">
+                                <span class="text-[14.5px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
+                                <span class="text-[15.5px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $realTotal }}</span>
                             </div>
                         </div>
                     </div>
@@ -410,14 +410,14 @@
                         @foreach($invHistory as $ihIdx => [$ihTitle, $ihWhen])
                         <div class="text-center">
                             <div class="flex items-center">
-                                <span class="flex-1 h-px {{ $ihIdx === 0 ? 'bg-transparent' : 'bg-[#CBE3D2]' }}"></span>
-                                <span class="w-[34px] h-[34px] shrink-0 rounded-full flex items-center justify-center {{ $ihIdx === count($invHistory) - 1 ? 'bg-[#1F8A4C]' : 'bg-white border-2 border-[#1F8A4C]' }}">
-                                    <i data-lucide="check" class="w-4 h-4 {{ $ihIdx === count($invHistory) - 1 ? 'text-white' : 'text-[#1F8A4C]' }}" style="stroke-width:2.8"></i>
+                                <span class="flex-1 h-px {{ $ihIdx === 0 ? 'bg-transparent' : 'bg-[#CBE3D2] dark:bg-[#0C3D1D] ' }}"></span>
+                                <span class="w-[34px] h-[34px] shrink-0 rounded-full flex items-center justify-center {{ $ihIdx === count($invHistory) - 1 ? 'bg-[#1F8A4C] dark:bg-[#2E9250] ' : 'bg-white dark:bg-[#12150F] border-2 border-[#1F8A4C] dark:border-[#2E9250] ' }}">
+                                    <i data-lucide="check" class="w-4 h-4 {{ $ihIdx === count($invHistory) - 1 ? 'text-white' : 'text-[#1F8A4C] dark:text-[#339B56] ' }}" style="stroke-width:2.8"></i>
                                 </span>
-                                <span class="flex-1 h-px {{ $ihIdx === count($invHistory) - 1 ? 'bg-transparent' : 'bg-[#CBE3D2]' }}"></span>
+                                <span class="flex-1 h-px {{ $ihIdx === count($invHistory) - 1 ? 'bg-transparent' : 'bg-[#CBE3D2] dark:bg-[#0C3D1D] ' }}"></span>
                             </div>
-                            <p class="mt-3 text-[12px] font-bold text-[#1B1B18] leading-snug px-1">{{ $ihTitle }}</p>
-                            <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $ihWhen }}</p>
+                            <p class="mt-3 text-[12px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug px-1">{{ $ihTitle }}</p>
+                            <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $ihWhen }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -429,35 +429,35 @@
                 <section class="ui-card">
                     <h2 class="ui-card-title">{{ $isFr ? 'Résumé du paiement' : 'Payment summary' }}</h2>
                     <p class="mt-3.5 ui-dt">{{ $isFr ? 'Montant total' : 'Total amount' }}</p>
-                    <p class="mt-0.5 text-[22px] font-bold text-[#157A43]">{{ $realTotal }}</p>
+                    <p class="mt-0.5 text-[22px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $realTotal }}</p>
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
-                            <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Montant payé' : 'Amount paid' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realPaid ? $realTotal : '0 FCFA' }}</dd>
+                            <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Montant payé' : 'Amount paid' }}</dt>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realPaid ? $realTotal : '0 FCFA' }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
-                            <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Mode de paiement' : 'Payment method' }}</dt>
-                            <dd class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $realMethod ?? '—' }}</dd>
+                            <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Mode de paiement' : 'Payment method' }}</dt>
+                            <dd class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realMethod ?? '—' }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
-                            <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Date de paiement' : 'Payment date' }}</dt>
-                            <dd class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $realPaidAt ?? '—' }}</dd>
+                            <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Date de paiement' : 'Payment date' }}</dt>
+                            <dd class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realPaidAt ?? '—' }}</dd>
                         </div>
                     </dl>
                     @if($realPaid)
-                    <div class="mt-4 bg-[#EFF6F1] rounded-xl px-4 py-3.5 flex items-start gap-3">
-                        <i data-lucide="circle-check" class="w-[21px] h-[21px] shrink-0 text-[#1F8A4C]" style="stroke-width:1.8"></i>
+                    <div class="mt-4 bg-[#EFF6F1] dark:bg-[#1A1E16] rounded-xl px-4 py-3.5 flex items-start gap-3">
+                        <i data-lucide="circle-check" class="w-[21px] h-[21px] shrink-0 text-[#1F8A4C] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         <p class="text-[12px] leading-relaxed">
-                            <span class="font-bold text-[#157A43]">{{ $isFr ? 'Paiement confirmé' : 'Payment confirmed' }}</span><br>
-                            <span class="text-[#3B382F]">{{ $isFr ? 'Cette facture a été entièrement payée.' : 'This invoice has been fully paid.' }}</span>
+                            <span class="font-bold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Paiement confirmé' : 'Payment confirmed' }}</span><br>
+                            <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Cette facture a été entièrement payée.' : 'This invoice has been fully paid.' }}</span>
                         </p>
                     </div>
                     @else
-                    <div class="mt-4 bg-[#FDF3E0] rounded-xl px-4 py-3.5 flex items-start gap-3">
-                        <i data-lucide="clock" class="w-[21px] h-[21px] shrink-0 text-[#C97A16]" style="stroke-width:1.8"></i>
+                    <div class="mt-4 bg-[#FDF3E0] dark:bg-[#3A2B06] rounded-xl px-4 py-3.5 flex items-start gap-3">
+                        <i data-lucide="clock" class="w-[21px] h-[21px] shrink-0 text-[#C97A16] dark:text-[#EDB33A]" style="stroke-width:1.8"></i>
                         <p class="text-[12px] leading-relaxed">
-                            <span class="font-bold text-[#C97A16]">{{ $isFr ? 'En attente de paiement' : 'Awaiting payment' }}</span><br>
-                            <span class="text-[#3B382F]">{{ $isFr ? 'Cette facture n\'a pas encore été réglée.' : 'This invoice has not been settled yet.' }}</span>
+                            <span class="font-bold text-[#C97A16] dark:text-[#EDB33A]">{{ $isFr ? 'En attente de paiement' : 'Awaiting payment' }}</span><br>
+                            <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Cette facture n\'a pas encore été réglée.' : 'This invoice has not been settled yet.' }}</span>
                         </p>
                     </div>
                     @endif
@@ -470,28 +470,28 @@
                         <div class="flex items-center gap-3.5">
                             <img src="{{ asset('images/landing/qv-pdf-green.png') }}" alt="" class="w-[28px] h-[32px] shrink-0" aria-hidden="true">
                             <span class="min-w-0">
-                                <span class="block text-[12.5px] font-bold text-[#1B1B18]">{{ $adTitle }}</span>
-                                <span class="block text-[11.5px] text-[#3565DE]">{{ $adFile }}</span>
+                                <span class="block text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $adTitle }}</span>
+                                <span class="block text-[11.5px] text-[#3565DE] dark:text-[#8FB6F5]">{{ $adFile }}</span>
                             </span>
                         </div>
                         @endforeach
                     </div>
-                    <p class="mt-3.5 text-right"><a href="{{ route('orders.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#3565DE]">{{ $isFr ? 'Voir tous les documents' : 'View all documents' }}</a></p>
+                    <p class="mt-3.5 text-right"><a href="{{ route('orders.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#3565DE] dark:text-[#8FB6F5]">{{ $isFr ? 'Voir tous les documents' : 'View all documents' }}</a></p>
                 </section>
 
                 <section class="ui-card">
                     <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
-                    <div class="mt-2 divide-y divide-[#F1F2F1]">
+                    <div class="mt-2 divide-y divide-[#F1F2F1] dark:divide-[#262B21]">
                         @foreach($invActions as [$iaIcon, $iaLabel, $iaUrl])
                         @if($iaUrl)
                         <a href="{{ $iaUrl }}" class="flex items-center gap-3.5 py-3 group">
-                            <i data-lucide="{{ $iaIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#3B382F]" style="stroke-width:1.7"></i>
-                            <span class="flex-1 text-[13px] text-[#3B382F] group-hover:text-[#14652F]">{{ $iaLabel }}</span>
+                            <i data-lucide="{{ $iaIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#3B382F] dark:text-[#B4B5A6]" style="stroke-width:1.7"></i>
+                            <span class="flex-1 text-[13px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $iaLabel }}</span>
                         </a>
                         @else
                         <button type="button" onclick="window.print()" class="w-full flex items-center gap-3.5 py-3 group">
-                            <i data-lucide="{{ $iaIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#3B382F]" style="stroke-width:1.7"></i>
-                            <span class="flex-1 text-left text-[13px] text-[#3B382F] group-hover:text-[#14652F]">{{ $iaLabel }}</span>
+                            <i data-lucide="{{ $iaIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#3B382F] dark:text-[#B4B5A6]" style="stroke-width:1.7"></i>
+                            <span class="flex-1 text-left text-[13px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $iaLabel }}</span>
                         </button>
                         @endif
                         @endforeach

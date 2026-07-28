@@ -74,6 +74,41 @@
     $apTrust    = $ap('trustScore', [$lang], $unknownStat + ['max' => null, 'breakdown' => []]);
     $apWorkshop = $ap('workshop', [$lang], null);
 
+    /*
+     | The written reviews themselves, and the award rows with their evidence.
+     | ArtisanProfile counts and distributes reviews but does not hand back the
+     | text; ArtisanReviews and ArtisanAwards are the registers that do, and
+     | both are read here under the same guard as everything else so a missing
+     | class empties the block rather than throwing at a visitor.
+     |
+     | The badge beside a reviewer's name is ArtisanReviews' own sentence. The
+     | artwork's "Verified Buyer" is a claim this platform cannot make: it is
+     | not party to sales, holds no orders and never learns whether money moved.
+     | What it can check is that the account messaged this artisan through the
+     | platform, and that is what the badge says, at the length the register
+     | wrote it — the class states in terms that surfaces must never shorten it
+     | into a purchase.
+     */
+    $reviewRows = collect();
+    $reviewBadgeLabel = '';
+    if (class_exists(\App\Support\ArtisanReviews::class)) {
+        try {
+            $reviewRows = collect(\App\Support\ArtisanReviews::publishedFor($business, 3));
+            $reviewBadgeLabel = \App\Support\ArtisanReviews::contactBadgeLabel($lang);
+        } catch (\Throwable $e) {
+            $reviewRows = collect();
+        }
+    }
+
+    $awardRows = collect();
+    if (class_exists(\App\Support\ArtisanAwards::class)) {
+        try {
+            $awardRows = collect(\App\Support\ArtisanAwards::forBusiness($business, $lang));
+        } catch (\Throwable $e) {
+            $awardRows = collect();
+        }
+    }
+
     /* A statistic's two states, decided once so no block below can drift. */
     $statKnown = fn ($s) => is_array($s) && ! empty($s['known']) && ($s['value'] ?? null) !== null;
     $statText  = function ($s) {
@@ -114,8 +149,38 @@
     $contactEmail = $business->email ?: null;
     $languages    = collect($business->languages_spoken ?? [])->filter()->implode(', ');
 
-    /* The design shows five craft tags. These are the ones this shop actually has. */
-    $craftTags = collect([$industryName, $regionName])->filter()->unique()->values();
+    /* The design shows five craft chips — Wood Carving, Traditional Sculpture,
+       Heritage Art, Masks, Statues. Every craft word this record actually
+       carries is rendered, in the design's order of authority: the official
+       trade off the craft taxonomy first, then the industry it sits under, then
+       the free tags the artisan entered against their own shop. The region is
+       deliberately not among them: it is already printed on the line above, and
+       a place is not a craft. A shop that has entered one trade gets one chip. */
+    $shopTags = collect();
+    try {
+        $shopTags = collect($business->tags->pluck('tag'));
+    } catch (\Throwable $e) {
+        $shopTags = collect();
+    }
+    $craftTags = collect([$business->source_metier, $industryName])
+        ->merge($shopTags)
+        ->map(fn ($t) => trim((string) $t))
+        ->filter()
+        ->unique(fn ($t) => mb_strtolower($t))
+        ->values();
+
+    /* The design bleeds a carved-mask photograph across the hero's right half.
+       It renders only from this shop's own images — its cover, or failing that
+       the first picture in its gallery. Someone else's mask behind this
+       artisan's name and face is a misattribution, not a background. */
+    $heroImage = $business->cover_image ?: null;
+    if (! $heroImage) {
+        try {
+            $heroImage = $business->gallery->where('type', 'image')->sortBy('sort_order')->first()?->file_path;
+        } catch (\Throwable $e) {
+            $heroImage = null;
+        }
+    }
 
     $gan = $business->gan ?: null;
 
@@ -160,10 +225,23 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* ── Measured against the artwork ────────────────────────────────
+           docs/ARTISAN-PROFILE-V2-SPEC.md, "MEASURED TYPOGRAPHY, SPACING AND
+           COLOUR". The artwork is 1024 wide and this container is 1280, so
+           every measured value is the artwork's × 1.25.
+
+           The one that changes the whole page's character: the card fill is
+           #FCFAF6 against a #FCF9F6 page — two levels apart. The border does
+           the separating, not the fill. The kit's default surface is pure
+           white, which against cream reads as a generic dashboard, so it is
+           overridden here and only here, scoped to this desktop document so
+           the phone partial keeps whatever its own owner decided. */
+        .ap-desktop .ui-card { background-color: #FCFAF6; }
+
         /* Section eyebrow: gold glyph + small caps, above every band in the design. */
         .ap-sec-title {
             display: flex; align-items: center; gap: 9px;
-            font-size: 13px; font-weight: 700; letter-spacing: .055em;
+            font-size: 11.5px; font-weight: 700; letter-spacing: .02em;
             text-transform: uppercase; color: #1D1B16; line-height: 1.3;
         }
         .ap-sec-title > i { color: #C9942E; flex: none; }
@@ -201,7 +279,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FFFDF9] text-[#1D1B16] antialiased">
+<body class="bg-[#FCF9F6] text-[#1D1B16] antialiased">
 
 {{-- ── Phone ──────────────────────────────────────────────────────────────
      A sibling document, not a reflow: its own top bar, hero card and fixed
@@ -212,7 +290,7 @@
 </div>
 
 {{-- ── Desktop ─────────────────────────────────────────────────────────── --}}
-<div class="hidden lg:block">
+<div class="hidden lg:block ap-desktop">
 
 @php
     $dirIconVariant = 'vdetail';
@@ -222,7 +300,7 @@
 @include('pages.partials.directory-header')
 
 <main>
-<div class="max-w-[1240px] mx-auto px-4 sm:px-6 pt-4 pb-10">
+<div class="max-w-[1280px] mx-auto px-[25px] pt-4 pb-10">
 
     {{-- ── Breadcrumb ─────────────────────────────────────────────────── --}}
     <nav class="flex flex-wrap items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
@@ -250,13 +328,18 @@
             <div class="absolute -left-24 -top-24 w-[520px] h-[420px] rounded-full opacity-40"
                  style="background: radial-gradient(closest-side, #106239, transparent 70%)"></div>
             {{-- The design bleeds a large carved-mask photograph across the
-                 right half. It renders only when this shop has a cover image
-                 of its own: the design's stock artwork would put another
-                 artisan's work behind this artisan's name and face. --}}
-            @if($business->cover_image)
-            <img src="{{ asset('storage/' . $business->cover_image) }}" alt=""
-                 class="absolute inset-y-0 right-0 w-[62%] h-full object-cover opacity-75" aria-hidden="true">
-            <div class="absolute inset-0 bg-gradient-to-r from-[#0E0A03] via-[#0E0A03]/95 to-[#070300]/40"></div>
+                 right half, to the card's edge, under a gradient that takes it
+                 back to black by the middle of the card. It renders only from
+                 this shop's own pictures: the design's stock artwork would put
+                 another artisan's work behind this artisan's name and face. --}}
+            @if($heroImage)
+            <img src="{{ asset('storage/' . $heroImage) }}" alt=""
+                 class="absolute inset-y-0 right-0 w-[64%] h-full object-cover object-center" aria-hidden="true">
+            {{-- Two layers, as the artwork reads: a horizontal wash that hides
+                 the seam behind the name block, and a warm darkening over the
+                 whole photograph so white type stays legible on top of it. --}}
+            <div class="absolute inset-y-0 right-0 w-[64%] bg-gradient-to-r from-[#0E0A03] via-[#0E0A03]/45 to-transparent"></div>
+            <div class="absolute inset-0 bg-[#0E0A03]/15"></div>
             @else
             {{-- No photograph on record: the right half keeps the artwork's
                  darkened-relief feel with a pure CSS carve pattern instead of
@@ -284,13 +367,13 @@
             {{-- Name block --}}
             <div class="min-w-0 flex-1 pt-1">
                 @if($isVerified)
-                <span class="inline-flex items-center gap-1.5 bg-[#C8860B] text-[#1B1403] text-[10.5px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
+                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
                     <i data-lucide="badge-check" class="w-3 h-3"></i>
                     {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                 </span>
                 @endif
 
-                <h1 class="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[34px] leading-[1.15] font-bold text-white">
+                <h1 class="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[34px] tracking-[-0.01em] leading-[1.15] font-bold text-white">
                     <span>{{ $businessName }}</span>
                     @if($isVerified)
                     <svg viewBox="0 0 16 16" class="w-[22px] h-[22px] shrink-0" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#17A34A"/><path d="M4.7 8.2 7 10.4l4.3-4.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -298,7 +381,7 @@
                 </h1>
 
                 @if($tagline)
-                <p class="mt-1.5 text-[13.5px] text-[#E4DCC9]">{{ $tagline }}</p>
+                <p class="mt-1.5 text-[13.5px] font-normal leading-snug text-[#E4DCC9]">{{ $tagline }}</p>
                 @endif
 
                 <div class="mt-3.5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12.5px] text-[#CFC6B2]">
@@ -408,7 +491,7 @@
          The design's second band: a bordered identity table on the left, the
          artisan's own words in the middle, and a location panel on the right.
     --}}
-    <div class="mt-5 grid grid-cols-12 gap-5 items-start">
+    <div class="mt-5 grid grid-cols-12 gap-2.5 items-start">
 
         {{-- Identity table.
              The design lists twelve rows and fills every one. Here a row exists
@@ -418,6 +501,43 @@
              "workshop visits" have no column on `businesses` at all and are not
              synthesised. --}}
         @php
+            /* The artwork's NATIONALITY row. `businesses` has no nationality
+               column, and a Cameroonian region does not make its occupant
+               Cameroonian — ArtisanProfile says so in as many words and offers
+               the registered workshop's country as the nearest fact it holds.
+               That is what is printed, under the label that describes it. A
+               row headed "nationality" over a workshop address would be the
+               page asserting somebody's citizenship. */
+            $countryStat = $apIdentity['country'] ?? $unknownStat;
+            $workshopCountry = $statKnown($countryStat) ? $statText($countryStat) : null;
+            /* The register stores an ISO code. Spelling it out in the reader's
+               language renames nothing — it is the same value, legibly. */
+            if ($workshopCountry !== null && strlen($workshopCountry) === 2 && class_exists(\Locale::class)) {
+                try {
+                    $spelled = \Locale::getDisplayRegion('-' . strtoupper($workshopCountry), $lang);
+                    if ($spelled !== '' && strtoupper($spelled) !== strtoupper($workshopCountry)) {
+                        $workshopCountry = $spelled;
+                    }
+                } catch (\Throwable $e) {
+                    // The code stands as stored.
+                }
+            }
+
+            /* The artwork's WORKSHOP VISITS row reads "Verified on 15/06/2026".
+               The only thing behind such a sentence is an inspection the
+               workshop register recorded, so the row exists only when the
+               register holds a verification date. No date, no row: "visits
+               welcome" is a promise on the artisan's behalf that nobody made. */
+            $workshopVisit = null;
+            if ($apWorkshop && ! empty($apWorkshop['verified_at'])) {
+                try {
+                    $workshopVisit = ($isFr ? 'Inspecté le ' : 'Inspected on ')
+                        . \Illuminate\Support\Carbon::parse($apWorkshop['verified_at'])->locale($lang)->translatedFormat('d/m/Y');
+                } catch (\Throwable $e) {
+                    $workshopVisit = null;
+                }
+            }
+
             $identityRows = collect([
                 $gan            ? [$isFr ? 'Identifiant artisan' : 'Artisan ID', $gan, 'fingerprint', true] : null,
                 $business->siarc_code && ! $gan
@@ -425,24 +545,26 @@
                                   [$isFr ? "Nom de l'entreprise" : 'Business name', $businessName, 'store', false],
                 $apWorkshop && ($apWorkshop['name'] ?? null)
                                 ? [$isFr ? 'Atelier' : 'Workshop', $apWorkshop['name'], 'warehouse', false] : null,
+                $workshopCountry ? [$isFr ? "Pays de l'atelier" : 'Workshop country', $workshopCountry, 'flag', false] : null,
                 $industryName   ? [$isFr ? 'Spécialisation' : 'Specialisation', $industryName, 'hammer', false] : null,
                 $statKnown($yearsExperience)
-                                ? [$isFr ? "Années d'expérience" : 'Years of experience', $statText($yearsExperience) . ' ' . ($isFr ? 'ans' : 'years'), 'clock', false] : null,
+                                ? [$isFr ? "Années d'expérience" : 'Years experience', $statText($yearsExperience) . ' ' . ($isFr ? 'ans' : 'years'), 'clock', false] : null,
                 $languages !== '' ? [$isFr ? 'Langues' : 'Languages', $languages, 'languages', false] : null,
                 $contactPhone   ? [$isFr ? 'Téléphone' : 'Phone', $contactPhone, 'phone', false] : null,
                 $contactEmail   ? ['Email', $contactEmail, 'mail', false] : null,
                 $coarseLocation ? [$isFr ? 'Localisation' : 'Location', $coarseLocation, 'map-pin', false] : null,
+                $workshopVisit  ? [$isFr ? "Visites d'atelier" : 'Workshop visits', $workshopVisit, 'door-open', false] : null,
             ])->filter()->values();
         @endphp
         <section class="col-span-12 xl:col-span-4 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="id-card" class="w-4 h-4"></i>{{ $isFr ? "Fiche d'identité" : 'Identity' }}</h2>
-            <dl class="divide-y divide-[#F5F1E8]">
+            <dl>
                 @foreach($identityRows as [$idLabel, $idValue, $idIcon, $idMono])
-                <div class="flex items-start gap-2.5 py-2.5 first:pt-0">
+                <div class="flex items-start gap-2.5 py-[3.5px] min-h-[25px] first:pt-0">
                     <i data-lucide="{{ $idIcon }}" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[128px] shrink-0 text-[10.5px] uppercase tracking-[.05em] text-[#8A857A] pt-[2px]">{{ $idLabel }}</dt>
-                    <span class="shrink-0 text-[11px] text-[#C8C1B2] pt-[1px]" aria-hidden="true">:</span>
-                    <dd class="min-w-0 flex-1 text-[12.5px] font-semibold text-[#1D1B16] break-words {{ $idMono ? 'font-mono text-[11.5px]' : '' }}">{{ $idValue }}</dd>
+                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B]">{{ $idLabel }}</dt>
+                    <span class="shrink-0 text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
+                    <dd class="min-w-0 flex-1 text-[12.5px] font-medium leading-[18px] text-[#1D1F24] break-words {{ $idMono ? 'font-mono text-[11.5px]' : '' }}">{{ $idValue }}</dd>
                 </div>
                 @endforeach
 
@@ -450,10 +572,10 @@
                      and checked — config/legal.php is explicit that it is not a
                      guarantee of quality or of an order being fulfilled — so the
                      row says which of the two it is. --}}
-                <div class="flex items-start gap-2.5 py-2.5">
+                <div class="flex items-start gap-2.5 py-[3.5px] min-h-[25px]">
                     <i data-lucide="shield-check" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[128px] shrink-0 text-[10.5px] uppercase tracking-[.05em] text-[#8A857A] pt-[2px]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
-                    <span class="shrink-0 text-[11px] text-[#C8C1B2] pt-[1px]" aria-hidden="true">:</span>
+                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
+                    <span class="shrink-0 text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
                     <dd class="min-w-0 flex-1">
                         @if($isVerified)
                         <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Documents vérifiés' : 'Documents checked' }}</span>
@@ -466,7 +588,7 @@
         </section>
 
         {{-- About --}}
-        <section class="col-span-12 xl:col-span-5 ui-card">
+        <section class="col-span-12 xl:col-span-4 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="user" class="w-4 h-4"></i>{{ $isFr ? 'À propos de' : 'About' }} {{ $businessName }}</h2>
 
             @if(trim((string) $descriptionText) !== '')
@@ -490,10 +612,18 @@
                  says what it is. --}}
             @php
                 $aboutTiles = [
-                    ['products_created',   $isFr ? 'Produits créés' : 'Products created'],
-                    ['products_sold',      $isFr ? 'Produits vendus' : 'Products sold'],
-                    ['exhibitions',        $isFr ? 'Expositions' : 'Exhibitions'],
-                    ['certificates_issued', $isFr ? 'Certificats émis' : 'Certificates issued'],
+                    ['products_sold',   $isFr ? 'Produits vendus' : 'Products sold'],
+                    ['happy_customers', $isFr ? 'Clients satisfaits' : 'Happy customers'],
+                    ['exhibitions',     $isFr ? 'Expositions' : 'Exhibitions'],
+                    ['awards_received', $isFr ? 'Distinctions reçues' : 'Awards received'],
+                ];
+                /* The artwork's fourth tile counts awards received. That one the
+                   register can answer, from business_awards, so it is fed in
+                   beside the statistics rather than left to say "not tracked". */
+                $apStats['awards_received'] = [
+                    'value' => (int) ($apAwards['count'] ?? 0),
+                    'known' => true,
+                    'basis' => $apAwards['basis'] ?? '',
                 ];
             @endphp
             <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -501,18 +631,18 @@
                 @php $tile = $apStats[$tileKey] ?? $unknownStat; @endphp
                 <div class="rounded-lg border border-[#EFEBE2] px-2 py-3 text-center">
                     @if($statKnown($tile))
-                    <p class="text-[19px] font-bold leading-none text-[#1D1B16]">{{ $statText($tile) }}</p>
+                    <p class="text-[18px] font-bold leading-none text-[#1D1B16]">{{ $statText($tile) }}</p>
                     @else
                     <p class="text-[11.5px] leading-tight ap-absent" @if(trim((string) ($tile['basis'] ?? '')) !== '') title="{{ $tile['basis'] }}" @endif>{{ $notTracked }}</p>
                     @endif
-                    <p class="mt-1.5 text-[10px] leading-tight text-[#8A857A]">{{ $tileLabel }}</p>
+                    <p class="mt-1.5 text-[9px] font-normal leading-tight text-[#8A857A]">{{ $tileLabel }}</p>
                 </div>
                 @endforeach
             </div>
         </section>
 
         {{-- Workshop location --}}
-        <section id="ap-workshop" class="col-span-12 xl:col-span-3 ui-card">
+        <section id="ap-workshop" class="col-span-12 xl:col-span-4 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="map-pin" class="w-4 h-4"></i>{{ $isFr ? "Localisation de l'atelier" : 'Workshop location' }}</h2>
 
             <p class="flex items-start gap-2 text-[12.5px] font-semibold leading-snug text-[#1D1B16]">
@@ -615,26 +745,33 @@
             </a>
         </div>
 
-        <div class="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div class="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
             @foreach($certBlocks as $block)
             @php $issued = ! empty($block['issued']); $first = $block['items'][0] ?? null; @endphp
-            <article class="ui-card p-4 text-center {{ $issued ? '' : 'bg-[#FCFBF8]' }}">
-                {{-- The artwork draws each certificate as a foil shield. On
-                     screen this is a visual treatment only — layered gradients
-                     in a shield clip with the brand mark centred. It is never
-                     captioned as a hologram or a security feature;
-                     docs/PRINT-SECURITY-SPEC.md governs claims. --}}
-                <span class="ap-shield mx-auto {{ $issued ? '' : 'ap-shield-dim' }}">
-                    <span class="ap-shield-sheen"></span>
-                    <img src="{{ brand_asset('mark') }}" alt="" class="relative w-6 h-6 object-contain">
-                </span>
-
-                <p class="mt-2.5 text-[11.5px] font-semibold leading-snug text-[#1D1B16]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
-                <p class="text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
+            {{-- The artwork's card is horizontal: the foil shield on the left,
+                 the certificate's name beside it over two lines, the number
+                 beneath both, and a bottom row carrying the state, the date and
+                 the download control. --}}
+            <article class="relative ui-card p-3.5 pb-9 {{ $issued ? '' : 'bg-[#FCFBF8]' }}">
+                <div class="flex items-start gap-2.5">
+                    {{-- The artwork draws each certificate as a foil shield. On
+                         screen this is a visual treatment only — layered
+                         gradients in a shield clip with the brand mark centred.
+                         It is never captioned as a hologram or a security
+                         feature; docs/PRINT-SECURITY-SPEC.md governs claims. --}}
+                    <span class="ap-shield shrink-0 {{ $issued ? '' : 'ap-shield-dim' }}">
+                        <span class="ap-shield-sheen"></span>
+                        <img src="{{ brand_asset('mark') }}" alt="" class="relative w-6 h-6 object-contain">
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-[11.5px] font-semibold leading-snug text-[#1D1B16]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
+                        <p class="mt-0.5 text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
+                    </div>
+                </div>
 
                 @if($issued && $first)
                 <p class="mt-2.5 font-mono text-[10px] font-semibold text-[#6F6B60] break-all">{{ $first['number'] }}</p>
-                <div class="mt-2.5 flex items-center justify-center gap-2">
+                <div class="mt-2.5 flex items-center gap-2">
                     <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Au registre' : 'On register' }}</span>
                     @if(! empty($first['issued_at']))
                     <span class="text-[10px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($first['issued_at'])->format('d/m/Y') }}</span>
@@ -642,6 +779,19 @@
                 </div>
                 @if(($block['count'] ?? 0) > 1)
                 <p class="mt-1.5 text-[10px] text-[#8A857A]">+{{ $block['count'] - 1 }} {{ $isFr ? 'autre(s)' : 'more' }}</p>
+                @endif
+
+                {{-- The artwork puts a download glyph on every card. It renders
+                     where the issuing register gave the entry an address of its
+                     own; a glyph on a card with nowhere to go teaches a reader
+                     that the control is decoration. --}}
+                @if(! empty($first['url']))
+                <a href="{{ $first['url'] }}" target="_blank" rel="noopener"
+                   title="{{ $isFr ? 'Ouvrir le certificat' : 'Open the certificate' }}"
+                   aria-label="{{ $isFr ? 'Ouvrir le certificat' : 'Open the certificate' }} {{ strtoupper($block['type']) }}"
+                   class="absolute right-2.5 bottom-2.5 w-7 h-7 rounded-md border border-[#EFE7D4] bg-[#FBF7EC] text-[#8A6D1F] flex items-center justify-center hover:bg-[#F3E7CB] transition-colors">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </a>
                 @endif
                 @else
                 {{-- The register's own explanation of the absence, not ours. --}}
@@ -668,7 +818,28 @@
          under this artisan's name and portrait, a stranger's carving reads as
          their work.
     --}}
-    @php $products = collect($apProducts['items'] ?? []); @endphp
+    @php
+        $products = collect($apProducts['items'] ?? []);
+
+        /* The artwork prints a category under every product name — "Traditional
+           Masks", "Wood Sculpture". ArtisanProfile does not carry one, so it is
+           read straight off product_categories for exactly the pieces shown. A
+           piece filed under no category simply has no second line. */
+        $productCategories = collect();
+        if ($products->isNotEmpty()) {
+            try {
+                $productCategories = \Illuminate\Support\Facades\DB::table('products')
+                    ->join('product_categories as pc', 'pc.id', '=', 'products.category_id')
+                    ->whereIn('products.id', $products->pluck('id')->filter()->all())
+                    ->get(['products.id as pid', 'pc.name_fr', 'pc.name_en'])
+                    ->mapWithKeys(fn ($r) => [
+                        (int) $r->pid => $isFr ? $r->name_fr : ($r->name_en ?: $r->name_fr),
+                    ]);
+            } catch (\Throwable $e) {
+                $productCategories = collect();
+            }
+        }
+    @endphp
     <section class="mt-7">
         <div class="flex items-center justify-between gap-4">
             <h2 class="ap-sec-title"><i data-lucide="package" class="w-4 h-4"></i>{{ $isFr ? 'Produits en vedette' : 'Featured products' }}</h2>
@@ -680,7 +851,7 @@
         </div>
 
         @if($products->isNotEmpty())
-        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
+        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-2">
             @foreach($products->take(6) as $p)
             <article class="ui-card p-0 overflow-hidden">
                 <div class="relative">
@@ -700,14 +871,18 @@
                     </a>
                 </div>
                 <div class="p-3">
-                    <h3 class="text-[12px] font-semibold leading-snug text-[#1D1B16]">
+                    <h3 class="text-[11px] font-semibold leading-snug text-[#1D1B16]">
                         <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="hover:text-leaf transition-colors">{{ $p['name'] }}</a>
                     </h3>
 
+                    @if($productCategories->get((int) ($p['id'] ?? 0)))
+                    <p class="mt-1 text-[9px] font-normal text-[#8A857A]">{{ $productCategories->get((int) $p['id']) }}</p>
+                    @endif
+
                     @if(($p['price']['amount'] ?? null) !== null)
-                    <p class="mt-2 text-[13.5px] font-bold text-[#1D1B16]">
-                        {{ $p['price']['currency'] === 'XAF' ? 'FCFA' : $p['price']['currency'] }}
-                        {{ number_format($p['price']['amount'], 0, ',', ' ') }}
+                    <p class="mt-2 font-bold text-[#1D1B16]">
+                        <span class="text-[11.5px]">{{ $p['price']['currency'] === 'XAF' ? 'FCFA' : $p['price']['currency'] }}</span>
+                        <span class="text-[14px]">{{ $isFr ? number_format($p['price']['amount'], 0, ',', ' ') : number_format($p['price']['amount'], 0, '.', ',') }}</span>
                     </p>
                     @else
                     {{-- No published price is a real state, and a different one
@@ -722,7 +897,14 @@
                          nothing to attribute here. What CAN be shown is whether
                          the piece has a certificate of authenticity on register. --}}
                     @if($p['has_authenticity_certificate'])
-                    <span class="mt-2.5 ui-pill ui-pill-ok"><i data-lucide="badge-check" class="w-3 h-3"></i>{{ $isFr ? 'Certifiée' : 'Certified' }}</span>
+                    {{-- The artwork's badge, at its sampled colour (#003712).
+                         The word is the kit's, not the artwork's: "verified"
+                         beside a price reads as a verdict on the piece, and
+                         what the register actually holds is a certificate of
+                         authenticity against it. --}}
+                    <span class="mt-2.5 inline-flex items-center gap-1 rounded px-2 py-1 bg-[#003712] text-white text-[9px] font-bold uppercase tracking-[.06em]">
+                        <i data-lucide="badge-check" class="w-[11px] h-[11px]"></i>{{ $isFr ? 'Certifiée' : 'Certified' }}
+                    </span>
                     @endif
                 </div>
             </article>
@@ -739,7 +921,7 @@
     {{-- ── Reviews · Statistics · Achievements ─────────────────────────
          The design's last three-column band.
     --}}
-    <div class="mt-7 grid grid-cols-12 gap-5 items-start">
+    <div class="mt-7 grid grid-cols-12 gap-2.5 items-start">
 
         {{-- Customer reviews.
              The design shows "4.9", five gold stars, "Based on 128 reviews", a
@@ -754,30 +936,93 @@
             @if($hasReviews)
             <div class="flex items-start gap-6">
                 <div class="shrink-0 text-center">
-                    <p class="text-[38px] leading-none font-bold text-[#1D1B16]">{{ $statText($apReviews['mean']) }}</p>
+                    <p class="text-[36px] leading-none font-bold text-[#04240D]">{{ $statText($apReviews['mean']) }}</p>
                     <p class="mt-1.5 flex items-center justify-center gap-0.5">
                         @for($i = 1; $i <= 5; $i++)
-                        <svg viewBox="0 0 20 20" class="w-3.5 h-3.5 {{ $i <= round($apReviews['mean']['value']) ? 'fill-[#EFA912]' : 'fill-[#E6E1D6]' }}"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
+                        <svg viewBox="0 0 20 20" class="w-[12.5px] h-[12.5px] {{ $i <= round($apReviews['mean']['value']) ? 'fill-[#E29A08]' : 'fill-[#E6E1D6]' }}"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
                         @endfor
                     </p>
-                    <p class="mt-2 text-[11px] text-[#8A857A]">{{ $isFr ? 'Sur' : 'Based on' }} {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}</p>
+                    <p class="mt-2 text-[10.6px] font-normal text-[#8A857A]">{{ $isFr ? 'Sur' : 'Based on' }} {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}</p>
                 </div>
-                <div class="min-w-0 flex-1 space-y-1.5">
+                <div class="min-w-0 flex-1">
                     @foreach([5, 4, 3, 2, 1] as $star)
                     @php
                         $n = (int) ($apReviews['distribution'][$star] ?? 0);
                         $pct = $apReviews['count'] > 0 ? round($n / $apReviews['count'] * 100) : 0;
                     @endphp
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-[52px] shrink-0 text-[10.5px] text-[#8A857A]">{{ $star }} {{ $isFr ? 'étoiles' : 'stars' }}</span>
+                    <div class="flex items-center gap-2.5 h-[24px]">
+                        <span class="w-[58px] shrink-0 text-[11px] font-normal text-[#616469]">{{ $star }} {{ $isFr ? 'Étoiles' : 'Stars' }}</span>
                         <span class="flex-1 h-[7px] rounded-full bg-[#F2EEE4] overflow-hidden">
-                            <span class="block h-full rounded-full bg-[#EFA912]" style="width: {{ $pct }}%"></span>
+                            <span class="block h-full rounded-full bg-[#E29A08]" style="width: {{ $pct }}%"></span>
                         </span>
-                        <span class="w-[26px] shrink-0 text-right text-[10.5px] text-[#3B382F]">{{ $n }}</span>
+                        <span class="w-[26px] shrink-0 text-right text-[11px] text-[#3C4145]">{{ $n }}</span>
                     </div>
                     @endforeach
                 </div>
             </div>
+
+            {{-- The artwork's written review: avatar, name, a badge, the date,
+                 a star row and the body. Everything here is a column on the
+                 review row or on its author's account.
+
+                 Two things the artwork shows are not rendered, because nothing
+                 behind them exists. The reviewer's photograph: `users.avatar`
+                 is not among the columns the register hands back, so the
+                 initial stands in rather than a stock face. And the product
+                 thumbnail beside the text: reviews on this platform are written
+                 about the artisan and are not keyed to a piece, so there is no
+                 piece to show — picking one of this shop's carvings would
+                 attribute a stranger's sentence to a work they never named. --}}
+            @if($reviewRows->isNotEmpty())
+            <ul class="mt-5 pt-4 border-t border-[#F2EEE4] space-y-4">
+                @foreach($reviewRows as $r)
+                <li class="flex items-start gap-3">
+                    <span class="w-9 h-9 rounded-full bg-[#F3E7CB] text-[#8A6D1F] flex items-center justify-center shrink-0 text-[13px] font-bold">
+                        {{ mb_strtoupper(mb_substr((string) ($r->reviewer_name ?: '?'), 0, 1)) }}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <span class="text-[12px] font-semibold text-[#1D1B16]">{{ $r->reviewer_name ?: ($isFr ? 'Compte supprimé' : 'Deleted account') }}</span>
+                                @if(! empty($r->is_verified_contact) && $reviewBadgeLabel !== '')
+                                <span class="ui-pill ui-pill-ok text-[9.5px]"><i data-lucide="message-square" class="w-3 h-3"></i>{{ $reviewBadgeLabel }}</span>
+                                @endif
+                            </div>
+                            @if(! empty($r->published_at))
+                            <span class="shrink-0 text-[10.5px] text-[#8A857A]">{{ \Illuminate\Support\Carbon::parse($r->published_at)->locale($lang)->translatedFormat('d/m/Y') }}</span>
+                            @endif
+                        </div>
+
+                        <p class="mt-1 flex items-center gap-0.5">
+                            @for($i = 1; $i <= 5; $i++)
+                            <svg viewBox="0 0 20 20" class="w-[12.5px] h-[12.5px] {{ $i <= (int) $r->rating ? 'fill-[#E29A08]' : 'fill-[#E6E1D6]' }}"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
+                            @endfor
+                        </p>
+
+                        @if(trim((string) $r->title) !== '')
+                        <p class="mt-1.5 text-[12px] font-semibold text-[#1D1B16]">{{ $r->title }}</p>
+                        @endif
+                        @if(trim((string) $r->body) !== '')
+                        <p class="mt-1 text-[11.5px] leading-relaxed text-[#3B382F]">{{ $r->body }}</p>
+                        @endif
+                    </div>
+                </li>
+                @endforeach
+            </ul>
+
+            @if(($apReviews['count'] ?? 0) > $reviewRows->count())
+            <p class="mt-3 text-[11px] text-[#8A857A]">
+                {{ $isFr ? 'et' : 'and' }} {{ $apReviews['count'] - $reviewRows->count() }}
+                {{ $isFr ? 'autre(s) avis publié(s).' : 'other published review(s).' }}
+            </p>
+            @endif
+
+            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A]">
+                {{ $isFr
+                   ? "Chaque avis est lu par un modérateur avant publication. Le badge atteste d'un échange par la messagerie de la plateforme — il n'atteste d'aucun achat : la plateforme n'est pas partie aux ventes."
+                   : 'Every review is read by a moderator before publication. The badge attests to an exchange through the platform’s own messaging — it attests to no purchase: the platform is not party to sales.' }}
+            </p>
+            @endif
             @else
             <p class="text-[12.5px] leading-relaxed ap-absent">
                 {{ $isFr
@@ -815,7 +1060,7 @@
                 ['last_active',         $isFr ? 'Dernière activité' : 'Last active',          'activity'],
             ];
         @endphp
-        <section class="col-span-12 md:col-span-6 xl:col-span-4 ui-card">
+        <section class="col-span-12 md:col-span-6 xl:col-span-3 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="bar-chart-3" class="w-4 h-4"></i>{{ $isFr ? "Statistiques de l'artisan" : 'Artisan statistics' }}</h2>
             <ul class="divide-y divide-[#F5F1E8]">
                 @foreach($statRows as [$sKey, $sLabel, $sIcon])
@@ -846,13 +1091,21 @@
              that this platform holds no register of. Printing one would invent
              a national distinction for a named person; this project has already
              had external honours stripped from its certificates once. --}}
-        <section class="col-span-12 md:col-span-6 xl:col-span-3 ui-card">
+        <section class="col-span-12 md:col-span-6 xl:col-span-4 ui-card">
             <h2 class="ap-sec-title mb-4"><i data-lucide="award" class="w-4 h-4"></i>{{ $isFr ? 'Distinctions' : 'Achievements' }}</h2>
 
-            @if(! empty($apAwards['items']))
+            @php
+                /* ArtisanAwards carries the evidence pointer as well as the
+                   title, so it is preferred where it answered; ArtisanProfile's
+                   list is the fallback. The artwork shows four rows and a "view
+                   all" button, so four is what is shown and the button appears
+                   only when there is a fifth. */
+                $awards = $awardRows->isNotEmpty() ? $awardRows : collect($apAwards['items'] ?? []);
+            @endphp
+            @if($awards->isNotEmpty())
             <ul class="space-y-3.5">
-                @foreach($apAwards['items'] as $award)
-                <li class="flex items-start gap-2.5">
+                @foreach($awards as $awIndex => $award)
+                <li class="flex items-start gap-2.5 {{ $awIndex >= 4 ? 'ap-award-extra hidden' : '' }}">
                     <span class="w-7 h-7 rounded-lg bg-[#FBF1DD] text-[#8A6D1F] flex items-center justify-center shrink-0">
                         <i data-lucide="medal" class="w-3.5 h-3.5"></i>
                     </span>
@@ -863,10 +1116,34 @@
                         @if(! empty($award['issuer']))
                         <p class="mt-0.5 text-[10.5px] text-[#8A857A]">{{ $award['issuer'] }}</p>
                         @endif
+                        {{-- The one thing that makes an outside body's honour
+                             checkable by somebody other than us. Rendered when
+                             the reviewer who recorded it left a pointer. --}}
+                        @if(! empty($award['evidence_url']))
+                        <a href="{{ $award['evidence_url'] }}" target="_blank" rel="noopener nofollow"
+                           class="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-[#8A6D1F] hover:underline">
+                            <i data-lucide="external-link" class="w-3 h-3"></i>{{ $isFr ? 'Justificatif' : 'Evidence' }}
+                        </a>
+                        @endif
                     </div>
                 </li>
                 @endforeach
             </ul>
+
+            @if($awards->count() > 4)
+            <button type="button" id="ap-awards-all"
+                    class="ui-btn ui-btn-block mt-4 bg-transparent text-[#8A6D1F] border-[#E2CD9B] hover:bg-[#FBF7EC] text-[10.5px] font-bold uppercase tracking-[.06em]">
+                {{ $isFr ? 'Voir toutes les distinctions' : 'View all achievements' }} ({{ $awards->count() }})
+            </button>
+            @endif
+
+            {{-- Whose statement this is. The row says an outside body honoured
+                 this artisan; the platform is repeating it, not confirming it. --}}
+            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A]">
+                {{ $isFr
+                   ? "Distinctions saisies au dossier depuis des justificatifs, et rapportées telles quelles. La plateforme ne vérifie pas l'organisme décernant."
+                   : 'Distinctions recorded on file from evidence and reported verbatim. The platform does not verify the awarding body.' }}
+            </p>
             @else
             <p class="text-[12px] leading-relaxed ap-absent">
                 {{ $isFr
@@ -957,8 +1234,8 @@
         ],
     ];
 @endphp
-<section class="mt-10 border-y border-[#EFE7D4] bg-[#F8F3E7]">
-    <div class="max-w-[1240px] mx-auto px-4 sm:px-6 py-6">
+<section class="mt-10 border-y border-[#EFE7D4] bg-[#F9F6EF]">
+    <div class="max-w-[1280px] mx-auto px-[25px] py-6">
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-6 gap-y-5">
             @foreach($trustBar as $tb)
             <div class="flex items-start gap-3">
@@ -993,6 +1270,11 @@
 
 <script>
     lucide.createIcons();
+    const awardsAll = document.getElementById('ap-awards-all');
+    if (awardsAll) awardsAll.addEventListener('click', () => {
+        document.querySelectorAll('.ap-award-extra').forEach(el => el.classList.remove('hidden'));
+        awardsAll.remove();
+    });
     const mBtn = document.getElementById('mobile-menu-btn');
     const mMenu = document.getElementById('mobile-menu');
     if (mBtn && mMenu) mBtn.addEventListener('click', () => mMenu.classList.toggle('hidden'));

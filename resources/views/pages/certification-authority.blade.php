@@ -34,24 +34,24 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F5F3EE] text-[#1D1B16] antialiased">
+<body class="bg-[#F5F3EE] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
 <main class="max-w-[880px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
     <nav class="flex items-center gap-2 text-[12.5px] mb-5" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
         <span>{{ $isFr ? 'Autorité de certification' : 'Certification Authority' }}</span>
     </nav>
 
     <header class="mb-7">
         <span class="ui-pill ui-pill-neutral">{{ $isFr ? 'Vérification indépendante' : 'Independent verification' }}</span>
-        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] leading-tight">
+        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] dark:text-[#339B56] leading-tight">
             {{ $isFr ? "Autorité de certification Artisan Hub 237" : 'Artisan Hub 237 Certification Authority' }}
         </h1>
-        <p class="mt-3 text-[13.5px] text-[#3A3A35] leading-relaxed max-w-[640px]">
+        <p class="mt-3 text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed max-w-[640px]">
             {{ $isFr
                ? "Chaque certificat émis par cette plateforme porte une signature numérique Ed25519. La clé publique correspondante est publiée ci-dessous : elle permet à un musée, un assureur, une maison de ventes ou un service des douanes de vérifier un certificat par eux-mêmes, hors ligne, sans nous le demander ni nous croire sur parole."
                : 'Every certificate this platform issues carries an Ed25519 digital signature. The matching public key is published below, so a museum, insurer, auction house or customs office can verify a certificate themselves — offline, without asking us and taking our word for it.' }}
@@ -66,7 +66,7 @@
         <dl class="ui-dl ui-dl--2 mt-3">
             <div>
                 <dt class="ui-dt">{{ $isFr ? 'Algorithme' : 'Algorithm' }}</dt>
-                <dd class="ui-dd">EdDSA / Ed25519 <span class="text-[#8A857A]">(RFC 8032)</span></dd>
+                <dd class="ui-dd">EdDSA / Ed25519 <span class="text-[#8A857A] dark:text-[#868778]">(RFC 8032)</span></dd>
             </div>
             <div>
                 <dt class="ui-dt">{{ $isFr ? 'Identifiant de clé' : 'Key ID' }}</dt>
@@ -75,7 +75,7 @@
         </dl>
         <div class="mt-4">
             <p class="ui-dt">{{ $isFr ? 'Clé publique (base64url)' : 'Public key (base64url)' }}</p>
-            <p class="mt-1 font-mono text-[11.5px] text-[#55524A] break-all">{{ $key['x'] }}</p>
+            <p class="mt-1 font-mono text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $key['x'] }}</p>
         </div>
         <a href="{{ url('/.well-known/jwks.json') }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-4">
             <i data-lucide="key-round" class="w-4 h-4"></i>
@@ -99,7 +99,7 @@
     {{-- ── How to verify ── --}}
     <section class="ui-card p-5 sm:p-6 mt-4">
         <h2 class="ui-card-title">{{ $isFr ? 'Vérifier un certificat vous-même' : 'Verify a certificate yourself' }}</h2>
-        <p class="mt-2 text-[13px] text-[#3A3A35] leading-relaxed">
+        <p class="mt-2 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? "Le message signé est reconstruit à partir des champs imprimés sur le certificat, séparés par des retours à la ligne, dans cet ordre exact :"
                : 'The signed message is rebuilt from the fields printed on the certificate, newline-separated, in exactly this order:' }}
@@ -110,7 +110,7 @@
 &lt;{{ $isFr ? 'empreinte du contenu' : 'content hash' }}&gt;
 &lt;{{ $isFr ? "date d'émission ISO 8601" : 'issue date, ISO 8601' }}&gt;</pre>
 
-        <p class="mt-4 text-[13px] text-[#3A3A35] leading-relaxed">
+        <p class="mt-4 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr ? 'Puis vérifiez la signature détachée avec la clé publique. Par exemple :' : 'Then check the detached signature against the public key. For example:' }}
         </p>
 <pre class="code mt-3"><span class="c"># Python, with PyNaCl</span>
@@ -137,7 +137,7 @@ key.verify(payload, b64u(signature))   <span class="c"># raises if invalid</span
     {{-- ── The log ── --}}
     <section class="ui-card p-5 sm:p-6 mt-4">
         <h2 class="ui-card-title">{{ $isFr ? "Journal infalsifiable des certificats" : 'Tamper-evident certificate log' }}</h2>
-        <p class="mt-2 text-[13px] text-[#3A3A35] leading-relaxed">
+        <p class="mt-2 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? "Chaque événement du cycle de vie d'un certificat — émission, approbation, révocation, vérification — est ajouté à une chaîne de hachage où chaque entrée engage la précédente. Modifier ou supprimer une entrée passée casse toutes les suivantes."
                : 'Every certificate lifecycle event — issued, approved, revoked, verified — is appended to a hash chain in which each entry commits to the one before it. Altering or removing any past entry breaks every link after it.' }}
@@ -155,7 +155,7 @@ key.verify(payload, b64u(signature))   <span class="c"># raises if invalid</span
                         <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Intacte' : 'Intact' }}</span>
                     @else
                         <span class="ui-pill ui-pill-danger">{{ $isFr ? 'Rompue' : 'Broken' }}</span>
-                        <span class="text-[#8A857A]">#{{ $chain['broken_at'] }}</span>
+                        <span class="text-[#8A857A] dark:text-[#868778]">#{{ $chain['broken_at'] }}</span>
                     @endif
                 </dd>
             </div>
@@ -164,7 +164,7 @@ key.verify(payload, b64u(signature))   <span class="c"># raises if invalid</span
         @if($head)
         <div class="mt-4">
             <p class="ui-dt">{{ $isFr ? 'Tête de chaîne actuelle' : 'Current chain head' }}</p>
-            <p class="mt-1 font-mono text-[10.5px] leading-relaxed text-[#55524A] break-all">{{ $head }}</p>
+            <p class="mt-1 font-mono text-[10.5px] leading-relaxed text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $head }}</p>
             <p class="ui-hint mt-1">
                 {{ $isFr
                    ? "Notez cette valeur : si l'historique est réécrit plus tard, elle ne correspondra plus."
@@ -184,7 +184,7 @@ key.verify(payload, b64u(signature))   <span class="c"># raises if invalid</span
         </div>
     </section>
 
-    <p class="mt-6 text-[12px] text-[#6F6B60] leading-relaxed">
+    <p class="mt-6 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">
         {{ $isFr
            ? "Artisan Hub 237 est une entreprise privée. Ses certificats attestent d'enregistrements effectués sur la plateforme ; ils ne remplacent ni un titre de propriété délivré par une autorité publique, ni des documents douaniers, ni aucun droit de propriété intellectuelle."
            : 'Artisan Hub 237 is a private company. Its certificates attest to records made on the platform; they replace neither a title issued by a public authority, nor customs documents, nor any intellectual property right.' }}

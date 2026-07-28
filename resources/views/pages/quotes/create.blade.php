@@ -51,7 +51,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
+<body class="bg-[#F7F8F7] dark:bg-[#12150F] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.quotes-buyer-header')
 
@@ -63,8 +63,8 @@
         <!-- Title row -->
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
-                <h1 class="text-[22px] font-bold text-[#1B1B18]">{{ $isFr ? 'Créer une demande de devis' : 'Create a quote request' }}</h1>
-                <p class="mt-1 text-[13px] text-[#55524A]">{{ $isFr ? 'Remplissez les informations ci-dessous pour demander un devis personnalisé à un artisan ou une entreprise.' : 'Fill in the information below to request a personalised quote from an artisan or business.' }}</p>
+                <h1 class="text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Créer une demande de devis' : 'Create a quote request' }}</h1>
+                <p class="mt-1 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Remplissez les informations ci-dessous pour demander un devis personnalisé à un artisan ou une entreprise.' : 'Fill in the information below to request a personalised quote from an artisan or business.' }}</p>
             </div>
             <a href="{{ route('dashboard.buyer', ['lang' => $lang]) }}" class="shrink-0 ui-btn ui-btn-secondary">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -77,14 +77,14 @@
             <div class="flex items-center gap-3 min-w-[860px]">
                 @foreach($steps as $stIdx => [$stNum, $stTitle, $stSub])
                 <div class="flex items-center gap-3.5 shrink-0">
-                    <span class="w-[36px] h-[36px] shrink-0 rounded-full flex items-center justify-center text-[14px] font-bold {{ $stIdx === 0 ? 'bg-[#0E5A2D] text-white' : 'bg-white border border-[#D9DDD9] text-[#55524A]' }}">{{ $stNum }}</span>
+                    <span class="w-[36px] h-[36px] shrink-0 rounded-full flex items-center justify-center text-[14px] font-bold {{ $stIdx === 0 ? 'bg-[#0E5A2D] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-white dark:bg-[#12150F] border border-[#D9DDD9] dark:border-[#39402F] text-[#55524A] dark:text-[#B4B5A6] ' }}">{{ $stNum }}</span>
                     <span>
-                        <span class="block text-[13px] font-bold {{ $stIdx === 0 ? 'text-[#14652F]' : 'text-[#1B1B18]' }}">{{ $stTitle }}</span>
-                        <span class="block mt-0.5 text-[11.5px] text-[#6F6B60]">{{ $stSub }}</span>
+                        <span class="block text-[13px] font-bold {{ $stIdx === 0 ? 'text-[#14652F] dark:text-[#339B56] ' : 'text-[#1B1B18] dark:text-[#F3EFE7] ' }}">{{ $stTitle }}</span>
+                        <span class="block mt-0.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $stSub }}</span>
                     </span>
                 </div>
                 @if($stIdx < count($steps) - 1)
-                <span class="flex-1 min-w-[36px] h-px {{ $stIdx === 0 ? 'bg-[#157A43]' : 'bg-[#E0E4E0]' }}"></span>
+                <span class="flex-1 min-w-[36px] h-px {{ $stIdx === 0 ? 'bg-[#157A43] dark:bg-[#2E9250] ' : 'bg-[#E0E4E0] dark:bg-[#1A1E16] ' }}"></span>
                 @endif
                 @endforeach
             </div>
@@ -101,7 +101,7 @@
                 @endif
 
                 <div class="ui-card">
-                    <h2 class="ui-card-title text-[#14652F]">{{ $isFr ? 'Informations de l\'acheteur' : 'Buyer information' }}</h2>
+                    <h2 class="ui-card-title text-[#14652F] dark:text-[#339B56]">{{ $isFr ? 'Informations de l\'acheteur' : 'Buyer information' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
                         <div>
                             <label class="{{ $labelCls }}">{{ $isFr ? 'Nom complet' : 'Full name' }} <span class="ui-req">*</span></label>
@@ -142,10 +142,10 @@
                         </div>
                     </div>
 
-                    <h2 class="mt-8 ui-card-title text-[#14652F]">{{ $isFr ? 'Informations générales' : 'General information' }}</h2>
+                    <h2 class="mt-8 ui-card-title text-[#14652F] dark:text-[#339B56]">{{ $isFr ? 'Informations générales' : 'General information' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-5">
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Référence de la demande' : 'Request reference' }} <span class="ui-req">*</span> <span class="font-normal text-[#8A857A]">({{ $isFr ? 'Auto-générée' : 'Auto-generated' }})</span></label>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Référence de la demande' : 'Request reference' }} <span class="ui-req">*</span> <span class="font-normal text-[#8A857A] dark:text-[#868778]">({{ $isFr ? 'Auto-générée' : 'Auto-generated' }})</span></label>
                             {{-- The reference is assigned on save; there is nothing to show yet. --}}
                             <input type="text" value="" readonly placeholder="—" class="{{ $fieldCls }}">
                         </div>
@@ -154,7 +154,7 @@
                             <input type="text" id="rfq-title" name="title" required maxlength="255" placeholder="{{ $isFr ? 'Ex. Mobilier en bois massif pour hôtel' : 'E.g. Solid wood furniture for a hotel' }}" class="{{ $fieldCls }}">
                         </div>
                         <div>
-                            <label class="{{ $labelCls }}">{{ $isFr ? 'Date souhaitée de réponse' : 'Desired response date' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></label>
+                            <label class="{{ $labelCls }}">{{ $isFr ? 'Date souhaitée de réponse' : 'Desired response date' }} <span class="font-normal text-[#8A857A] dark:text-[#868778]">({{ $isFr ? 'optionnel' : 'optional' }})</span></label>
                             <div class="ui-field-group">
                                 <i data-lucide="calendar" class="w-[17px] h-[17px]" style="stroke-width:1.7"></i>
                                 <input type="date" name="desired_response_date" min="{{ now()->toDateString() }}" class="ui-field-bare">
@@ -164,20 +164,20 @@
 
                     <div class="mt-6">
                         <label class="{{ $labelCls }}">{{ $isFr ? 'Description détaillée de votre besoin' : 'Detailed description of your need' }} <span class="ui-req">*</span></label>
-                        <p class="-mt-1 mb-2 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Décrivez précisément votre projet, les spécifications, les matériaux souhaités, les finitions, etc.' : 'Describe your project precisely: specifications, desired materials, finishes, etc.' }}</p>
+                        <p class="-mt-1 mb-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Décrivez précisément votre projet, les spécifications, les matériaux souhaités, les finitions, etc.' : 'Describe your project precisely: specifications, desired materials, finishes, etc.' }}</p>
                         <div class="relative">
                             <textarea id="rfq-desc" name="description" required rows="4" maxlength="2000" placeholder="{{ $isFr ? 'Ex. Nous recherchons des meubles en bois massif de haute qualité...' : 'E.g. We are looking for high-quality solid wood furniture...' }}" class="ui-field ui-textarea"></textarea>
-                            <span id="rfq-desc-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">0 / 2000</span>
+                            <span id="rfq-desc-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A] dark:text-[#868778]">0 / 2000</span>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <label class="{{ $labelCls }}">{{ $isFr ? 'Joindre des fichiers' : 'Attach files' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></label>
-                        <p class="-mt-1 mb-3 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Ajoutez des plans, images de référence, cahier des charges ou tout document utile.' : 'Add plans, reference images, specifications or any useful document.' }}</p>
+                        <label class="{{ $labelCls }}">{{ $isFr ? 'Joindre des fichiers' : 'Attach files' }} <span class="font-normal text-[#8A857A] dark:text-[#868778]">({{ $isFr ? 'optionnel' : 'optional' }})</span></label>
+                        <p class="-mt-1 mb-3 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Ajoutez des plans, images de référence, cahier des charges ou tout document utile.' : 'Add plans, reference images, specifications or any useful document.' }}</p>
                         <div class="flex flex-col lg:flex-row gap-4 items-stretch">
-                            <div class="flex-1 border-2 border-dashed border-[#CFE0D4] rounded-xl px-5 py-8 flex flex-wrap items-center justify-center gap-4">
-                                <span class="flex items-center gap-3 text-[13.5px] text-[#3B382F]">
-                                    <i data-lucide="cloud-upload" class="w-6 h-6 text-[#55524A]" style="stroke-width:1.5"></i>
+                            <div class="flex-1 border-2 border-dashed border-[#CFE0D4] dark:border-[#39402F] rounded-xl px-5 py-8 flex flex-wrap items-center justify-center gap-4">
+                                <span class="flex items-center gap-3 text-[13.5px] text-[#3B382F] dark:text-[#B4B5A6]">
+                                    <i data-lucide="cloud-upload" class="w-6 h-6 text-[#55524A] dark:text-[#B4B5A6]" style="stroke-width:1.5"></i>
                                     {{ $isFr ? 'Glissez-déposez vos fichiers ici ou' : 'Drag and drop your files here or' }}
                                 </span>
                                 <label class="ui-btn ui-btn-secondary cursor-pointer">
@@ -190,15 +190,15 @@
                             <div id="rfq-file-list" class="lg:w-[380px] shrink-0 space-y-2.5"></div>
                             <template id="rfq-file-tpl">
                                 <div class="rfq-file flex items-center gap-3.5">
-                                    <div class="flex-1 min-w-0 flex items-center gap-3.5 bg-white border border-[#EFF0EF] rounded-xl shadow-sm px-3.5 py-2.5">
+                                    <div class="flex-1 min-w-0 flex items-center gap-3.5 bg-white dark:bg-[#12150F] border border-[#EFF0EF] dark:border-[#262B21] rounded-xl shadow-sm px-3.5 py-2.5">
                                         <img src="{{ asset('images/landing/qb-file-1.png') }}" alt="" class="w-[30px] h-[30px] shrink-0" aria-hidden="true">
                                         <span class="flex-1 min-w-0">
-                                            <span class="rfq-file-name block text-[12.5px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis"></span>
-                                            <span class="rfq-file-size block text-[11.5px] text-[#6F6B60]"></span>
+                                            <span class="rfq-file-name block text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap overflow-hidden text-ellipsis"></span>
+                                            <span class="rfq-file-size block text-[11.5px] text-[#6F6B60] dark:text-[#868778]"></span>
                                         </span>
-                                        <button type="button" class="rfq-file-del shrink-0 text-[#3B382F] hover:text-[#DC2626]"><i data-lucide="x" class="w-4 h-4"></i></button>
+                                        <button type="button" class="rfq-file-del shrink-0 text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#DC2626] dark:hover:text-[#F0555C]"><i data-lucide="x" class="w-4 h-4"></i></button>
                                     </div>
-                                    <button type="button" onclick="document.getElementById('rfq-files').click()" class="shrink-0 w-[38px] h-[38px] rounded-full bg-white border border-[#EFF0EF] shadow-sm flex items-center justify-center text-[#3B5BDB] hover:border-[#3B5BDB]">
+                                    <button type="button" onclick="document.getElementById('rfq-files').click()" class="shrink-0 w-[38px] h-[38px] rounded-full bg-white dark:bg-[#12150F] border border-[#EFF0EF] dark:border-[#262B21] shadow-sm flex items-center justify-center text-[#3B5BDB] dark:text-[#8FB6F5] hover:border-[#3B5BDB] dark:hover:border-[#8FB6F5]">
                                         <i data-lucide="plus" class="w-4 h-4"></i>
                                     </button>
                                 </div>
@@ -225,28 +225,28 @@
                 <h2 class="ui-card-title">{{ $isFr ? 'Résumé de la demande' : 'Request summary' }}</h2>
                 <dl class="mt-4 space-y-3">
                     <div class="flex items-center justify-between gap-3">
-                        <dt class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Articles demandés' : 'Requested items' }}</dt>
-                        <dd class="text-[12.5px] text-[#55524A]">0 article{{ $isFr ? '' : 's' }}</dd>
+                        <dt class="text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Articles demandés' : 'Requested items' }}</dt>
+                        <dd class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">0 article{{ $isFr ? '' : 's' }}</dd>
                     </div>
                     <div class="flex items-center justify-between gap-3">
-                        <dt class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Quantité totale' : 'Total quantity' }}</dt>
-                        <dd class="text-[12.5px] text-[#55524A]">0</dd>
+                        <dt class="text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Quantité totale' : 'Total quantity' }}</dt>
+                        <dd class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">0</dd>
                     </div>
                     <div class="flex items-center justify-between gap-3">
-                        <dt class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Date de réponse souhaitée' : 'Desired response date' }}</dt>
-                        <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $isFr ? '25 Mai 2024' : '25 May 2024' }}</dd>
+                        <dt class="text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Date de réponse souhaitée' : 'Desired response date' }}</dt>
+                        <dd class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? '25 Mai 2024' : '25 May 2024' }}</dd>
                     </div>
                 </dl>
 
-                <p class="mt-6 text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}</p>
-                <div class="mt-2.5 border border-[#EDEEED] rounded-xl px-4 py-3.5">
+                <p class="mt-6 text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}</p>
+                <div class="mt-2.5 border border-[#EDEEED] dark:border-[#262B21] rounded-xl px-4 py-3.5">
                     <div class="flex items-center gap-3.5">
                         <img src="{{ $quoteVendor->logo ? asset('storage/'.$quoteVendor->logo) : asset('images/landing/qb-artbois.png') }}" alt="" class="w-[46px] h-[46px] shrink-0 rounded-lg object-cover">
                         <div class="min-w-0">
-                            <p class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? $quoteVendor->name_fr : ($quoteVendor->name_en ?? $quoteVendor->name_fr) }}</p>
-                            @if($quoteVendor->city_name ?? null)<p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $quoteVendor->city_name }}</p>@endif
+                            <p class="text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? $quoteVendor->name_fr : ($quoteVendor->name_en ?? $quoteVendor->name_fr) }}</p>
+                            @if($quoteVendor->city_name ?? null)<p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $quoteVendor->city_name }}</p>@endif
                             @if(in_array($quoteVendor->verification_tier, ['verified', 'certified']))
-                            <p class="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#157A43]">
+                            <p class="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#157A43] dark:text-[#339B56]">
                                 <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
                                 {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                             </p>
@@ -254,28 +254,28 @@
                         </div>
                     </div>
                     <div class="mt-2 flex justify-end">
-                        <a href="{{ $vendorUrl }}" class="inline-flex items-center gap-2 text-[12.5px] font-bold text-[#14652F] hover:text-[#14532D]">
+                        <a href="{{ $vendorUrl }}" class="inline-flex items-center gap-2 text-[12.5px] font-bold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">
                             {{ $isFr ? 'Voir le profil' : 'View the profile' }}
                             <i data-lucide="square-arrow-out-up-right" class="w-3.5 h-3.5"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="mt-5 border-t border-[#F0F1F0] pt-5">
-                    <p class="text-[12.5px] font-semibold text-[#3B382F]">{{ $isFr ? 'Message pour l\'artisan' : 'Message for the artisan' }} <span class="font-normal text-[#8A857A]">({{ $isFr ? 'optionnel' : 'optional' }})</span></p>
-                    <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Ajouter un message personnalisé à votre demande.' : 'Add a personalised message to your request.' }}</p>
+                <div class="mt-5 border-t border-[#F0F1F0] dark:border-[#262B21] pt-5">
+                    <p class="text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Message pour l\'artisan' : 'Message for the artisan' }} <span class="font-normal text-[#8A857A] dark:text-[#868778]">({{ $isFr ? 'optionnel' : 'optional' }})</span></p>
+                    <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Ajouter un message personnalisé à votre demande.' : 'Add a personalised message to your request.' }}</p>
                     <div class="relative mt-2.5">
                         <textarea id="rfq-msg" name="message" rows="5" maxlength="500" placeholder="{{ $isFr ? 'Ex. Nous serions ravis de collaborer avec vous sur ce projet...' : 'E.g. We would be delighted to work with you on this project...' }}" class="ui-field ui-textarea"></textarea>
-                        <span id="rfq-msg-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A]">0 / 500</span>
+                        <span id="rfq-msg-count" class="absolute bottom-3 right-4 text-[11.5px] text-[#8A857A] dark:text-[#868778]">0 / 500</span>
                     </div>
                 </div>
 
-                <div class="mt-5 bg-[#E9F3EC] rounded-xl px-4 py-4">
-                    <p class="flex items-center gap-2.5 text-[13px] font-bold text-[#14652F]">
+                <div class="mt-5 bg-[#E9F3EC] dark:bg-[#1A1E16] rounded-xl px-4 py-4">
+                    <p class="flex items-center gap-2.5 text-[13px] font-bold text-[#14652F] dark:text-[#339B56]">
                         <i data-lucide="lightbulb" class="w-[17px] h-[17px]" style="stroke-width:1.8"></i>
                         {{ $isFr ? 'Conseil' : 'Tip' }}
                     </p>
-                    <p class="mt-2 text-[12px] text-[#3B382F] leading-relaxed">{{ $isFr ? 'Plus votre demande est détaillée, plus les propositions reçues seront précises et adaptées à vos besoins.' : 'The more detailed your request, the more precise and tailored the proposals you receive will be.' }}</p>
+                    <p class="mt-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? 'Plus votre demande est détaillée, plus les propositions reçues seront précises et adaptées à vos besoins.' : 'The more detailed your request, the more precise and tailored the proposals you receive will be.' }}</p>
                 </div>
             </aside>
         </div>

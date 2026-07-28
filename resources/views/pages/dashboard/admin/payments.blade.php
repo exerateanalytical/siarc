@@ -206,7 +206,7 @@ $tabs = ['reported', 'under_review', 'confirmed', 'rejected', 'expired', 'cancel
             {{-- ── The trail ── --}}
             <div>
                 <p class="ui-eyebrow">{{ $isFr ? 'Journal' : 'Event trail' }}</p>
-                <ul class="mt-2 divide-y divide-[#F0F1F0]">
+                <ul class="mt-2 divide-y divide-[#F0F1F0] dark:divide-[#262B21]">
                     @foreach($trails[$p->id] ?? [] as $e)
                     <li class="py-2" data-event="{{ $e->event }}">
                         <p class="text-[12.5px] ui-ink">

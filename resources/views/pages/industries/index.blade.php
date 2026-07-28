@@ -79,7 +79,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
+<body class="bg-[#FEFDFC] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 {{-- Canonical platform chrome (consolidated 2026-07-03) --}}
 @include('pages.partials.directory-header', ['dirNavActive' => 'categories'])
@@ -90,37 +90,37 @@
         <!-- Sidebar -->
         <aside class="hidden lg:block w-[273px] shrink-0 space-y-5">
             <!-- Categories list -->
-            <div class="rounded-xl shadow-sm border border-[#EFEDE7] overflow-hidden">
+            <div class="rounded-xl shadow-sm border border-[#EFEDE7] dark:border-[#262B21] overflow-hidden">
                 <div class="flex items-center gap-3 bg-[#0A2C1D] px-4 h-[42px]">
                     <img src="{{ asset('images/landing/cat-sidebar-icon.png') }}" alt="" class="w-[22px] h-[20px]" aria-hidden="true">
                     <span class="text-[12px] font-bold tracking-[0.12em] text-white uppercase">{{ $isFr ? 'Secteurs' : 'Sectors' }}</span>
                 </div>
-                <nav class="bg-white py-1.5">
-                    <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="relative flex items-center gap-3 px-4 py-[8px] {{ $current ? 'hover:bg-[#FAF8F2]' : 'bg-[#F7F4EA]' }} transition-colors">
+                <nav class="bg-white dark:bg-[#12150F] py-1.5">
+                    <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="relative flex items-center gap-3 px-4 py-[8px] {{ $current ? 'hover:bg-[#FAF8F2] hover:dark:bg-[#0A0C09]' : 'bg-[#F7F4EA] dark:bg-[#0A0C09]' }} transition-colors">
                         @unless($current)<span class="absolute left-0 inset-y-0 w-[3px] bg-[#D9991F]"></span>@endunless
                         <img src="{{ asset('images/landing/cat-side-0.png') }}" alt="" class="w-[20px] h-[20px]" aria-hidden="true">
-                        <span class="text-[13.5px] font-semibold text-[#14351F]">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</span>
-                        <span class="ml-auto border border-[#E7E5DC] bg-white rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60]">{{ $rootBiz }}</span>
+                        <span class="text-[13.5px] font-semibold text-[#14351F] dark:text-[#339B56]">{{ $isFr ? 'Toutes les catégories' : 'All categories' }}</span>
+                        <span class="ml-auto border border-[#E7E5DC] dark:border-[#262B21] bg-white dark:bg-[#12150F] rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $rootBiz }}</span>
                     </a>
                     @foreach($sectors as $sec)
                     @php $secActive = in_array($sec->id, $trailIds); @endphp
-                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="relative flex items-center gap-3 px-4 py-[8px] {{ $secActive ? 'bg-[#F7F4EA]' : 'hover:bg-[#FAF8F2]' }} transition-colors">
+                    <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $sec->slug]) }}" class="relative flex items-center gap-3 px-4 py-[8px] {{ $secActive ? 'bg-[#F7F4EA] dark:bg-[#0A0C09]' : 'hover:bg-[#FAF8F2] hover:dark:bg-[#0A0C09]' }} transition-colors">
                         @if($secActive)<span class="absolute left-0 inset-y-0 w-[3px] bg-[#D9991F]"></span>@endif
-                        <i data-lucide="layers" class="w-[18px] h-[18px] text-[#1D4A2E] shrink-0" style="stroke-width:1.8"></i>
-                        <span class="text-[13.5px] {{ $secActive ? 'font-semibold text-[#14351F]' : 'text-[#26251F]' }} truncate">{{ $nm($sec) }}</span>
-                        <span class="ml-auto shrink-0 border border-[#E7E5DC] rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60]">{{ $biz[$sec->id] ?? 0 }}</span>
+                        <i data-lucide="layers" class="w-[18px] h-[18px] text-[#1D4A2E] dark:text-[#339B56] shrink-0" style="stroke-width:1.8"></i>
+                        <span class="text-[13.5px] {{ $secActive ? 'font-semibold text-[#14351F] dark:text-[#339B56]' : 'text-[#26251F] dark:text-[#F3EFE7]' }} truncate">{{ $nm($sec) }}</span>
+                        <span class="ml-auto shrink-0 border border-[#E7E5DC] dark:border-[#262B21] rounded-full px-2 py-0.5 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $biz[$sec->id] ?? 0 }}</span>
                     </a>
                     @endforeach
                 </nav>
             </div>
 
             <!-- Regions card -->
-            <div class="relative rounded-xl border border-[#EFEDE7] bg-[#FBFAF6] shadow-sm overflow-hidden p-5">
+            <div class="relative rounded-xl border border-[#EFEDE7] dark:border-[#262B21] bg-[#FBFAF6] dark:bg-[#12150F] shadow-sm overflow-hidden p-5">
                 <img src="{{ asset('images/landing/cat-region-map.png') }}" alt="" class="absolute right-0 top-3 w-[68px] pointer-events-none select-none" aria-hidden="true">
-                <h3 class="relative font-serif text-[19px] font-bold leading-snug text-[#1D1B16] max-w-[190px]">
+                <h3 class="relative font-serif text-[19px] font-bold leading-snug text-[#1D1B16] dark:text-[#F3EFE7] max-w-[190px]">
                     {{ $isFr ? "Explorez l'artisanat par région" : 'Explore crafts by region' }}
                 </h3>
-                <p class="relative mt-2.5 text-[12.5px] text-[#6F6B60] leading-relaxed max-w-[190px]">
+                <p class="relative mt-2.5 text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed max-w-[190px]">
                     {{ $isFr ? 'Découvrez les trésors artisanaux des 10 régions du Cameroun.' : "Discover the craft treasures of Cameroon's 10 regions." }}
                 </p>
                 <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
@@ -131,14 +131,14 @@
             </div>
 
             <!-- Help card -->
-            <div class="rounded-xl border border-[#EFEDE7] bg-white shadow-sm p-5 flex items-start gap-3.5">
-                <span class="w-12 h-12 shrink-0 rounded-lg bg-[#F2F0E7] flex items-center justify-center">
-                    <i data-lucide="headset" class="w-6 h-6 text-[#1D4A2E]" style="stroke-width:1.5"></i>
+            <div class="rounded-xl border border-[#EFEDE7] dark:border-[#262B21] bg-white dark:bg-[#12150F] shadow-sm p-5 flex items-start gap-3.5">
+                <span class="w-12 h-12 shrink-0 rounded-lg bg-[#F2F0E7] dark:bg-[#0A0C09] flex items-center justify-center">
+                    <i data-lucide="headset" class="w-6 h-6 text-[#1D4A2E] dark:text-[#339B56]" style="stroke-width:1.5"></i>
                 </span>
                 <div>
-                    <h3 class="text-[13.5px] font-bold text-[#1D1B16]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</h3>
-                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $isFr ? 'Notre équipe est à votre écoute' : 'Our team is here for you' }}</p>
-                    <a href="{{ route('contact', ['lang' => $lang]) }}" class="mt-3 inline-flex items-center gap-2 bg-[#F1EFE9] hover:bg-[#EAE7DE] text-[12.5px] font-medium text-[#26251F] px-3.5 py-2 rounded-lg transition-colors">
+                    <h3 class="text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</h3>
+                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Notre équipe est à votre écoute' : 'Our team is here for you' }}</p>
+                    <a href="{{ route('contact', ['lang' => $lang]) }}" class="mt-3 inline-flex items-center gap-2 bg-[#F1EFE9] dark:bg-[#0A0C09] hover:bg-[#EAE7DE] hover:dark:bg-[#0A0C09] text-[12.5px] font-medium text-[#26251F] dark:text-[#F3EFE7] px-3.5 py-2 rounded-lg transition-colors">
                         {{ $isFr ? 'Nous contacter' : 'Contact us' }}
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                     </a>
@@ -150,15 +150,15 @@
         <main class="flex-1 min-w-0">
             <!-- Breadcrumb -->
             <nav class="flex flex-wrap items-center gap-2 text-[13px]" aria-label="Breadcrumb">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#166534] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#166534] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
-                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="{{ $current ? 'text-[#166534] hover:underline' : 'text-[#6F6B60]' }}">{{ $isFr ? 'Catégories' : 'Categories' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="{{ $current ? 'text-[#166534] dark:text-[#339B56] hover:underline' : 'text-[#6F6B60] dark:text-[#868778]' }}">{{ $isFr ? 'Catégories' : 'Categories' }}</a>
                 @foreach($trail as $crumb)
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
                 @if($loop->last)
-                <span class="text-[#6F6B60] truncate max-w-[260px]">{{ $nm($crumb) }}</span>
+                <span class="text-[#6F6B60] dark:text-[#868778] truncate max-w-[260px]">{{ $nm($crumb) }}</span>
                 @else
-                <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $crumb->slug]) }}" class="text-[#166534] hover:underline truncate max-w-[180px]">{{ $nm($crumb) }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang, 'cat' => $crumb->slug]) }}" class="text-[#166534] dark:text-[#339B56] hover:underline truncate max-w-[180px]">{{ $nm($crumb) }}</a>
                 @endif
                 @endforeach
             </nav>
@@ -168,11 +168,11 @@
                     @if($current)
                     <span class="inline-block text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#B8860B]">{{ $levelLabel($current->level) }}</span>
                     @endif
-                    <h1 class="font-serif text-[28px] sm:text-[36px] font-bold text-[#1D1B16] leading-tight">
+                    <h1 class="font-serif text-[28px] sm:text-[36px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-tight">
                         {{ $current ? $nm($current) : ($view === 'filieres' ? ($isFr ? 'Toutes les filières' : 'All branches') : ($isFr ? 'Toutes les catégories' : 'All categories')) }}
                     </h1>
                     <div class="mt-2.5 h-[3.5px] w-[112px] bg-gradient-to-r from-[#D9991F] via-[#E9C989] to-transparent rounded-full"></div>
-                    <p class="mt-4 text-[14px] text-[#55524A] leading-relaxed max-w-[460px]">
+                    <p class="mt-4 text-[14px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[460px]">
                         @if($current)
                             {{ $isFr
                                 ? ($isLeaf($current) ? 'Découvrez les artisans et les créations de ce métier.' : 'Parcourez les sous-catégories officielles de cette branche de l\'artisanat.')
@@ -187,19 +187,19 @@
                                 : 'Explore Cameroonian crafts by the official nomenclature: sector, branch, trade group and trade.' }}
                         @endif
                     </p>
-                    <p class="mt-3 text-[13px] text-[#6F6B60]">
-                        <span class="font-semibold text-[#1D1B16]">{{ $fmt($headBiz) }}</span> {{ $isFr ? 'artisans' : 'artisans' }}
+                    <p class="mt-3 text-[13px] text-[#6F6B60] dark:text-[#868778]">
+                        <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $fmt($headBiz) }}</span> {{ $isFr ? 'artisans' : 'artisans' }}
                         <span class="mx-1.5 text-[#CFC9BB]">·</span>
-                        <span class="font-semibold text-[#1D1B16]">{{ $fmt($headProd) }}</span> {{ $isFr ? 'produits' : 'products' }}
+                        <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $fmt($headProd) }}</span> {{ $isFr ? 'produits' : 'products' }}
                     </p>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <form method="GET" action="{{ route('industries.index') }}" class="flex items-center gap-2.5 h-[46px] bg-white border border-[#E5E3E0] rounded-xl px-4 shadow-sm">
+                    <form method="GET" action="{{ route('industries.index') }}" class="flex items-center gap-2.5 h-[46px] bg-white dark:bg-[#12150F] border border-[#E5E3E0] dark:border-[#262B21] rounded-xl px-4 shadow-sm">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         @if($current)<input type="hidden" name="cat" value="{{ $current->slug }}">@endif
                         @if(!$current && $view === 'filieres')<input type="hidden" name="view" value="filieres">@endif
-                        <label for="sort" class="text-[13.5px] text-[#6F6B60] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
+                        <label for="sort" class="text-[13.5px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort" name="sort" onchange="this.form.submit()"
                             class="ui-field-bare font-semibold cursor-pointer w-auto pr-1">
                             <option value="" @selected(empty($sort))>{{ $isFr ? 'Ordre officiel' : 'Official order' }}</option>
@@ -207,27 +207,27 @@
                             <option value="products" @selected(($sort ?? '') === 'products')>{{ $isFr ? 'Produits' : 'Products' }}</option>
                         </select>
                     </form>
-                    <div class="hidden sm:flex items-center h-[46px] bg-[#F4F2ED] rounded-xl p-1">
+                    <div class="hidden sm:flex items-center h-[46px] bg-[#F4F2ED] dark:bg-[#0A0C09] rounded-xl p-1">
                         <button type="button" id="view-grid-btn" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}"
-                            class="h-full px-3.5 rounded-lg bg-white shadow-sm flex items-center justify-center transition-colors">
-                            <i data-lucide="layout-grid" class="w-[18px] h-[18px] text-[#14532D]" style="stroke-width:2.2"></i>
+                            class="h-full px-3.5 rounded-lg bg-white dark:bg-[#12150F] shadow-sm flex items-center justify-center transition-colors">
+                            <i data-lucide="layout-grid" class="w-[18px] h-[18px] text-[#14532D] dark:text-[#339B56]" style="stroke-width:2.2"></i>
                         </button>
                         <button type="button" id="view-list-btn" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}"
                             class="h-full px-3.5 rounded-lg flex items-center justify-center transition-colors">
-                            <i data-lucide="list" class="w-[18px] h-[18px] text-[#6F6B60]" style="stroke-width:2.2"></i>
+                            <i data-lucide="list" class="w-[18px] h-[18px] text-[#6F6B60] dark:text-[#868778]" style="stroke-width:2.2"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
             @unless($current)
-            <div class="mt-5 inline-flex items-center bg-[#F4F2ED] rounded-xl p-1 gap-1">
-                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] hover:text-[#1D1B16]' : 'bg-white shadow-sm text-[#14532D]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
-                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white shadow-sm text-[#14532D]' : 'text-[#6F6B60] hover:text-[#1D1B16]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
+            <div class="mt-5 inline-flex items-center bg-[#F4F2ED] dark:bg-[#0A0C09] rounded-xl p-1 gap-1">
+                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' : 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
             </div>
             @endunless
 
-            <p class="{{ $current ? 'mt-5' : 'mt-3' }} text-[13px] text-[#55524A]">
+            <p class="{{ $current ? 'mt-5' : 'mt-3' }} text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
                 {{ $fmt($children->count()) }}
                 @if(!$current && $view === 'filieres')
                     {{ $isFr ? ($children->count() === 1 ? 'filière' : 'filières') : ($children->count() === 1 ? 'branch' : 'branches') }}
@@ -238,11 +238,11 @@
 
             @if($children->isEmpty())
             <!-- Leaf métier: no sub-categories -->
-            <div class="mt-4 bg-white border border-[#F1EFEA] rounded-xl px-6 py-12 text-center">
-                <span class="block mx-auto w-14 h-14 rounded-full bg-[#F2F0E7] flex items-center justify-center">
-                    <i data-lucide="hammer" class="w-7 h-7 text-[#1D4A2E]" style="stroke-width:1.5"></i>
+            <div class="mt-4 bg-white dark:bg-[#12150F] border border-[#F1EFEA] dark:border-[#262B21] rounded-xl px-6 py-12 text-center">
+                <span class="block mx-auto w-14 h-14 rounded-full bg-[#F2F0E7] dark:bg-[#0A0C09] flex items-center justify-center">
+                    <i data-lucide="hammer" class="w-7 h-7 text-[#1D4A2E] dark:text-[#339B56]" style="stroke-width:1.5"></i>
                 </span>
-                <p class="mt-4 text-[14px] text-[#55524A] max-w-[380px] mx-auto">{{ $isFr ? "Ce métier n'a pas de sous-catégorie. Découvrez les artisans qui l'exercent." : 'This trade has no sub-category. Discover the artisans who practise it.' }}</p>
+                <p class="mt-4 text-[14px] text-[#55524A] dark:text-[#B4B5A6] max-w-[380px] mx-auto">{{ $isFr ? "Ce métier n'a pas de sous-catégorie. Découvrez les artisans qui l'exercent." : 'This trade has no sub-category. Discover the artisans who practise it.' }}</p>
                 @if($current)
                 <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $current->slug]) }}" class="mt-5 inline-flex items-center gap-2 bg-[#0E3022] hover:bg-leaf text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
                     {{ $isFr ? 'Voir les artisans' : 'View artisans' }}<i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -257,17 +257,17 @@
             @unless($current)
             <div class="mt-4">
                 <div class="flex items-center gap-3">
-                    <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] whitespace-nowrap">{{ $isFr ? 'Catégories populaires' : 'Popular categories' }}</h2>
-                    <span class="h-px flex-1 bg-[#EAE7DE]"></span>
+                    <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $isFr ? 'Catégories populaires' : 'Popular categories' }}</h2>
+                    <span class="h-px flex-1 bg-[#EAE7DE] dark:bg-[#0A0C09]"></span>
                 </div>
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
                     @foreach($featured as $tile)
-                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $tile->slug]) }}" class="group bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all">
+                    <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $tile->slug]) }}" class="group bg-white dark:bg-[#12150F] border border-[#F1EFEA] dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all">
                         <span class="block mx-auto w-[84px] h-[84px] rounded-full overflow-hidden">
                             <img src="{{ asset('images/landing/' . $tile->image_icon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
                         </span>
-                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] leading-snug line-clamp-2 min-h-[34px] flex items-center justify-center">{{ $nm($tile) }}</h3>
-                        <p class="mt-1 text-[12px] text-[#6F6B60]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
+                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[34px] flex items-center justify-center">{{ $nm($tile) }}</h3>
+                        <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
                     </a>
                     @endforeach
                 </div>
@@ -276,8 +276,8 @@
 
 @unless($current)
             <div class="mt-9 flex items-center gap-3">
-                <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] whitespace-nowrap">{{ $isFr ? 'Toutes les catégories officielles' : 'All official categories' }}</h2>
-                <span class="h-px flex-1 bg-[#EAE7DE]"></span>
+                <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $isFr ? 'Toutes les catégories officielles' : 'All official categories' }}</h2>
+                <span class="h-px flex-1 bg-[#EAE7DE] dark:bg-[#0A0C09]"></span>
             </div>
             @endunless
 
@@ -285,23 +285,23 @@
             <div id="cards-grid" class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 @foreach($children as $child)
                 @php $leaf = $isLeaf($child); $href = $leaf ? route('businesses.index', ['lang' => $lang, 'industry' => $child->slug]) : route('industries.index', ['lang' => $lang, 'cat' => $child->slug]); @endphp
-                <div class="group bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all">
+                <div class="group bg-white dark:bg-[#12150F] border border-[#F1EFEA] dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-3 pt-4 pb-5 text-center hover:shadow-md hover:-translate-y-0.5 transition-all">
                     @if($child->image_icon)
                     <span class="block mx-auto w-[84px] h-[84px] rounded-full overflow-hidden">
                         <img src="{{ asset('images/landing/' . $child->image_icon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
                     </span>
                     @else
-                    <span class="block mx-auto w-[84px] h-[84px] rounded-full bg-[#F2F0E7] flex items-center justify-center">
-                        <i data-lucide="{{ $nodeIcon($child->level) }}" class="w-8 h-8 text-[#1D4A2E]" style="stroke-width:1.5"></i>
+                    <span class="block mx-auto w-[84px] h-[84px] rounded-full bg-[#F2F0E7] dark:bg-[#0A0C09] flex items-center justify-center">
+                        <i data-lucide="{{ $nodeIcon($child->level) }}" class="w-8 h-8 text-[#1D4A2E] dark:text-[#339B56]" style="stroke-width:1.5"></i>
                     </span>
                     @endif
                     <span class="mt-3 inline-block text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
-                    <h2 class="mt-1 text-[14px] font-bold text-[#1D1B16] leading-snug line-clamp-2 min-h-[38px] flex items-center justify-center">
+                    <h2 class="mt-1 text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[38px] flex items-center justify-center">
                         {{ $nm($child) }}
                     </h2>
                     <div class="mx-auto mt-1.5 h-[2px] w-6 bg-[#E2B54D] rounded-full"></div>
-                    <p class="mt-2 text-[12px] text-[#6F6B60]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
-                    <a href="{{ $href }}" class="mt-3.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] hover:text-leaf transition-colors">
+                    <p class="mt-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
+                    <a href="{{ $href }}" class="mt-3.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                         {{ $leaf ? ($isFr ? 'Voir les artisans' : 'View artisans') : ($isFr ? 'Explorer' : 'Explore') }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -313,22 +313,22 @@
             <div id="cards-list" class="hidden mt-4 space-y-3.5">
                 @foreach($children as $child)
                 @php $leaf = $isLeaf($child); $href = $leaf ? route('businesses.index', ['lang' => $lang, 'industry' => $child->slug]) : route('industries.index', ['lang' => $lang, 'cat' => $child->slug]); @endphp
-                <div class="bg-white border border-[#F1EFEA] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-5 py-3.5 flex items-center gap-5">
+                <div class="bg-white dark:bg-[#12150F] border border-[#F1EFEA] dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-5 py-3.5 flex items-center gap-5">
                     @if($child->image_icon)
                     <span class="block w-[56px] h-[56px] shrink-0 rounded-full overflow-hidden">
                         <img src="{{ asset('images/landing/' . $child->image_icon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
                     </span>
                     @else
-                    <span class="block w-[56px] h-[56px] shrink-0 rounded-full bg-[#F2F0E7] flex items-center justify-center">
-                        <i data-lucide="{{ $nodeIcon($child->level) }}" class="w-6 h-6 text-[#1D4A2E]" style="stroke-width:1.5"></i>
+                    <span class="block w-[56px] h-[56px] shrink-0 rounded-full bg-[#F2F0E7] dark:bg-[#0A0C09] flex items-center justify-center">
+                        <i data-lucide="{{ $nodeIcon($child->level) }}" class="w-6 h-6 text-[#1D4A2E] dark:text-[#339B56]" style="stroke-width:1.5"></i>
                     </span>
                     @endif
                     <div class="min-w-0">
                         <span class="text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
-                        <h2 class="text-[15px] font-bold text-[#1D1B16] truncate">{{ $nm($child) }}</h2>
-                        <p class="mt-0.5 text-[12.5px] text-[#6F6B60]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
+                        <h2 class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">{{ $nm($child) }}</h2>
+                        <p class="mt-0.5 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
                     </div>
-                    <a href="{{ $href }}" class="ml-auto shrink-0 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] hover:text-leaf transition-colors">
+                    <a href="{{ $href }}" class="ml-auto shrink-0 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                         {{ $leaf ? ($isFr ? 'Voir les artisans' : 'View artisans') : ($isFr ? 'Explorer' : 'Explore') }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -338,13 +338,13 @@
 
 
             <!-- Trust strip -->
-            <div class="mt-7 bg-[#F6F6EF] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9]">
+            <div class="mt-7 bg-[#F6F6EF] dark:bg-[#0A0C09] rounded-xl px-4 sm:px-7 py-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-y-6 lg:divide-x divide-[#E3DFC9] dark:divide-[#6A5210]">
                 @foreach($trustItems as [$trustIcon, $trustTitle, $trustDesc])
                 <div class="flex items-start gap-2.5 lg:px-4 first:lg:pl-0 last:lg:pr-0">
                     <img src="{{ asset('images/landing/' . $trustIcon) }}" alt="" class="w-[52px] h-[52px] shrink-0 -mt-1" aria-hidden="true">
                     <div>
-                        <h3 class="text-[13.5px] font-bold text-[#1D1B16]">{{ $trustTitle }}</h3>
-                        <p class="mt-1 text-[12px] text-[#6F6B60] leading-relaxed whitespace-pre-line">{{ $trustDesc }}</p>
+                        <h3 class="text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</h3>
+                        <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $trustDesc }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -374,12 +374,12 @@
         const isGrid = view !== 'list';
         gridEl.classList.toggle('hidden', !isGrid);
         listEl.classList.toggle('hidden', isGrid);
-        gridBtn.classList.toggle('bg-white', isGrid);
+        gridBtn.classList.toggle('bg-white dark:bg-[#12150F]', isGrid);
         gridBtn.classList.toggle('shadow-sm', isGrid);
-        listBtn.classList.toggle('bg-white', !isGrid);
+        listBtn.classList.toggle('bg-white dark:bg-[#12150F]', !isGrid);
         listBtn.classList.toggle('shadow-sm', !isGrid);
-        gridBtn.querySelector('svg')?.setAttribute('class', 'w-[18px] h-[18px] ' + (isGrid ? 'text-[#14532D]' : 'text-[#6F6B60]'));
-        listBtn.querySelector('svg')?.setAttribute('class', 'w-[18px] h-[18px] ' + (!isGrid ? 'text-[#14532D]' : 'text-[#6F6B60]'));
+        gridBtn.querySelector('svg')?.setAttribute('class', 'w-[18px] h-[18px] ' + (isGrid ? 'text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778]'));
+        listBtn.querySelector('svg')?.setAttribute('class', 'w-[18px] h-[18px] ' + (!isGrid ? 'text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778]'));
         try { localStorage.setItem('catView', view); } catch (e) {}
     }
     gridBtn.addEventListener('click', () => setView('grid'));

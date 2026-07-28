@@ -33,7 +33,7 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @php
     $siacUser = session('siac_user') ?? [];
@@ -170,28 +170,31 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
 
     <!-- Main column -->
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <header class="sticky top-0 z-20 bg-white border-b border-[#EEEFEE] h-[64px] flex items-center px-4 lg:px-6 gap-3 shrink-0">
-            <button id="sidebar-toggle" class="lg:hidden p-2 -ml-2 rounded-lg hover:bg-[#F6F7F6]">
-                <i data-lucide="menu" class="w-5 h-5 text-[#3B382F]"></i>
+        <header class="sticky top-0 z-20 bg-white dark:bg-[#12150F] border-b border-[#EEEFEE] dark:border-[#262B21] h-[64px] flex items-center px-4 lg:px-6 gap-3 shrink-0">
+            <button id="sidebar-toggle" class="lg:hidden p-2 -ml-2 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E]">
+                <i data-lucide="menu" class="w-5 h-5 text-[#3B382F] dark:text-[#B4B5A6]"></i>
             </button>
-            <h1 class="text-[14px] font-bold text-[#1B1B18] truncate">{{ $pageTitle ?? '' }}</h1>
+            <h1 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $pageTitle ?? '' }}</h1>
             <div class="flex-1"></div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ request()->fullUrlWithQuery(['lang' => $lang === 'fr' ? 'en' : 'fr']) }}" class="hidden sm:flex items-center justify-center h-[34px] px-3 rounded-lg border border-[#E5E7E5] text-[12px] font-semibold text-[#3B382F] hover:border-[#14532D] transition-colors">
+                {{-- Dark-mode control. Presence of a `.theme-toggle` in the page
+                     suppresses the floating fallback in pages.partials.theme. --}}
+                @include('pages.partials.theme-toggle')
+                <a href="{{ request()->fullUrlWithQuery(['lang' => $lang === 'fr' ? 'en' : 'fr']) }}" class="hidden sm:flex items-center justify-center h-[34px] px-3 rounded-lg border border-[#E5E7E5] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14532D] dark:hover:border-[#2E9250] transition-colors">
                     {{ strtoupper($lang === 'fr' ? 'en' : 'fr') }}
                 </a>
-                <a href="{{ route('messages.inbox') }}" class="relative flex items-center justify-center w-[38px] h-[38px] rounded-lg text-[#3B382F] hover:bg-[#F6F7F6] transition-colors" title="Messages">
+                <a href="{{ route('messages.inbox') }}" class="relative flex items-center justify-center w-[38px] h-[38px] rounded-lg text-[#3B382F] dark:text-[#B4B5A6] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] transition-colors" title="Messages">
                     <i data-lucide="message-circle" class="w-[19px] h-[19px]" style="stroke-width:1.7"></i>
                 </a>
-                <a href="{{ route('notifications.index') }}" class="relative flex items-center justify-center w-[38px] h-[38px] rounded-lg text-[#3B382F] hover:bg-[#F6F7F6] transition-colors" title="Notifications">
+                <a href="{{ route('notifications.index') }}" class="relative flex items-center justify-center w-[38px] h-[38px] rounded-lg text-[#3B382F] dark:text-[#B4B5A6] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] transition-colors" title="Notifications">
                     <i data-lucide="bell" class="w-[19px] h-[19px]" style="stroke-width:1.7"></i>
                     @if($unreadNotifications > 0)
-                    <span class="absolute top-0.5 right-0.5 min-w-[17px] h-[17px] px-1 bg-[#E01E1E] text-white text-[10px] font-bold rounded-full flex items-center justify-center">{{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}</span>
+                    <span class="absolute top-0.5 right-0.5 min-w-[17px] h-[17px] px-1 bg-[#E01E1E] dark:bg-[#C0343B] text-white text-[10px] font-bold rounded-full flex items-center justify-center">{{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}</span>
                     @endif
                 </a>
-                <a href="{{ route('profile.show') }}" class="w-[36px] h-[36px] bg-[#DFEDE3] hover:bg-[#CFE5D6] rounded-full flex items-center justify-center ml-1 transition-colors" title="{{ $lang === 'fr' ? 'Mon profil' : 'My Profile' }}">
-                    <span class="text-[#14652F] text-[12px] font-bold">{{ $dashInitials }}</span>
+                <a href="{{ route('profile.show') }}" class="w-[36px] h-[36px] bg-[#DFEDE3] dark:bg-[#0C3D1D] hover:bg-[#CFE5D6] dark:hover:bg-[#0C3D1D] rounded-full flex items-center justify-center ml-1 transition-colors" title="{{ $lang === 'fr' ? 'Mon profil' : 'My Profile' }}">
+                    <span class="text-[#14652F] dark:text-[#339B56] text-[12px] font-bold">{{ $dashInitials }}</span>
                 </a>
             </div>
         </header>

@@ -113,10 +113,10 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
 @section('content')
 
 {{-- Breadcrumb : Accueil / Paramètres --}}
-<nav class="flex items-center gap-1.5 text-xs text-[#8A857A] -mt-2 mb-5" aria-label="Breadcrumb">
-    <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
-    <i data-lucide="chevron-right" class="w-3 h-3 text-[#B8B2A4]"></i>
-    <span class="text-[#3B382F]">{{ $isFr ? 'Paramètres' : 'Settings' }}</span>
+<nav class="flex items-center gap-1.5 text-xs text-[#8A857A] dark:text-[#868778] -mt-2 mb-5" aria-label="Breadcrumb">
+    <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43] dark:hover:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+    <i data-lucide="chevron-right" class="w-3 h-3 text-[#B8B2A4] dark:text-[#868778]"></i>
+    <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Paramètres' : 'Settings' }}</span>
 </nav>
 
 @if(session('success'))
@@ -134,12 +134,12 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
 @endif
 
 {{-- ── Top tabs ─────────────────────────────────────────────────────────── --}}
-<div class="border-b border-[#EFEBE2] mb-6 overflow-x-auto">
+<div class="border-b border-[#EFEBE2] dark:border-[#262B21] mb-6 overflow-x-auto">
     <nav class="flex items-center gap-7 min-w-max">
         @foreach($tabs as $key => $tab)
         <a href="{{ route('admin.settings', array_filter(['section' => $key === 'general' ? null : $key, 'lang' => request()->query('lang')])) }}"
-           class="flex items-center gap-2 pb-3 pt-1 text-[13px] font-semibold border-b-2 -mb-px transition-colors {{ $section === $key ? 'border-[#0A5A2A] text-[#0A5A2A]' : 'border-transparent text-[#55524A] hover:text-[#1B1B18]' }}">
-            <i data-lucide="{{ $tab['icon'] }}" class="w-4 h-4 {{ $section === $key ? 'text-[#0A5A2A]' : 'text-[#8A857A]' }}"></i>
+           class="flex items-center gap-2 pb-3 pt-1 text-[13px] font-semibold border-b-2 -mb-px transition-colors {{ $section === $key ? 'border-[#0A5A2A] dark:border-[#2E9250] text-[#0A5A2A] dark:text-[#339B56] ' : 'border-transparent text-[#55524A] dark:text-[#B4B5A6] hover:text-[#1B1B18] dark:hover:text-[#F3EFE7] ' }}">
+            <i data-lucide="{{ $tab['icon'] }}" class="w-4 h-4 {{ $section === $key ? 'text-[#0A5A2A] dark:text-[#339B56] ' : 'text-[#8A857A] dark:text-[#868778] ' }}"></i>
             {{ $isFr ? $tab['fr'] : $tab['en'] }}
         </a>
         @endforeach
@@ -177,7 +177,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
                     <rect width="10" height="20" fill="#007A5E"/><rect x="10" width="10" height="20" fill="#CE1126"/><rect x="20" width="10" height="20" fill="#FCD116"/>
                     <path d="M15 6l1 2.6h2.7l-2.2 1.7.9 2.7-2.4-1.7-2.4 1.7.9-2.7-2.2-1.7H14z" fill="#FCD116"/>
                 </svg>
-                <i data-lucide="chevron-down" class="w-3 h-3 text-[#B8B2A4] shrink-0"></i>
+                <i data-lucide="chevron-down" class="w-3 h-3 text-[#B8B2A4] dark:text-[#868778] shrink-0"></i>
                 <input type="tel" name="settings[contact_phone]" class="ui-field-bare flex-1 min-w-0"
                        value="{{ $p('contact_phone', config('legal.company.phone')) }}">
             </div>
@@ -228,7 +228,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
                 <option value="home" @selected($p('landing_page', 'directory') === 'home')>{{ $isFr ? 'Accueil (hero, mise en avant)' : 'Home (hero, spotlight)' }}</option>
                 <option value="directory" @selected($p('landing_page', 'directory') === 'directory')>{{ $isFr ? 'Annuaire des artisans' : 'Artisan directory' }}</option>
             </select>
-            <p class="mt-1 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
+            <p class="mt-1 text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
         </div>
         <button type="submit" class="{{ $greenBtn }}">
             <i data-lucide="check" class="w-4 h-4"></i>
@@ -243,7 +243,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Logo actuel' : 'Current logo' }}</label>
             <div class="flex items-start gap-4">
-                <img src="{{ $logoUrl }}" alt="Logo" class="w-[88px] h-[88px] rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
+                <img src="{{ $logoUrl }}" alt="Logo" class="w-[88px] h-[88px] rounded-full object-cover border border-[#EFEBE2] dark:border-[#262B21] bg-[#F8F4EC] dark:bg-[#1A1E16] shrink-0">
                 <div class="space-y-2 min-w-0">
                     <form method="POST" action="{{ route('admin.settings.general') }}" enctype="multipart/form-data">
                         @csrf
@@ -268,7 +268,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
         <div>
             <label class="{{ $labelCls }}">Favicon</label>
             <div class="flex items-center gap-3">
-                <img src="{{ $faviconUrl }}" alt="Favicon" class="w-9 h-9 rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
+                <img src="{{ $faviconUrl }}" alt="Favicon" class="w-9 h-9 rounded-full object-cover border border-[#EFEBE2] dark:border-[#262B21] bg-[#F8F4EC] dark:bg-[#1A1E16] shrink-0">
                 <form method="POST" action="{{ route('admin.settings.general') }}" enctype="multipart/form-data">
                     @csrf
                     <label class="ui-btn ui-btn-secondary">
@@ -285,7 +285,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Couleur principale' : 'Primary colour' }}</label>
                 <div class="ui-field-group">
-                    <span class="w-6 h-6 rounded-md shrink-0 border border-[#EFEBE2]" style="background: {{ $p('primary_color', '#0A5A2A') }}"></span>
+                    <span class="w-6 h-6 rounded-md shrink-0 border border-[#EFEBE2] dark:border-[#262B21]" style="background: {{ $p('primary_color', '#0A5A2A') }}"></span>
                     <input type="text" name="settings[primary_color]" value="{{ $p('primary_color', '#0A5A2A') }}"
                            onchange="this.form.submit()" class="ui-field-bare flex-1 min-w-0">
                 </div>
@@ -293,7 +293,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
             <div>
                 <label class="{{ $labelCls }}">{{ $isFr ? 'Couleur secondaire' : 'Secondary colour' }}</label>
                 <div class="ui-field-group">
-                    <span class="w-6 h-6 rounded-md shrink-0 border border-[#EFEBE2]" style="background: {{ $p('secondary_color', '#F3B700') }}"></span>
+                    <span class="w-6 h-6 rounded-md shrink-0 border border-[#EFEBE2] dark:border-[#262B21]" style="background: {{ $p('secondary_color', '#F3B700') }}"></span>
                     <input type="text" name="settings[secondary_color]" value="{{ $p('secondary_color', '#F3B700') }}"
                            onchange="this.form.submit()" class="ui-field-bare flex-1 min-w-0">
                 </div>
@@ -312,13 +312,11 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
             <input type="hidden" name="settings[{{ $key }}]" value="false">
             <span class="relative inline-flex shrink-0 mt-0.5">
                 <input type="checkbox" name="settings[{{ $key }}]" value="true" class="sr-only peer" @checked($on)>
-                <span class="w-10 h-[22px] bg-[#EAE5D8] rounded-full transition-colors peer-checked:bg-[#0A9B4A]
-                             after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:w-4 after:h-4
-                             after:bg-white after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-[18px]"></span>
+                <span class="w-10 h-[22px] bg-[#EAE5D8] dark:bg-[#1A1E16] rounded-full transition-colors peer-checked:bg-[#0A9B4A] dark:peer-checked:bg-[#2E9250] after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:w-4 after:h-4 after:bg-white dark:after:bg-[#12150F] after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-[18px]"></span>
             </span>
             <span class="min-w-0">
-                <span class="block text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? $frTexts[0] : $enTexts[0] }}</span>
-                <span class="block text-xs text-[#8A857A] mt-0.5">{{ $isFr ? $frTexts[1] : $enTexts[1] }}</span>
+                <span class="block text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? $frTexts[0] : $enTexts[0] }}</span>
+                <span class="block text-xs text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $isFr ? $frTexts[1] : $enTexts[1] }}</span>
             </span>
         </label>
         @endforeach
@@ -348,17 +346,17 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Formats d\'images autorisés' : 'Allowed image formats' }}</label>
-            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-[#EAE5D8] rounded-lg min-h-[40px]"
+            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-[#EAE5D8] dark:border-[#262B21] rounded-lg min-h-[40px]"
                  data-chips="image_formats">
                 @foreach(array_filter(array_map('trim', explode(',', $p('image_formats', 'JPG,PNG,WEBP')))) as $chip)
-                <span class="inline-flex items-center gap-1 bg-[#F1EDE3] text-[#3B382F] text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
+                <span class="inline-flex items-center gap-1 bg-[#F1EDE3] dark:bg-[#1A1E16] text-[#3B382F] dark:text-[#B4B5A6] text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
                     {{ $chip }}
-                    <button type="button" class="text-[#B8B2A4] hover:text-[#55524A]" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
+                    <button type="button" class="text-[#B8B2A4] dark:text-[#868778] hover:text-[#55524A] dark:hover:text-[#B4B5A6]" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
                 </span>
                 @endforeach
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B8B2A4] ml-auto"></i>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B8B2A4] dark:text-[#868778] ml-auto"></i>
                 <input type="hidden" name="settings[image_formats]" value="{{ $p('image_formats', 'JPG,PNG,WEBP') }}">
             </div>
         </div>
@@ -376,17 +374,17 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
         </div>
         <div>
             <label class="{{ $labelCls }}">{{ $isFr ? 'Langues activées' : 'Enabled languages' }}</label>
-            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-[#EAE5D8] rounded-lg min-h-[40px]"
+            <div class="flex items-center gap-1.5 flex-wrap px-2.5 py-2 border border-[#EAE5D8] dark:border-[#262B21] rounded-lg min-h-[40px]"
                  data-chips="enabled_languages">
                 @foreach(array_filter(array_map('trim', explode(',', $p('enabled_languages', 'Français,English')))) as $chip)
-                <span class="inline-flex items-center gap-1 bg-[#F1EDE3] text-[#3B382F] text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
+                <span class="inline-flex items-center gap-1 bg-[#F1EDE3] dark:bg-[#1A1E16] text-[#3B382F] dark:text-[#B4B5A6] text-xs font-semibold px-2 py-1 rounded" data-chip="{{ $chip }}">
                     {{ $chip }}
-                    <button type="button" class="text-[#B8B2A4] hover:text-[#55524A]" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
+                    <button type="button" class="text-[#B8B2A4] dark:text-[#868778] hover:text-[#55524A] dark:hover:text-[#B4B5A6]" onclick="removeChip(this)" aria-label="{{ $isFr ? 'Retirer' : 'Remove' }} {{ $chip }}">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
                 </span>
                 @endforeach
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B8B2A4] ml-auto"></i>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#B8B2A4] dark:text-[#868778] ml-auto"></i>
                 <input type="hidden" name="settings[enabled_languages]" value="{{ $p('enabled_languages', 'Français,English') }}">
             </div>
         </div>
@@ -427,7 +425,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
             <span class="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style="background: {{ $color }}1a">
                 <svg viewBox="0 0 24 24" class="w-4 h-4" fill="{{ $color }}" aria-hidden="true">{!! $svgPath !!}</svg>
             </span>
-            <span class="text-xs font-semibold text-[#3B382F] w-[74px] shrink-0">{{ $label }}</span>
+            <span class="text-xs font-semibold text-[#3B382F] dark:text-[#B4B5A6] w-[74px] shrink-0">{{ $label }}</span>
             <input type="text" name="settings[{{ $key }}]" placeholder="{{ $placeholder }}"
                    class="ui-field flex-1 min-w-0"
                    value="{{ $p($key, $placeholder) }}">
@@ -443,11 +441,11 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
     {{-- 7. Mentions Légales --}}
     <div class="{{ $cardCls }}">
         <h2 class="ui-card-title mb-2">{{ $isFr ? 'Mentions Légales' : 'Legal Notices' }}</h2>
-        <div class="divide-y divide-[#F5F1E8]">
+        <div class="divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
             @foreach($legalRows as [$label, $href])
             <div class="flex items-center justify-between gap-3 py-3">
-                <span class="text-[13px] font-medium text-[#1B1B18]">{{ $label }}</span>
-                <a href="{{ $href }}" class="inline-flex items-center gap-1 text-xs font-semibold text-[#0A5A2A] hover:underline whitespace-nowrap">
+                <span class="text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7]">{{ $label }}</span>
+                <a href="{{ $href }}" class="inline-flex items-center gap-1 text-xs font-semibold text-[#0A5A2A] dark:text-[#339B56] hover:underline whitespace-nowrap">
                     {{ $isFr ? 'Voir / Modifier' : 'View / Edit' }}
                     <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                 </a>
@@ -466,9 +464,9 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
 
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Dernière sauvegarde' : 'Last backup' }}</p>
+                <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Dernière sauvegarde' : 'Last backup' }}</p>
                 {{-- No stored run means no backup has been taken through this screen. --}}
-                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('backup_last_run', '') ?: ($isFr ? 'Jamais' : 'Never') }}</p>
+                <p class="text-xs text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $p('backup_last_run', '') ?: ($isFr ? 'Jamais' : 'Never') }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf
@@ -479,14 +477,14 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
         </div>
 
         <div class="flex items-start justify-between gap-3">
-            <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Sauvegarde automatique' : 'Automatic backup' }}</p>
-            <span class="text-xs font-semibold text-[#0A9B4A] whitespace-nowrap">{{ $isFr ? 'Activée (quotidienne)' : 'Enabled (daily)' }}</span>
+            <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Sauvegarde automatique' : 'Automatic backup' }}</p>
+            <span class="text-xs font-semibold text-[#0A9B4A] dark:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Activée (quotidienne)' : 'Enabled (daily)' }}</span>
         </div>
 
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Nettoyage du cache' : 'Cache cleanup' }}</p>
-                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('cache_size_mb', '125') }} {{ $isFr ? 'Mo' : 'MB' }}</p>
+                <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Nettoyage du cache' : 'Cache cleanup' }}</p>
+                <p class="text-xs text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $p('cache_size_mb', '125') }} {{ $isFr ? 'Mo' : 'MB' }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf
@@ -497,8 +495,8 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
 
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Optimisation de la base de données' : 'Database optimisation' }}</p>
-                <p class="text-xs text-[#8A857A] mt-0.5">{{ $p('db_optimization_status', 'OK') }}</p>
+                <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Optimisation de la base de données' : 'Database optimisation' }}</p>
+                <p class="text-xs text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $p('db_optimization_status', 'OK') }}</p>
             </div>
             <form method="POST" action="{{ route('admin.settings.general') }}">
                 @csrf
@@ -557,10 +555,10 @@ function removeChip(btn) {
 {{-- ══════════════════════ Notifications (Twilio — preserved) ══════════════════════ --}}
 @if($section === 'notifications')
 <div class="ui-card ui-card--flush max-w-3xl">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-[#F5F1E8]">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[#F5F1E8] dark:border-[#262B21]">
         <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
-                <i data-lucide="message-circle" class="w-4 h-4 text-[#157A43]"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="message-circle" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>
             </div>
             <div>
                 <h3 class="ui-card-title">Twilio — WhatsApp OTP</h3>
@@ -568,19 +566,19 @@ function removeChip(btn) {
             </div>
         </div>
         @if(($twilio['configured'] ?? false))
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 dark:bg-[#0C3D1D] text-green-700 dark:text-[#339B56] text-xs font-semibold">
             <i data-lucide="check" class="w-3 h-3"></i>
             {{ ($twilio['from_env'] ?? false) ? ($isFr ? 'Configuré (.env)' : 'Configured (.env)') : ($isFr ? 'Configuré' : 'Configured') }}
         </span>
         @else
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-[#3A2B06] text-amber-700 dark:text-[#EDB33A] text-xs font-semibold">
             <i data-lucide="alert-triangle" class="w-3 h-3"></i>
             {{ $isFr ? 'Non configuré' : 'Not configured' }}
         </span>
         @endif
     </div>
 
-    <form method="POST" action="{{ route('admin.settings.twilio') }}" class="p-5 space-y-4 border-b border-[#F5F1E8]">
+    <form method="POST" action="{{ route('admin.settings.twilio') }}" class="p-5 space-y-4 border-b border-[#F5F1E8] dark:border-[#262B21]">
         @csrf
         <div class="grid sm:grid-cols-2 gap-4">
             <div>
@@ -635,7 +633,7 @@ function removeChip(btn) {
     <div>
         <h3 class="ui-card-title mb-3">{{ $isFr ? 'Logo de la plateforme' : 'Platform logo' }}</h3>
         <div class="flex items-center gap-5">
-            <img src="{{ $logoUrl }}" alt="Logo" class="w-24 h-24 rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
+            <img src="{{ $logoUrl }}" alt="Logo" class="w-24 h-24 rounded-full object-cover border border-[#EFEBE2] dark:border-[#262B21] bg-[#F8F4EC] dark:bg-[#1A1E16] shrink-0">
             <div class="min-w-0">
                 <label class="ui-btn ui-btn-secondary">
                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -643,16 +641,16 @@ function removeChip(btn) {
                     <input type="file" name="logo" accept=".png,.jpg,.jpeg,.svg" class="hidden"
                            onchange="document.getElementById('branding-logo-name').textContent = this.files.length ? this.files[0].name : ''">
                 </label>
-                <p class="text-xs text-[#B8B2A4] mt-2">{{ $isFr ? 'PNG, JPG ou SVG. Taille recommandée : 512x512px' : 'PNG, JPG or SVG. Recommended size: 512x512px' }}</p>
-                <p id="branding-logo-name" class="text-xs text-[#157A43] mt-1 truncate"></p>
+                <p class="text-xs text-[#B8B2A4] dark:text-[#868778] mt-2">{{ $isFr ? 'PNG, JPG ou SVG. Taille recommandée : 512x512px' : 'PNG, JPG or SVG. Recommended size: 512x512px' }}</p>
+                <p id="branding-logo-name" class="text-xs text-[#157A43] dark:text-[#339B56] mt-1 truncate"></p>
             </div>
         </div>
     </div>
 
-    <div class="pt-5 border-t border-[#F5F1E8]">
+    <div class="pt-5 border-t border-[#F5F1E8] dark:border-[#262B21]">
         <h3 class="ui-card-title mb-3">{{ $isFr ? 'Logo favicon' : 'Favicon logo' }}</h3>
         <div class="flex items-center gap-5">
-            <img src="{{ $faviconUrl }}" alt="Favicon" class="w-10 h-10 rounded-full object-cover border border-[#EFEBE2] bg-[#F8F4EC] shrink-0">
+            <img src="{{ $faviconUrl }}" alt="Favicon" class="w-10 h-10 rounded-full object-cover border border-[#EFEBE2] dark:border-[#262B21] bg-[#F8F4EC] dark:bg-[#1A1E16] shrink-0">
             <div class="min-w-0">
                 <label class="ui-btn ui-btn-secondary">
                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -660,15 +658,15 @@ function removeChip(btn) {
                     <input type="file" name="favicon" accept=".png,.ico,.svg" class="hidden"
                            onchange="document.getElementById('branding-favicon-name').textContent = this.files.length ? this.files[0].name : ''">
                 </label>
-                <p class="text-xs text-[#B8B2A4] mt-2">{{ $isFr ? 'PNG, ICO ou SVG. Taille recommandée : 32x32px' : 'PNG, ICO or SVG. Recommended size: 32x32px' }}</p>
-                <p id="branding-favicon-name" class="text-xs text-[#157A43] mt-1 truncate"></p>
+                <p class="text-xs text-[#B8B2A4] dark:text-[#868778] mt-2">{{ $isFr ? 'PNG, ICO ou SVG. Taille recommandée : 32x32px' : 'PNG, ICO or SVG. Recommended size: 32x32px' }}</p>
+                <p id="branding-favicon-name" class="text-xs text-[#157A43] dark:text-[#339B56] mt-1 truncate"></p>
             </div>
         </div>
     </div>
 
-    <div class="flex items-center justify-end gap-3 pt-5 border-t border-[#F5F1E8]">
+    <div class="flex items-center justify-end gap-3 pt-5 border-t border-[#F5F1E8] dark:border-[#262B21]">
         <a href="{{ route('admin.settings', array_filter(['section' => 'branding', 'lang' => request()->query('lang')])) }}"
-           class="px-4 py-2.5 rounded-lg bg-[#F1EDE3] text-[#3B382F] text-sm font-semibold hover:bg-[#EAE5D8] transition-colors">
+           class="px-4 py-2.5 rounded-lg bg-[#F1EDE3] dark:bg-[#1A1E16] text-[#3B382F] dark:text-[#B4B5A6] text-sm font-semibold hover:bg-[#EAE5D8] dark:hover:bg-[#242A1E] transition-colors">
             {{ $isFr ? 'Annuler' : 'Cancel' }}
         </a>
         <button type="submit" class="{{ $greenBtn }}">
@@ -727,7 +725,7 @@ function removeChip(btn) {
                 <option value="fr" @selected($defaultLocale === 'fr')>{{ $isFr ? 'Français' : 'French' }}</option>
                 <option value="en" @selected($defaultLocale === 'en')>{{ $isFr ? 'Anglais' : 'English' }}</option>
             </select>
-            <p class="text-xs text-[#B8B2A4] mt-2">
+            <p class="text-xs text-[#B8B2A4] dark:text-[#868778] mt-2">
                 {{ $isFr
                     ? 'La plateforme est bilingue : chaque visiteur peut basculer entre français et anglais à tout moment.'
                     : 'The platform is bilingual: every visitor can switch between French and English at any time.' }}
@@ -741,12 +739,12 @@ function removeChip(btn) {
     {{-- Sauvegardes / audit (preserved) --}}
     <div class="{{ $cardCls }} space-y-4">
         <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
-                <i data-lucide="database-backup" class="w-4 h-4 text-[#157A43]"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="database-backup" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>
             </div>
             <h3 class="ui-card-title">{{ $isFr ? 'Sauvegardes de la base de données' : 'Database backups' }}</h3>
         </div>
-        <p class="text-[12.5px] text-[#3B382F]">
+        <p class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
             {{ $isFr
                 ? 'Les sauvegardes de la base de données sont gérées au niveau de l\'infrastructure (sauvegarde quotidienne automatique du serveur). Toutes les actions d\'administration sont tracées dans le journal d\'audit et peuvent être consultées à tout moment.'
                 : 'Database backups are handled at the infrastructure level (automatic daily server backup). Every admin action is recorded in the audit log and can be reviewed at any time.' }}
@@ -773,9 +771,9 @@ function removeChip(btn) {
     <form method="POST" action="{{ route('admin.settings.update') }}"
           class="ui-card ui-card--flush">
         @csrf
-        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F5F1E8]">
-            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center">
-                <i data-lucide="{{ $groupMeta[$g]['icon'] ?? 'settings-2' }}" class="w-4 h-4 text-[#157A43]"></i>
+        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F5F1E8] dark:border-[#262B21]">
+            <div class="w-8 h-8 rounded-lg bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="{{ $groupMeta[$g]['icon'] ?? 'settings-2' }}" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>
             </div>
             <h3 class="ui-card-title">{{ $groupMeta[$g][$isFr ? 'fr' : 'en'] ?? ucfirst($g) }}</h3>
         </div>
@@ -809,14 +807,14 @@ function removeChip(btn) {
 @endif
 
 {{-- ── Footer (design) ─────────────────────────────────────────────────── --}}
-<div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#EFEBE2] mt-8 pt-5 text-xs text-[#8A857A]">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#EFEBE2] dark:border-[#262B21] mt-8 pt-5 text-xs text-[#8A857A] dark:text-[#868778]">
     <p>© 2025 Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
     <div class="flex items-center gap-6">
-        <a href="{{ route('admin.support', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-[#3B382F]">
+        <a href="{{ route('admin.support', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-[#3B382F] dark:hover:text-[#B4B5A6]">
             <i data-lucide="circle-help" class="w-4 h-4"></i>
             {{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}
         </a>
-        <a href="{{ route('contact', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-[#3B382F]">
+        <a href="{{ route('contact', array_filter(['lang' => request()->query('lang')])) }}" class="inline-flex items-center gap-1.5 hover:text-[#3B382F] dark:hover:text-[#B4B5A6]">
             <i data-lucide="mail" class="w-4 h-4"></i>
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>

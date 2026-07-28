@@ -18,7 +18,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FBF8F2] text-[#1D1B16] antialiased">
+<body class="bg-[#FBF8F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 @include('pages.partials.directory-header')
 <div class="max-w-[1240px] mx-auto px-4 sm:px-6 py-8">
     @include('pages.partials.article-reader', ['publicMode' => true])

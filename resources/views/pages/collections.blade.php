@@ -16,7 +16,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FBF8F2] text-[#1D1B16] antialiased">
+<body class="bg-[#FBF8F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 @include('pages.partials.directory-header')
 
 {{-- Hero --}}
@@ -40,23 +40,23 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($collections as $c)
         @php $cover = $c->cover_image ? asset('storage/'.$c->cover_image) : asset('images/landing/'.($hcArt[$c->slug] ?? 'hc-masques.png')); @endphp
-        <article class="bg-white border border-[#EDE6D6] rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(30,25,15,0.06)] hover:shadow-md transition-shadow group">
-            <div class="h-[180px] overflow-hidden bg-[#F1EDE2] relative">
+        <article class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(30,25,15,0.06)] hover:shadow-md transition-shadow group">
+            <div class="h-[180px] overflow-hidden bg-[#F1EDE2] dark:bg-[#0A0C09] relative">
                 <img src="{{ $cover }}" alt="{{ $c->name_fr }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                @if($c->category_fr)<span class="absolute top-3 left-3 bg-white/90 rounded-md px-2.5 py-1 text-[10.5px] font-semibold text-[#14652F]">{{ $c->category_fr }}</span>@endif
+                @if($c->category_fr)<span class="absolute top-3 left-3 bg-white/90 dark:bg-[#12150F/90] rounded-md px-2.5 py-1 text-[10.5px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ $c->category_fr }}</span>@endif
             </div>
             <div class="p-5">
-                <h2 class="font-serif text-[18px] font-bold text-[#1D1B16] leading-snug">{{ $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr) }}</h2>
-                @if($c->description_fr)<p class="mt-1.5 text-[12px] text-[#6F6B60] leading-relaxed line-clamp-2">{{ $isFr ? $c->description_fr : ($c->description_en ?? $c->description_fr) }}</p>@endif
-                <div class="mt-3 flex items-center gap-4 text-[11.5px] text-[#8A857A]">
+                <h2 class="font-serif text-[18px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug">{{ $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr) }}</h2>
+                @if($c->description_fr)<p class="mt-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed line-clamp-2">{{ $isFr ? $c->description_fr : ($c->description_en ?? $c->description_fr) }}</p>@endif
+                <div class="mt-3 flex items-center gap-4 text-[11.5px] text-[#8A857A] dark:text-[#868778]">
                     @if($c->region_fr)<span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $c->region_fr }}</span>@endif
                     <span class="flex items-center gap-1.5"><i data-lucide="package" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $c->products_count }} {{ $isFr?'objets':'items' }}</span>
                 </div>
-                <a href="{{ route('collections.show', ['slug'=>$c->slug, 'lang'=>$lang]) }}" class="mt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr?'Explorer la collection':'Explore collection' }}<i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                <a href="{{ route('collections.show', ['slug'=>$c->slug, 'lang'=>$lang]) }}" class="mt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">{{ $isFr?'Explorer la collection':'Explore collection' }}<i data-lucide="arrow-right" class="w-4 h-4"></i></a>
             </div>
         </article>
         @empty
-        <p class="col-span-full text-center py-12 text-[13px] text-[#6F6B60]">{{ $isFr ? 'Aucune collection publiée pour le moment.' : 'No published collections yet.' }}</p>
+        <p class="col-span-full text-center py-12 text-[13px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune collection publiée pour le moment.' : 'No published collections yet.' }}</p>
         @endforelse
     </div>
 </div>

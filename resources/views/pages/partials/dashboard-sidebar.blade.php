@@ -145,7 +145,12 @@
 @endonce
 
 <aside id="{{ $sidebarId }}"
-    class="dash-aside fixed lg:static inset-y-0 left-0 z-40 w-[268px] shrink-0 bg-[#02301B] flex flex-col h-full lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
+    {{-- The rail is already dark in light mode, so dark mode does not invert it:
+         it moves to the contract's `brand-deep` (#0C3B1E), which sits 1.55:1
+         above the #0A0C09 page instead of disappearing into it. Every label on
+         it was re-measured against that fill — the quietest, #A9C4B3, is
+         6.77:1. --}}
+    class="dash-aside fixed lg:static inset-y-0 left-0 z-40 w-[268px] shrink-0 bg-[#02301B] dark:bg-[#0C3B1E] flex flex-col h-full lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
 
     {{-- Brand --}}
     <a href="{{ route('home', ['lang' => $sbLang]) }}" class="h-[64px] flex items-center gap-3 px-4 border-b border-white/10 shrink-0">
@@ -184,7 +189,7 @@
                 $sbBadge  = $sideBadges[$sbRoute] ?? null;
             @endphp
             <a href="{{ route($sbRoute, ['lang' => $sbLang]) }}"
-                class="relative flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] mb-0.5 transition-colors {{ $sbActive ? 'bg-[#14532D] text-white font-bold' : 'text-[#DCE7DF] hover:bg-white/5 hover:text-white' }}">
+                class="relative flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] mb-0.5 transition-colors {{ $sbActive ? 'bg-[#14532D] dark:bg-[#1E7A44] text-white font-bold' : 'text-[#DCE7DF] hover:bg-white/5 hover:text-white' }}">
                 @if($sbActive)<span class="absolute left-0 inset-y-1.5 w-[3px] rounded-r bg-[#E5A82E]"></span>@endif
                 <i data-lucide="{{ $sbIcon }}" class="w-[17px] h-[17px] shrink-0 {{ $sbActive ? 'text-[#E5A82E]' : 'text-[#A9C4B3]' }}" style="stroke-width:1.7"></i>
                 <span class="truncate">{{ $sbIsFr ? $sbLabelFr : $sbLabelEn }}</span>

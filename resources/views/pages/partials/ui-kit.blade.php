@@ -68,6 +68,81 @@
         --ui-h:            38px;      /* the field height */
     }
 
+    /* ── Dark mode ──────────────────────────────────────────────
+       The kit is plain CSS driven by variables, so the whole platform's
+       fields, cards, tables, pills and buttons switch by re-declaring the
+       variables once. Nothing below this block needs a dark rule of its own,
+       and a page that hand-rolls a dark card is drift.
+
+       Values are the tokens in docs/DARK-MODE-CONTRACT.md. Two of them were
+       added by this pass because the table lacked a pair that passes:
+
+         --ui-green (#339B56)       green *text*. The table's brand #2E9250 is
+                                    4.31:1 on surface-2 — under AA for body
+                                    text — so the fill stays #2E9250 and the
+                                    label lightens: 4.80:1 on #1A1E16.
+         --ui-border-field (#68715B) the boundary of an actual control. WCAG
+                                    1.4.11 wants 3:1 for that; the table's
+                                    border-strong #39402F is 1.57:1 on the
+                                    input fill. Card hairlines keep #262B21 —
+                                    they are decorative, and the card is also
+                                    told apart by its fill. */
+    html.dark {
+        color-scheme: dark;
+
+        --ui-page:        #0A0C09;
+        --ui-surface:     #12150F;
+        --ui-surface-alt: #1A1E16;
+
+        --ui-border-card:  #262B21;
+        --ui-border-field: #68715B;
+        --ui-border-soft:  #21261C;
+
+        --ui-ink:    #F3EFE7;
+        --ui-body:   #B4B5A6;
+        --ui-muted:  #868778;
+        --ui-faint:  #868778;   /* placeholders: 4.63:1 on the input fill */
+        --ui-label:  #EDB33A;
+
+        --ui-green:       #339B56;
+        --ui-green-deep:  #3CA862;
+        --ui-green-dark:  #2E9250;
+        --ui-green-tint:  #0C3D1D;
+        --ui-gold:        #E9A81E;
+        --ui-gold-tint:   #3A2B06;
+        --ui-danger:      #F0555C;
+        --ui-danger-tint: #3A1013;
+    }
+
+    /* The handful of rules below hardcode a colour rather than read a
+       variable, so each needs a dark counterpart. */
+    html.dark .ui-field:hover:not(:disabled):not(:focus) { border-color: #7C866E; }
+    html.dark .ui-field:focus,
+    html.dark .ui-field-group:focus-within { box-shadow: 0 0 0 3px rgba(51, 155, 86, 0.25); }
+    html.dark .ui-field--invalid:focus,
+    html.dark .ui-field[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(240, 85, 92, 0.25); }
+    html.dark .ui-field:disabled,
+    html.dark .ui-field[readonly] { background-color: #1F241B; color: var(--ui-muted); }
+    html.dark .ui-select {
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23B4B5A6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5'/%3E%3C/svg%3E");
+    }
+    html.dark .ui-dropzone { background-color: #161A13; }
+    html.dark .ui-file::file-selector-button:hover,
+    html.dark .ui-dropzone:hover { background-color: #17301F; border-color: var(--ui-green); }
+    html.dark .ui-btn:focus-visible { outline-color: var(--ui-green); }
+    /* White on the dark brand fill is 3.93:1 — under AA. The contract's
+       brand-ink is near-black for exactly this reason. */
+    html.dark .ui-btn-primary { color: #04150A; }
+    html.dark .ui-btn-secondary { border-color: var(--ui-border-field); }
+    html.dark .ui-btn-danger { border-color: #5C2126; }
+    /* #339B56 is only 3.51:1 on the success well; success-ink is 7.58:1. */
+    html.dark .ui-pill-ok      { color: #8BDCA6; }
+    html.dark .ui-pill-warn    { color: #EDB33A; }
+    html.dark .ui-pill-neutral { background: #1F241B; color: var(--ui-body); }
+    html.dark .ui-alert-ok     { border-color: #1B5E33; color: #8BDCA6; }
+    html.dark .ui-alert-warn   { border-color: #6A5210; color: #EDB33A; }
+    html.dark .ui-alert-danger { border-color: #7A2A2E; color: var(--ui-danger); }
+
     /* ── Labels & helper text ───────────────────────────────── */
     .ui-label {
         display: block;
@@ -415,3 +490,12 @@
     .ui-empty { padding: 44px 16px; text-align: center; font-size: 12.5px; color: var(--ui-muted); }
 </style>
 @endonce
+
+{{-- Dark-mode foundation: `darkMode: 'class'` merged onto whatever
+     `tailwind.config` this page set, the contract palette, the no-flash boot
+     script and the toggle. Included from here, and not from 47 hand-edited
+     copies, because every page in the platform already includes the kit — and
+     always later in <head> than its own `tailwind.config` assignment, which is
+     what makes the merge land. See resources/views/pages/partials/theme.blade.php
+     and docs/DARK-MODE-CONTRACT.md. --}}
+@include('pages.partials.theme')

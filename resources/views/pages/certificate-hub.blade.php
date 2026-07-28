@@ -276,29 +276,29 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F5F3EE] text-[#1D1B16] antialiased">
+<body class="bg-[#F5F3EE] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
 <main class="max-w-[880px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
     <nav class="flex items-center gap-2 text-[12.5px] mb-5" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <a href="/galerie/produits/{{ $product->slug }}{{ $q }}" class="text-[#6F6B60] hover:text-leaf">{{ $productName }}</a>
+        <a href="/galerie/produits/{{ $product->slug }}{{ $q }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56]">{{ $productName }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
         <span>{{ $isFr ? 'Certificats' : 'Certificates' }}</span>
     </nav>
 
     <header class="mb-7">
         <span class="ui-pill ui-pill-neutral">{{ $isFr ? 'Registre' : 'Register' }}</span>
-        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] leading-tight">
+        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] dark:text-[#339B56] leading-tight">
             {{ $isFr ? 'Certificats de cette pièce' : 'Certificates for this piece' }}
         </h1>
-        <p class="mt-2 text-[14px] text-[#3A3A35]">
+        <p class="mt-2 text-[14px] text-[#3A3A35] dark:text-[#F3EFE7]">
             {{ $productName }}@if($makerName) — {{ $makerName }}@endif
         </p>
-        <p class="mt-3 text-[13.5px] text-[#3A3A35] leading-relaxed max-w-[640px]">
+        <p class="mt-3 text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed max-w-[640px]">
             {{ $isFr
                ? "Cette page liste les six documents que la plateforme peut émettre pour une pièce et son artisan, avec leur état réel. Un document absent est indiqué comme absent, avec la raison : c'est aussi utile à savoir qu'un document présent."
                : 'This page lists the six documents the platform can issue for a piece and its maker, with their real state. A document that does not exist is shown as absent, with the reason — which is as useful to know as one that does.' }}
@@ -310,7 +310,7 @@
          of them and a reader who copies the wrong number gets nowhere. --}}
     <section class="ui-card p-5 sm:p-6">
         <h2 class="ui-card-title">{{ $isFr ? 'Identifiants permanents' : 'Permanent identifiers' }}</h2>
-        <p class="mt-1 text-[12.5px] text-[#6F6B60]">
+        <p class="mt-1 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">
             {{ $isFr
                ? "Attribués une fois et jamais réutilisés. Ils relient tous les documents ci-dessous."
                : 'Assigned once and never reused. They are what ties every document below together.' }}
@@ -338,7 +338,7 @@
          type's colour from config/certificate_types.php, so a reader who has
          seen one of these documents recognises its row here by colour before
          reading the name. --}}
-    <h2 class="mt-8 mb-3 font-serif text-[19px] font-bold text-[#02301B]">
+    <h2 class="mt-8 mb-3 font-serif text-[19px] font-bold text-[#02301B] dark:text-[#339B56]">
         {{ $isFr ? 'Les six documents' : 'The six documents' }}
     </h2>
 
@@ -350,7 +350,7 @@
 
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <h3 class="font-serif text-[16.5px] font-bold text-[#02301B] leading-tight">
+                        <h3 class="font-serif text-[16.5px] font-bold text-[#02301B] dark:text-[#339B56] leading-tight">
                             {{ $type['name'][$lang] ?? $row['code'] }}
                         </h3>
                         <p class="mt-0.5 text-[11.5px] font-semibold tracking-[.14em] uppercase"
@@ -395,7 +395,7 @@
                     </dl>
 
                     @if(! empty($row['note']))
-                        <p class="mt-3 text-[12.5px] text-[#6F6B60] leading-relaxed">{{ $row['note'] }}</p>
+                        <p class="mt-3 text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $row['note'] }}</p>
                     @endif
 
                     <div class="mt-4 flex flex-wrap gap-2">
@@ -412,7 +412,7 @@
                             {{-- Said rather than hidden: a reader who cannot find a
                                  verify button should know it is missing from the
                                  platform, not from this page. --}}
-                            <span class="text-[12px] text-[#6F6B60] self-center">
+                            <span class="text-[12px] text-[#6F6B60] dark:text-[#868778] self-center">
                                 {{ $isFr
                                    ? "Aucune adresse de vérification publique n'est encore publiée pour ce type de document."
                                    : 'No public verification address is published for this document type yet.' }}
@@ -420,7 +420,7 @@
                         @endif
                     </div>
                 @else
-                    <p class="mt-3 text-[13px] text-[#3A3A35] leading-relaxed">{{ $row['reason'] }}</p>
+                    <p class="mt-3 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $row['reason'] }}</p>
                 @endif
             </section>
         @endforeach
@@ -431,7 +431,7 @@
          full dossier is a click away on the provenance certificate. --}}
     <section class="ui-card p-5 sm:p-6 mt-8">
         <h2 class="ui-card-title">{{ $isFr ? 'Chaîne de propriété' : 'Ownership chain' }}</h2>
-        <p class="mt-1 text-[12.5px] text-[#6F6B60]">
+        <p class="mt-1 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">
             {{ $isFr ? 'Détenteurs enregistrés' : 'Recorded holders' }}: {{ count($chain) }}
         </p>
         <ol class="mt-4 space-y-3">
@@ -439,8 +439,8 @@
                 <li class="flex items-start gap-3">
                     <span class="ui-pill ui-pill-neutral mt-0.5">{{ $holder->sequence }}</span>
                     <div class="min-w-0">
-                        <p class="text-[13.5px] font-semibold text-[#1D1B16]">{{ $holder->legal_name }}</p>
-                        <p class="text-[12px] text-[#6F6B60]">
+                        <p class="text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $holder->legal_name }}</p>
+                        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">
                             @if($holder->is_original_creator){{ $isFr ? 'Créateur' : 'Maker' }} · @endif
                             {{ $date($holder->owned_from) }}
                             @if($holder->owned_until) — {{ $date($holder->owned_until) }}
@@ -461,8 +461,8 @@
             @endforeach
         </ol>
         @if($owner)
-            <p class="mt-4 text-[12.5px] text-[#6F6B60]">
-                {{ $isFr ? 'Détenteur actuel' : 'Current holder' }}: <span class="font-semibold text-[#1D1B16]">{{ $owner->legal_name }}</span>
+            <p class="mt-4 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">
+                {{ $isFr ? 'Détenteur actuel' : 'Current holder' }}: <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $owner->legal_name }}</span>
             </p>
         @endif
     </section>
@@ -489,8 +489,8 @@
          entirely, and a score shown out of a fixed 100 would misreport it. --}}
     <section class="ui-card p-5 sm:p-6 mt-4">
         <h2 class="ui-card-title">{{ $isFr ? 'Indice de patrimoine' : 'Legacy Index' }}</h2>
-        <p class="mt-3 text-[26px] font-bold text-[#02301B]">{{ $legacy['total'] }}/{{ $legacy['max'] }}</p>
-        <p class="mt-2 text-[12.5px] text-[#6F6B60] leading-relaxed max-w-[560px]">
+        <p class="mt-3 text-[26px] font-bold text-[#02301B] dark:text-[#339B56]">{{ $legacy['total'] }}/{{ $legacy['max'] }}</p>
+        <p class="mt-2 text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed max-w-[560px]">
             {{ $isFr
                ? "Cet indice mesure la complétude du dossier documentaire, et non la valeur ni la qualité de l'œuvre ni celle de son artisan."
                : 'This index measures how completely the record is documented. It is not a measure of the merit of the work, nor of the artisan.' }}
@@ -504,7 +504,7 @@
          box someone looked at. --}}
     <section class="ui-card p-5 sm:p-6 mt-4">
         <h2 class="ui-card-title">{{ $isFr ? 'Signalements au registre' : 'Reports to the register' }}</h2>
-        <p class="mt-1 text-[12.5px] text-[#6F6B60] leading-relaxed max-w-[560px]">
+        <p class="mt-1 text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed max-w-[560px]">
             {{ $isFr
                ? "Ce que personne n'a signalé à ce registre. C'est un négatif utile, pas une enquête : la plateforme n'est pas un enquêteur."
                : 'What nobody has reported to this register. That is a useful negative, not an investigation — the platform is not an investigator.' }}
@@ -514,10 +514,10 @@
                 @if(array_key_exists($key, $flags))
                     <li class="flex items-center gap-2 text-[13px]">
                         @if($flags[$key])
-                            <i data-lucide="check" class="w-4 h-4 text-leaf"></i>
+                            <i data-lucide="check" class="w-4 h-4 text-leaf dark:text-[#339B56]"></i>
                             <span>{{ $label[$lang] }}</span>
                         @else
-                            <i data-lucide="alert-triangle" class="w-4 h-4 text-[#B4231F]"></i>
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-[#B4231F] dark:text-[#F0555C]"></i>
                             <span>{{ $isFr ? 'Signalement actif' : 'Active report' }} — {{ $label[$lang] }}</span>
                         @endif
                     </li>
@@ -526,11 +526,11 @@
         </ul>
     </section>
 
-    <p class="mt-6 text-[12px] text-[#6F6B60] leading-relaxed">
+    <p class="mt-6 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">
         {{ $isFr
            ? "Les signatures numériques de ces documents peuvent être vérifiées hors ligne contre la clé publique de l'autorité de certification."
            : 'The digital signatures on these documents can be checked offline against the certification authority’s published key.' }}
-        <a href="/autorite-de-certification{{ $q }}" class="text-leaf underline">{{ $isFr ? 'Autorité de certification' : 'Certification Authority' }}</a>
+        <a href="/autorite-de-certification{{ $q }}" class="text-leaf dark:text-[#339B56] underline">{{ $isFr ? 'Autorité de certification' : 'Certification Authority' }}</a>
     </p>
 
 </main>

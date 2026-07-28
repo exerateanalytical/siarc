@@ -161,7 +161,7 @@ $fileCls = 'ui-file';
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                 @foreach($images as $idx => $img)
-                <div class="rounded-lg overflow-hidden border border-[#EFEBE2] bg-white">
+                <div class="rounded-lg overflow-hidden border border-[#EFEBE2] dark:border-[#262B21] bg-white dark:bg-[#12150F]">
                     <div class="relative aspect-square">
                         <img src="{{ $img->url }}" alt="" class="w-full h-full object-cover">
                         @if($img->id === $coverId)
@@ -181,7 +181,7 @@ $fileCls = 'ui-file';
                          inside the product form is dropped by the HTML parser,
                          so they point at the forms rendered after </form> via
                          the form= attribute. --}}
-                    <div class="flex flex-wrap items-center gap-1 p-1.5 border-t border-[#EFEBE2]">
+                    <div class="flex flex-wrap items-center gap-1 p-1.5 border-t border-[#EFEBE2] dark:border-[#262B21]">
                         <button type="submit" form="pimg-up-{{ $img->id }}" class="ui-btn ui-btn-secondary ui-btn-sm px-2" @disabled($idx === 0)
                                 aria-label="{{ $lang === 'fr' ? 'Reculer la photo' : 'Move photo earlier' }}">
                             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>

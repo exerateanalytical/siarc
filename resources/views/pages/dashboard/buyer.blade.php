@@ -17,10 +17,10 @@
     $fmt = fn ($n) => number_format((int) $n, 0, ',', ' ');
 
     $bmKpis = [
-        ['bm-kpi-1.png', $fmt($buyerStats['orders']),   null,   $isFr ? 'Commandes' : 'Orders',              'bg-[#F4F8F1] border-[#E4EEDF]'],
-        ['bm-kpi-2.png', $fmt($buyerStats['spend']),    'FCFA', $isFr ? 'Total dépensé' : 'Total spent',     'bg-[#FBF6EC] border-[#F1E7D2]'],
-        ['bm-kpi-3.png', $fmt($buyerStats['requests']), null,   $isFr ? 'Demandes de devis' : 'Quote requests', 'bg-[#F4F8FC] border-[#E0EAF4]'],
-        ['bm-kpi-4.png', $fmt($buyerStats['saved']),    null,   $isFr ? 'Favoris' : 'Saved items',           'bg-[#FDF4F4] border-[#F5E0E0]'],
+        ['bm-kpi-1.png', $fmt($buyerStats['orders']),   null,   $isFr ? 'Commandes' : 'Orders',              'bg-[#F4F8F1] dark:bg-[#1A1E16] border-[#E4EEDF] dark:border-[#39402F]'],
+        ['bm-kpi-2.png', $fmt($buyerStats['spend']),    'FCFA', $isFr ? 'Total dépensé' : 'Total spent',     'bg-[#FBF6EC] dark:bg-[#1A1E16] border-[#F1E7D2] dark:border-[#4A3A12]'],
+        ['bm-kpi-3.png', $fmt($buyerStats['requests']), null,   $isFr ? 'Demandes de devis' : 'Quote requests', 'bg-[#F4F8FC] dark:bg-[#12150F] border-[#E0EAF4] dark:border-[#20304F]'],
+        ['bm-kpi-4.png', $fmt($buyerStats['saved']),    null,   $isFr ? 'Favoris' : 'Saved items',           'bg-[#FDF4F4] dark:bg-[#1A1E16] border-[#F5E0E0] dark:border-[#5C2126]'],
     ];
 
     // Second element is the kit pill variant. "Shipped" had a bespoke blue with
@@ -81,11 +81,11 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F5F5F3] text-[#1B1B18] antialiased">
+<body class="bg-[#F5F5F3] dark:bg-[#1A1E16] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 <!-- Slide-over menu (buyer flows live here) -->
-<aside id="buyer-menu" class="fixed inset-y-0 left-0 z-50 w-[300px] bg-[#002714] overflow-y-auto">
-    <div class="bg-[#031E12] px-5 py-4 flex items-center gap-3">
+<aside id="buyer-menu" class="fixed inset-y-0 left-0 z-50 w-[300px] bg-[#002714] dark:bg-[#0C3B1E] overflow-y-auto">
+    <div class="bg-[#031E12] dark:bg-[#0C3B1E] px-5 py-4 flex items-center gap-3">
         <img src="{{ brand_asset('mark') }}" alt="" class="w-[48px] h-[48px] object-contain shrink-0">
         <span class="text-[11.5px] font-bold tracking-[0.02em] text-white uppercase leading-[1.4]">
             {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
@@ -114,14 +114,14 @@
             ['shield-check',   $isFr ? 'Sécurité' : 'Security',                  route('security.show')],
             ['circle-help',    $isFr ? 'Aide & Support' : 'Help & Support',      route('support.index')],
         ] as [$mIcon, $mLabel, $mHref])
-        <a href="{{ $mHref }}" class="flex items-center gap-3.5 px-5 py-3 text-[14px] text-white hover:bg-white/5">
-            <i data-lucide="{{ $mIcon }}" class="w-5 h-5 text-[#A8B8AC]" style="stroke-width:1.7"></i>
+        <a href="{{ $mHref }}" class="flex items-center gap-3.5 px-5 py-3 text-[14px] text-white hover:bg-white dark:hover:bg-[#242A1E]/5">
+            <i data-lucide="{{ $mIcon }}" class="w-5 h-5 text-[#A8B8AC] dark:text-[#868778]" style="stroke-width:1.7"></i>
             {{ $mLabel }}
         </a>
         @endforeach
         <form method="POST" action="{{ route('logout') }}" class="mt-2 border-t border-white/10 pt-2">
             @csrf
-            <button type="submit" class="w-full flex items-center gap-3.5 px-5 py-3 text-[14px] text-[#FF8B8B] hover:bg-white/5">
+            <button type="submit" class="w-full flex items-center gap-3.5 px-5 py-3 text-[14px] text-[#FF8B8B] dark:text-[#F0555C] hover:bg-white dark:hover:bg-[#242A1E]/5">
                 <i data-lucide="log-out" class="w-5 h-5" style="stroke-width:1.7"></i>
                 {{ $isFr ? 'Se déconnecter' : 'Log out' }}
             </button>
@@ -130,24 +130,24 @@
 </aside>
 <div id="buyer-backdrop" class="fixed inset-0 z-40 bg-black/50 hidden"></div>
 
-<div class="max-w-[431px] lg:max-w-[1160px] mx-auto min-h-screen bg-[#FEFEFE] shadow-sm">
+<div class="max-w-[431px] lg:max-w-[1160px] mx-auto min-h-screen bg-[#FEFEFE] dark:bg-[#12150F] shadow-sm">
 
     <!-- Header -->
-    <header class="bg-white px-4 pt-3.5 pb-3 flex items-center gap-3">
+    <header class="bg-white dark:bg-[#12150F] px-4 pt-3.5 pb-3 flex items-center gap-3">
         <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] object-contain shrink-0">
         <span class="leading-tight min-w-0">
-            <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-            <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
-            <span class="block text-[9.5px] text-[#55524A] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+            <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
+            <span class="block text-[12px] font-bold tracking-[0.01em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
+            <span class="block text-[9.5px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
         </span>
         <a href="{{ route('notifications.index') }}" class="relative ml-auto p-1 shrink-0" aria-label="Notifications">
-            <i data-lucide="bell" class="w-[24px] h-[24px] text-[#1B1B18]" style="stroke-width:1.8"></i>
+            <i data-lucide="bell" class="w-[24px] h-[24px] text-[#1B1B18] dark:text-[#F3EFE7]" style="stroke-width:1.8"></i>
             @if(($notificationCount ?? 0) > 0)
-            <span class="absolute -top-1.5 -right-1.5 bg-[#D40C0F] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
+            <span class="absolute -top-1.5 -right-1.5 bg-[#D40C0F] dark:bg-[#C0343B] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
             @endif
         </a>
         <button type="button" class="bm-menu-btn p-1 shrink-0" aria-label="Menu">
-            <i data-lucide="menu" class="w-[26px] h-[26px] text-[#1B1B18]" style="stroke-width:2.2"></i>
+            <i data-lucide="menu" class="w-[26px] h-[26px] text-[#1B1B18] dark:text-[#F3EFE7]" style="stroke-width:2.2"></i>
         </button>
     </header>
 
@@ -170,7 +170,7 @@
                     @endif
                 </div>
             </div>
-            <a href="{{ route('products.index', ['lang' => $lang]) }}" class="absolute right-4 bottom-3.5 inline-flex items-center gap-2 bg-[#0A3D22]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
+            <a href="{{ route('products.index', ['lang' => $lang]) }}" class="absolute right-4 bottom-3.5 inline-flex items-center gap-2 bg-[#0A3D22] dark:bg-[#0C3B1E]/80 border border-white/70 rounded-lg px-3.5 py-[7px] text-[12px] font-semibold text-white">
                 <i data-lucide="compass" class="w-3.5 h-3.5"></i>
                 {{ $isFr ? 'Explorer la galerie' : 'Browse the gallery' }}
             </a>
@@ -179,8 +179,8 @@
         <!-- Aperçu de votre activité -->
         <section id="apercu" class="ui-card p-4">
             <div class="flex items-center justify-between gap-2">
-                <h2 class="text-[14.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu de votre activité' : 'Your activity overview' }}</h2>
-                <span class="flex items-center gap-1 text-[11px] text-[#55524A] whitespace-nowrap">
+                <h2 class="text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Aperçu de votre activité' : 'Your activity overview' }}</h2>
+                <span class="flex items-center gap-1 text-[11px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">
                     {{ $isFr ? 'Depuis votre inscription' : 'Since you joined' }}
                 </span>
             </div>
@@ -190,8 +190,8 @@
                     <div class="flex items-start gap-2.5">
                         <img src="{{ asset('images/landing/' . $kIcon) }}" alt="" class="w-[31px] h-[31px] shrink-0" aria-hidden="true">
                         <div class="min-w-0 flex-1">
-                            <p class="text-[16.5px] font-bold text-[#1B1B18] leading-tight">{{ $kVal }}@if($kUnit)<span class="text-[10px] font-bold ml-1">{{ $kUnit }}</span>@endif</p>
-                            <span class="text-[11px] text-[#55524A] leading-tight">{{ $kLabel }}</span>
+                            <p class="text-[16.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $kVal }}@if($kUnit)<span class="text-[10px] font-bold ml-1">{{ $kUnit }}</span>@endif</p>
+                            <span class="text-[11px] text-[#55524A] dark:text-[#B4B5A6] leading-tight">{{ $kLabel }}</span>
                         </div>
                     </div>
                 </div>
@@ -202,8 +202,8 @@
         <!-- Commandes récentes -->
         <section class="ui-card p-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Commandes récentes' : 'Recent orders' }}</h2>
-                <a href="{{ route('orders.index') }}" class="text-[11.5px] font-medium text-[#157A43]">{{ $isFr ? 'Voir toutes' : 'View all' }}</a>
+                <h2 class="text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Commandes récentes' : 'Recent orders' }}</h2>
+                <a href="{{ route('orders.index') }}" class="text-[11.5px] font-medium text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir toutes' : 'View all' }}</a>
             </div>
             @if($buyerOrders->isEmpty())
             <div class="ui-empty py-8">
@@ -212,23 +212,23 @@
                 <a href="{{ route('products.index', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-2">{{ $isFr ? 'Explorer la galerie' : 'Browse the gallery' }}</a>
             </div>
             @else
-            <div class="mt-1 divide-y divide-[#F4F4F2]">
+            <div class="mt-1 divide-y divide-[#F4F4F2] dark:divide-[#262B21]">
                 @foreach($buyerOrders as $o)
                 @php $oMeta = $bmStatus[$o->status] ?? $bmStatus['created']; @endphp
                 <a href="{{ route('quotes.po', ['po' => $o->id]) }}" class="flex items-center gap-3 py-3">
-                    <span class="w-[43px] h-[43px] rounded-lg bg-[#F4F6F4] border border-[#EBEEEA] shrink-0 flex items-center justify-center">
-                        <i data-lucide="package" class="w-5 h-5 text-[#8A857A]"></i>
+                    <span class="w-[43px] h-[43px] rounded-lg bg-[#F4F6F4] dark:bg-[#1A1E16] border border-[#EBEEEA] dark:border-[#262B21] shrink-0 flex items-center justify-center">
+                        <i data-lucide="package" class="w-5 h-5 text-[#8A857A] dark:text-[#868778]"></i>
                     </span>
                     <div class="min-w-0 flex-1">
-                        <p class="text-[12.5px] font-bold text-[#1B1B18] truncate">{{ $o->proposal?->request?->title ?? $o->reference }}</p>
-                        <p class="mt-0.5 text-[11px] text-[#8A857A] truncate">{{ $o->reference }} · {{ $o->proposal?->request?->business?->name_fr }}</p>
+                        <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $o->proposal?->request?->title ?? $o->reference }}</p>
+                        <p class="mt-0.5 text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $o->reference }} · {{ $o->proposal?->request?->business?->name_fr }}</p>
                     </div>
                     <div class="shrink-0 text-left w-[86px]">
                         <span class="ui-pill {{ $oMeta[1] }}">{{ $oMeta[0] }}</span>
-                        <p class="mt-1 text-[10.5px] text-[#8A857A]">{{ $o->created_at?->translatedFormat('d M Y') }}</p>
+                        <p class="mt-1 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $o->created_at?->translatedFormat('d M Y') }}</p>
                     </div>
-                    <p class="text-[12.5px] font-bold text-[#1B1B18] shrink-0 whitespace-nowrap">{{ number_format((int) $o->total, 0, ',', ' ') }} FCFA</p>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-[#B4B0A6] shrink-0"></i>
+                    <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] shrink-0 whitespace-nowrap">{{ number_format((int) $o->total, 0, ',', ' ') }} FCFA</p>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-[#B4B0A6] dark:text-[#868778] shrink-0"></i>
                 </a>
                 @endforeach
             </div>
@@ -237,15 +237,15 @@
 
         <!-- Actions rapides -->
         <section class="ui-card p-4">
-            <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
+            <h2 class="text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
             <div class="mt-3 grid grid-cols-4 gap-2">
                 @foreach($bmActions as [$qIcon, $qLabel, $qHref, $qBadge])
-                <a href="{{ $qHref }}" class="relative bg-[#F4F6F4] border border-[#EBEEEA] rounded-xl px-1.5 pt-3.5 pb-2.5 text-center">
+                <a href="{{ $qHref }}" class="relative bg-[#F4F6F4] dark:bg-[#1A1E16] border border-[#EBEEEA] dark:border-[#262B21] rounded-xl px-1.5 pt-3.5 pb-2.5 text-center">
                     @if($qBadge)
-                    <span class="absolute top-1.5 right-1.5 bg-[#D40C0F] text-white text-[9px] font-bold min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center">{{ $qBadge }}</span>
+                    <span class="absolute top-1.5 right-1.5 bg-[#D40C0F] dark:bg-[#C0343B] text-white text-[9px] font-bold min-w-[17px] h-[17px] px-1 rounded-full flex items-center justify-center">{{ $qBadge }}</span>
                     @endif
                     <img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[24px] h-[24px] mx-auto" aria-hidden="true">
-                    <span class="mt-2 block text-[10px] text-[#3B382F] leading-tight">{{ $qLabel }}</span>
+                    <span class="mt-2 block text-[10px] text-[#3B382F] dark:text-[#B4B5A6] leading-tight">{{ $qLabel }}</span>
                 </a>
                 @endforeach
             </div>
@@ -255,8 +255,8 @@
         <section class="ui-card ui-card--flush relative lg:col-span-2">
             <img src="{{ asset('images/landing/bm-promo-art.png') }}" alt="" class="absolute right-0 bottom-0 h-full pointer-events-none select-none" aria-hidden="true">
             <div class="relative p-4 pr-[84px]">
-                <h2 class="text-[15px] font-bold text-[#1B1B18]">{{ $isFr ? 'Vous êtes artisan ?' : 'Are you an artisan?' }}</h2>
-                <p class="mt-1 text-[11.5px] text-[#55524A] leading-relaxed max-w-[240px]">
+                <h2 class="text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Vous êtes artisan ?' : 'Are you an artisan?' }}</h2>
+                <p class="mt-1 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[240px]">
                     {{ $isFr ? 'Créez votre boutique, publiez vos produits et recevez des demandes de devis.' : 'Create your shop, publish your products and start receiving quote requests.' }}
                 </p>
                 <a href="{{ route('business.create') }}" class="ui-btn ui-btn-primary ui-btn-sm mt-3">
@@ -267,31 +267,31 @@
     </div>
 
     <!-- Bottom nav -->
-    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#EDEDEB] max-w-[431px] mx-auto flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
-        <a href="{{ route('dashboard.buyer') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#0B5B31]">
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white dark:bg-[#12150F] border-t border-[#EDEDEB] dark:border-[#262B21] max-w-[431px] mx-auto flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
+        <a href="{{ route('dashboard.buyer') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#0B5B31] dark:text-[#339B56]">
             <i data-lucide="house" class="w-[22px] h-[22px]"></i>
             <span class="text-[10px] font-semibold">{{ $isFr ? 'Accueil' : 'Home' }}</span>
         </a>
-        <a href="{{ route('products.index', ['lang' => $lang]) }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+        <a href="{{ route('products.index', ['lang' => $lang]) }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
             <i data-lucide="shopping-bag" class="w-[22px] h-[22px]"></i>
             <span class="text-[10px]">{{ $isFr ? 'Produits' : 'Products' }}</span>
         </a>
-        <a href="{{ route('quotes.create') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
-            <span class="-mt-7 w-[52px] h-[52px] rounded-full bg-[#0B4D27] shadow-lg flex items-center justify-center text-white">
+        <a href="{{ route('quotes.create') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
+            <span class="-mt-7 w-[52px] h-[52px] rounded-full bg-[#0B4D27] dark:bg-[#2E9250] shadow-lg flex items-center justify-center text-white dark:text-[#04150A]">
                 <i data-lucide="plus" class="w-6 h-6"></i>
             </span>
             <span class="text-[10px] mt-0.5">{{ $isFr ? 'Devis' : 'Quote' }}</span>
         </a>
-        <a href="{{ route('orders.index') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+        <a href="{{ route('orders.index') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
             <span class="relative">
                 <i data-lucide="clipboard-list" class="w-[22px] h-[22px]"></i>
                 @if($buyerStats['orders'] > 0)
-                <span class="absolute -top-1.5 -right-2.5 bg-[#D40C0F] text-white text-[8.5px] font-bold min-w-[16px] h-[15px] px-0.5 rounded-full flex items-center justify-center">{{ min(99, $buyerStats['orders']) }}</span>
+                <span class="absolute -top-1.5 -right-2.5 bg-[#D40C0F] dark:bg-[#C0343B] text-white text-[8.5px] font-bold min-w-[16px] h-[15px] px-0.5 rounded-full flex items-center justify-center">{{ min(99, $buyerStats['orders']) }}</span>
                 @endif
             </span>
             <span class="text-[10px]">{{ $isFr ? 'Commandes' : 'Orders' }}</span>
         </a>
-        <button type="button" class="bm-menu-btn flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A]">
+        <button type="button" class="bm-menu-btn flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
             <i data-lucide="menu" class="w-[22px] h-[22px]"></i>
             <span class="text-[10px]">Menu</span>
         </button>

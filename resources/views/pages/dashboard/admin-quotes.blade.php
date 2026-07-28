@@ -23,8 +23,8 @@
                             @forelse($adminConversations as $c)
                             <tr>
                                 <td>
-                                    <p class="text-[12.5px] font-bold text-[#1B1B18]">{{ $c->subject ?? ($isFr ? 'Conversation' : 'Conversation') }}</p>
-                                    <p class="text-[11px] text-[#8A857A]">#{{ $c->id }}</p>
+                                    <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $c->subject ?? ($isFr ? 'Conversation' : 'Conversation') }}</p>
+                                    <p class="text-[11px] text-[#8A857A] dark:text-[#868778]">#{{ $c->id }}</p>
                                 </td>
                                 <td>{{ $c->buyer_name ?? '—' }}</td>
                                 <td>{{ $c->business_name ?? '—' }}</td>

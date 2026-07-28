@@ -37,8 +37,8 @@ $docTypeLabels = [
         <div class="ui-card">
             <div class="flex items-start justify-between gap-3 mb-3">
                 <div>
-                    <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $app->business->name_fr }}</p>
-                    <p class="ui-hint">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-semibold text-[#3B382F]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
+                    <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $app->business->name_fr }}</p>
+                    <p class="ui-hint">{{ $lang === 'fr' ? 'Demande' : 'Requesting' }}: <span class="font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $tierLabels[$app->tier_requested] ?? $app->tier_requested }}</span> — {{ $app->submitted_at?->diffForHumans() }}</p>
                 </div>
                 <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $app->business->slug]) }}" target="_blank" class="ui-btn ui-btn-ghost ui-btn-sm shrink-0">
                     <i data-lucide="external-link" class="w-3 h-3"></i>{{ $lang === 'fr' ? 'Voir profil' : 'View profile' }}
@@ -66,7 +66,7 @@ $docTypeLabels = [
                 </button>
             </div>
 
-            <div id="reject-v-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-[#F1EDE4]">
+            <div id="reject-v-{{ $app->id }}" class="hidden mt-3 pt-3 border-t border-[#F1EDE4] dark:border-[#262B21]">
                 <form method="POST" action="{{ route('technical.verifications.reject', ['id' => $app->id]) }}">
                     @csrf
                     <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="ui-field ui-textarea min-h-[64px] mb-2 resize-none"></textarea>
@@ -77,7 +77,7 @@ $docTypeLabels = [
         @empty
         <div class="ui-card text-center py-8">
             <i data-lucide="inbox" class="w-8 h-8 text-[#EFEBE2] mx-auto mb-2"></i>
-            <p class="text-[12.5px] text-[#8A857A]">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
+            <p class="text-[12.5px] text-[#8A857A] dark:text-[#868778]">{{ $lang === 'fr' ? 'Aucune demande en attente.' : 'No pending applications.' }}</p>
         </div>
         @endforelse
     </div>
@@ -92,7 +92,7 @@ $docTypeLabels = [
         <div class="ui-card">
             <div class="flex items-start justify-between gap-3 mb-3">
                 <div>
-                    <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $cert->business->name_fr }}</p>
+                    <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $cert->business->name_fr }}</p>
                     <p class="ui-hint">{{ $lang === 'fr' ? $cert->certification->name_fr : ($cert->certification->name_en ?? '') }} — {{ $cert->created_at->diffForHumans() }}</p>
                 </div>
                 @if($cert->certificate_file)
@@ -112,7 +112,7 @@ $docTypeLabels = [
                     <i data-lucide="x" class="w-4 h-4"></i>{{ $lang === 'fr' ? 'Rejeter' : 'Reject' }}
                 </button>
             </div>
-            <div id="reject-c-{{ $cert->id }}" class="hidden mt-3 pt-3 border-t border-[#F1EDE4]">
+            <div id="reject-c-{{ $cert->id }}" class="hidden mt-3 pt-3 border-t border-[#F1EDE4] dark:border-[#262B21]">
                 <form method="POST" action="{{ route('technical.certifications.reject', ['id' => $cert->id]) }}">
                     @csrf
                     <textarea name="notes" required rows="2" placeholder="{{ $lang === 'fr' ? 'Raison du rejet (obligatoire)' : 'Rejection reason (required)' }}" class="ui-field ui-textarea min-h-[64px] mb-2 resize-none"></textarea>
@@ -123,7 +123,7 @@ $docTypeLabels = [
         @empty
         <div class="ui-card text-center py-8">
             <i data-lucide="inbox" class="w-8 h-8 text-[#EFEBE2] mx-auto mb-2"></i>
-            <p class="text-[12.5px] text-[#8A857A]">{{ $lang === 'fr' ? 'Aucune certification en attente.' : 'No pending certifications.' }}</p>
+            <p class="text-[12.5px] text-[#8A857A] dark:text-[#868778]">{{ $lang === 'fr' ? 'Aucune certification en attente.' : 'No pending certifications.' }}</p>
         </div>
         @endforelse
     </div>

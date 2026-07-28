@@ -9,18 +9,18 @@
 
     // Status → pill (label + classes) matching the design
     $kycStatusMeta = [
-        'submitted'    => [$isFr ? 'En attente' : 'Pending',       'bg-[#FDF3E0] text-[#C97A16]', '#E9A83A'],
-        'draft'        => [$isFr ? 'En attente' : 'Pending',       'bg-[#FDF3E0] text-[#C97A16]', '#E9A83A'],
-        'under_review' => [$isFr ? 'En vérification' : 'In review', 'bg-[#E8EFFB] text-[#3565DE]', '#3565DE'],
-        'approved'     => [$isFr ? 'Approuvée' : 'Approved',        'bg-[#E2F3E8] text-[#157A43]', '#157A43'],
-        'rejected'     => [$isFr ? 'Rejetée' : 'Rejected',         'bg-[#FDE8E8] text-[#DC2626]', '#DC2626'],
+        'submitted'    => [$isFr ? 'En attente' : 'Pending',       'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]', '#E9A83A'],
+        'draft'        => [$isFr ? 'En attente' : 'Pending',       'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]', '#E9A83A'],
+        'under_review' => [$isFr ? 'En vérification' : 'In review', 'bg-[#E8EFFB] dark:bg-[#101C33] text-[#3565DE] dark:text-[#8FB6F5]', '#3565DE'],
+        'approved'     => [$isFr ? 'Approuvée' : 'Approved',        'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]', '#157A43'],
+        'rejected'     => [$isFr ? 'Rejetée' : 'Rejected',         'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C]', '#DC2626'],
     ];
 
     // Vendor type → rôle pill of the applicant
     $kycRoleMeta = [
-        'artisan'     => [$isFr ? 'Artisan' : 'Artisan',       'bg-[#E2F3E8] text-[#157A43]'],
-        'entreprise'  => [$isFr ? 'Boutique' : 'Shop',         'bg-[#FDF3E0] text-[#C97A16]'],
-        'cooperative' => [$isFr ? 'Coopérative' : 'Cooperative','bg-[#F0EAFB] text-[#7C4FE0]'],
+        'artisan'     => [$isFr ? 'Artisan' : 'Artisan',       'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]'],
+        'entreprise'  => [$isFr ? 'Boutique' : 'Shop',         'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]'],
+        'cooperative' => [$isFr ? 'Coopérative' : 'Cooperative','bg-[#F0EAFB] dark:bg-[#1E1733] text-[#7C4FE0] dark:text-[#BCA4F0]'],
     ];
 
     $kycMonthsFr = [1 => 'Jan', 2 => 'Fév', 3 => 'Mars', 4 => 'Avr', 5 => 'Mai', 6 => 'Juin', 7 => 'Juil', 8 => 'Août', 9 => 'Sept', 10 => 'Oct', 11 => 'Nov', 12 => 'Déc'];
@@ -32,11 +32,11 @@
 
     // Five stat cards [icon, iconColor, tileBg, cardBg, value, label, sub, spark]
     $kycCards = [
-        ['users-round', '#157A43', '#E8F2EC', 'bg-white border-[#EFEBE2]',        $kycStats['total'],        $isFr ? 'Total Demandes' : 'Total requests',   '+' . $kycStats['this_month'] . ($isFr ? ' ce mois' : ' this month'), '#3FA96A'],
-        ['hourglass',   '#C97A16', '#FDF3E0', 'bg-white border-[#EFEBE2]',        $kycStats['pending'],      $isFr ? 'En Attente' : 'Pending',              $kycStats['pct_pending'] . ($isFr ? '% du total' : '% of total'),   '#E9A83A'],
-        ['shield-check','#3565DE', '#E8EFFB', 'bg-[#F4F8FF] border-[#CFE0F7]',    $kycStats['approved'],     $isFr ? 'Approuvées' : 'Approved',             $kycStats['pct_approved'] . ($isFr ? '% du total' : '% of total'),  '#3565DE'],
-        ['shield-x',    '#DC2626', '#FDECEC', 'bg-white border-[#EFEBE2]',        $kycStats['rejected'],     $isFr ? 'Rejetées' : 'Rejected',              $kycStats['pct_rejected'] . ($isFr ? '% du total' : '% of total'),  '#DC2626'],
-        ['clock',       '#7C4FE0', '#F0EAFB', 'bg-white border-[#EFEBE2]',        $kycStats['in_review'],    $isFr ? 'En Vérification' : 'In verification', $kycStats['pct_review'] . ($isFr ? '% du total' : '% of total'),    '#7C4FE0'],
+        ['users-round', '#157A43', '#E8F2EC', 'bg-white dark:bg-[#12150F] border-[#EFEBE2] dark:border-[#262B21]',        $kycStats['total'],        $isFr ? 'Total Demandes' : 'Total requests',   '+' . $kycStats['this_month'] . ($isFr ? ' ce mois' : ' this month'), '#3FA96A'],
+        ['hourglass',   '#C97A16', '#FDF3E0', 'bg-white dark:bg-[#12150F] border-[#EFEBE2] dark:border-[#262B21]',        $kycStats['pending'],      $isFr ? 'En Attente' : 'Pending',              $kycStats['pct_pending'] . ($isFr ? '% du total' : '% of total'),   '#E9A83A'],
+        ['shield-check','#3565DE', '#E8EFFB', 'bg-[#F4F8FF] dark:bg-[#12150F] border-[#CFE0F7] dark:border-[#20304F]',    $kycStats['approved'],     $isFr ? 'Approuvées' : 'Approved',             $kycStats['pct_approved'] . ($isFr ? '% du total' : '% of total'),  '#3565DE'],
+        ['shield-x',    '#DC2626', '#FDECEC', 'bg-white dark:bg-[#12150F] border-[#EFEBE2] dark:border-[#262B21]',        $kycStats['rejected'],     $isFr ? 'Rejetées' : 'Rejected',              $kycStats['pct_rejected'] . ($isFr ? '% du total' : '% of total'),  '#DC2626'],
+        ['clock',       '#7C4FE0', '#F0EAFB', 'bg-white dark:bg-[#12150F] border-[#EFEBE2] dark:border-[#262B21]',        $kycStats['in_review'],    $isFr ? 'En Vérification' : 'In verification', $kycStats['pct_review'] . ($isFr ? '% du total' : '% of total'),    '#7C4FE0'],
     ];
 
     // Right rail — répartition par rôle (real distribution) [label, count, pct, color]
@@ -76,9 +76,9 @@
                             <i data-lucide="{{ $kcIcon }}" class="w-[22px] h-[22px]" style="color: {{ $kcColor }};stroke-width:1.8"></i>
                         </span>
                     </div>
-                    <p class="mt-3 text-[26px] font-bold text-[#1B1B18] leading-none">{{ number_format($kcValue) }}</p>
-                    <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F]">{{ $kcLabel }}</p>
-                    <p class="mt-0.5 text-[11px] text-[#6F6B60]">{{ $kcSub }}</p>
+                    <p class="mt-3 text-[26px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ number_format($kcValue) }}</p>
+                    <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $kcLabel }}</p>
+                    <p class="mt-0.5 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $kcSub }}</p>
                     <svg viewBox="0 0 120 28" class="mt-2 w-full h-[26px]" preserveAspectRatio="none" aria-hidden="true">
                         <polyline points="0,20 15,16 30,18 45,10 60,14 75,7 90,11 105,5 120,8" fill="none" stroke="{{ $kcSpark }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
                     </svg>
@@ -94,7 +94,7 @@
                     <form method="GET" class="mt-4 flex flex-wrap items-center gap-2.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <div class="ui-field-group flex-1 min-w-[180px]">
-                            <i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i>
+                            <i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                             <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher...' : 'Search...' }}" class="ui-field-bare flex-1 min-w-0">
                         </div>
                         <select name="statut" onchange="this.form.submit()" class="ui-field ui-select">
@@ -120,7 +120,7 @@
                     <div class="ui-table-wrap mt-4">
                         <table class="ui-table min-w-[760px]">
                             <thead>
-                                <tr class="border-b border-[#EFEBE2]">
+                                <tr class="border-b border-[#EFEBE2] dark:border-[#262B21]">
                                     <th>{{ $isFr ? 'Utilisateur' : 'User' }}</th>
                                     <th>{{ $isFr ? 'Rôle' : 'Role' }}</th>
                                     <th>Type</th>
@@ -133,8 +133,8 @@
                             <tbody>
                                 @forelse($applications as $app)
                                 @php
-                                    [$stLabel, $stCls] = $kycStatusMeta[$app->status] ?? [$app->status, 'bg-[#EEECE6] text-[#6F6B60]'];
-                                    [$roLabel, $roCls] = $kycRoleMeta[$app->vendor_type] ?? [$isFr ? 'Artisan' : 'Artisan', 'bg-[#E2F3E8] text-[#157A43]'];
+                                    [$stLabel, $stCls] = $kycStatusMeta[$app->status] ?? [$app->status, 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778]'];
+                                    [$roLabel, $roCls] = $kycRoleMeta[$app->vendor_type] ?? [$isFr ? 'Artisan' : 'Artisan', 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]'];
                                     $initial = mb_strtoupper(mb_substr($app->owner_name ?? $app->business_name ?? '?', 0, 1));
                                 @endphp
                                 <tr>
@@ -143,33 +143,33 @@
                                             @if($app->logo)
                                             <img src="{{ asset('storage/' . $app->logo) }}" alt="" class="w-9 h-9 rounded-full object-cover shrink-0">
                                             @else
-                                            <span class="w-9 h-9 rounded-full bg-[#14652F] text-white text-[13px] font-bold flex items-center justify-center shrink-0">{{ $initial }}</span>
+                                            <span class="w-9 h-9 rounded-full bg-[#14652F] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[13px] font-bold flex items-center justify-center shrink-0">{{ $initial }}</span>
                                             @endif
                                             <span class="min-w-0">
-                                                <span class="block text-[13px] font-semibold text-[#1B1B18] truncate">{{ $app->owner_name ?? $app->business_name }}</span>
-                                                <span class="block text-[11px] text-[#8A857A] truncate">{{ $app->owner_email ?? '—' }}</span>
+                                                <span class="block text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $app->owner_name ?? $app->business_name }}</span>
+                                                <span class="block text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $app->owner_email ?? '—' }}</span>
                                             </span>
                                         </div>
                                     </td>
                                     <td><span class="inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
                                     <td>{{ $app->vendor_type === 'artisan' ? ($isFr ? 'Individuel' : 'Individual') : ($isFr ? 'Entreprise' : 'Business') }}</td>
                                     <td><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>{{ $stLabel }}</span></td>
-                                    <td class="whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[11px] text-[#8A857A]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
-                                    <td class="whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[11px] text-[#8A857A]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
                                     <td>
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
                                             @if($app->status === 'approved')
-                                            <span class="w-8 h-8 rounded-lg bg-[#E2F3E8] flex items-center justify-center text-[#157A43]" title="{{ $isFr ? 'Vérifié' : 'Verified' }}"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
+                                            <span class="w-8 h-8 rounded-lg bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center text-[#157A43] dark:text-[#339B56]" title="{{ $isFr ? 'Vérifié' : 'Verified' }}"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
                                             @else
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="7" class="py-10 text-center text-[13px] text-[#6F6B60]">{{ $isFr ? 'Aucune demande KYC ne correspond à ces critères.' : 'No KYC request matches these criteria.' }}</td></tr>
+                                <tr><td colspan="7" class="py-10 text-center text-[13px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune demande KYC ne correspond à ces critères.' : 'No KYC request matches these criteria.' }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -177,24 +177,24 @@
 
                     @if($applications->hasPages())
                     <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                        <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $applications->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $applications->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($applications->total()) }} {{ $isFr ? 'demandes' : 'requests' }}</p>
+                        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $applications->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $applications->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($applications->total()) }} {{ $isFr ? 'demandes' : 'requests' }}</p>
                         <div class="flex items-center gap-1.5">
                             @if($applications->onFirstPage())
-                            <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                            <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                             @else
-                            <a href="{{ $applications->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                            <a href="{{ $applications->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                             @endif
                             @foreach($applications->getUrlRange(1, $applications->lastPage()) as $pn => $url)
                             @if($pn === $applications->currentPage())
-                            <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
+                            <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
                             @else
-                            <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md">{{ $pn }}</a>
+                            <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pn }}</a>
                             @endif
                             @endforeach
                             @if($applications->hasMorePages())
-                            <a href="{{ $applications->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                            <a href="{{ $applications->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                             @else
-                            <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                            <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                             @endif
                         </div>
                     </div>
@@ -204,16 +204,16 @@
                 {{-- Right rail --}}
                 <aside class="space-y-4">
                     <section class="ui-card">
-                        <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Répartition par rôle' : 'Distribution by role' }}</h2>
+                        <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Répartition par rôle' : 'Distribution by role' }}</h2>
                         <div class="mt-4 space-y-3.5">
                             @foreach($kycRoleDist as $rd)
                             @php $pct = round($rd['count'] / $kycRoleTotal * 100, 1); @endphp
                             <div>
                                 <div class="flex items-center justify-between text-[12px]">
-                                    <span class="flex items-center gap-2 text-[#3B382F]"><span class="w-2 h-2 rounded-full" style="background-color: {{ $rd['color'] }}"></span>{{ $isFr ? $rd['fr'] : $rd['en'] }}</span>
-                                    <span class="font-semibold text-[#1B1B18]">{{ $pct }}% ({{ $rd['count'] }})</span>
+                                    <span class="flex items-center gap-2 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full" style="background-color: {{ $rd['color'] }}"></span>{{ $isFr ? $rd['fr'] : $rd['en'] }}</span>
+                                    <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $pct }}% ({{ $rd['count'] }})</span>
                                 </div>
-                                <div class="mt-1.5 h-1.5 rounded-full bg-[#F0EFEA] overflow-hidden">
+                                <div class="mt-1.5 h-1.5 rounded-full bg-[#F0EFEA] dark:bg-[#1A1E16] overflow-hidden">
                                     <span class="block h-full rounded-full" style="width: {{ $pct }}%; background-color: {{ $rd['color'] }}"></span>
                                 </div>
                             </div>
@@ -222,18 +222,18 @@
                     </section>
 
                     <section class="ui-card">
-                        <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Vérification rapide' : 'Quick verification' }}</h2>
-                        <div class="mt-2 divide-y divide-[#F5F1E8]">
+                        <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Vérification rapide' : 'Quick verification' }}</h2>
+                        <div class="mt-2 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                             @foreach($kycQuickLinks as [$qlIcon, $qlLabel, $qlUrl])
                             <a href="{{ $qlUrl }}" class="flex items-center gap-3 py-2.5 group">
-                                <i data-lucide="{{ $qlIcon }}" class="w-[17px] h-[17px] text-[#55524A] group-hover:text-[#14652F]"></i>
-                                <span class="text-[12.5px] text-[#3B382F] group-hover:text-[#14652F]">{{ $qlLabel }}</span>
+                                <i data-lucide="{{ $qlIcon }}" class="w-[17px] h-[17px] text-[#55524A] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]"></i>
+                                <span class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qlLabel }}</span>
                             </a>
                             @endforeach
                         </div>
                     </section>
 
-                    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#0E3D22] to-[#12522C] px-5 py-6 text-center">
+                    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#0E3D22] dark:from-[#0C3B1E] to-[#12522C] dark:to-[#2E9250] px-5 py-6 text-center">
                         <p class="font-serif text-[15px] leading-relaxed text-white italic">{{ $isFr ? 'Vérifier aujourd\'hui, protéger notre héritage pour demain.' : 'Verify today, protect our heritage for tomorrow.' }}</p>
                         <p class="mt-3 text-[#E9C25A] text-[12px]">◇ ◈ ◇</p>
                     </section>
@@ -243,27 +243,27 @@
             {{-- Process + documents --}}
             <div class="mt-5 grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-5">
                 <section class="ui-card">
-                    <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="git-branch" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Étapes du processus KYC' : 'KYC process steps' }}</h2>
+                    <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="git-branch" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Étapes du processus KYC' : 'KYC process steps' }}</h2>
                     <div class="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3">
                         @foreach($kycProcess as $i => [$pIcon, $pTitle, $pDesc])
                         <div class="flex flex-col">
-                            <span class="w-[42px] h-[42px] rounded-full bg-[#F3F0E6] flex items-center justify-center"><i data-lucide="{{ $pIcon }}" class="w-5 h-5 text-[#14652F]" style="stroke-width:1.7"></i></span>
-                            <p class="mt-2.5 text-[12.5px] font-bold text-[#1B1B18]">{{ $i + 1 }}. {{ $pTitle }}</p>
-                            <p class="mt-1 text-[11px] text-[#6F6B60] leading-relaxed whitespace-pre-line">{{ $pDesc }}</p>
+                            <span class="w-[42px] h-[42px] rounded-full bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center"><i data-lucide="{{ $pIcon }}" class="w-5 h-5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i></span>
+                            <p class="mt-2.5 text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $i + 1 }}. {{ $pTitle }}</p>
+                            <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $pDesc }}</p>
                         </div>
                         @endforeach
                     </div>
                 </section>
 
                 <section class="ui-card">
-                    <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'Documents requis' : 'Required documents' }}</h2>
+                    <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Documents requis' : 'Required documents' }}</h2>
                     <ul class="mt-4 space-y-3">
                         @foreach($kycDocs as $doc)
-                        <li class="flex items-center gap-2.5 text-[12.5px] text-[#3B382F]"><i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] shrink-0"></i>{{ $doc }}</li>
+                        <li class="flex items-center gap-2.5 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] dark:text-[#339B56] shrink-0"></i>{{ $doc }}</li>
                         @endforeach
                     </ul>
                 </section>
             </div>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

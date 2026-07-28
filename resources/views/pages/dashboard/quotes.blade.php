@@ -214,60 +214,60 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1D1B16] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#1A1E16] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 <!-- Header -->
-<header class="bg-white">
+<header class="bg-white dark:bg-[#12150F]">
     <div class="max-w-[1500px] mx-auto px-4 lg:px-6 flex items-center gap-4 py-3">
-        <button type="button" onclick="document.getElementById('qd-sidebar').classList.toggle('open')" class="lg:hidden shrink-0 text-[#1B1B18]">
+        <button type="button" onclick="document.getElementById('qd-sidebar').classList.toggle('open')" class="lg:hidden shrink-0 text-[#1B1B18] dark:text-[#F3EFE7]">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
             <img src="{{ brand_asset('mark') }}" alt="" class="w-[50px] h-[50px] object-contain">
             <span class="leading-tight hidden sm:block">
-                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
-                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
-                <span class="block text-[10.5px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</span>
+                <span class="block text-[12.5px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">{{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}</span>
+                <span class="block text-[10.5px] text-[#2E7D4F] dark:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
         <form action="{{ route('gallery.search') }}" method="GET" class="flex-1 max-w-[560px] mx-auto hidden md:block">
             <input type="hidden" name="lang" value="{{ $lang }}">
-            <div class="flex items-center gap-3 border border-[#E7E7E5] rounded-xl bg-[#FBFBFA] px-4 h-[46px]">
-                <i data-lucide="search" class="w-[18px] h-[18px] shrink-0 text-[#8A857A]"></i>
+            <div class="flex items-center gap-3 border border-[#E7E7E5] dark:border-[#262B21] rounded-xl bg-[#FBFBFA] dark:bg-[#12150F] px-4 h-[46px]">
+                <i data-lucide="search" class="w-[18px] h-[18px] shrink-0 text-[#8A857A] dark:text-[#868778]"></i>
                 <input type="text" name="q" id="qd-search" placeholder="{{ $isFr ? 'Rechercher dans la plateforme...' : 'Search the platform...' }}" class="ui-field-bare flex-1 min-w-0">
-                <span class="shrink-0 border border-[#E5E3E0] rounded-md bg-white px-2 py-0.5 text-[11.5px] text-[#55524A]">Ctrl + K</span>
+                <span class="shrink-0 border border-[#E5E3E0] dark:border-[#39402F] rounded-md bg-white dark:bg-[#12150F] px-2 py-0.5 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">Ctrl + K</span>
             </div>
         </form>
         <div class="flex items-center gap-5 shrink-0 ml-auto">
             <a href="{{ route('notifications.index', ['lang' => $lang]) }}" class="relative" title="Notifications">
-                <i data-lucide="bell" class="w-6 h-6 text-[#3B382F]" style="stroke-width:1.7"></i>
+                <i data-lucide="bell" class="w-6 h-6 text-[#3B382F] dark:text-[#B4B5A6]" style="stroke-width:1.7"></i>
                 @if(($notificationCount ?? 0) > 0)
-                <span class="absolute -top-1.5 -right-1.5 w-[17px] h-[17px] rounded-full bg-[#DC2626] text-white text-[10px] font-bold flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
+                <span class="absolute -top-1.5 -right-1.5 w-[17px] h-[17px] rounded-full bg-[#DC2626] dark:bg-[#C0343B] text-white text-[10px] font-bold flex items-center justify-center">{{ min(99, $notificationCount) }}</span>
                 @endif
             </a>
             <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="relative" title="Messages">
-                <i data-lucide="message-circle" class="w-6 h-6 text-[#3B382F]" style="stroke-width:1.7"></i>
+                <i data-lucide="message-circle" class="w-6 h-6 text-[#3B382F] dark:text-[#B4B5A6]" style="stroke-width:1.7"></i>
                 @if(($messageCount ?? 0) > 0)
-                <span class="absolute -top-1.5 -right-1.5 w-[17px] h-[17px] rounded-full bg-[#157A43] text-white text-[10px] font-bold flex items-center justify-center">{{ min(99, $messageCount) }}</span>
+                <span class="absolute -top-1.5 -right-1.5 w-[17px] h-[17px] rounded-full bg-[#157A43] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[10px] font-bold flex items-center justify-center">{{ min(99, $messageCount) }}</span>
                 @endif
             </a>
             <div class="relative group">
                 <button class="flex items-center gap-2.5">
                     <img src="{{ asset('images/landing/qd-avatar.png') }}" alt="" class="w-[42px] h-[42px] rounded-full object-cover">
                     <span class="leading-tight text-left hidden sm:block">
-                        <span class="block text-[13.5px] font-bold text-[#1B1B18] whitespace-nowrap">{{ $siacUser['name'] ?? '' }}</span>
-                        <span class="block text-[11.5px] text-[#6F6B60]">{{ $isFr ? 'Artisan' : 'Artisan' }}</span>
+                        <span class="block text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $siacUser['name'] ?? '' }}</span>
+                        <span class="block text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Artisan' : 'Artisan' }}</span>
                     </span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#8A857A]"></i>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                 </button>
-                <div class="absolute right-0 top-full w-56 bg-white rounded-xl shadow-lg border border-[#E7E7E5] py-1.5 hidden group-hover:block z-50">
-                    <a href="{{ route('profile.show', ['lang' => $lang]) }}" class="block px-4 py-2 text-[12.5px] text-[#262521] hover:bg-[#F6F7F6]">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
-                    <a href="{{ route('security.show', ['lang' => $lang]) }}" class="block px-4 py-2 text-[12.5px] text-[#262521] hover:bg-[#F6F7F6]">{{ $isFr ? 'Sécurité' : 'Security' }}</a>
-                    <a href="{{ route('membership.certificate', ['lang' => $lang]) }}" class="block px-4 py-2 text-[12.5px] text-[#262521] hover:bg-[#F6F7F6]">{{ $isFr ? 'Mon certificat d\'adhésion' : 'My membership certificate' }}</a>
-                    <div class="my-1 border-t border-[#EFEFED]"></div>
+                <div class="absolute right-0 top-full w-56 bg-white dark:bg-[#12150F] rounded-xl shadow-lg border border-[#E7E7E5] dark:border-[#262B21] py-1.5 hidden group-hover:block z-50">
+                    <a href="{{ route('profile.show', ['lang' => $lang]) }}" class="block px-4 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E]">{{ $isFr ? 'Mon profil' : 'My profile' }}</a>
+                    <a href="{{ route('security.show', ['lang' => $lang]) }}" class="block px-4 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E]">{{ $isFr ? 'Sécurité' : 'Security' }}</a>
+                    <a href="{{ route('membership.certificate', ['lang' => $lang]) }}" class="block px-4 py-2 text-[12.5px] text-[#262521] dark:text-[#F3EFE7] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E]">{{ $isFr ? 'Mon certificat d\'adhésion' : 'My membership certificate' }}</a>
+                    <div class="my-1 border-t border-[#EFEFED] dark:border-[#262B21]"></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full text-left px-4 py-2 text-[12.5px] text-[#B42025] hover:bg-[#F6F7F6]">{{ $isFr ? 'Déconnexion' : 'Log out' }}</button>
+                        <button type="submit" class="w-full text-left px-4 py-2 text-[12.5px] text-[#B42025] dark:text-[#F0555C] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E]">{{ $isFr ? 'Déconnexion' : 'Log out' }}</button>
                     </form>
                 </div>
             </div>
@@ -286,7 +286,7 @@
 
         @if(session('success'))
         <div class="ui-alert ui-alert-ok mb-4">
-            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43]"></i>
+            <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>
             {{ session('success') }}
         </div>
         @endif
@@ -294,14 +294,14 @@
         <!-- Hello row -->
         <div class="flex flex-col lg:flex-row lg:items-center gap-4">
             <div class="flex-1 min-w-0">
-                <h1 class="text-[28px] font-bold text-[#1B1B18]">👋 {{ $isFr ? 'Bonjour' : 'Hello' }}, {{ $firstName }} !</h1>
-                <p class="mt-1 text-[13.5px] text-[#55524A]">{{ $isFr ? 'Voici un aperçu de votre activité sur Artisan Hub 237.' : 'Here is an overview of your activity on Artisan Hub 237.' }}</p>
+                <h1 class="text-[28px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">👋 {{ $isFr ? 'Bonjour' : 'Hello' }}, {{ $firstName }} !</h1>
+                <p class="mt-1 text-[13.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Voici un aperçu de votre activité sur Artisan Hub 237.' : 'Here is an overview of your activity on Artisan Hub 237.' }}</p>
             </div>
-            <div class="shrink-0 bg-[#EFF5F0] rounded-2xl px-5 py-4 flex flex-wrap items-center gap-4">
+            <div class="shrink-0 bg-[#EFF5F0] dark:bg-[#1A1E16] rounded-2xl px-5 py-4 flex flex-wrap items-center gap-4">
                 <img src="{{ asset('images/landing/qd-shield.png') }}" alt="" class="w-[42px] h-[48px] shrink-0" aria-hidden="true">
                 <div class="min-w-0">
-                    <p class="text-[14px] font-bold text-[#14532D]">{{ $isFr ? 'Compte vérifié' : 'Verified account' }}</p>
-                    <p class="mt-0.5 text-[12px] text-[#3B382F]">{{ $isFr ? 'Votre profil est complet à 85%' : 'Your profile is 85% complete' }}</p>
+                    <p class="text-[14px] font-bold text-[#14532D] dark:text-[#339B56]">{{ $isFr ? 'Compte vérifié' : 'Verified account' }}</p>
+                    <p class="mt-0.5 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Votre profil est complet à 85%' : 'Your profile is 85% complete' }}</p>
                 </div>
                 <a href="{{ route('profile.show', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary shrink-0">
                     {{ $isFr ? 'Voir mon profil' : 'View my profile' }}
@@ -312,17 +312,17 @@
 
         <!-- Aperçu rapide -->
         <section class="mt-4 ui-card px-5 py-5">
-            <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Aperçu rapide' : 'Quick overview' }}</h2>
+            <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Aperçu rapide' : 'Quick overview' }}</h2>
             <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
                 @foreach($kpis as [$kIcon, $kColor, $kBg, $kLabel, $kValue, $kDelta, $kDeltaColor])
-                <div class="border border-[#F0F1F0] rounded-xl p-4">
+                <div class="border border-[#F0F1F0] dark:border-[#262B21] rounded-xl p-4">
                     <div class="flex items-start gap-3">
                         <span class="w-[46px] h-[46px] shrink-0 rounded-xl flex items-center justify-center" style="background:{{ $kBg }}">
                             <i data-lucide="{{ $kIcon }}" class="w-[22px] h-[22px]" style="stroke-width:1.7;color:{{ $kColor }}"></i>
                         </span>
                         <span class="min-w-0">
-                            <span class="block text-[11.5px] text-[#55524A] leading-snug">{{ $kLabel }}</span>
-                            <span class="block mt-0.5 text-[22px] font-bold text-[#1B1B18] leading-none">{{ $kValue }}</span>
+                            <span class="block text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-snug">{{ $kLabel }}</span>
+                            <span class="block mt-0.5 text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $kValue }}</span>
                         </span>
                     </div>
                     <p class="mt-2.5 text-[12px] font-semibold" style="color:{{ $kDeltaColor }}">{{ $kDelta }}</p>
@@ -335,33 +335,33 @@
         <div class="mt-3 flex flex-col xl:flex-row gap-3 items-stretch">
             <section class="flex-[1.18] min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Pipeline des demandes de devis' : 'Quote request pipeline' }}</h2>
-                    <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Pipeline des demandes de devis' : 'Quote request pipeline' }}</h2>
+                    <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
                 <div class="mt-6 grid grid-cols-6">
                     @foreach($pipeStages as $psIdx => [$psLabel, $psColor, $psCount])
                     <div class="text-center">
-                        <p class="h-[34px] flex items-end justify-center text-[11px] text-[#55524A] leading-tight whitespace-pre-line">{{ $psLabel }}</p>
+                        <p class="h-[34px] flex items-end justify-center text-[11px] text-[#55524A] dark:text-[#B4B5A6] leading-tight whitespace-pre-line">{{ $psLabel }}</p>
                         <div class="mt-2.5 flex items-center">
                             <span class="flex-1 h-[3px] {{ $psIdx === 0 ? '' : '' }}" style="background:{{ $psIdx === 0 ? 'transparent' : $pipeSegs[$psIdx - 1] }}"></span>
-                            <span class="w-[18px] h-[18px] shrink-0 rounded-full bg-white" style="border:4px solid {{ $psColor }}"></span>
+                            <span class="w-[18px] h-[18px] shrink-0 rounded-full bg-white dark:bg-[#12150F]" style="border:4px solid {{ $psColor }}"></span>
                             <span class="flex-1 h-[3px]" style="background:{{ $psIdx === count($pipeStages) - 1 ? 'transparent' : $pipeSegs[$psIdx] }}"></span>
                         </div>
-                        <p class="mt-3 text-[19px] font-bold text-[#1B1B18]">{{ $psCount }}</p>
+                        <p class="mt-3 text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $psCount }}</p>
                     </div>
                     @endforeach
                 </div>
-                <div class="mt-6 bg-[#F2F5F2] rounded-xl px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <div class="mt-6 bg-[#F2F5F2] dark:bg-[#1A1E16] rounded-xl px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-3">
                     <div>
-                        <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Taux de conversion' : 'Conversion rate' }}</p>
-                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18]">{{ $conversionPct }}%</p>
-                        <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $acceptedCount }}/{{ $totalRfqCount }} {{ $isFr ? 'acceptées' : 'accepted' }}</p>
+                        <p class="text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Taux de conversion' : 'Conversion rate' }}</p>
+                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $conversionPct }}%</p>
+                        <p class="mt-0.5 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $acceptedCount }}/{{ $totalRfqCount }} {{ $isFr ? 'acceptées' : 'accepted' }}</p>
                     </div>
-                    <div class="hidden sm:block w-px self-stretch bg-[#DFE5DF]"></div>
+                    <div class="hidden sm:block w-px self-stretch bg-[#DFE5DF] dark:bg-[#1A1E16]"></div>
                     <div class="min-w-0">
-                        <p class="text-[12px] text-[#55524A]">{{ $isFr ? 'Valeur potentielle' : 'Potential value' }}</p>
-                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] whitespace-nowrap">{{ number_format($potentialValue, 0, ',', ' ') }} <span class="text-[#157A43]">FCFA</span></p>
-                        <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Propositions en attente' : 'Proposals awaiting reply' }}</p>
+                        <p class="text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Valeur potentielle' : 'Potential value' }}</p>
+                        <p class="mt-0.5 text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ number_format($potentialValue, 0, ',', ' ') }} <span class="text-[#157A43] dark:text-[#339B56]">FCFA</span></p>
+                        <p class="mt-0.5 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Propositions en attente' : 'Proposals awaiting reply' }}</p>
                     </div>
                     <img src="{{ asset('images/landing/qd-spark.png') }}" alt="" class="ml-auto h-[52px] object-contain" aria-hidden="true">
                 </div>
@@ -369,9 +369,9 @@
 
             <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                         {{ $isFr ? 'Demandes de devis' : 'Quote requests' }}
-                        @if($rfqPage && $rfqPage->total())<span class="text-[12px] font-normal text-[#6F6B60]">({{ $rfqPage->total() }})</span>@endif
+                        @if($rfqPage && $rfqPage->total())<span class="text-[12px] font-normal text-[#6F6B60] dark:text-[#868778]">({{ $rfqPage->total() }})</span>@endif
                     </h2>
                 </div>
                 {{-- Status filter + pagination: the list used to stop at the five
@@ -384,7 +384,7 @@
                     @endforeach
                 </div>
                 @endif
-                <div class="mt-2 divide-y divide-[#F1F2F1]">
+                <div class="mt-2 divide-y divide-[#F1F2F1] dark:divide-[#262B21]">
                     @forelse($recentRequests as $rqRow)
                     @php
                         [$rqImg, $rqTitle, $rqPlace, $rqDate, $rqPill, $rqPillColor, $rqPillBg] = $rqRow;
@@ -393,11 +393,11 @@
                     <a href="{{ $rqUrl }}" class="flex items-center gap-3.5 py-3 group">
                         <img src="{{ asset('images/landing/' . $rqImg) }}" alt="" class="w-[42px] h-[42px] shrink-0 rounded-lg object-cover">
                         <span class="flex-1 min-w-0">
-                            <span class="block text-[13px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ $rqTitle }}</span>
-                            <span class="block mt-0.5 text-[12px] text-[#6F6B60] whitespace-nowrap overflow-hidden text-ellipsis">{{ $rqPlace }} &nbsp; {{ $rqDate }}</span>
+                            <span class="block text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap overflow-hidden text-ellipsis">{{ $rqTitle }}</span>
+                            <span class="block mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap overflow-hidden text-ellipsis">{{ $rqPlace }} &nbsp; {{ $rqDate }}</span>
                         </span>
                         <span class="shrink-0 rounded-md px-2.5 py-1 text-[10px] font-bold tracking-[0.02em]" style="color:{{ $rqPillColor }};background:{{ $rqPillBg }}">{{ $rqPill }}</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 shrink-0 text-[#157A43] group-hover:translate-x-0.5"></i>
+                        <i data-lucide="chevron-right" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56] group-hover:translate-x-0.5"></i>
                     </a>
                     @empty
                     <p class="ui-empty">{{ $isFr ? 'Aucune demande de devis pour le moment.' : 'No quote requests yet.' }}</p>
@@ -413,26 +413,26 @@
         <div class="mt-3 flex flex-col xl:flex-row gap-3 items-stretch">
             <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Activité récente' : 'Recent activity' }}</h2>
-                    <a href="{{ route('notifications.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Activité récente' : 'Recent activity' }}</h2>
+                    <a href="{{ route('notifications.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
-                <div class="mt-2 divide-y divide-[#F1F2F1]">
+                <div class="mt-2 divide-y divide-[#F1F2F1] dark:divide-[#262B21]">
                     @forelse($activities as [$acIcon, $acColor, $acBg, $acTitle, $acSub, $acTime, $acBadge, $acStars])
                     <div class="flex items-start gap-3.5 py-3.5">
                         <span class="w-[40px] h-[40px] shrink-0 rounded-xl flex items-center justify-center" style="background:{{ $acBg }}">
                             <i data-lucide="{{ $acIcon }}" class="w-[19px] h-[19px]" style="stroke-width:2;color:{{ $acColor }}"></i>
                         </span>
                         <div class="flex-1 min-w-0">
-                            <p class="text-[13px] font-bold text-[#1B1B18] leading-snug">{{ $acTitle }}</p>
+                            <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $acTitle }}</p>
                             @if($acStars)
-                            <p class="mt-0.5 text-[15px] tracking-[0.2em] text-[#F5B301] leading-none">{{ $acSub }}</p>
+                            <p class="mt-0.5 text-[15px] tracking-[0.2em] text-[#F5B301] dark:text-[#EDB33A] leading-none">{{ $acSub }}</p>
                             @else
-                            <p class="mt-0.5 text-[12px] text-[#6F6B60] leading-snug">{{ $acSub }}</p>
+                            <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $acSub }}</p>
                             @endif
                         </div>
                         <div class="shrink-0 flex items-center gap-2 pt-0.5">
-                            <span class="text-[11.5px] text-[#6F6B60]">{{ $acTime }}</span>
-                            @if($acBadge)<span class="w-[17px] h-[17px] rounded-full bg-[#14652F] text-white text-[10px] font-bold flex items-center justify-center">{{ $acBadge }}</span>@endif
+                            <span class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $acTime }}</span>
+                            @if($acBadge)<span class="w-[17px] h-[17px] rounded-full bg-[#14652F] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[10px] font-bold flex items-center justify-center">{{ $acBadge }}</span>@endif
                         </div>
                     </div>
                     @empty
@@ -443,8 +443,8 @@
 
             <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Performance des produits' : 'Product performance' }}</h2>
-                    <a href="{{ $storeUrl }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Performance des produits' : 'Product performance' }}</h2>
+                    <a href="{{ $storeUrl }}" class="text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
                 <div class="mt-3 space-y-4">
                     @forelse($perfRows as $pfIdx => [$pfImg, $pfName, $pfViews, $pfPct])
@@ -452,9 +452,9 @@
                         <span class="w-[22px] h-[22px] shrink-0 rounded-full text-white text-[11px] font-bold flex items-center justify-center" style="background:{{ $rankColors[$pfIdx % 5] }}">{{ $pfIdx + 1 }}</span>
                         <img src="{{ $pfImg }}" alt="" class="w-[44px] h-[44px] shrink-0 rounded-lg object-cover">
                         <div class="flex-1 min-w-0">
-                            <p class="text-[13px] font-bold text-[#1B1B18] whitespace-nowrap overflow-hidden text-ellipsis">{{ $pfName }}</p>
-                            <p class="mt-0.5 text-[12px] text-[#6F6B60]">{{ $isFr ? 'Vues' : 'Views' }} : {{ $pfViews }}</p>
-                            <div class="mt-1.5 h-[5px] rounded-full bg-[#EEF0EE]"><div class="h-full rounded-full bg-[#14652F]" style="width:{{ $pfPct }}%"></div></div>
+                            <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap overflow-hidden text-ellipsis">{{ $pfName }}</p>
+                            <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Vues' : 'Views' }} : {{ $pfViews }}</p>
+                            <div class="mt-1.5 h-[5px] rounded-full bg-[#EEF0EE] dark:bg-[#1A1E16]"><div class="h-full rounded-full bg-[#14652F] dark:bg-[#2E9250]" style="width:{{ $pfPct }}%"></div></div>
                         </div>
                     </div>
                     @empty
@@ -467,25 +467,25 @@
         <!-- Santé + Documents + Portefeuille -->
         <div class="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
             <section class="ui-card px-5 py-5">
-                <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Santé de votre boutique' : 'Your shop health' }}</h2>
+                <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Santé de votre boutique' : 'Your shop health' }}</h2>
                 <div class="mt-4 flex items-center gap-5">
                     <div class="shrink-0 text-center">
                         <div class="relative w-[108px] h-[108px] rounded-full" style="background:conic-gradient(#14652F 0 {{ $healthScore }}%, #E4E7E4 {{ $healthScore }}% 100%)">
-                            <div class="absolute inset-[13px] rounded-full bg-white flex items-center justify-center">
-                                <span class="text-[24px] font-bold text-[#1B1B18]">{{ $healthScore }}%</span>
+                            <div class="absolute inset-[13px] rounded-full bg-white dark:bg-[#12150F] flex items-center justify-center">
+                                <span class="text-[24px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $healthScore }}%</span>
                             </div>
                         </div>
-                        <p class="mt-2.5 text-[13px] font-bold text-[#14532D]">{{ $healthLabel }}</p>
-                        <p class="text-[11.5px] text-[#6F6B60]">{{ $healthHint }}</p>
+                        <p class="mt-2.5 text-[13px] font-bold text-[#14532D] dark:text-[#339B56]">{{ $healthLabel }}</p>
+                        <p class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $healthHint }}</p>
                     </div>
                     <ul class="flex-1 min-w-0 space-y-2.5">
                         @foreach($healthChecks as [$hcLabel, $hcValue, $hcColor, $hcSuffix])
                         <li class="flex items-center gap-2.5">
-                            <span class="w-[17px] h-[17px] shrink-0 rounded-full bg-[#DFF3E5] flex items-center justify-center">
-                                <i data-lucide="check" class="w-2.5 h-2.5 text-[#14652F]" style="stroke-width:3.5"></i>
+                            <span class="w-[17px] h-[17px] shrink-0 rounded-full bg-[#DFF3E5] dark:bg-[#0C3D1D] flex items-center justify-center">
+                                <i data-lucide="check" class="w-2.5 h-2.5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:3.5"></i>
                             </span>
-                            <span class="flex-1 text-[12px] text-[#3B382F]">{{ $hcLabel }}</span>
-                            <span class="shrink-0 text-[12px] font-bold" style="color:{{ $hcColor }}">{{ $hcValue }}@if($hcSuffix)<span class="{{ $hcSuffix === '/20' ? 'text-[#ED7E1C]' : 'text-[#157A43]' }}">{{ $hcSuffix }}</span>@endif</span>
+                            <span class="flex-1 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $hcLabel }}</span>
+                            <span class="shrink-0 text-[12px] font-bold" style="color:{{ $hcColor }}">{{ $hcValue }}@if($hcSuffix)<span class="{{ $hcSuffix === '/20' ? 'text-[#ED7E1C] dark:text-[#EDB33A] ' : 'text-[#157A43] dark:text-[#339B56] ' }}">{{ $hcSuffix }}</span>@endif</span>
                         </li>
                         @endforeach
                     </ul>
@@ -497,18 +497,18 @@
 
             <section class="ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Documents & Certifications' : 'Documents & Certifications' }}</h2>
-                    <a href="{{ route('verification.show', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Documents & Certifications' : 'Documents & Certifications' }}</h2>
+                    <a href="{{ route('verification.show', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
-                <div class="mt-2 divide-y divide-[#F1F2F1]">
+                <div class="mt-2 divide-y divide-[#F1F2F1] dark:divide-[#262B21]">
                     @foreach($docRows as [$dcIcon, $dcTitle, $dcSub, $dcPill, $dcVariant])
                     <div class="flex items-center gap-3.5 py-3">
-                        <span class="w-[40px] h-[40px] shrink-0 rounded-xl bg-[#E4F1E8] flex items-center justify-center">
-                            <i data-lucide="{{ $dcIcon }}" class="w-[19px] h-[19px] text-[#14652F]" style="stroke-width:1.8"></i>
+                        <span class="w-[40px] h-[40px] shrink-0 rounded-xl bg-[#E4F1E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                            <i data-lucide="{{ $dcIcon }}" class="w-[19px] h-[19px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         </span>
                         <div class="flex-1 min-w-0">
-                            <p class="text-[12.5px] font-bold text-[#1B1B18] leading-snug">{{ $dcTitle }}</p>
-                            <p class="mt-0.5 text-[11.5px] text-[#6F6B60]">{{ $dcSub }}</p>
+                            <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $dcTitle }}</p>
+                            <p class="mt-0.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $dcSub }}</p>
                         </div>
                         <span class="ui-pill {{ $dcVariant }} shrink-0">{{ $dcPill }}</span>
                     </div>
@@ -517,12 +517,12 @@
             </section>
 
             <section class="ui-card px-5 py-5 flex flex-col">
-                <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Portefeuille' : 'Wallet' }}</h2>
+                <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Portefeuille' : 'Wallet' }}</h2>
                 <div class="mt-auto flex flex-col items-center text-center py-6">
-                    <span class="w-11 h-11 rounded-full bg-[#F2F5F2] flex items-center justify-center mb-3">
-                        <i data-lucide="wallet" class="w-5 h-5 text-[#8A857A]"></i>
+                    <span class="w-11 h-11 rounded-full bg-[#F2F5F2] dark:bg-[#1A1E16] flex items-center justify-center mb-3">
+                        <i data-lucide="wallet" class="w-5 h-5 text-[#8A857A] dark:text-[#868778]"></i>
                     </span>
-                    <p class="text-[12.5px] text-[#6F6B60] max-w-[220px]">{{ $isFr ? 'Le portefeuille et les paiements en ligne arrivent bientôt.' : 'Wallet and online payouts are coming soon.' }}</p>
+                    <p class="text-[12.5px] text-[#6F6B60] dark:text-[#868778] max-w-[220px]">{{ $isFr ? 'Le portefeuille et les paiements en ligne arrivent bientôt.' : 'Wallet and online payouts are coming soon.' }}</p>
                 </div>
                 <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary ui-btn-block mt-auto">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
             </section>
@@ -532,8 +532,8 @@
         <div class="mt-3 flex flex-col xl:flex-row gap-3 items-stretch">
             <section class="flex-1 min-w-0 ui-card px-5 py-5">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Événements & Opportunités' : 'Events & Opportunities' }}</h2>
-                    <a href="{{ route('events.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
+                    <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Événements & Opportunités' : 'Events & Opportunities' }}</h2>
+                    <a href="{{ route('events.index', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                 </div>
                 <div class="mt-4 flex flex-col sm:flex-row gap-3 items-stretch">
                     {{-- Only the next real published event; no event, no tile. --}}
@@ -545,28 +545,28 @@
                         $evDates = $fmtDate($siacEvent->starts_at)
                             . ($siacEvent->ends_at ? ' – ' . $fmtDate($siacEvent->ends_at) : '');
                     @endphp
-                    <div class="flex-[1.35] bg-[#EBF2FC] rounded-xl p-4">
+                    <div class="flex-[1.35] bg-[#EBF2FC] dark:bg-[#101C33] rounded-xl p-4">
                         <div class="flex items-start gap-3.5">
-                            <img src="{{ $siacEvent->cover_image ? asset('storage/' . $siacEvent->cover_image) : asset('images/landing/qd-siac.png') }}" alt="" class="w-[44px] h-[54px] shrink-0 rounded-md bg-white object-contain">
+                            <img src="{{ $siacEvent->cover_image ? asset('storage/' . $siacEvent->cover_image) : asset('images/landing/qd-siac.png') }}" alt="" class="w-[44px] h-[54px] shrink-0 rounded-md bg-white dark:bg-[#12150F] object-contain">
                             <div class="min-w-0">
-                                <p class="text-[14.5px] font-bold text-[#1B1B18]">{{ $evName }}</p>
+                                <p class="text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $evName }}</p>
                                 @if($evDesc)
-                                <p class="mt-1 text-[11.5px] text-[#3B382F] leading-relaxed">{{ \Illuminate\Support\Str::limit(strip_tags($evDesc), 110) }}</p>
+                                <p class="mt-1 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">{{ \Illuminate\Support\Str::limit(strip_tags($evDesc), 110) }}</p>
                                 @endif
-                                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $evDates }}</p>
+                                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="calendar-days" class="w-3.5 h-3.5 text-[#3565DE] dark:text-[#8FB6F5]"></i> {{ $evDates }}</p>
                                 @if($evPlace)
-                                <p class="mt-1 flex items-center gap-2 text-[11.5px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#3565DE]"></i> {{ $evPlace }}</p>
+                                <p class="mt-1 flex items-center gap-2 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#3565DE] dark:text-[#8FB6F5]"></i> {{ $evPlace }}</p>
                                 @endif
                             </div>
                         </div>
                         <a href="{{ $siacUrl }}" class="ui-btn ui-btn-primary ui-btn-sm mt-3.5">{{ $isFr ? 'S\'inscrire' : 'Register' }}</a>
                     </div>
                     @endif
-                    <div class="flex-1 bg-[#EFECFA] rounded-xl p-4 flex flex-col">
-                        <i data-lucide="megaphone" class="w-[38px] h-[38px] text-[#5B4FD8] -scale-x-100" style="stroke-width:1.4"></i>
-                        <p class="mt-4 text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Appels à candidatures' : 'Calls for applications' }}</p>
-                        <p class="mt-1 text-[12px] text-[#3B382F]">{{ $upcomingEventCount }} {{ $isFr ? ($upcomingEventCount === 1 ? 'opportunité disponible' : 'opportunités disponibles') : ($upcomingEventCount === 1 ? 'opportunity available' : 'opportunities available') }}</p>
-                        <a href="{{ route('events.index', ['lang' => $lang]) }}" class="mt-auto pt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#157A43] hover:text-[#14532D]">
+                    <div class="flex-1 bg-[#EFECFA] dark:bg-[#101C33] rounded-xl p-4 flex flex-col">
+                        <i data-lucide="megaphone" class="w-[38px] h-[38px] text-[#5B4FD8] dark:text-[#8FB6F5] -scale-x-100" style="stroke-width:1.4"></i>
+                        <p class="mt-4 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Appels à candidatures' : 'Calls for applications' }}</p>
+                        <p class="mt-1 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $upcomingEventCount }} {{ $isFr ? ($upcomingEventCount === 1 ? 'opportunité disponible' : 'opportunités disponibles') : ($upcomingEventCount === 1 ? 'opportunity available' : 'opportunities available') }}</p>
+                        <a href="{{ route('events.index', ['lang' => $lang]) }}" class="mt-auto pt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">
                             {{ $isFr ? 'Voir les opportunités' : 'See the opportunities' }}
                             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                         </a>
@@ -575,17 +575,17 @@
             </section>
 
             <section class="flex-1 min-w-0 ui-card px-5 py-5 relative overflow-hidden">
-                <h2 class="text-[15.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Conseils pour booster votre activité' : 'Tips to boost your activity' }}</h2>
+                <h2 class="text-[15.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Conseils pour booster votre activité' : 'Tips to boost your activity' }}</h2>
                 <img src="{{ asset('images/landing/qd-rocket.png') }}" alt="" class="absolute right-4 top-9 w-[110px] hidden sm:block" aria-hidden="true">
                 <div class="mt-4 space-y-4 sm:pr-[130px]">
                     @foreach($tips as [$tpIcon, $tpTitle, $tpSub])
                     <div class="flex items-start gap-3.5">
-                        <span class="w-[36px] h-[36px] shrink-0 rounded-lg bg-[#E4F1E8] flex items-center justify-center">
-                            <i data-lucide="{{ $tpIcon }}" class="w-[17px] h-[17px] text-[#14652F]" style="stroke-width:1.8"></i>
+                        <span class="w-[36px] h-[36px] shrink-0 rounded-lg bg-[#E4F1E8] dark:bg-[#0C3D1D] flex items-center justify-center">
+                            <i data-lucide="{{ $tpIcon }}" class="w-[17px] h-[17px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         </span>
                         <div class="min-w-0">
-                            <p class="text-[13px] font-bold text-[#1B1B18] leading-snug">{{ $tpTitle }}</p>
-                            <p class="mt-0.5 text-[12px] text-[#6F6B60] leading-snug">{{ $tpSub }}</p>
+                            <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $tpTitle }}</p>
+                            <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $tpSub }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -597,12 +597,12 @@
         </div>
 
         <!-- Bottom bar -->
-        <section class="mt-3 bg-[#EAF3EE] rounded-2xl px-5 py-4 flex flex-wrap items-center gap-4">
-            <span class="w-[42px] h-[42px] shrink-0 rounded-full bg-white flex items-center justify-center">
-                <i data-lucide="shield-check" class="w-[21px] h-[21px] text-[#14652F]" style="stroke-width:1.8"></i>
+        <section class="mt-3 bg-[#EAF3EE] dark:bg-[#1A1E16] rounded-2xl px-5 py-4 flex flex-wrap items-center gap-4">
+            <span class="w-[42px] h-[42px] shrink-0 rounded-full bg-white dark:bg-[#12150F] flex items-center justify-center">
+                <i data-lucide="shield-check" class="w-[21px] h-[21px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
             </span>
-            <p class="flex-1 min-w-[260px] text-[12.5px] text-[#3B382F] leading-relaxed">
-                <span class="font-bold text-[#1B1B18]">{{ $isFr ? 'Votre profil est vérifié et visible par des acheteurs du monde entier.' : 'Your profile is verified and visible to buyers around the world.' }}</span><br>
+            <p class="flex-1 min-w-[260px] text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">
+                <span class="font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Votre profil est vérifié et visible par des acheteurs du monde entier.' : 'Your profile is verified and visible to buyers around the world.' }}</span><br>
                 {{ $isFr ? 'Continuez à offrir des produits de qualité et à répondre aux demandes.' : 'Keep offering quality products and responding to requests.' }}
             </p>
             <a href="{{ $storeUrl }}" class="ui-btn ui-btn-primary ui-btn-lg shrink-0">

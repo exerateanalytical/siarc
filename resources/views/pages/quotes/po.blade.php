@@ -115,7 +115,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F7F8F7] text-[#1B1B18] antialiased">
+<body class="bg-[#F7F8F7] dark:bg-[#12150F] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.quotes-buyer-header')
 
@@ -135,23 +135,23 @@
         @endif
 
         <!-- Breadcrumb + title -->
-        <nav class="flex items-center gap-2 text-[12.5px] text-[#55524A]">
-            <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Commandes' : 'Orders' }}</a>
+        <nav class="flex items-center gap-2 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
+            <a href="{{ route('messages.inbox', ['lang' => $lang]) }}" class="hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Commandes' : 'Orders' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-            <a href="{{ route('orders.index', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Bons de commande' : 'Purchase orders' }}</a>
+            <a href="{{ route('orders.index', ['lang' => $lang]) }}" class="hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Bons de commande' : 'Purchase orders' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-            <span class="font-semibold text-[#1B1B18]">{{ $isFr ? 'Détails du bon de commande' : 'Purchase order details' }}</span>
+            <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Détails du bon de commande' : 'Purchase order details' }}</span>
         </nav>
         <div class="mt-2 flex flex-wrap items-start justify-between gap-4">
             <div>
-                <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18]">
+                <h1 class="flex flex-wrap items-center gap-3 text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $isFr ? 'Bon de commande' : 'Purchase order' }}
                     <span class="ui-pill ui-pill-ok">{{ $poStatusLabel }}</span>
                 </h1>
-                <p class="mt-1.5 text-[13px] text-[#55524A]">
-                    PO N°: <span class="font-semibold text-[#1B1B18]">{{ $realPoRef }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Basé sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18]">{{ $realQuoRef }}</span>
-                    &nbsp;•&nbsp; {{ $isFr ? 'Date de commande' : 'Order date' }}: <span class="font-semibold text-[#1B1B18]">{{ $realOrderDate }}</span>
+                <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
+                    PO N°: <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realPoRef }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Basé sur' : 'Based on' }}: <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realQuoRef }}</span>
+                    &nbsp;•&nbsp; {{ $isFr ? 'Date de commande' : 'Order date' }}: <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realOrderDate }}</span>
                 </p>
             </div>
             <div class="shrink-0 flex flex-wrap items-center gap-3">
@@ -180,43 +180,43 @@
                         <div class="min-w-0">
                             <p class="ui-dt">{{ $isFr ? 'Fournisseur' : 'Supplier' }}</p>
                             <p class="mt-1 flex flex-wrap items-center gap-2">
-                                <span class="text-[14.5px] font-bold text-[#1B1B18]">{{ $realBizName }}</span>
+                                <span class="text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realBizName }}</span>
                                 @if(in_array($biz?->verification_tier, ['verified', 'certified'], true))
-                                <span class="inline-flex items-center gap-1 bg-[#E2F3E8] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
+                                <span class="inline-flex items-center gap-1 bg-[#E2F3E8] dark:bg-[#0C3D1D] rounded-md px-2 py-0.5 text-[10.5px] font-semibold text-[#157A43] dark:text-[#339B56]"><i data-lucide="check" class="w-2.5 h-2.5" style="stroke-width:3.4"></i> {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}</span>
                                 @endif
                             </p>
                             @if($biz?->address_fr)
-                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $isFr ? $biz->address_fr : ($biz->address_en ?: $biz->address_fr) }}</p>
+                            <p class="mt-2 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $isFr ? $biz->address_fr : ($biz->address_en ?: $biz->address_fr) }}</p>
                             @endif
                             @if($biz?->phone)
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->phone }}</p>
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $biz->phone }}</p>
                             @endif
                             @if($biz?->email)
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $biz->email }}</p>
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $biz->email }}</p>
                             @endif
-                            <a href="{{ $vendorUrl }}" class="mt-2 inline-block text-[12px] font-semibold text-[#1B1B18] underline underline-offset-4 hover:text-[#14652F]">{{ $isFr ? 'Voir le profil du fournisseur' : 'View the supplier profile' }}</a>
+                            <a href="{{ $vendorUrl }}" class="mt-2 inline-block text-[12px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] underline underline-offset-4 hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir le profil du fournisseur' : 'View the supplier profile' }}</a>
                         </div>
                     </div>
                     <div>
                         <p class="ui-dt">{{ $isFr ? 'Acheteur' : 'Buyer' }}</p>
                         <p class="ui-dd text-[14.5px]">{{ $realBuyerName }}</p>
                         @if($buyer?->email)
-                        <p class="mt-2 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $buyer->email }}</p>
+                        <p class="mt-2 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">{{ $buyer->email }}</p>
                         @endif
                         @if($buyer?->phone)
-                        <p class="mt-2 text-[12.5px] text-[#3B382F]">{{ $buyer->phone }}</p>
+                        <p class="mt-2 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $buyer->phone }}</p>
                         @endif
                     </div>
                     <div class="flex items-start gap-3.5">
-                        <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F]" style="stroke-width:1.7"></i></span>
+                        <span class="w-[38px] h-[38px] shrink-0 rounded-lg bg-[#EFF5F0] dark:bg-[#1A1E16] flex items-center justify-center"><i data-lucide="calendar-days" class="w-[18px] h-[18px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i></span>
                         <div>
                             <p class="ui-card-title">{{ $isFr ? 'Dates importantes' : 'Important dates' }}</p>
                             <p class="mt-2.5 ui-dt">{{ $isFr ? 'Date de commande' : 'Order date' }}</p>
                             <p class="ui-dd">{{ $realOrderDate }}</p>
                             <p class="mt-2 ui-dt">{{ $isFr ? 'Date de livraison prévue' : 'Expected delivery date' }}</p>
-                            <p class="ui-dd text-[#E5484D]">{{ $realDelivery ?? '—' }} @if($realDeliveryIn !== null)<span class="font-semibold">({{ $realDeliveryIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
+                            <p class="ui-dd text-[#E5484D] dark:text-[#F0555C]">{{ $realDelivery ?? '—' }} @if($realDeliveryIn !== null)<span class="font-semibold">({{ $realDeliveryIn }} {{ $isFr ? 'jours' : 'days' }})</span>@endif</p>
                             <p class="mt-2 ui-dt">{{ $isFr ? 'Statut' : 'Status' }}</p>
-                            <p class="ui-dd text-[#157A43]">{{ $poStatusLabel }}</p>
+                            <p class="ui-dd text-[#157A43] dark:text-[#339B56]">{{ $poStatusLabel }}</p>
                         </div>
                     </div>
                 </section>
@@ -239,17 +239,17 @@
                             <tbody>
                                 @foreach($poRows as $ri => [$pImg, $pName, $pDesc, $pQty, $pUnit, $pTotal])
                                 <tr>
-                                    <td class="align-top text-[#1B1B18]">{{ $ri + 1 }}</td>
+                                    <td class="align-top text-[#1B1B18] dark:text-[#F3EFE7]">{{ $ri + 1 }}</td>
                                     <td class="align-top">
                                         <div class="flex items-start gap-3">
                                             <img src="{{ asset('images/landing/' . $pImg) }}" alt="" class="w-[42px] h-[42px] shrink-0 rounded-lg object-cover">
-                                            <p class="text-[13px] font-bold text-[#1B1B18] max-w-[180px]">{{ $pName }}</p>
+                                            <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] max-w-[180px]">{{ $pName }}</p>
                                         </div>
                                     </td>
-                                    <td class="align-top text-[#3565DE] leading-relaxed max-w-[240px]">{{ $pDesc }}</td>
-                                    <td class="align-top text-center font-bold text-[#1B1B18] whitespace-nowrap">{{ $pQty }}<br><span class="font-normal text-[11.5px] text-[#3565DE]">{{ $isFr ? 'Pièces' : 'Pieces' }}</span></td>
-                                    <td class="align-top text-right font-semibold text-[#1B1B18] whitespace-nowrap">{{ $pUnit }}</td>
-                                    <td class="align-top text-right font-bold text-[#1B1B18] whitespace-nowrap">{{ $pTotal }}</td>
+                                    <td class="align-top text-[#3565DE] dark:text-[#8FB6F5] leading-relaxed max-w-[240px]">{{ $pDesc }}</td>
+                                    <td class="align-top text-center font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $pQty }}<br><span class="font-normal text-[11.5px] text-[#3565DE] dark:text-[#8FB6F5]">{{ $isFr ? 'Pièces' : 'Pieces' }}</span></td>
+                                    <td class="align-top text-right font-semibold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $pUnit }}</td>
+                                    <td class="align-top text-right font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $pTotal }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -257,13 +257,13 @@
                     </div>
 
                     <!-- Conditions / instructions / totals -->
-                    <div class="mt-5 border-t border-[#F0F1F0] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="mt-5 border-t border-[#F0F1F0] dark:border-[#262B21] pt-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div>
                             <h3 class="ui-card-title">{{ $isFr ? 'Conditions de commande' : 'Order conditions' }}</h3>
                             <ul class="mt-3 space-y-2.5">
                                 @foreach($poConditions as [$pcLabel, $pcRest])
-                                <li class="flex items-start gap-2.5 text-[12px] text-[#3B382F] leading-relaxed">
-                                    <i data-lucide="circle-check" class="w-4 h-4 shrink-0 mt-0.5 text-[#1F8A4C]" style="stroke-width:2"></i>
+                                <li class="flex items-start gap-2.5 text-[12px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">
+                                    <i data-lucide="circle-check" class="w-4 h-4 shrink-0 mt-0.5 text-[#1F8A4C] dark:text-[#339B56]" style="stroke-width:2"></i>
                                     <span><span class="font-bold">{{ $pcLabel }}</span> {{ $pcRest }}</span>
                                 </li>
                                 @endforeach
@@ -271,28 +271,28 @@
                         </div>
                         <div>
                             <h3 class="ui-card-title">{{ $isFr ? 'Instructions spéciales' : 'Special instructions' }}</h3>
-                            <p class="mt-3 text-[12.5px] text-[#3B382F] leading-relaxed">{{ $rpp->notes ?: '—' }}</p>
-                            <p class="mt-4 text-[12.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Personne de contact:' : 'Contact person:' }}</p>
-                            <p class="mt-1 text-[12.5px] text-[#3B382F]">{{ $realBuyerName }}</p>
+                            <p class="mt-3 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed">{{ $rpp->notes ?: '—' }}</p>
+                            <p class="mt-4 text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Personne de contact:' : 'Contact person:' }}</p>
+                            <p class="mt-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $realBuyerName }}</p>
                             @if($buyer?->phone)
-                            <p class="mt-1.5 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $buyer->phone }}</p>
+                            <p class="mt-1.5 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="phone" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $buyer->phone }}</p>
                             @endif
                             @if($buyer?->email)
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A]"></i> {{ $buyer->email }}</p>
+                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="mail" class="w-3.5 h-3.5 text-[#55524A] dark:text-[#B4B5A6]"></i> {{ $buyer->email }}</p>
                             @endif
                         </div>
                         <div>
                             <dl class="space-y-2.5">
                                 @foreach($poTotals as [$ptLabel, $ptValue, $ptColor])
                                 <div class="flex items-center justify-between gap-3">
-                                    <dt class="text-[12.5px] text-[#3B382F]">{{ $ptLabel }}</dt>
+                                    <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $ptLabel }}</dt>
                                     <dd class="text-[12.5px] font-semibold" style="color:{{ $ptColor }}">{{ $ptValue }}</dd>
                                 </div>
                                 @endforeach
                             </dl>
-                            <div class="mt-4 border-t border-[#F0F1F0] pt-4 flex items-center justify-between gap-3">
-                                <span class="text-[14.5px] font-bold text-[#157A43]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
-                                <span class="text-[15.5px] font-bold text-[#157A43]">{{ $realTotal }}</span>
+                            <div class="mt-4 border-t border-[#F0F1F0] dark:border-[#262B21] pt-4 flex items-center justify-between gap-3">
+                                <span class="text-[14.5px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'TOTAL À PAYER' : 'TOTAL TO PAY' }}</span>
+                                <span class="text-[15.5px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $realTotal }}</span>
                             </div>
                         </div>
                     </div>
@@ -305,14 +305,14 @@
                         @foreach($poTimeline as $tlIdx => [$tlIcon, $tlTitle, $tlSub, $tlDone])
                         <div class="text-center">
                             <div class="flex items-center">
-                                <span class="flex-1 h-px {{ $tlIdx === 0 ? '' : ($poTimeline[$tlIdx - 1][3] && $tlDone ? 'bg-[#1F8A4C]' : 'bg-[#E0E4E0]') }} {{ $tlIdx === 0 ? 'bg-transparent' : '' }}"></span>
-                                <span class="w-[38px] h-[38px] shrink-0 rounded-full flex items-center justify-center {{ $tlDone ? 'bg-[#1F8A4C]' : 'bg-white border border-[#DDE2DD]' }}">
-                                    <i data-lucide="{{ $tlIcon }}" class="w-[17px] h-[17px] {{ $tlDone ? 'text-white' : 'text-[#8A8F98]' }}" style="stroke-width:{{ $tlDone ? 2.8 : 1.7 }}"></i>
+                                <span class="flex-1 h-px {{ $tlIdx === 0 ? '' : ($poTimeline[$tlIdx - 1][3] && $tlDone ? 'bg-[#1F8A4C] dark:bg-[#2E9250]' : 'bg-[#E0E4E0] dark:bg-[#1A1E16] ') }} {{ $tlIdx === 0 ? 'bg-transparent' : '' }}"></span>
+                                <span class="w-[38px] h-[38px] shrink-0 rounded-full flex items-center justify-center {{ $tlDone ? 'bg-[#1F8A4C] dark:bg-[#2E9250] ' : 'bg-white dark:bg-[#12150F] border border-[#DDE2DD] dark:border-[#39402F] ' }}">
+                                    <i data-lucide="{{ $tlIcon }}" class="w-[17px] h-[17px] {{ $tlDone ? 'text-white' : 'text-[#8A8F98] dark:text-[#868778] ' }}" style="stroke-width:{{ $tlDone ? 2.8 : 1.7 }}"></i>
                                 </span>
-                                <span class="flex-1 h-px {{ $tlIdx === count($poTimeline) - 1 ? 'bg-transparent' : ($tlDone && $poTimeline[$tlIdx + 1][3] ? 'bg-[#1F8A4C]' : 'bg-[#E0E4E0]') }}"></span>
+                                <span class="flex-1 h-px {{ $tlIdx === count($poTimeline) - 1 ? 'bg-transparent' : ($tlDone && $poTimeline[$tlIdx + 1][3] ? 'bg-[#1F8A4C] dark:bg-[#2E9250] ' : 'bg-[#E0E4E0] dark:bg-[#1A1E16] ') }}"></span>
                             </div>
-                            <p class="mt-3 text-[12px] font-bold text-[#1B1B18] leading-snug px-1">{{ $tlTitle }}</p>
-                            <p class="mt-1 text-[11px] text-[#6F6B60] leading-snug">{{ $tlSub }}</p>
+                            <p class="mt-3 text-[12px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug px-1">{{ $tlTitle }}</p>
+                            <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $tlSub }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -325,27 +325,27 @@
                     <h2 class="ui-card-title">{{ $isFr ? 'Résumé de la commande' : 'Order summary' }}</h2>
                     <dl class="mt-4 space-y-3">
                         <div class="flex items-center justify-between gap-3">
-                            <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Nombre d\'articles' : 'Number of items' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realItemCount }}</dd>
+                            <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Nombre d\'articles' : 'Number of items' }}</dt>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realItemCount }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-3">
-                            <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Quantité totale' : 'Total quantity' }}</dt>
-                            <dd class="text-[12.5px] font-bold text-[#1B1B18]">{{ $realTotalQty }} {{ $isFr ? 'Pièces' : 'Pieces' }}</dd>
+                            <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Quantité totale' : 'Total quantity' }}</dt>
+                            <dd class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $realTotalQty }} {{ $isFr ? 'Pièces' : 'Pieces' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Montant total' : 'Total amount' }}</dt>
-                            <dd class="mt-1 text-right text-[21px] font-bold text-[#157A43]">{{ $realTotal }}</dd>
+                            <dt class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Montant total' : 'Total amount' }}</dt>
+                            <dd class="mt-1 text-right text-[21px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $realTotal }}</dd>
                         </div>
                     </dl>
-                    <div class="mt-4 border-t border-[#F0F1F0] pt-4">
-                        <div class="bg-[#EFF6F1] rounded-xl px-4 py-3.5 flex items-start gap-3">
-                            <i data-lucide="badge-check" class="w-[22px] h-[22px] shrink-0 text-[#1F8A4C]" style="stroke-width:1.7"></i>
+                    <div class="mt-4 border-t border-[#F0F1F0] dark:border-[#262B21] pt-4">
+                        <div class="bg-[#EFF6F1] dark:bg-[#1A1E16] rounded-xl px-4 py-3.5 flex items-start gap-3">
+                            <i data-lucide="badge-check" class="w-[22px] h-[22px] shrink-0 text-[#1F8A4C] dark:text-[#339B56]" style="stroke-width:1.7"></i>
                             <p class="text-[12px] leading-relaxed">
-                                <span class="font-bold text-[#157A43]">{{ $poStatusLabel }}</span><br>
-                                <span class="text-[#3B382F]">{{ $isFr ? 'Le fournisseur a confirmé ce bon de commande.' : 'The supplier has confirmed this purchase order.' }}</span>
+                                <span class="font-bold text-[#157A43] dark:text-[#339B56]">{{ $poStatusLabel }}</span><br>
+                                <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Le fournisseur a confirmé ce bon de commande.' : 'The supplier has confirmed this purchase order.' }}</span>
                             </p>
                         </div>
-                        <p class="mt-2.5 text-[11.5px] text-[#6F6B60]">{{ $realConfirmAt }}</p>
+                        <p class="mt-2.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $realConfirmAt }}</p>
                     </div>
                 </section>
 
@@ -357,25 +357,25 @@
                             @if($pdType === 'img')
                             <img src="{{ asset('images/landing/qv-pdf.png') }}" alt="" class="w-[26px] h-[30px] shrink-0" aria-hidden="true">
                             @else
-                            <span class="w-[26px] h-[30px] shrink-0 flex items-center justify-center"><i data-lucide="file-text" class="w-[22px] h-[22px] text-[#55524A]" style="stroke-width:1.5"></i></span>
+                            <span class="w-[26px] h-[30px] shrink-0 flex items-center justify-center"><i data-lucide="file-text" class="w-[22px] h-[22px] text-[#55524A] dark:text-[#B4B5A6]" style="stroke-width:1.5"></i></span>
                             @endif
                             <span class="min-w-0">
-                                <span class="block text-[12.5px] font-bold text-[#1B1B18]">{{ $pdTitle }}</span>
-                                <span class="block text-[11.5px] text-[#6F6B60]">{{ $pdFile }}</span>
+                                <span class="block text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $pdTitle }}</span>
+                                <span class="block text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $pdFile }}</span>
                             </span>
                         </div>
                         @endforeach
                     </div>
-                    <p class="mt-3.5 text-right"><a href="{{ route('membership.certificate', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#3565DE]">{{ $isFr ? 'Voir tous les documents' : 'View all documents' }}</a></p>
+                    <p class="mt-3.5 text-right"><a href="{{ route('membership.certificate', ['lang' => $lang]) }}" class="text-[12.5px] font-semibold text-[#3565DE] dark:text-[#8FB6F5]">{{ $isFr ? 'Voir tous les documents' : 'View all documents' }}</a></p>
                 </section>
 
                 <section class="ui-card">
                     <h2 class="ui-card-title">Actions</h2>
-                    <div class="mt-2 divide-y divide-[#F1F2F1]">
+                    <div class="mt-2 divide-y divide-[#F1F2F1] dark:divide-[#262B21]">
                         @foreach($poActions as [$paIcon, $paLabel, $paUrl, $paDanger])
                         <a href="{{ $paUrl }}" class="flex items-center gap-3.5 py-3 group">
-                            <i data-lucide="{{ $paIcon }}" class="w-[18px] h-[18px] shrink-0 {{ $paDanger ? 'text-[#E5484D]' : 'text-[#3B382F]' }}" style="stroke-width:1.7"></i>
-                            <span class="flex-1 text-[13px] {{ $paDanger ? 'text-[#E5484D]' : 'text-[#3B382F] group-hover:text-[#14652F]' }}">{{ $paLabel }}</span>
+                            <i data-lucide="{{ $paIcon }}" class="w-[18px] h-[18px] shrink-0 {{ $paDanger ? 'text-[#E5484D] dark:text-[#F0555C] ' : 'text-[#3B382F] dark:text-[#B4B5A6] ' }}" style="stroke-width:1.7"></i>
+                            <span class="flex-1 text-[13px] {{ $paDanger ? 'text-[#E5484D] dark:text-[#F0555C] ' : 'text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56] ' }}">{{ $paLabel }}</span>
                         </a>
                         @endforeach
                     </div>

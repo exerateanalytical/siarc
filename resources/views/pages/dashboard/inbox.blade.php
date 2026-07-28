@@ -15,26 +15,26 @@
                     : $conv->buyer?->name;
                 $unread = $conv->messages()->where('sender_id', '!=', $userId)->whereNull('read_at')->count();
             @endphp
-            <a href="{{ route('messages.thread', ['id' => $conv->id]) }}" class="flex items-center gap-3 px-4 py-3.5 hover:bg-[#FBF9F4] transition-colors border-b border-[#FBF9F4] last:border-0">
-                <div class="w-10 h-10 rounded-full bg-forest-50 flex items-center justify-center shrink-0">
-                    <i data-lucide="{{ $isBuyer ? 'building-2' : 'user' }}" class="w-4 h-4 text-forest-500"></i>
+            <a href="{{ route('messages.thread', ['id' => $conv->id]) }}" class="flex items-center gap-3 px-4 py-3.5 hover:bg-[#FBF9F4] dark:hover:bg-[#242A1E] transition-colors border-b border-[#FBF9F4] dark:border-[#262B21] last:border-0">
+                <div class="w-10 h-10 rounded-full bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center shrink-0">
+                    <i data-lucide="{{ $isBuyer ? 'building-2' : 'user' }}" class="w-4 h-4 text-forest-500 dark:text-[#339B56]"></i>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
-                        <p class="text-sm font-semibold text-[#1B1B18] truncate">{{ $otherName ?: ($lang === 'fr' ? 'Utilisateur' : 'User') }}</p>
+                        <p class="text-sm font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $otherName ?: ($lang === 'fr' ? 'Utilisateur' : 'User') }}</p>
                         @if($unread > 0)
-                        <span class="w-2 h-2 rounded-full bg-[#DC0508] shrink-0"></span>
+                        <span class="w-2 h-2 rounded-full bg-[#DC0508] dark:bg-[#C0343B] shrink-0"></span>
                         @endif
                     </div>
-                    <p class="text-xs text-[#8A857A] truncate">{{ $conv->subject }}</p>
+                    <p class="text-xs text-[#8A857A] dark:text-[#868778] truncate">{{ $conv->subject }}</p>
                     @if($conv->latestMessage)
-                    <p class="text-xs text-[#A8A296] truncate mt-0.5">{{ Str::limit($conv->latestMessage->body, 60) }}</p>
+                    <p class="text-xs text-[#A8A296] dark:text-[#868778] truncate mt-0.5">{{ Str::limit($conv->latestMessage->body, 60) }}</p>
                     @endif
                 </div>
                 <div class="text-right shrink-0">
-                    <p class="text-xs text-[#A8A296]">{{ $conv->last_message_at?->diffForHumans() }}</p>
+                    <p class="text-xs text-[#A8A296] dark:text-[#868778]">{{ $conv->last_message_at?->diffForHumans() }}</p>
                     @if($unread > 0)
-                    <span class="inline-block mt-1 px-1.5 py-0.5 bg-[#DC0508] text-white text-[10px] font-bold rounded-full">{{ $unread }}</span>
+                    <span class="inline-block mt-1 px-1.5 py-0.5 bg-[#DC0508] dark:bg-[#C0343B] text-white text-[10px] font-bold rounded-full">{{ $unread }}</span>
                     @endif
                 </div>
             </a>

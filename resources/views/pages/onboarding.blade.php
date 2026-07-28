@@ -155,34 +155,34 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F2F3F4] text-[#1B1B18] antialiased">
+<body class="bg-[#F2F3F4] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 <!-- Header -->
-<header class="bg-white">
+<header class="bg-white dark:bg-[#12150F]">
     <div class="max-w-[1024px] mx-auto px-4 flex items-center justify-between gap-4 py-2.5">
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
             <img src="{{ brand_asset('mark') }}" alt="" class="w-[50px] h-[50px] object-contain">
             <span class="leading-tight">
-                <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">Artisan Hub 237</span>
-                <span class="block text-[10px] text-[#2E7D4F] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">Artisan Hub 237</span>
+                <span class="block text-[10px] text-[#2E7D4F] dark:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
         <div class="flex items-center gap-4">
             <a href="{{ route('contact', ['lang' => $lang]) }}" class="hidden sm:flex items-center gap-2.5">
-                <i data-lucide="headphones" class="w-5 h-5 text-[#14532D]" style="stroke-width:1.7"></i>
+                <i data-lucide="headphones" class="w-5 h-5 text-[#14532D] dark:text-[#339B56]" style="stroke-width:1.7"></i>
                 <span class="leading-tight text-left">
-                    <span class="block text-[12.5px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</span>
-                    <span class="block text-[11px] text-[#6F6B60]">{{ $isFr ? 'Contactez-nous' : 'Contact us' }}</span>
+                    <span class="block text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</span>
+                    <span class="block text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Contactez-nous' : 'Contact us' }}</span>
                 </span>
             </a>
             <div class="relative group">
-                <button class="flex items-center gap-1.5 border border-[#E5E3E0] rounded-lg px-3.5 py-2 text-[13px] font-semibold text-[#1B1B18]">
+                <button class="flex items-center gap-1.5 border border-[#E5E3E0] dark:border-[#262B21] rounded-lg px-3.5 py-2 text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ strtoupper($lang) }}
-                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i>
                 </button>
-                <div class="absolute right-0 top-full w-28 bg-white rounded-lg shadow-lg border border-[#E7E7E5] py-1 hidden group-hover:block z-50">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="block px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf' : 'text-[#262521]' }}">FR — Français</a>
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf' : 'text-[#262521]' }}">EN — English</a>
+                <div class="absolute right-0 top-full w-28 bg-white dark:bg-[#12150F] rounded-lg shadow-lg border border-[#E7E7E5] dark:border-[#262B21] py-1 hidden group-hover:block z-50">
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="block px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">FR — Français</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">EN — English</a>
                 </div>
             </div>
         </div>
@@ -251,21 +251,21 @@
         </aside>
 
         <!-- Main -->
-        <main class="flex-1 min-w-0 bg-white rounded-2xl lg:rounded-l-none lg:rounded-tr-none shadow-sm mt-3 lg:mt-0 px-5 sm:px-8 py-7">
+        <main class="flex-1 min-w-0 bg-white dark:bg-[#12150F] rounded-2xl lg:rounded-l-none lg:rounded-tr-none shadow-sm mt-3 lg:mt-0 px-5 sm:px-8 py-7">
 
             <!-- ═══════ Step 1 — account type ═══════ -->
             <div id="panel-1" class="ob-panel">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Étape 1 sur 3' : 'Step 1 of 3' }}</p>
-                        <h1 class="mt-1 text-[23px] font-bold text-[#1B1B18]">{{ $isFr ? 'Choisissez votre type de compte' : 'Choose your account type' }}</h1>
-                        <p class="mt-1.5 text-[13px] text-[#6F6B60] max-w-[430px]">
+                        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Étape 1 sur 3' : 'Step 1 of 3' }}</p>
+                        <h1 class="mt-1 text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Choisissez votre type de compte' : 'Choose your account type' }}</h1>
+                        <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[430px]">
                             {{ $isFr ? 'Sélectionnez le profil qui correspond le mieux à votre activité sur la plateforme.' : 'Select the profile that best matches your activity on the platform.' }}
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[11.5px] text-[#3B382F]">33% {{ $isFr ? 'terminé' : 'complete' }}</p>
-                        <div class="mt-1.5 w-[150px] h-[7px] rounded-full bg-[#E8EAE9]"><div class="h-full w-[33%] rounded-full bg-[#10592E]"></div></div>
+                        <p class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7]">33% {{ $isFr ? 'terminé' : 'complete' }}</p>
+                        <div class="mt-1.5 w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-[33%] rounded-full bg-[#10592E]"></div></div>
                     </div>
                 </div>
 
@@ -288,16 +288,16 @@
                     @foreach($accountTypes as $atIdx => [$atKey, $atIcon, $atColor, $atTitle, $atDesc, $atPerks])
                     <label class="cursor-pointer">
                         <input type="radio" name="account_type" value="{{ $atKey }}" class="sr-only peer" @checked($atIdx === 0)>
-                        <div class="relative h-full rounded-xl border border-[#E7E9E7] bg-white p-6 transition-all peer-checked:border-[#0F5132] peer-checked:shadow-[0_0_0_1px_#0F5132] hover:border-[#C9CFC9]">
+                        <div class="relative h-full rounded-xl border border-[#E7E9E7] dark:border-[#262B21] bg-white dark:bg-[#12150F] p-6 transition-all peer-checked:border-[#0F5132] peer-checked:shadow-[0_0_0_1px_#0F5132] hover:border-[#C9CFC9]">
                             <span class="absolute top-6 right-6 w-[24px] h-[24px] rounded-full border-2 border-[#C9CFC9] flex items-center justify-center at-radio">
                                 <span class="hidden w-[12px] h-[12px] rounded-full bg-[#0F5132] at-dot"></span>
                             </span>
                             <img src="{{ asset('images/landing/' . $atIcon) }}" alt="" class="w-[60px] h-[60px]" aria-hidden="true">
-                            <h3 class="mt-5 text-[16.5px] font-bold text-[#1B1B18]">{{ $atTitle }}</h3>
-                            <p class="mt-2 text-[12.5px] text-[#55524A] leading-relaxed">{{ $atDesc }}</p>
+                            <h3 class="mt-5 text-[16.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $atTitle }}</h3>
+                            <p class="mt-2 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $atDesc }}</p>
                             <ul class="mt-4 space-y-2.5">
                                 @foreach($atPerks as $perk)
-                                <li class="flex items-center gap-2.5 text-[12px] text-[#3B382F]">
+                                <li class="flex items-center gap-2.5 text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">
                                     <span class="w-[17px] h-[17px] shrink-0 rounded-full flex items-center justify-center" style="background:{{ $atColor }}">
                                         <i data-lucide="check" class="w-2.5 h-2.5 text-white" style="stroke-width:3.5"></i>
                                     </span>
@@ -310,15 +310,15 @@
                     @endforeach
                 </div>
 
-                <div class="relative mt-5 rounded-xl border border-[#DFEDE2] bg-[#F3F8F3] overflow-hidden">
+                <div class="relative mt-5 rounded-xl border border-[#DFEDE2] dark:border-[#262B21] bg-[#F3F8F3] dark:bg-[#0A0C09] overflow-hidden">
                     <img src="{{ asset('images/landing/ob-vases.png') }}" alt="" class="absolute right-4 bottom-0 h-[88%] pointer-events-none select-none hidden sm:block" aria-hidden="true">
                     <div class="relative flex items-start gap-4 p-5 sm:pr-[130px]">
-                        <span class="w-[38px] h-[38px] shrink-0 rounded-full bg-white border border-[#CFE3D4] flex items-center justify-center">
-                            <i data-lucide="star" class="w-[18px] h-[18px] text-[#14532D]" style="stroke-width:1.8"></i>
+                        <span class="w-[38px] h-[38px] shrink-0 rounded-full bg-white dark:bg-[#12150F] border border-[#CFE3D4] dark:border-[#262B21] flex items-center justify-center">
+                            <i data-lucide="star" class="w-[18px] h-[18px] text-[#14532D] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         </span>
                         <div>
-                            <h3 class="text-[14px] font-bold text-[#1B1B18]">{{ $isFr ? 'Pourquoi devenir membre ?' : 'Why become a member?' }}</h3>
-                            <p class="mt-1 text-[12.5px] text-[#3B382F] leading-relaxed">
+                            <h3 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Pourquoi devenir membre ?' : 'Why become a member?' }}</h3>
+                            <p class="mt-1 text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
                                 {{ $isFr
                                     ? 'En devenant membre, vous accédez à une visibilité nationale et internationale, aux demandes de devis qualifiées et à des outils pour développer votre activité.'
                                     : 'By becoming a member, you gain national and international visibility, qualified quote requests and tools to grow your business.'
@@ -335,30 +335,30 @@
                     </button>
                 </div>
 
-                <p class="mt-6 pt-5 border-t border-[#F0F0EE] text-center text-[13px] text-[#55524A]">
+                <p class="mt-6 pt-5 border-t border-[#F0F0EE] dark:border-[#262B21] text-center text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
                     {{ $isFr ? 'Vous avez déjà un compte ?' : 'Already have an account?' }}
-                    <a href="/login?lang={{ $lang }}" class="ml-1.5 font-semibold text-[#14532D] hover:underline">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                    <a href="/login?lang={{ $lang }}" class="ml-1.5 font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
                 </p>
             </div>
 
             <!-- ═══════ Step 2 — identity & security ═══════ -->
             <div id="panel-2" class="ob-panel hidden">
-                <button type="button" onclick="goToStep(1)" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#1B1B18] hover:text-leaf">
+                <button type="button" onclick="goToStep(1)" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     {{ $isFr ? 'Retour' : 'Back' }}
                 </button>
                 <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <h1 class="text-[23px] font-bold text-[#1B1B18]">{{ $isFr ? 'Vos informations personnelles' : 'Your personal information' }}</h1>
-                        <p class="mt-1.5 text-[13px] text-[#6F6B60] max-w-[460px]">
+                        <h1 class="text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Vos informations personnelles' : 'Your personal information' }}</h1>
+                        <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">
                             {{ $isFr ? 'Ces informations nous permettent de vous identifier et de sécuriser votre compte.' : 'This information lets us identify you and secure your account.' }}
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[12px] text-[#3B382F]">{{ $isFr ? 'Étape 2 sur 3' : 'Step 2 of 3' }}</p>
+                        <p class="text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 2 sur 3' : 'Step 2 of 3' }}</p>
                         <div class="mt-1.5 flex items-center gap-2.5">
-                            <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9]"><div class="h-full w-[66%] rounded-full bg-[#10592E]"></div></div>
-                            <span class="text-[11.5px] text-[#3B382F] whitespace-nowrap">66% {{ $isFr ? 'terminé' : 'complete' }}</span>
+                            <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-[66%] rounded-full bg-[#10592E]"></div></div>
+                            <span class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">66% {{ $isFr ? 'terminé' : 'complete' }}</span>
                         </div>
                     </div>
                 </div>
@@ -368,12 +368,12 @@
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         <div>
                             <label for="ob-first-name" class="{{ $labelCls }}">{{ $isFr ? 'Prénom(s)' : 'First name(s)' }} <span class="ui-req">*</span></label>
-                            <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
+                            <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                                 <input type="text" id="ob-first-name" name="first_name" value="{{ old('first_name') }}" placeholder="Aristide" class="{{ $fieldCls }}"></div>
                         </div>
                         <div>
                             <label for="ob-last-name" class="{{ $labelCls }}">{{ $isFr ? 'Nom' : 'Last name' }} <span class="ui-req">*</span></label>
-                            <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
+                            <div class="relative"><i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                                 <input type="text" id="ob-last-name" name="last_name" value="{{ old('last_name') }}" placeholder="Ndop" class="{{ $fieldCls }}"></div>
                         </div>
                     </div>
@@ -388,13 +388,13 @@
                                  the kit's field-group is for — no second bordered box. --}}
                             <div class="ui-field-group ui-field--lg">
                                 <img src="{{ asset('images/landing/ob-flag.png') }}" alt="" class="w-[20px] h-[14px] shrink-0 rounded-[2px]">
-                                <span class="shrink-0 text-[13.5px] text-[#1B1B18]">+237</span>
+                                <span class="shrink-0 text-[13.5px] text-[#1B1B18] dark:text-[#F3EFE7]">+237</span>
                                 <input type="tel" id="ob-phone" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="ui-field-bare">
                             </div>
                         </div>
                         <div>
                             <label for="ob-email" class="{{ $labelCls }}">Email <span class="ui-req">*</span></label>
-                            <div class="relative"><i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A]"></i>
+                            <div class="relative"><i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                                 <input type="email" id="ob-email" name="email" value="{{ old('email') }}" placeholder="vous@exemple.cm" class="{{ $fieldCls }}"></div>
                             <p class="ui-hint">{{ $isFr ? 'Un code de vérification y sera envoyé.' : 'A verification code will be sent there.' }}</p>
                         </div>
@@ -434,23 +434,23 @@
 
             <!-- ═══════ Step 3 — review & account creation ═══════ -->
             <div id="panel-3" class="ob-panel hidden">
-                <button type="button" onclick="goToStep(2)" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#1B1B18] hover:text-leaf">
+                <button type="button" onclick="goToStep(2)" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     {{ $isFr ? 'Retour' : 'Back' }}
                 </button>
                 <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <h1 class="text-[23px] font-bold text-[#1B1B18] flex flex-wrap items-center gap-3">
+                        <h1 class="text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] flex flex-wrap items-center gap-3">
                             {{ $isFr ? 'Vérification & création' : 'Review & creation' }}
-                            <span class="inline-flex items-center bg-[#EBF4ED] rounded-full px-3.5 py-1.5 text-[11.5px] font-semibold text-[#14532D]">{{ $isFr ? 'Dernière étape' : 'Last step' }}</span>
+                            <span class="inline-flex items-center bg-[#EBF4ED] dark:bg-[#0C3D1D] rounded-full px-3.5 py-1.5 text-[11.5px] font-semibold text-[#14532D] dark:text-[#339B56]">{{ $isFr ? 'Dernière étape' : 'Last step' }}</span>
                         </h1>
-                        <p class="mt-1.5 text-[13px] text-[#6F6B60] max-w-[460px]">{{ $isFr ? 'Relisez les informations que vous venez de saisir. Elles pourront être modifiées à tout moment depuis votre tableau de bord.' : 'Check the information you have just entered. You will be able to edit it at any time from your dashboard.' }}</p>
+                        <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">{{ $isFr ? 'Relisez les informations que vous venez de saisir. Elles pourront être modifiées à tout moment depuis votre tableau de bord.' : 'Check the information you have just entered. You will be able to edit it at any time from your dashboard.' }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[12px] text-[#3B382F]">{{ $isFr ? 'Étape 3 sur 3' : 'Step 3 of 3' }}</p>
+                        <p class="text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 3 sur 3' : 'Step 3 of 3' }}</p>
                         <div class="mt-1.5 flex items-center gap-2.5">
-                            <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9]"><div class="h-full w-full rounded-full bg-[#10592E]"></div></div>
-                            <span class="text-[11.5px] text-[#3B382F] whitespace-nowrap">100% {{ $isFr ? 'terminé' : 'complete' }}</span>
+                            <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-full rounded-full bg-[#10592E]"></div></div>
+                            <span class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">100% {{ $isFr ? 'terminé' : 'complete' }}</span>
                         </div>
                     </div>
                 </div>
@@ -463,28 +463,28 @@
                     <dl class="ui-dl ui-dl--2">
                         <div>
                             <dt class="ui-dt flex items-center gap-2.5">
-                                <i data-lucide="user-round" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
+                                <i data-lucide="user-round" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]" style="stroke-width:1.9"></i>
                                 {{ $isFr ? 'Type de compte' : 'Account type' }}
                             </dt>
                             <dd id="sum-type" class="ui-dd">—</dd>
                         </div>
                         <div>
                             <dt class="ui-dt flex items-center gap-2.5">
-                                <i data-lucide="id-card" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
+                                <i data-lucide="id-card" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]" style="stroke-width:1.9"></i>
                                 {{ $isFr ? 'Identité' : 'Identity' }}
                             </dt>
                             <dd id="sum-name" class="ui-dd">—</dd>
                         </div>
                         <div>
                             <dt class="ui-dt flex items-center gap-2.5">
-                                <i data-lucide="mail" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
+                                <i data-lucide="mail" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]" style="stroke-width:1.9"></i>
                                 Email
                             </dt>
                             <dd id="sum-email" class="ui-dd break-all">—</dd>
                         </div>
                         <div>
                             <dt class="ui-dt flex items-center gap-2.5">
-                                <i data-lucide="phone" class="w-4 h-4 shrink-0 text-[#157A43]" style="stroke-width:1.9"></i>
+                                <i data-lucide="phone" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]" style="stroke-width:1.9"></i>
                                 {{ $isFr ? 'Téléphone' : 'Phone' }}
                             </dt>
                             <dd id="sum-phone" class="ui-dd">—</dd>
@@ -498,10 +498,10 @@
                     <ol class="mt-4 space-y-3">
                         @foreach($nextSteps as $nsIdx => [$nsIcon, $nsHref, $nsTitle, $nsDesc, $nsBtn])
                         <li class="flex items-start gap-3.5">
-                            <span class="w-[30px] h-[30px] shrink-0 rounded-full bg-[#EBF4ED] flex items-center justify-center text-[12px] font-bold text-[#14532D]">{{ $nsIdx + 1 }}</span>
+                            <span class="w-[30px] h-[30px] shrink-0 rounded-full bg-[#EBF4ED] dark:bg-[#0C3D1D] flex items-center justify-center text-[12px] font-bold text-[#14532D] dark:text-[#339B56]">{{ $nsIdx + 1 }}</span>
                             <div class="min-w-0 pt-0.5">
-                                <p class="text-[13px] font-bold text-[#1B1B18]">{{ $nsTitle }}</p>
-                                <p class="mt-1 text-[12px] text-[#6F6B60] leading-relaxed">{{ $nsDesc }}</p>
+                                <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $nsTitle }}</p>
+                                <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $nsDesc }}</p>
                             </div>
                         </li>
                         @endforeach
@@ -509,14 +509,14 @@
                 </section>
 
                 <div class="relative mt-4">
-                    <div class="rounded-xl bg-[#F3F7F3] px-4 py-4 lg:pr-[250px] flex items-start gap-3">
+                    <div class="rounded-xl bg-[#F3F7F3] dark:bg-[#0A0C09] px-4 py-4 lg:pr-[250px] flex items-start gap-3">
                         {{-- Real checkbox now, so the browser owns the checked state; the kit
                              styles it and the old hand-drawn box is gone. --}}
                         <label class="ui-check-row cursor-pointer select-none">
                             <input type="checkbox" checked class="ui-check ob-terms-check mt-0.5">
                             <span>
                                 {{ $isFr ? "Je certifie que toutes les informations fournies sont exactes et que j'accepte" : 'I certify that all the information provided is accurate and that I accept' }}
-                                {{ $isFr ? 'les' : 'the' }} <a href="{{ route('terms') }}" target="_blank" class="text-[#157A43] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a> {{ $isFr ? 'de la plateforme.' : 'of the platform.' }}
+                                {{ $isFr ? 'les' : 'the' }} <a href="{{ route('terms') }}" target="_blank" class="text-[#157A43] dark:text-[#339B56] underline underline-offset-2">{{ $isFr ? "conditions générales d'utilisation" : 'general terms of use' }}</a> {{ $isFr ? 'de la plateforme.' : 'of the platform.' }}
                             </span>
                         </label>
                     </div>
@@ -541,33 +541,33 @@
 
         <!-- White sidebar -->
         <aside class="hidden lg:block lg:w-[230px] shrink-0 lg:pl-3">
-            <h2 class="text-[15px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase leading-snug">
+            <h2 class="text-[15px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase leading-snug">
                 {{ $isFr ? 'Créer mon compte' : 'Create my account' }}<br>{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}
             </h2>
-            <p class="mt-3 text-[12.5px] text-[#55524A]">{{ $isFr ? 'Étapes complétées' : 'Completed steps' }}</p>
-            <p class="text-[15px] font-bold text-[#157A43]">{{ $stepCount }} {{ $isFr ? 'sur' : 'of' }} {{ $stepCount }}</p>
+            <p class="mt-3 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Étapes complétées' : 'Completed steps' }}</p>
+            <p class="text-[15px] font-bold text-[#157A43] dark:text-[#339B56]">{{ $stepCount }} {{ $isFr ? 'sur' : 'of' }} {{ $stepCount }}</p>
 
             <ol class="mt-7">
                 @foreach($wizardSteps as $wsIdx => [$wsTitle, $wsSub])
                 <li class="relative {{ $wsIdx > 0 ? 'mt-5' : '' }}">
-                    @if($wsIdx < $stepCount - 1)<span class="absolute left-[13px] top-[32px] -bottom-5 w-px bg-[#D9E6DC]"></span>@endif
+                    @if($wsIdx < $stepCount - 1)<span class="absolute left-[13px] top-[32px] -bottom-5 w-px bg-[#D9E6DC] dark:bg-[#0C3D1D]"></span>@endif
                     <div class="flex items-start gap-3.5">
                         <span class="relative z-10 w-[27px] h-[27px] shrink-0 rounded-full bg-[#14532D] flex items-center justify-center text-[12px] font-semibold text-white">{{ $wsIdx + 1 }}</span>
                         <span class="pt-0.5 min-w-0">
-                            <span class="block text-[13px] font-bold text-[#1B1B18] leading-snug">{{ $wsIdx === 0 ? ($isFr ? 'Type de compte' : 'Account type') : $wsTitle }}</span>
-                            <span class="block mt-1 text-[12px] text-[#55524A] leading-snug {{ $wsIdx === 0 ? 'success-type-name' : '' }}">{{ $wsIdx === 0 ? reset($typeNames) : $wsSub }}</span>
+                            <span class="block text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $wsIdx === 0 ? ($isFr ? 'Type de compte' : 'Account type') : $wsTitle }}</span>
+                            <span class="block mt-1 text-[12px] text-[#55524A] dark:text-[#B4B5A6] leading-snug {{ $wsIdx === 0 ? 'success-type-name' : '' }}">{{ $wsIdx === 0 ? reset($typeNames) : $wsSub }}</span>
                         </span>
                     </div>
                 </li>
                 @endforeach
             </ol>
 
-            <div class="mt-10 bg-[#F4F9F6] rounded-xl p-4">
-                <p class="flex items-start gap-3 text-[12.5px] font-bold text-[#14532D] leading-snug">
+            <div class="mt-10 bg-[#F4F9F6] dark:bg-[#0A0C09] rounded-xl p-4">
+                <p class="flex items-start gap-3 text-[12.5px] font-bold text-[#14532D] dark:text-[#339B56] leading-snug">
                     <img src="{{ asset('images/landing/ob12-shield.png') }}" alt="" class="w-[19px] h-[26px] shrink-0" aria-hidden="true">
                     {{ $isFr ? 'Votre confiance est notre priorité' : 'Your trust is our priority' }}
                 </p>
-                <p class="mt-3 text-[12px] text-[#3B382F] leading-relaxed">
+                <p class="mt-3 text-[12px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
                     {{ $isFr
                         ? 'Vos données sont sécurisées et utilisées uniquement pour la vérification et la gestion de votre compte.'
                         : 'Your data is secured and used only for the verification and management of your account.'
@@ -583,9 +583,9 @@
             <section class="ui-card flex flex-col sm:flex-row items-center gap-6">
                 <img src="{{ asset('images/landing/ob12-check.png') }}" alt="" class="w-[120px] sm:w-[140px] shrink-0" aria-hidden="true">
                 <div class="flex-1 min-w-0 text-center sm:text-left">
-                    <p class="text-[16px] font-semibold text-[#1B1B18]">{{ $isFr ? 'Félicitations !' : 'Congratulations!' }} 🎉</p>
-                    <h1 class="mt-1.5 text-[22px] sm:text-[26px] font-bold text-[#1B1B18] leading-snug">{{ $isFr ? 'Votre compte a été créé.' : 'Your account has been created.' }}</h1>
-                    <p class="mt-3 text-[13px] text-[#55524A] leading-relaxed max-w-[480px]">
+                    <p class="text-[16px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Félicitations !' : 'Congratulations!' }} 🎉</p>
+                    <h1 class="mt-1.5 text-[22px] sm:text-[26px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $isFr ? 'Votre compte a été créé.' : 'Your account has been created.' }}</h1>
+                    <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[480px]">
                         {{ $isFr
                             ? "Bienvenue sur Artisan Hub 237. Vous êtes déjà connecté : il ne reste plus qu'à compléter votre profil pour être visible des acheteurs."
                             : 'Welcome to Artisan Hub 237. You are already signed in: all that is left is to complete your profile so buyers can find you.'
@@ -596,18 +596,18 @@
             </section>
 
             <!-- Account info row -->
-            <section class="mt-4 ui-card grid grid-cols-1 sm:grid-cols-3 gap-y-4 sm:divide-x divide-[#EDEDEB]">
+            <section class="mt-4 ui-card grid grid-cols-1 sm:grid-cols-3 gap-y-4 sm:divide-x divide-[#EDEDEB] dark:divide-[#262B21]">
                 <div class="min-w-0">
                     <p class="ui-dt">{{ $isFr ? 'Compte' : 'Account' }}</p>
-                    <p class="ui-dd text-[#14652F] break-all">{{ $siacUser['email'] ?? '—' }}</p>
+                    <p class="ui-dd text-[#14652F] dark:text-[#339B56] break-all">{{ $siacUser['email'] ?? '—' }}</p>
                 </div>
                 <div class="sm:pl-8 min-w-0">
                     <p class="ui-dt">{{ $isFr ? 'Date de création' : 'Creation date' }}</p>
                     <p class="ui-dd">{{ $submittedAtLabel }}</p>
                 </div>
                 <div class="sm:pl-8 flex items-center gap-3.5 min-w-0">
-                    <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] flex items-center justify-center">
-                        <i data-lucide="user" class="w-5 h-5 text-[#14532D]"></i>
+                    <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] dark:bg-[#0C3D1D] flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5 text-[#14532D] dark:text-[#339B56]"></i>
                     </span>
                     <span class="min-w-0">
                         <span class="ui-dt block">{{ $isFr ? 'Type de compte' : 'Account type' }}</span>
@@ -623,12 +623,12 @@
                 <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($nextSteps as $nsIdx => [$nsIcon, $nsHref, $nsTitle, $nsDesc, $nsBtn])
                     <div class="ui-card flex flex-col">
-                        <span class="w-[54px] h-[54px] rounded-2xl bg-[#E8F2EC] flex items-center justify-center">
-                            <i data-lucide="{{ $nsIcon }}" class="w-[24px] h-[24px] text-[#14652F]" style="stroke-width:1.8"></i>
+                        <span class="w-[54px] h-[54px] rounded-2xl bg-[#E8F2EC] dark:bg-[#0C3D1D] flex items-center justify-center">
+                            <i data-lucide="{{ $nsIcon }}" class="w-[24px] h-[24px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         </span>
-                        <p class="mt-4 text-[11.5px] font-semibold text-[#8A857A]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
-                        <h3 class="mt-0.5 text-[14.5px] font-bold text-[#1B1B18]">{{ $nsTitle }}</h3>
-                        <p class="mt-2.5 text-[12.5px] text-[#55524A] leading-relaxed flex-1">{{ $nsDesc }}</p>
+                        <p class="mt-4 text-[11.5px] font-semibold text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
+                        <h3 class="mt-0.5 text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $nsTitle }}</h3>
+                        <p class="mt-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed flex-1">{{ $nsDesc }}</p>
                         <a href="{{ $nsHref }}" class="mt-5 ui-btn ui-btn-secondary">
                             {{ $nsBtn }}
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -650,34 +650,34 @@
 
             <!-- Email verification notice -->
             <section class="mt-4 ui-card flex flex-col sm:flex-row items-start gap-5">
-                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] flex items-center justify-center">
-                    <i data-lucide="mail" class="w-5 h-5 text-[#14652F]" style="stroke-width:1.8"></i>
+                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] dark:bg-[#0C3D1D] flex items-center justify-center">
+                    <i data-lucide="mail" class="w-5 h-5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                 </span>
                 <div class="min-w-0">
                     <h2 class="ui-card-title">{{ $isFr ? 'Vérifiez votre adresse email' : 'Verify your email address' }}</h2>
-                    <p class="mt-1.5 text-[12.5px] text-[#55524A] leading-relaxed">
+                    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                         {{ $isFr ? 'Un code de vérification vient d\'être envoyé à' : 'A verification code has just been sent to' }}
-                        <span class="font-semibold text-[#14652F] break-all">{{ $siacUser['email'] ?? '—' }}</span>.
+                        <span class="font-semibold text-[#14652F] dark:text-[#339B56] break-all">{{ $siacUser['email'] ?? '—' }}</span>.
                         {{ $isFr ? 'Pensez à vérifier vos spams si vous ne le voyez pas.' : 'Remember to check your spam folder if you do not see it.' }}
                     </p>
                 </div>
             </section>
 
             <!-- Help bar -->
-            <section class="mt-4 bg-[#EFF5F1] rounded-xl px-6 py-4 flex items-start gap-5">
-                <i data-lucide="headphones" class="w-[30px] h-[30px] shrink-0 text-[#14652F]" style="stroke-width:1.6"></i>
-                <p class="text-[12.5px] text-[#3B382F] leading-relaxed">
-                    <span class="font-bold text-[#1B1B18]">{{ $isFr ? "Besoin d'aide ?" : 'Need help?' }}</span>
+            <section class="mt-4 bg-[#EFF5F1] dark:bg-[#0A0C09] rounded-xl px-6 py-4 flex items-start gap-5">
+                <i data-lucide="headphones" class="w-[30px] h-[30px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
+                <p class="text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+                    <span class="font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? "Besoin d'aide ?" : 'Need help?' }}</span>
                     {{ $isFr ? 'Notre équipe est là pour vous accompagner.' : 'Our team is here to support you.' }}<br>
                     {{ $isFr ? 'Contactez-nous par email à' : 'Contact us by email at' }}
-                    <a href="mailto:{{ config('legal.company.email') }}" class="font-semibold text-[#14652F] break-all">{{ config('legal.company.email') }}</a>@if(config('legal.company.phone'))
+                    <a href="mailto:{{ config('legal.company.email') }}" class="font-semibold text-[#14652F] dark:text-[#339B56] break-all">{{ config('legal.company.email') }}</a>@if(config('legal.company.phone'))
                     {{ $isFr ? 'ou par téléphone au' : 'or by phone on' }}
-                    <a href="tel:{{ preg_replace('/\s+/', '', config('legal.company.phone')) }}" class="font-semibold text-[#14652F]">{{ config('legal.company.phone') }}</a>@endif.
+                    <a href="tel:{{ preg_replace('/\s+/', '', config('legal.company.phone')) }}" class="font-semibold text-[#14652F] dark:text-[#339B56]">{{ config('legal.company.phone') }}</a>@endif.
                 </p>
             </section>
 
             <!-- Closing quote -->
-            <p class="mt-6 mb-2 text-center text-[15px] font-semibold italic text-[#14532D]">
+            <p class="mt-6 mb-2 text-center text-[15px] font-semibold italic text-[#14532D] dark:text-[#339B56]">
                 “{{ $isFr ? 'Ensemble, valorisons le savoir-faire des artisans camerounais et ouvrons-leur de nouvelles opportunités.' : 'Together, let us showcase the know-how of Cameroonian artisans and open up new opportunities for them.' }}”
                 <img src="{{ asset('images/landing/ob12-heart.png') }}" alt="" class="inline-block w-[22px] h-[22px] ml-2 align-text-bottom" aria-hidden="true">
             </p>
@@ -689,14 +689,14 @@
          page — below a form the visitor has already decided to fill in. Someone
          who reached this page is past being persuaded; they want the fields. --}}
     <div id="step1-extras" class="hidden lg:block">
-        <section class="mt-4 bg-white rounded-2xl shadow-sm px-6 py-7">
-            <h2 class="text-center text-[17.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Les avantages de la plateforme' : 'The platform\'s advantages' }}</h2>
+        <section class="mt-4 bg-white dark:bg-[#12150F] rounded-2xl shadow-sm px-6 py-7">
+            <h2 class="text-center text-[17.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Les avantages de la plateforme' : 'The platform\'s advantages' }}</h2>
             <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-7">
                 @foreach($advantages as [$advIcon, $advTitle, $advDesc])
                 <div class="text-center">
                     <img src="{{ asset('images/landing/' . $advIcon) }}" alt="" class="w-[54px] h-[54px] mx-auto" aria-hidden="true">
-                    <h3 class="mt-3.5 text-[12.5px] font-bold text-[#1B1B18]">{{ $advTitle }}</h3>
-                    <p class="mt-2 text-[11px] text-[#6F6B60] leading-relaxed whitespace-pre-line">{{ $advDesc }}</p>
+                    <h3 class="mt-3.5 text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $advTitle }}</h3>
+                    <p class="mt-2 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $advDesc }}</p>
                 </div>
                 @endforeach
             </div>
@@ -718,11 +718,11 @@
     </div>
 
     <!-- Help strip (shown on every wizard step) -->
-    <section id="strip-help" class="mt-4 bg-[#FEFAF3] border border-[#F2E8D8] rounded-2xl px-6 py-4 flex flex-wrap items-center gap-4">
+    <section id="strip-help" class="mt-4 bg-[#FEFAF3] dark:bg-[#12150F] border border-[#F2E8D8] dark:border-[#6A5210] rounded-2xl px-6 py-4 flex flex-wrap items-center gap-4">
         <img src="{{ asset('images/landing/ob-help.png') }}" alt="" class="w-[46px] h-[46px] shrink-0" aria-hidden="true">
         <div class="min-w-0">
-            <h2 class="text-[13.5px] font-bold text-[#1B1B18]">{{ $isFr ? 'Besoin d\'aide pour vous inscrire ?' : 'Need help signing up?' }}</h2>
-            <p class="mt-0.5 text-[12px] text-[#55524A]">{{ $isFr ? 'Notre équipe est disponible pour vous accompagner à chaque étape.' : 'Our team is available to support you at every step.' }}</p>
+            <h2 class="text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide pour vous inscrire ?' : 'Need help signing up?' }}</h2>
+            <p class="mt-0.5 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Notre équipe est disponible pour vous accompagner à chaque étape.' : 'Our team is available to support you at every step.' }}</p>
         </div>
         <a href="{{ route('contact', ['lang' => $lang]) }}" class="sm:ml-auto shrink-0 ui-btn ui-btn-secondary">
             <i data-lucide="message-circle" class="w-4 h-4"></i>

@@ -35,7 +35,7 @@ empty state must be styled as richly as the filled state it replaces.
 | Hero card | 81–317 | dark `#0E0A03`, r≈20, mask artwork right half fading in; portrait Ø118 with 3px gold ring + green VERIFIED pill overlapping bottom; flag+country, name+tick, title, 4 meta rows (icons gold), inset trust panel `#0B0B07` r≈14 split in two columns with gold uppercase labels |
 | Action row | 322–367 | white card, 4 columns w/ vertical hairlines: Message, Visit Workshop (gold active), Call, Follow |
 | Certificates | 375–512 | white card; header row w/ green shield icon + "View All →"; horizontal scroll of shield cards: **iridescent shield artwork** (CSS gradient treatment, no security caption), code, name, date, green Verified pill |
-| Products | 521–695 | 2-col grid; image tile r≈14 with heart top-right; name, category, price bold, green cart-square (quote link) |
+| Products | 521–695 | **4-col grid** (corrected 2026-07-28 — this line previously said 2-col and was wrong; the artwork plainly shows four cards across, verified on a magnified crop); image tile r≈14 with heart top-right; name, category, price bold, green cart-square (quote link) |
 | Tabs + About | 702–853 | 5 tabs with icons, active green underlined; about prose + facts list (icon, label, value) |
 | Bottom nav | 857–910 | deep green `#02411D`; 5 items, centre Verify = gold-ringed disc Ø62 raised ~30px with the brand mark |
 
@@ -91,3 +91,111 @@ hologram or security feature — `docs/PRINT-SECURITY-SPEC.md` governs claims.
 - `ArtisanProfileFamilyTest`, `ArtisanProfilePageTest`, `ArtisanProfileMobileTest`,
   `UiConsistencyTest`, `BrandAssetTest` all green — none may be weakened.
 - Both languages; `$lang` passed to every `ArtisanProfile` call.
+
+---
+
+# MEASURED TYPOGRAPHY, SPACING AND COLOUR — authoritative
+
+Owner instruction 2026-07-28: *"same colors, same gaps, same fonts, font size,
+gaps, spacing, styling, etc. everything. nothing left out."*
+
+Everything below was measured off `certificates/artisan profile v2 desktop.png`
+(1024 wide) by cap-height measurement on 4× magnified crops and by dominant-colour
+sampling. **The site container is 1280, so artwork px × 1.25 = site px.** Both
+columns are given. Do not round away from these numbers.
+
+## Typeface
+
+The artwork's face is **Poppins**, which `tailwind.config` already sets as the
+site `sans`. Verified by rendering the artwork's own name string in Poppins,
+Montserrat and Nunito Sans at the artwork's size and comparing letterforms
+against a magnified crop. **The family is not the gap — the sizes, weights and
+letter-spacing are.** Do not swap the font.
+
+## Type scale
+
+| Element | artwork px | **site px @1280** | weight | notes |
+|---|---|---|---|---|
+| Artisan name | 29.5 | **37** | 700 | tracking ≈ -0.01em |
+| Title / subtitle under name | 14 | **17** | 400 | |
+| VERIFIED pill text | 9 | **11** | 700 | uppercase, tracking .08em |
+| Card section heading (IDENTITY, CERTIFICATES & VERIFICATIONS…) | 10 | **13** | 700 | uppercase, tracking .06em |
+| Identity row label | 10.4 | **13** | 500 | uppercase |
+| Identity row value | 10.4 | **13** | 600 | |
+| Stat tile number | 15.6 | **19.5** | 700 | |
+| Stat tile label | 7 | **9** | 400 | |
+| Reviews mean figure | 29 | **36** | 700 | dark green |
+| "Based on N reviews" | 8.5 | **10.6** | 400 | |
+| Rating-bar label ("5 Stars") | 9.7 | **12** | 400 | |
+| Product name | 9 | **11** | 600 | |
+| Product category | 7.5 | **9** | 400 | |
+| Product price | 11 | **14** | 700 | |
+
+## Vertical rhythm
+
+| Measure | artwork px | **site px @1280** |
+|---|---|---|
+| Identity row pitch (baseline to baseline) | 20.25 | **25** |
+| Rating-bar row pitch | 19 | **24** |
+| Rating-bar height | 5.5 | **7** (rounded-full) |
+| Star glyph size | 10 | **12.5** |
+
+## Horizontal grid — measured gutters
+
+Found by column-projection: a gutter is a column that is page-cream for ≥93% of
+the band's rows.
+
+| Band | columns | gutter (artwork) | **gutter @1280** |
+|---|---|---|---|
+| Page margin | — | 20 each side | **25** (content 1230) |
+| Products | 6 | 6 | **7.5** → `gap-2` |
+| Certificates | 6 | ~13 | **16** → `gap-4` |
+| Info row | 3 | 8 / 7 | **~10** → `gap-2.5` |
+
+Info-row card widths at 1024: 323 / 339 / 307 — near-equal thirds with a
+slightly wider middle card, **not** the 4/5/3 ratio assumed earlier.
+
+## Colours — dominant-sampled, exact
+
+| Token | Value |
+|---|---|
+| Page cream | `#FCF9F6` |
+| Card surface | `#FCFAF6` — cards are *barely* lighter than the page; **the border does the separating, not the fill** |
+| Trust-bar band | `#F9F6EF` |
+| Navbar green | `#002A0D` |
+| Footer green | `#011E13` |
+| Hero black | `#0E0A03` |
+| Floating trust panel | `#070805` |
+| VERIFIED pill gold | `#D3B030` |
+| Star gold / rating-bar fill | `#E29A08` |
+| SELL button gold | `#925104` → `#996A0D` |
+| Product VERIFIED badge green | `#003712` |
+| Contact button green | `#14652F` |
+| Mobile cart square / bottom nav | `#02411D` |
+| Notification badge red | `#CC060E` |
+
+A common error already made once on this page: painting card fills a brighter
+white than the page. In the artwork they are within two levels of each other.
+
+## Mobile type — the ÷2 conversion does not hold
+
+Measured ink extents on the 864px mobile artwork (cap height ÷ 0.71 = font size):
+
+| Element | cap px | font @864 | **font at 432 CSS (÷2)** |
+|---|---|---|---|
+| Hero name | 25 | 35 | **17.5** |
+| Hero title | 13 | 18 | **9** |
+| Section head (FEATURED PRODUCTS) | 12 | 16.5 | **8.2** |
+| Product name | 9 | 12.5 | **6.2** |
+| Product category | 8 | 11 | **5.5** |
+| Tab label | 9 | 12.5 | **6.2** |
+
+Body copy at 5.5–6.2px is not shippable — iOS and Android both put their minimum
+around 11–12px, and this is a marketplace read by buyers on phones.
+
+The desktop artwork does **not** have this problem: its 1024→1280 conversion
+yields a 37px name and sensible body sizes throughout. The inconsistency is
+specific to the mobile mockup, whose type is drawn roughly half the size its
+frame implies. Preserving the *ratios* between elements (hero name ≈ 2.8× the
+product name, section heads ≈ 1.3×) is therefore the transferable part; the
+absolute sizes need a decision recorded here before the mobile view is final.

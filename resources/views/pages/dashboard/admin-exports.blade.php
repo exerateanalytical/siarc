@@ -20,17 +20,17 @@
         'evenements'   => $isFr ? 'Événements & Actualités' : 'Events & News',
     ];
     $formatPill = [
-        'csv'  => ['CSV',  'bg-[#E8F2DC] text-[#2E6B34]'],
-        'xlsx' => ['XLSX', 'bg-[#E8F2DC] text-[#2E6B34]'],
-        'pdf'  => ['PDF',  'bg-[#FAE7E3] text-[#C4392B]'],
-        'zip'  => ['ZIP',  'bg-[#ECE6F7] text-[#7C4FE0]'],
+        'csv'  => ['CSV',  'bg-[#E8F2DC] dark:bg-[#0C3D1D] text-[#2E6B34] dark:text-[#339B56]'],
+        'xlsx' => ['XLSX', 'bg-[#E8F2DC] dark:bg-[#0C3D1D] text-[#2E6B34] dark:text-[#339B56]'],
+        'pdf'  => ['PDF',  'bg-[#FAE7E3] dark:bg-[#3A1013] text-[#C4392B] dark:text-[#F0555C]'],
+        'zip'  => ['ZIP',  'bg-[#ECE6F7] dark:bg-[#1E1733] text-[#7C4FE0] dark:text-[#BCA4F0]'],
     ];
     $fileIcon = ['csv' => 'dex-file-csv.png', 'xlsx' => 'dex-file-xlsx.png', 'pdf' => 'dex-file-pdf.png', 'zip' => 'dex-file-zip.png'];
     $statusMeta = [
-        'reussi'   => [$isFr ? 'Réussi' : 'Success',      'text-[#157A43]', 'circle-check'],
-        'en_cours' => [$isFr ? 'En cours' : 'Running',    'text-[#DF860A]', 'dot'],
-        'echoue'   => [$isFr ? 'Échoué' : 'Failed',       'text-[#B0070F]', 'circle-x'],
-        'planifie' => [$isFr ? 'Planifié' : 'Scheduled',  'text-[#1B62BC]', 'dot'],
+        'reussi'   => [$isFr ? 'Réussi' : 'Success',      'text-[#157A43] dark:text-[#339B56]', 'circle-check'],
+        'en_cours' => [$isFr ? 'En cours' : 'Running',    'text-[#DF860A] dark:text-[#EDB33A]', 'dot'],
+        'echoue'   => [$isFr ? 'Échoué' : 'Failed',       'text-[#B0070F] dark:text-[#F0555C]', 'circle-x'],
+        'planifie' => [$isFr ? 'Planifié' : 'Scheduled',  'text-[#1B62BC] dark:text-[#8FB6F5]', 'dot'],
     ];
 
     $monthsFr = [1 => 'Jan', 2 => 'Fév', 3 => 'Mar', 4 => 'Avr', 5 => 'Mai', 6 => 'Juin', 7 => 'Juil', 8 => 'Août', 9 => 'Sept', 10 => 'Oct', 11 => 'Nov', 12 => 'Déc'];
@@ -112,7 +112,7 @@
 
 @section('content')
             @if(session('status'))
-            <div class="mb-4 bg-[#E9F3DE] border border-[#BFDCAA] text-[#2E6B34] text-[12.5px] font-medium rounded-xl px-4 py-2.5">{{ session('status') }}</div>
+            <div class="mb-4 bg-[#E9F3DE] dark:bg-[#0C3D1D] border border-[#BFDCAA] dark:border-[#39402F] text-[#2E6B34] dark:text-[#339B56] text-[12.5px] font-medium rounded-xl px-4 py-2.5">{{ session('status') }}</div>
             @endif
             <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_270px] gap-5 items-start">
 
@@ -125,9 +125,9 @@
                             <div class="flex items-start gap-3">
                                 <img src="{{ asset('images/landing/' . $cIcon) }}" alt="" class="w-[46px] h-[46px] shrink-0">
                                 <div class="min-w-0">
-                                    <p class="text-[20px] font-bold text-[#23231F] leading-tight">{{ $cValue }}</p>
-                                    <p class="text-[11.5px] font-medium text-[#3B382F] leading-snug">{{ $cLabel }}</p>
-                                    @if($cSub !== '')<p class="mt-1.5 text-[11px] font-semibold text-[#6F6B60]">{{ $cSub }}</p>@endif
+                                    <p class="text-[20px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $cValue }}</p>
+                                    <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
+                                    @if($cSub !== '')<p class="mt-1.5 text-[11px] font-semibold text-[#6F6B60] dark:text-[#868778]">{{ $cSub }}</p>@endif
                                 </div>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                         <div class="ui-field-group">
                             <input type="text" name="du" value="{{ $filters['du'] }}" placeholder="{{ $isFr ? 'Du' : 'From' }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Du' : 'From' }}">
                             <input type="text" name="au" value="{{ $filters['au'] }}" placeholder="{{ $isFr ? 'Au' : 'To' }}" class="ui-field-bare w-[74px]" aria-label="{{ $isFr ? 'Au' : 'To' }}">
-                            <button type="submit" class="shrink-0 text-[#B06E12]" aria-label="{{ $isFr ? 'Filtrer par période' : 'Filter by period' }}"><i data-lucide="calendar-days" class="w-[16px] h-[16px]"></i></button>
+                            <button type="submit" class="shrink-0 text-[#B06E12] dark:text-[#EDB33A]" aria-label="{{ $isFr ? 'Filtrer par période' : 'Filter by period' }}"><i data-lucide="calendar-days" class="w-[16px] h-[16px]"></i></button>
                         </div>
                         <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-[142px]">
                             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
@@ -158,7 +158,7 @@
                         </select>
                         <div class="ui-field-group flex-1 min-w-[120px]">
                             <input type="text" name="q" value="{{ $filters['q'] }}" placeholder="{{ $isFr ? 'Rechercher un export...' : 'Search an export...' }}" class="ui-field-bare flex-1 min-w-0">
-                            <button type="submit" class="shrink-0 text-[#B06E12]" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"><i data-lucide="search" class="w-[17px] h-[17px]"></i></button>
+                            <button type="submit" class="shrink-0 text-[#B06E12] dark:text-[#EDB33A]" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"><i data-lucide="search" class="w-[17px] h-[17px]"></i></button>
                         </div>
                         {{-- Nouvel Export: real POST — exports the currently filtered dataset (artisans by default) --}}
                         <button type="submit" form="dex-new" class="ui-btn ui-btn-primary ui-btn-lg"><i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Nouvel Export' : 'New Export' }}</button>
@@ -175,7 +175,7 @@
                         <div class="ui-table-wrap">
                             <table class="ui-table min-w-[880px]">
                                 <thead>
-                                    <tr class="border-b border-[#F5EBDA]">
+                                    <tr class="border-b border-[#F5EBDA] dark:border-[#262B21]">
                                         <th>{{ $isFr ? 'Nom de l\'export' : 'Export name' }}</th>
                                         <th>{{ $isFr ? 'Type de données' : 'Data type' }}</th>
                                         <th>Format</th>
@@ -189,16 +189,16 @@
                                 <tbody>
                                     @forelse($exports as $e)
                                     @php
-                                        [$stLabel, $stText, $stIcon] = $statusMeta[$e->status] ?? [$e->status, 'text-[#6E6B63]', 'dot'];
-                                        [$fpLabel, $fpCls] = $formatPill[$e->format] ?? [strtoupper($e->format), 'bg-[#EFEFEA] text-[#55524A]'];
+                                        [$stLabel, $stText, $stIcon] = $statusMeta[$e->status] ?? [$e->status, 'text-[#6E6B63] dark:text-[#868778]', 'dot'];
+                                        [$fpLabel, $fpCls] = $formatPill[$e->format] ?? [strtoupper($e->format), 'bg-[#EFEFEA] dark:bg-[#1A1E16] text-[#55524A] dark:text-[#B4B5A6]'];
                                     @endphp
                                     <tr>
                                         <td>
                                             <div class="flex items-center gap-3">
                                                 <img src="{{ asset('images/landing/' . ($fileIcon[$e->format] ?? 'dex-file-csv.png')) }}" alt="" class="w-[26px] h-[28px] object-contain shrink-0">
                                                 <span class="min-w-0">
-                                                    <span class="block text-[12.5px] font-semibold text-[#23231F] truncate">{{ $e->name }}</span>
-                                                    <span class="block text-[11.5px] text-[#8A8578]">{{ number_format($e->records) }} {{ $e->counts_files ? ($isFr ? 'fichiers' : 'files') : ($isFr ? 'enregistrements' : 'records') }}</span>
+                                                    <span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] truncate">{{ $e->name }}</span>
+                                                    <span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ number_format($e->records) }} {{ $e->counts_files ? ($isFr ? 'fichiers' : 'files') : ($isFr ? 'enregistrements' : 'records') }}</span>
                                                 </span>
                                             </div>
                                         </td>
@@ -206,73 +206,73 @@
                                         <td><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-bold tracking-[0.04em] {{ $fpCls }}">{{ $fpLabel }}</span></td>
                                         <td class="whitespace-nowrap">
                                             <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold {{ $stText }}">
-                                                @if($stIcon === 'dot')<span class="w-2 h-2 rounded-full shrink-0 {{ $e->status === 'en_cours' ? 'bg-[#DF860A]' : 'bg-[#1B62BC]' }}"></span>
+                                                @if($stIcon === 'dot')<span class="w-2 h-2 rounded-full shrink-0 {{ $e->status === 'en_cours' ? 'bg-[#DF860A] dark:bg-[#3A2B06] ' : 'bg-[#1B62BC]' }}"></span>
                                                 @else<i data-lucide="{{ $stIcon }}" class="w-[15px] h-[15px] shrink-0"></i>@endif
                                                 {{ $stLabel }}
                                             </span>
                                         </td>
-                                        <td class="font-semibold text-[#23231F] whitespace-nowrap">{{ $dexSize($e->size_bytes) }}</td>
-                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $dexDate($e->created_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($e->created_at)->format('H:i') }}</span></td>
+                                        <td class="font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $dexSize($e->size_bytes) }}</td>
+                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $dexDate($e->created_at) }}</span><span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($e->created_at)->format('H:i') }}</span></td>
                                         <td class="whitespace-nowrap">
-                                            @if($e->expires_at)<span class="block text-[12.5px] font-semibold text-[#23231F]">{{ $dexDate($e->expires_at) }}</span><span class="block text-[11.5px] text-[#8A8578]">{{ \Carbon\Carbon::parse($e->expires_at)->format('H:i') }}</span>
-                                            @else<span class="text-[12.5px] text-[#3B382F]">–</span>@endif
+                                            @if($e->expires_at)<span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $dexDate($e->expires_at) }}</span><span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($e->expires_at)->format('H:i') }}</span>
+                                            @else<span class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">–</span>@endif
                                         </td>
                                         <td>
                                             <div class="flex items-center justify-end gap-1.5">
                                                 @if($e->status === 'en_cours')
                                                 <form method="POST" action="{{ route('admin.exports.status', ['id' => $e->id]) }}">@csrf<input type="hidden" name="lang" value="{{ $lang }}"><input type="hidden" name="statut" value="planifie">
-                                                    <button type="submit" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#DF860A] flex items-center justify-center text-[#DF860A]" title="{{ $isFr ? 'Mettre en pause' : 'Pause' }}"><i data-lucide="pause" class="w-[15px] h-[15px]"></i></button>
+                                                    <button type="submit" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] hover:border-[#DF860A] dark:hover:border-[#E9A81E] flex items-center justify-center text-[#DF860A] dark:text-[#EDB33A]" title="{{ $isFr ? 'Mettre en pause' : 'Pause' }}"><i data-lucide="pause" class="w-[15px] h-[15px]"></i></button>
                                                 </form>
                                                 <form method="POST" action="{{ route('admin.exports.status', ['id' => $e->id]) }}">@csrf<input type="hidden" name="lang" value="{{ $lang }}"><input type="hidden" name="statut" value="echoue">
-                                                    <button type="submit" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#B0070F] flex items-center justify-center text-[#B0070F]" title="{{ $isFr ? 'Annuler' : 'Cancel' }}"><i data-lucide="x" class="w-[15px] h-[15px]"></i></button>
+                                                    <button type="submit" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] hover:border-[#B0070F] dark:hover:border-[#F0555C] flex items-center justify-center text-[#B0070F] dark:text-[#F0555C]" title="{{ $isFr ? 'Annuler' : 'Cancel' }}"><i data-lucide="x" class="w-[15px] h-[15px]"></i></button>
                                                 </form>
                                                 @else
                                                     @if($e->status === 'reussi')
-                                                    <a href="{{ route('admin.exports.download', ['id' => $e->id, 'lang' => $lang]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#C9942E] flex items-center justify-center text-[#8A6B3F]" title="{{ $isFr ? 'Télécharger' : 'Download' }}"><i data-lucide="download" class="w-[15px] h-[15px]"></i></a>
+                                                    <a href="{{ route('admin.exports.download', ['id' => $e->id, 'lang' => $lang]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] hover:border-[#C9942E] dark:hover:border-[#E9A81E] flex items-center justify-center text-[#8A6B3F] dark:text-[#EDB33A]" title="{{ $isFr ? 'Télécharger' : 'Download' }}"><i data-lucide="download" class="w-[15px] h-[15px]"></i></a>
                                                     @endif
-                                                    <a href="{{ route('admin.exports', ['lang' => $lang, 'type' => $e->dataset]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#C9942E] flex items-center justify-center text-[#8A6B3F]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-[15px] h-[15px]"></i></a>
+                                                    <a href="{{ route('admin.exports', ['lang' => $lang, 'type' => $e->dataset]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] hover:border-[#C9942E] dark:hover:border-[#E9A81E] flex items-center justify-center text-[#8A6B3F] dark:text-[#EDB33A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-[15px] h-[15px]"></i></a>
                                                     <form method="POST" action="{{ route('admin.exports.delete', ['id' => $e->id]) }}" onsubmit="return confirm('{{ $isFr ? 'Supprimer cet export ?' : 'Delete this export?' }}')">@csrf<input type="hidden" name="lang" value="{{ $lang }}">
-                                                        <button type="submit" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] border border-[#F0E2C9] hover:border-[#B0070F] flex items-center justify-center text-[#C4756B]" title="{{ $isFr ? 'Supprimer' : 'Delete' }}"><i data-lucide="trash-2" class="w-[15px] h-[15px]"></i></button>
+                                                        <button type="submit" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] hover:border-[#B0070F] dark:hover:border-[#F0555C] flex items-center justify-center text-[#C4756B] dark:text-[#F0555C]" title="{{ $isFr ? 'Supprimer' : 'Delete' }}"><i data-lucide="trash-2" class="w-[15px] h-[15px]"></i></button>
                                                     </form>
                                                 @endif
                                             </div>
                                         </td>
                                     </tr>
                                     @empty
-                                    <tr><td colspan="8" class="py-10 text-center text-[13px] text-[#6E6B63]">{{ $isFr ? 'Aucun export ne correspond à ces critères.' : 'No export matches these criteria.' }}</td></tr>
+                                    <tr><td colspan="8" class="py-10 text-center text-[13px] text-[#6E6B63] dark:text-[#868778]">{{ $isFr ? 'Aucun export ne correspond à ces critères.' : 'No export matches these criteria.' }}</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
 
                         {{-- Pagination --}}
-                        <div class="mt-4 pt-4 border-t border-[#F5EBDA] flex flex-wrap items-center justify-between gap-3">
-                            <p class="text-[12.5px] text-[#3B382F]">
+                        <div class="mt-4 pt-4 border-t border-[#F5EBDA] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
+                            <p class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
                                 {{ $isFr ? 'Affichage de' : 'Showing' }} {{ $exports->firstItem() ?? 0 }} {{ $isFr ? 'à' : 'to' }} {{ $exports->lastItem() ?? 0 }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($exports->total()) }} {{ $isFr ? 'exports' : 'exports' }}
                             </p>
                             <div class="flex items-center gap-1.5">
                                 @if($exports->currentPage() > 1)
-                                <a href="{{ $exports->url(1) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#3B382F] hover:border-[#C9942E]"><i data-lucide="chevrons-left" class="w-4 h-4"></i></a>
-                                <a href="{{ $exports->previousPageUrl() }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#3B382F] hover:border-[#C9942E]"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                                <a href="{{ $exports->url(1) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#C9942E] dark:hover:border-[#E9A81E]"><i data-lucide="chevrons-left" class="w-4 h-4"></i></a>
+                                <a href="{{ $exports->previousPageUrl() }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#C9942E] dark:hover:border-[#E9A81E]"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                                 @else
-                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#C9C2B2]"><i data-lucide="chevrons-left" class="w-4 h-4"></i></span>
-                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#C9C2B2]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#C9C2B2] dark:text-[#868778]"><i data-lucide="chevrons-left" class="w-4 h-4"></i></span>
+                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#C9C2B2] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                                 @endif
                                 @foreach($pageItems as $pi)
                                     @if($pi === '…')
-                                    <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[13px] text-[#3B382F]">...</span>
+                                    <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[13px] text-[#3B382F] dark:text-[#B4B5A6]">...</span>
                                     @elseif($pi === $exports->currentPage())
-                                    <span class="w-9 h-9 flex items-center justify-center bg-[#093F1F] text-white text-[13px] font-semibold rounded-[10px]">{{ $pi }}</span>
+                                    <span class="w-9 h-9 flex items-center justify-center bg-[#093F1F] dark:bg-[#0C3B1E] text-white text-[13px] font-semibold rounded-[10px]">{{ $pi }}</span>
                                     @else
-                                    <a href="{{ $exports->url($pi) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[13px] text-[#3B382F] hover:border-[#C9942E]">{{ $pi }}</a>
+                                    <a href="{{ $exports->url($pi) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[13px] text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#C9942E] dark:hover:border-[#E9A81E]">{{ $pi }}</a>
                                     @endif
                                 @endforeach
                                 @if($exports->hasMorePages())
-                                <a href="{{ $exports->nextPageUrl() }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#B06E12] hover:border-[#C9942E]"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
-                                <a href="{{ $exports->url($lastPage) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#B06E12] hover:border-[#C9942E]"><i data-lucide="chevrons-right" class="w-4 h-4"></i></a>
+                                <a href="{{ $exports->nextPageUrl() }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#B06E12] dark:text-[#EDB33A] hover:border-[#C9942E] dark:hover:border-[#E9A81E]"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                                <a href="{{ $exports->url($lastPage) }}" class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#B06E12] dark:text-[#EDB33A] hover:border-[#C9942E] dark:hover:border-[#E9A81E]"><i data-lucide="chevrons-right" class="w-4 h-4"></i></a>
                                 @else
-                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#C9C2B2]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
-                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] border border-[#F0E2C9] rounded-[10px] text-[#C9C2B2]"><i data-lucide="chevrons-right" class="w-4 h-4"></i></span>
+                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#C9C2B2] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                                <span class="w-9 h-9 flex items-center justify-center bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] rounded-[10px] text-[#C9C2B2] dark:text-[#868778]"><i data-lucide="chevrons-right" class="w-4 h-4"></i></span>
                                 @endif
                             </div>
                             <select onchange="window.location = this.value" class="ui-field ui-select">
@@ -290,12 +290,12 @@
                     <section class="sub-card px-5 py-5">
                         <h2 class="ui-card-title">{{ $isFr ? 'Activité d\'export' : 'Export activity' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
-                            <span class="w-[88px] h-[88px] rounded-full shrink-0" style="background: {{ $dexConic }}"><span class="block w-[48px] h-[48px] rounded-full bg-[#FEFAF4] m-[20px]"></span></span>
+                            <span class="w-[88px] h-[88px] rounded-full shrink-0" style="background: {{ $dexConic }}"><span class="block w-[48px] h-[48px] rounded-full bg-[#FEFAF4] dark:bg-[#12150F] m-[20px]"></span></span>
                             <div class="flex-1 space-y-2">
                                 @foreach($dexLegend as [$dlColor, $dlName, $dlValue])
                                 <div class="flex items-center justify-between gap-2 text-[11px]">
-                                    <span class="flex items-center gap-1.5 font-medium text-[#3B382F]"><span class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $dlColor }}"></span>{{ $dlName }}</span>
-                                    <span class="font-semibold text-[#23231F] whitespace-nowrap">{{ $dlValue }}</span>
+                                    <span class="flex items-center gap-1.5 font-medium text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $dlColor }}"></span>{{ $dlName }}</span>
+                                    <span class="font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $dlValue }}</span>
                                 </div>
                                 @endforeach
                             </div>
@@ -309,13 +309,13 @@
                             @forelse($typeBars as [$tIcon, $tLabel, $tValue, $tColor, $tPct])
                             <div>
                                 <div class="flex items-center justify-between gap-2">
-                                    <span class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F]"><img src="{{ asset('images/landing/' . $tIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0">{{ $tLabel }}</span>
-                                    <span class="text-[11.5px] font-semibold text-[#23231F] whitespace-nowrap">{{ $tValue }}</span>
+                                    <span class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] dark:text-[#B4B5A6]"><img src="{{ asset('images/landing/' . $tIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0">{{ $tLabel }}</span>
+                                    <span class="text-[11.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $tValue }}</span>
                                 </div>
-                                <div class="mt-1.5 h-[6px] rounded-full bg-[#F3E9DA] overflow-hidden"><span class="block h-full rounded-full" style="width: {{ $tPct }}%; background-color: {{ $tColor }}"></span></div>
+                                <div class="mt-1.5 h-[6px] rounded-full bg-[#F3E9DA] dark:bg-[#1A1E16] overflow-hidden"><span class="block h-full rounded-full" style="width: {{ $tPct }}%; background-color: {{ $tColor }}"></span></div>
                             </div>
                             @empty
-                            <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
+                            <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
                             @endforelse
                         </div>
                     </section>
@@ -325,7 +325,7 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
-                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0"><span class="text-[12.5px] font-medium text-[#3B382F] group-hover:text-[#14652F]">{{ $qLabel }}</span></a>
+                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><img src="{{ asset('images/landing/' . $qIcon) }}" alt="" class="w-[18px] h-[18px] object-contain shrink-0"><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
                             @endforeach
                         </div>
                     </section>

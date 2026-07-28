@@ -163,14 +163,14 @@ $fileCls = 'ui-file';
                 <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Logo' : 'Logo' }}</label>
                     @if($isEdit && $business->logo)
-                    <img src="{{ asset('storage/' . $business->logo) }}" alt="" class="w-16 h-16 rounded-lg object-cover mb-2 border border-[#EFEBE2]">
+                    <img src="{{ asset('storage/' . $business->logo) }}" alt="" class="w-16 h-16 rounded-lg object-cover mb-2 border border-[#EFEBE2] dark:border-[#262B21]">
                     @endif
                     <input type="file" name="logo" accept="image/*" class="{{ $fileCls }}">
                 </div>
                 <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Photo de couverture' : 'Cover photo' }}</label>
                     @if($isEdit && $business->cover_image)
-                    <img src="{{ asset('storage/' . $business->cover_image) }}" alt="" class="w-full h-16 rounded-lg object-cover mb-2 border border-[#EFEBE2]">
+                    <img src="{{ asset('storage/' . $business->cover_image) }}" alt="" class="w-full h-16 rounded-lg object-cover mb-2 border border-[#EFEBE2] dark:border-[#262B21]">
                     @endif
                     <input type="file" name="cover_image" accept="image/*" class="{{ $fileCls }}">
                 </div>

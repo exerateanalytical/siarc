@@ -18,20 +18,20 @@
 @endphp
 
 <!-- Pourquoi rejoindre -->
-<section class="relative bg-[#F2EDE7] mt-4 overflow-hidden">
+<section class="relative bg-[#F2EDE7] dark:bg-[#0A0C09] mt-4 overflow-hidden">
     <img src="{{ asset('images/landing/auth-band-motif-left.png') }}" alt="" class="absolute left-0 bottom-0 w-[140px] pointer-events-none select-none" aria-hidden="true">
     <img src="{{ asset('images/landing/auth-band-motif-right.png') }}" alt="" class="absolute right-0 bottom-0 w-[140px] pointer-events-none select-none" aria-hidden="true">
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8 pt-8 pb-10">
-        <h2 class="text-center font-serif text-[24px] sm:text-[27px] text-[#1D1B16]">
+        <h2 class="text-center font-serif text-[24px] sm:text-[27px] text-[#1D1B16] dark:text-[#F3EFE7]">
             {{ $isFr ? 'Pourquoi rejoindre Artisan Hub 237 ?' : 'Why join Artisan Hub 237?' }}
         </h2>
-        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-8 lg:divide-x divide-[#DDD6CB]">
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-8 lg:divide-x divide-[#DDD6CB] dark:divide-[#262B21]">
             @foreach($whyItems as [$whyIcon, $whyTitle, $whyDesc])
             <div class="flex items-start gap-3.5 px-5">
-                <i data-lucide="{{ $whyIcon }}" class="w-10 h-10 shrink-0 text-[#B07E23]" style="stroke-width:1.4"></i>
+                <i data-lucide="{{ $whyIcon }}" class="w-10 h-10 shrink-0 text-[#B07E23] dark:text-[#EDB33A]" style="stroke-width:1.4"></i>
                 <div>
-                    <h3 class="text-[13.5px] font-semibold text-[#1D1B16] leading-snug whitespace-pre-line">{{ $whyTitle }}</h3>
-                    <p class="mt-2 text-[11.5px] text-[#7A756A] leading-relaxed whitespace-pre-line">{{ $whyDesc }}</p>
+                    <h3 class="text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug whitespace-pre-line">{{ $whyTitle }}</h3>
+                    <p class="mt-2 text-[11.5px] text-[#7A756A] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $whyDesc }}</p>
                 </div>
             </div>
             @endforeach
@@ -44,7 +44,7 @@
 @include('pages.partials.directory-footer')
 
 <!-- Mobile bottom navigation -->
-<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
+<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-[#12150F] border-t border-gray-200 dark:border-[#262B21] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
     @php
         $bottomTabs = [
             ['href' => route('home', ['lang' => $lang]), 'icon' => 'home', 'label' => $isFr ? 'Accueil' : 'Home', 'active' => false],
@@ -55,7 +55,7 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
         <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>

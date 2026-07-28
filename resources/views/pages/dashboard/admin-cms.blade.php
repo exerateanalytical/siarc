@@ -20,15 +20,15 @@
     <h2 class="ui-card-title mb-3">{{ $lang === 'fr' ? 'Pages statiques' : 'Static Pages' }}</h2>
     <div class="ui-card ui-card--flush mb-4">
         @forelse($pages as $page)
-        <div class="flex items-center gap-3 px-4 py-3.5 border-b border-[#F5F1E8] last:border-0">
-            <div class="w-9 h-9 rounded-lg bg-[#F8F4EC] flex items-center justify-center shrink-0">
-                <i data-lucide="file-text" class="w-4 h-4 text-[#B8B2A4]"></i>
+        <div class="flex items-center gap-3 px-4 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
+            <div class="w-9 h-9 rounded-lg bg-[#F8F4EC] dark:bg-[#1A1E16] flex items-center justify-center shrink-0">
+                <i data-lucide="file-text" class="w-4 h-4 text-[#B8B2A4] dark:text-[#868778]"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#1B1B18] truncate">{{ $page->title_fr }}</p>
+                <p class="text-sm font-medium text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $page->title_fr }}</p>
                 <p class="ui-dt">/{{ $page->slug }}</p>
             </div>
-            <span @class(['text-xs font-medium px-2 py-1 rounded-full shrink-0', 'bg-green-100 text-green-700' => $page->is_published, 'bg-[#F1EDE3] text-[#8A857A]' => !$page->is_published])>
+            <span @class(['text-xs font-medium px-2 py-1 rounded-full shrink-0', 'bg-green-100 dark:bg-[#0C3D1D] text-green-700 dark:text-[#339B56]' => $page->is_published, 'bg-[#F1EDE3] dark:bg-[#1A1E16] text-[#8A857A] dark:text-[#868778]' => !$page->is_published])>
                 {{ $page->is_published ? ($lang === 'fr' ? 'Publiée' : 'Published') : ($lang === 'fr' ? 'Brouillon' : 'Draft') }}
             </span>
             <button type="button" onclick="document.getElementById('edit-page-{{ $page->id }}').classList.toggle('hidden')" class="ui-btn ui-btn-ghost ui-btn-sm shrink-0">
@@ -39,7 +39,7 @@
                 <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm shrink-0"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </form>
         </div>
-        <div id="edit-page-{{ $page->id }}" class="hidden px-4 py-4 bg-[#F8F4EC] border-b border-[#F5F1E8]">
+        <div id="edit-page-{{ $page->id }}" class="hidden px-4 py-4 bg-[#F8F4EC] dark:bg-[#1A1E16] border-b border-[#F5F1E8] dark:border-[#262B21]">
             <form method="POST" action="{{ route('admin.cms.pages.update', ['id' => $page->id]) }}" class="space-y-2">
                 @csrf
                 <div class="grid grid-cols-2 gap-2">
@@ -80,13 +80,13 @@
     <h2 class="ui-card-title mb-3">FAQ</h2>
     <div class="ui-card ui-card--flush mb-4">
         @forelse($faqs as $faq)
-        <div class="flex items-center gap-3 px-4 py-3.5 border-b border-[#F5F1E8] last:border-0">
-            <div class="w-9 h-9 rounded-lg bg-[#F8F4EC] flex items-center justify-center shrink-0">
-                <i data-lucide="help-circle" class="w-4 h-4 text-[#B8B2A4]"></i>
+        <div class="flex items-center gap-3 px-4 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
+            <div class="w-9 h-9 rounded-lg bg-[#F8F4EC] dark:bg-[#1A1E16] flex items-center justify-center shrink-0">
+                <i data-lucide="help-circle" class="w-4 h-4 text-[#B8B2A4] dark:text-[#868778]"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#1B1B18] truncate">{{ $faq->question_fr }}</p>
-                <p class="text-xs text-[#B8B2A4] truncate">{{ $lang === 'fr' ? $faq->category?->name_fr : ($faq->category?->name_en ?? '—') }}</p>
+                <p class="text-sm font-medium text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $faq->question_fr }}</p>
+                <p class="text-xs text-[#B8B2A4] dark:text-[#868778] truncate">{{ $lang === 'fr' ? $faq->category?->name_fr : ($faq->category?->name_en ?? '—') }}</p>
             </div>
             <form method="POST" action="{{ route('admin.cms.faqs.destroy', ['id' => $faq->id]) }}" onsubmit="return confirm('{{ $lang === 'fr' ? 'Supprimer ?' : 'Delete?' }}')">
                 @csrf

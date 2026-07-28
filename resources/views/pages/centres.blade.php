@@ -4,7 +4,7 @@
 $isFr = $lang === 'fr';
 $title = ($isFr ? 'Centres d\'Artisanat' : 'Craft Centres') . ' — Artisan Hub 237';
 $typeLabels = ['principal' => $isFr ? 'Centre principal' : 'Main centre', 'secondaire' => $isFr ? 'Centre secondaire' : 'Secondary centre'];
-$typeCls = ['principal' => 'bg-[#E2F3E8] text-[#157A43]', 'secondaire' => 'bg-[#FDF3E0] text-[#C97A16]'];
+$typeCls = ['principal' => 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]', 'secondaire' => 'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16]'];
 @endphp
 
 @section('content')
@@ -41,9 +41,9 @@ $typeCls = ['principal' => 'bg-[#E2F3E8] text-[#157A43]', 'secondaire' => 'bg-[#
     {{-- Filters --}}
     <form method="GET" action="{{ route('centres.index') }}" class="flex flex-wrap items-center gap-2.5 mb-6">
         <input type="hidden" name="lang" value="{{ $lang }}">
-        <div class="flex items-center gap-2 bg-white border border-[#E7E7E5] rounded-lg px-3.5 h-[42px] flex-1 min-w-[220px]">
+        <div class="flex items-center gap-2 bg-white dark:bg-[#12150F] border border-[#E7E7E5] dark:border-[#262B21] rounded-lg px-3.5 h-[42px] flex-1 min-w-[220px]">
             <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un centre...' : 'Search a centre...' }}" class="ui-field-bare flex-1 min-w-0">
-            <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i></button>
+            <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></button>
         </div>
         <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
@@ -52,35 +52,35 @@ $typeCls = ['principal' => 'bg-[#E2F3E8] text-[#157A43]', 'secondaire' => 'bg-[#
         </select>
     </form>
 
-    <h2 class="text-[14px] font-bold text-[#1B1B18] mb-4">{{ $isFr ? 'Tous les centres' : 'All centres' }}</h2>
+    <h2 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] mb-4">{{ $isFr ? 'Tous les centres' : 'All centres' }}</h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         @forelse($centres as $centre)
-        <a href="{{ route('centres.show', ['slug' => $centre->slug, 'lang' => $lang]) }}" class="group bg-white border border-[#ECECEA] rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_20px_rgba(15,72,36,0.10)] transition-shadow flex flex-col">
+        <a href="{{ route('centres.show', ['slug' => $centre->slug, 'lang' => $lang]) }}" class="group bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_20px_rgba(15,72,36,0.10)] transition-shadow flex flex-col">
             <div class="relative h-[150px] bg-[#0F4824] overflow-hidden">
                 @if($centre->cover_image)
                 <img src="{{ asset('storage/' . $centre->cover_image) }}" alt="{{ $centre->name_fr }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform">
                 @else
                 <img src="{{ asset('images/landing/centre-hero.png') }}" alt="" class="w-full h-full object-cover opacity-90 group-hover:scale-[1.03] transition-transform">
                 @endif
-                <span class="absolute top-3 left-3 text-[10.5px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$centre->type] ?? 'bg-white/90 text-[#0F4824]' }}">{{ $typeLabels[$centre->type] ?? $centre->type }}</span>
+                <span class="absolute top-3 left-3 text-[10.5px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$centre->type] ?? 'bg-white/90 dark:bg-[#12150F/90] text-[#0F4824] dark:text-[#339B56]' }}">{{ $typeLabels[$centre->type] ?? $centre->type }}</span>
             </div>
             <div class="p-5 flex flex-col flex-1">
-                <h3 class="text-[15px] font-bold text-[#1D1B16] group-hover:text-[#14652F]">{{ $isFr ? $centre->name_fr : ($centre->name_en ?? $centre->name_fr) }}</h3>
-                <p class="mt-1 flex items-center gap-1.5 text-[12px] text-[#6F6B60]">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A]"></i>{{ $centre->city ?? '—' }}{{ $centre->region_fr ? ', ' . ($isFr ? $centre->region_fr : ($centre->region_en ?? $centre->region_fr)) : '' }}
+                <h3 class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] group-hover:text-[#14652F] group-hover:dark:text-[#339B56]">{{ $isFr ? $centre->name_fr : ($centre->name_en ?? $centre->name_fr) }}</h3>
+                <p class="mt-1 flex items-center gap-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778]">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i>{{ $centre->city ?? '—' }}{{ $centre->region_fr ? ', ' . ($isFr ? $centre->region_fr : ($centre->region_en ?? $centre->region_fr)) : '' }}
                 </p>
                 @if($centre->specialties_fr)
-                <p class="mt-2 text-[12px] text-[#3B382F] line-clamp-2 flex-1">{{ $isFr ? $centre->specialties_fr : ($centre->specialties_en ?? $centre->specialties_fr) }}</p>
+                <p class="mt-2 text-[12px] text-[#3B382F] dark:text-[#F3EFE7] line-clamp-2 flex-1">{{ $isFr ? $centre->specialties_fr : ($centre->specialties_en ?? $centre->specialties_fr) }}</p>
                 @endif
-                <div class="mt-3 pt-3 border-t border-[#F1EDE4] flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43]"><i data-lucide="users" class="w-3.5 h-3.5"></i>{{ number_format($centre->artisans_count) }} {{ $isFr ? 'artisans' : 'artisans' }}</span>
-                    <span class="flex items-center gap-1 text-[12px] font-semibold text-[#14652F] group-hover:gap-1.5 transition-all">{{ $isFr ? 'Découvrir' : 'Discover' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+                <div class="mt-3 pt-3 border-t border-[#F1EDE4] dark:border-[#262B21] flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] dark:text-[#339B56]"><i data-lucide="users" class="w-3.5 h-3.5"></i>{{ number_format($centre->artisans_count) }} {{ $isFr ? 'artisans' : 'artisans' }}</span>
+                    <span class="flex items-center gap-1 text-[12px] font-semibold text-[#14652F] dark:text-[#339B56] group-hover:gap-1.5 transition-all">{{ $isFr ? 'Découvrir' : 'Discover' }}<i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
                 </div>
             </div>
         </a>
         @empty
-        <div class="col-span-full text-center py-16 text-[#8A857A]">
+        <div class="col-span-full text-center py-16 text-[#8A857A] dark:text-[#868778]">
             <i data-lucide="map-pin" class="w-12 h-12 mx-auto mb-3 text-[#DCE7DF]"></i>
             <p class="text-[13.5px]">{{ $isFr ? 'Aucun centre trouvé.' : 'No centre found.' }}</p>
         </div>

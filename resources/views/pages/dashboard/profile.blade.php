@@ -33,9 +33,9 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
 
     {{-- Informations --}}
     <div class="ui-card ui-card--flush">
-        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F1EDE4]">
-            <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                <i data-lucide="user-cog" class="w-4 h-4 text-forest-600"></i>
+        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
+            <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="user-cog" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
             </div>
             <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Informations' : 'Information' }}</h2>
         </div>
@@ -77,9 +77,9 @@ $roleLabel = $roleLabels[$siacUser['role'] ?? ''][$lang] ?? ($lang === 'fr' ? 'A
 
     {{-- Mot de passe --}}
     <div class="ui-card ui-card--flush">
-        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F1EDE4]">
-            <div class="w-8 h-8 rounded-lg bg-forest-50 flex items-center justify-center">
-                <i data-lucide="lock" class="w-4 h-4 text-forest-600"></i>
+        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F1EDE4] dark:border-[#262B21]">
+            <div class="w-8 h-8 rounded-lg bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="lock" class="w-4 h-4 text-forest-600 dark:text-[#339B56]"></i>
             </div>
             <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Mot de passe' : 'Password' }}</h2>
         </div>

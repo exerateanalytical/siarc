@@ -16,8 +16,8 @@ $isAdmin = ! empty($siacUser['is_admin']);
 <div class="max-w-2xl">
 
     <div class="flex items-center gap-2 mb-4">
-        <a href="{{ $isAdmin ? route('admin.support') : route('support.index') }}" class="p-2 -ml-2 rounded-lg hover:bg-[#F1EDE4]">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A]"></i>
+        <a href="{{ $isAdmin ? route('admin.support') : route('support.index') }}" class="p-2 -ml-2 rounded-lg hover:bg-[#F1EDE4] dark:hover:bg-[#242A1E]">
+            <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
         </a>
         <span @class([
             'ui-pill',
@@ -37,12 +37,12 @@ $isAdmin = ! empty($siacUser['is_admin']);
     <div class="ui-card p-4 mb-4 space-y-3 max-h-[55vh] overflow-y-auto">
         @foreach($ticket->replies as $reply)
         <div class="flex {{ $reply->is_staff ? 'justify-end' : 'justify-start' }}">
-            <div class="max-w-[80%] {{ $reply->is_staff ? 'bg-forest-600 text-white' : 'bg-[#F1EDE4] text-[#262521]' }} rounded-2xl px-3.5 py-2.5">
-                <p class="text-[10px] font-semibold mb-0.5 {{ $reply->is_staff ? 'text-white/70' : 'text-[#A8A296]' }}">
+            <div class="max-w-[80%] {{ $reply->is_staff ? 'bg-forest-600 dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-[#F1EDE4] dark:bg-[#1A1E16] text-[#262521] dark:text-[#F3EFE7] ' }} rounded-2xl px-3.5 py-2.5">
+                <p class="text-[10px] font-semibold mb-0.5 {{ $reply->is_staff ? 'text-white/70' : 'text-[#A8A296] dark:text-[#868778] ' }}">
                     {{ $reply->is_staff ? ($lang === 'fr' ? 'Support' : 'Support') : $reply->user?->name }}
                 </p>
                 <p class="text-sm whitespace-pre-line">{{ $lang === 'fr' ? $reply->body_fr : ($reply->body_en ?? $reply->body_fr) }}</p>
-                <p class="text-[10px] mt-1 {{ $reply->is_staff ? 'text-white/70' : 'text-[#A8A296]' }}">{{ $reply->created_at->format('d/m H:i') }}</p>
+                <p class="text-[10px] mt-1 {{ $reply->is_staff ? 'text-white/70' : 'text-[#A8A296] dark:text-[#868778] ' }}">{{ $reply->created_at->format('d/m H:i') }}</p>
             </div>
         </div>
         @endforeach

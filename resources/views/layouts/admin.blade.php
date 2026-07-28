@@ -33,7 +33,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F4EC] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F4EC] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @php
     $siacUser = session('siac_user') ?? [];

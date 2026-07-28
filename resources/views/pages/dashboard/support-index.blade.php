@@ -22,13 +22,13 @@ $statusLabels = [
 
     <div class="ui-card ui-card--flush mb-6">
         @forelse($tickets as $ticket)
-        <a href="{{ route('support.show', ['id' => $ticket->id]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-[#FBF9F4] last:border-0 hover:bg-[#FBF9F4] transition-colors">
-            <div class="w-9 h-9 rounded-lg bg-[#FBF9F4] flex items-center justify-center shrink-0">
-                <i data-lucide="life-buoy" class="w-4 h-4 text-[#A8A296]"></i>
+        <a href="{{ route('support.show', ['id' => $ticket->id]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-[#FBF9F4] dark:border-[#262B21] last:border-0 hover:bg-[#FBF9F4] dark:hover:bg-[#242A1E] transition-colors">
+            <div class="w-9 h-9 rounded-lg bg-[#FBF9F4] dark:bg-[#12150F] flex items-center justify-center shrink-0">
+                <i data-lucide="life-buoy" class="w-4 h-4 text-[#A8A296] dark:text-[#868778]"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-[#1B1B18] truncate">{{ $lang === 'fr' ? $ticket->subject_fr : ($ticket->subject_en ?? $ticket->subject_fr) }}</p>
-                <p class="text-xs text-[#A8A296]">{{ $ticket->created_at->diffForHumans() }}</p>
+                <p class="text-sm font-medium text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $lang === 'fr' ? $ticket->subject_fr : ($ticket->subject_en ?? $ticket->subject_fr) }}</p>
+                <p class="text-xs text-[#A8A296] dark:text-[#868778]">{{ $ticket->created_at->diffForHumans() }}</p>
             </div>
             <span @class([
                 'ui-pill shrink-0',

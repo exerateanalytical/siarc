@@ -17,20 +17,20 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FEFDFC] text-[#1D1B16] antialiased">
+<body class="bg-[#FEFDFC] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
 <div class="max-w-[680px] mx-auto px-4 sm:px-6 pt-8 pb-16">
     <nav class="flex items-center gap-2 text-[13px] mb-4" aria-label="Breadcrumb">
-        <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}" class="text-[#166534] hover:underline">{{ $bizName }}</a>
-        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
-        <span class="text-[#6F6B60]">{{ $isFr ? 'Nouveau message' : 'New message' }}</span>
+        <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}" class="text-[#166534] dark:text-[#339B56] hover:underline">{{ $bizName }}</a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6] dark:text-[#868778]"></i>
+        <span class="text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Nouveau message' : 'New message' }}</span>
     </nav>
 
-    <h1 class="font-serif text-[28px] sm:text-[32px] font-bold text-[#1D1B16] leading-tight">{{ $isFr ? 'Contacter l\'artisan' : 'Contact the artisan' }}</h1>
-    <p class="mt-1.5 text-[14px] text-[#55524A]">{{ $isFr ? 'Votre message à' : 'Your message to' }} <span class="font-semibold text-[#1D1B16]">{{ $bizName }}</span></p>
-    <div class="mt-2.5 h-[3.5px] w-[100px] bg-gradient-to-r from-[#D9991F] via-[#E9C989] to-transparent rounded-full mb-6"></div>
+    <h1 class="font-serif text-[28px] sm:text-[32px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-tight">{{ $isFr ? 'Contacter l\'artisan' : 'Contact the artisan' }}</h1>
+    <p class="mt-1.5 text-[14px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Votre message à' : 'Your message to' }} <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $bizName }}</span></p>
+    <div class="mt-2.5 h-[3.5px] w-[100px] bg-gradient-to-r from-[#D9991F] dark:from-[#3A2B06] via-[#E9C989] dark:via-[#3A2B06] to-transparent rounded-full mb-6"></div>
 
     @if($errors->any())
     <div class="ui-alert ui-alert-danger mb-5">
@@ -47,8 +47,8 @@
         <input type="hidden" name="return_to" value="{{ route('messages.inbox') }}">
 
         @if($product)
-        <div class="flex items-center gap-2 bg-[#F6F7F6] border border-[#EAE7DE] rounded-lg px-3.5 py-2.5 text-[12.5px] text-[#3B382F]">
-            <i data-lucide="package" class="w-4 h-4 text-[#157A43]"></i>
+        <div class="flex items-center gap-2 bg-[#F6F7F6] dark:bg-[#0A0C09] dark:bg-[#1A1E16] dark:bg-[#0A0C09] border border-[#EAE7DE] dark:border-[#262B21] rounded-lg px-3.5 py-2.5 text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] dark:text-[#B4B5A6]">
+            <i data-lucide="package" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>
             {{ $isFr ? 'À propos du produit :' : 'About the product:' }} <span class="font-semibold">{{ $product->name_fr }}</span>
         </div>
         @endif
@@ -64,7 +64,7 @@
             <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg">
                 <i data-lucide="send" class="w-4 h-4"></i>{{ $isFr ? 'Envoyer le message' : 'Send message' }}
             </button>
-            <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}" class="text-[13px] font-medium text-[#6F6B60] hover:text-[#1D1B16]">{{ $isFr ? 'Annuler' : 'Cancel' }}</a>
+            <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}" class="text-[13px] font-medium text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7] dark:hover:text-[#F3EFE7]">{{ $isFr ? 'Annuler' : 'Cancel' }}</a>
         </div>
     </form>
 </div>

@@ -14,14 +14,14 @@
         'partner'       => $isFr ? 'Partenaire' : 'Partner',
     ];
     $typeCls = [
-        'Institutionnel' => 'bg-[#E2F3E8] text-[#157A43]',
-        'International'  => 'bg-[#E8EFFB] text-[#3565DE]',
-        'Finance'        => 'bg-[#FDF3E0] text-[#C97A16]',
-        'Privé'          => 'bg-[#F0EAFB] text-[#7C4FE0]',
+        'Institutionnel' => 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]',
+        'International'  => 'bg-[#E8EFFB] dark:bg-[#101C33] text-[#3565DE] dark:text-[#8FB6F5]',
+        'Finance'        => 'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]',
+        'Privé'          => 'bg-[#F0EAFB] dark:bg-[#1E1733] text-[#7C4FE0] dark:text-[#BCA4F0]',
     ];
     $statusCls = [
-        'active'  => ['bg-[#E2F3E8] text-[#157A43]', $isFr ? 'Actif' : 'Active'],
-        'pending' => ['bg-[#FDF3E0] text-[#C97A16]', $isFr ? 'En attente' : 'Pending'],
+        'active'  => ['bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]', $isFr ? 'Actif' : 'Active'],
+        'pending' => ['bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]', $isFr ? 'En attente' : 'Pending'],
     ];
     // Windows/Chromium render flag emoji as raw two-letter codes rather than
     // flag glyphs, and the project has no flag-image asset — use a neutral
@@ -77,9 +77,9 @@
                     <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center" style="background-color: {{ $pcTile }}">
                         <i data-lucide="{{ $pcIcon }}" class="w-[22px] h-[22px]" style="color: {{ $pcColor }};stroke-width:1.8"></i>
                     </span>
-                    <p class="mt-3 text-[24px] font-extrabold text-[#1B1B18] leading-none">{{ $pcValue }}</p>
-                    <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F]">{{ $pcLabel }}</p>
-                    <p class="mt-0.5 text-[11px] text-[#8A857A]">{{ $pcSub }}</p>
+                    <p class="mt-3 text-[24px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $pcValue }}</p>
+                    <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $pcLabel }}</p>
+                    <p class="mt-0.5 text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $pcSub }}</p>
                     <svg viewBox="0 0 120 28" class="mt-2 w-full h-[26px]" preserveAspectRatio="none" aria-hidden="true">
                         <polyline points="0,20 15,16 30,18 45,10 60,14 75,7 90,11 105,5 120,8" fill="none" stroke="{{ $pcSpark }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
                     </svg>
@@ -90,15 +90,15 @@
             <div class="mt-5 grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-5 items-start">
                 {{-- Main: list + filters + table --}}
                 <div class="ui-card ui-card--flush">
-                    <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#EFEBE2]">
+                    <div class="px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#EFEBE2] dark:border-[#262B21]">
                         <h2 class="ui-card-title">{{ $isFr ? 'LISTE DES PARTENAIRES' : 'PARTNERS LIST' }}</h2>
                     </div>
 
-                    <form method="GET" class="px-5 py-3.5 flex flex-wrap items-center gap-2.5 border-b border-[#EFEBE2]">
+                    <form method="GET" class="px-5 py-3.5 flex flex-wrap items-center gap-2.5 border-b border-[#EFEBE2] dark:border-[#262B21]">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <div class="ui-field-group flex-1 min-w-[180px]">
                             <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un partenaire...' : 'Search a partner...' }}" class="ui-field-bare flex-1 min-w-0">
-                            <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i></button>
+                            <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></button>
                         </div>
                         <select name="status" onchange="this.form.submit()" class="ui-field ui-select">
                             <option value="">{{ $isFr ? 'Tous les statuts' : 'All statuses' }}</option>
@@ -137,39 +137,39 @@
                             </thead>
                             <tbody>
                                 @forelse($partners as $partner)
-                                <tr class="border-t border-[#EFEBE2] hover:bg-[#FAFAF8]">
+                                <tr class="border-t border-[#EFEBE2] dark:border-[#262B21] hover:bg-[#FAFAF8] dark:hover:bg-[#242A1E]">
                                     <td>
                                         <div class="flex items-center gap-2.5">
-                                            <div class="w-9 h-9 rounded-lg bg-[#F8F8F6] border border-[#EFEBE2] flex items-center justify-center shrink-0 overflow-hidden">
+                                            <div class="w-9 h-9 rounded-lg bg-[#F8F8F6] dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] flex items-center justify-center shrink-0 overflow-hidden">
                                                 @if($logoFor($partner))
                                                 <img src="{{ asset('images/landing/' . $logoFor($partner)) }}" alt="" class="w-full h-full object-contain">
                                                 @elseif($partner->logo)
                                                 <img src="{{ asset('storage/' . $partner->logo) }}" alt="" class="w-full h-full object-contain">
                                                 @else
-                                                <i data-lucide="building-2" class="w-4 h-4 text-[#B9B4A9]"></i>
+                                                <i data-lucide="building-2" class="w-4 h-4 text-[#B9B4A9] dark:text-[#868778]"></i>
                                                 @endif
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-[12.5px] font-semibold text-[#1B1B18] truncate">{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</p>
-                                                <p class="text-[11px] text-[#8A857A] truncate">{{ $partner->contact_email }}</p>
+                                                <p class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</p>
+                                                <p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $partner->contact_email }}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] text-[#6F6B60]' }}">{{ $partner->partner_type }}</span></td>
-                                    <td><span class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A]"></i>{{ $partner->country }}</span></td>
+                                    <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778] ' }}">{{ $partner->partner_type }}</span></td>
+                                    <td><span class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i>{{ $partner->country }}</span></td>
                                     <td>{{ $partner->sector_fr }}</td>
                                     <td>
-                                        @php [$sCls, $sLabel] = $statusCls[$partner->status] ?? ['bg-[#EEECE6] text-[#6F6B60]', $partner->status]; @endphp
+                                        @php [$sCls, $sLabel] = $statusCls[$partner->status] ?? ['bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778]', $partner->status]; @endphp
                                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $sCls }}">{{ $sLabel }}</span>
                                     </td>
                                     <td>{{ $fmtDate($partner->start_date) }}</td>
                                     <td>
                                         <div class="flex items-center justify-end gap-1">
-                                            <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}" class="p-1.5 rounded-lg hover:bg-[#E2F3E8] text-[#157A43]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                            <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}#edit" class="p-1.5 rounded-lg hover:bg-[#E8EFFB] text-[#3565DE]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}" class="p-1.5 rounded-lg hover:bg-[#E2F3E8] dark:hover:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.partners.detail', ['id' => $partner->id, 'lang' => $lang]) }}#edit" class="p-1.5 rounded-lg hover:bg-[#E8EFFB] dark:hover:bg-[#101C33] text-[#3565DE] dark:text-[#8FB6F5]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
                                             <form method="POST" action="{{ route('admin.partners.destroy', ['id' => $partner->id]) }}" onsubmit="return confirm('{{ $isFr ? 'Supprimer ce partenaire ?' : 'Remove this partner?' }}')">
                                                 @csrf
-                                                <button type="submit" class="p-1.5 rounded-lg hover:bg-[#FDE8E8] text-[#DC2626]" title="{{ $isFr ? 'Supprimer' : 'Delete' }}"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
+                                                <button type="submit" class="p-1.5 rounded-lg hover:bg-[#FDE8E8] dark:hover:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C]" title="{{ $isFr ? 'Supprimer' : 'Delete' }}"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
                                             </form>
                                         </div>
                                     </td>
@@ -182,8 +182,8 @@
                     </div>
 
                     @if($partners->total() > 0)
-                    <div class="px-5 py-3.5 border-t border-[#EFEBE2] flex flex-wrap items-center justify-between gap-3">
-                        <p class="text-[12px] text-[#8A857A]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $partners->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $partners->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $partners->total() }} {{ $isFr ? 'partenaires' : 'partners' }}</p>
+                    <div class="px-5 py-3.5 border-t border-[#EFEBE2] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
+                        <p class="text-[12px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $partners->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $partners->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $partners->total() }} {{ $isFr ? 'partenaires' : 'partners' }}</p>
                         <div class="flex items-center gap-1">
                             {{ $partners->onEachSide(1)->links() }}
                         </div>
@@ -196,10 +196,10 @@
                     <div class="ui-card">
                         <h3 class="ui-card-title mb-4">{{ $isFr ? 'RÉPARTITION PAR TYPE' : 'BREAKDOWN BY TYPE' }}</h3>
                         <div class="flex items-center gap-4">
-                            <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $typeConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] m-[22px]"></span></span>
+                            <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $typeConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] dark:bg-[#12150F] m-[22px]"></span></span>
                             <ul class="space-y-1.5 min-w-0">
                                 @foreach($byTypePct as $tName => $pct)
-                                <li class="flex items-center gap-2 text-[12px] text-[#3B382F]">
+                                <li class="flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">
                                     <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $donutColors[$tName] ?? '#8A857A' }}"></span>
                                     <span class="flex-1 truncate">{{ $tName }}</span>
                                     <span class="font-semibold shrink-0">{{ $pct }}% ({{ $byType[$tName] }})</span>
@@ -215,11 +215,11 @@
                             @foreach($bySectorPct as $secName => $pct)
                             <div>
                                 <div class="flex items-center justify-between text-[12px] mb-1">
-                                    <span class="text-[#3B382F] truncate">{{ $secName }}</span>
-                                    <span class="font-semibold text-[#1B1B18] shrink-0">{{ $pct }}% ({{ $bySector[$secName] }})</span>
+                                    <span class="text-[#3B382F] dark:text-[#B4B5A6] truncate">{{ $secName }}</span>
+                                    <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] shrink-0">{{ $pct }}% ({{ $bySector[$secName] }})</span>
                                 </div>
-                                <div class="h-[6px] bg-[#F1F1EF] rounded-full overflow-hidden">
-                                    <div class="h-full bg-[#157A43] rounded-full" style="width: {{ $pct }}%"></div>
+                                <div class="h-[6px] bg-[#F1F1EF] dark:bg-[#1A1E16] rounded-full overflow-hidden">
+                                    <div class="h-full bg-[#157A43] dark:bg-[#2E9250] rounded-full" style="width: {{ $pct }}%"></div>
                                 </div>
                             </div>
                             @endforeach
@@ -244,14 +244,14 @@
             <div class="ui-card mt-5 flex flex-wrap items-center gap-6 justify-between">
                 <div class="max-w-[520px]">
                     <h3 class="ui-card-title mb-1.5">{{ $isFr ? 'DEVENIR PARTENAIRE' : 'BECOME A PARTNER' }}</h3>
-                    <p class="text-[12.5px] text-[#6F6B60] leading-relaxed">{{ $isFr ? 'Rejoignez notre réseau de partenaires et contribuez à la valorisation de l\'artisanat camerounais et africain.' : 'Join our partner network and contribute to promoting Cameroonian and African craftsmanship.' }}</p>
+                    <p class="text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? 'Rejoignez notre réseau de partenaires et contribuez à la valorisation de l\'artisanat camerounais et africain.' : 'Join our partner network and contribute to promoting Cameroonian and African craftsmanship.' }}</p>
                     <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
                         @foreach(($isFr ? ['handshake'=>'Visibilité accrue','heart'=>'Impact durable','users'=>'Réseau influent','layers'=>'Projets collaboratifs'] : ['handshake'=>'Increased visibility','heart'=>'Lasting impact','users'=>'Influential network','layers'=>'Collaborative projects']) as $icon => $label)
-                        <span class="flex items-center gap-1.5 text-[12px] text-[#3B382F]"><i data-lucide="{{ $icon }}" class="w-4 h-4 text-[#157A43]"></i>{{ $label }}</span>
+                        <span class="flex items-center gap-1.5 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="{{ $icon }}" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>{{ $label }}</span>
                         @endforeach
                     </div>
                 </div>
-                <a href="#add-partner" class="shrink-0 bg-[#0F4824] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-3 rounded-lg">{{ $isFr ? 'Faire une demande de partenariat' : 'Request a partnership' }}</a>
+                <a href="#add-partner" class="shrink-0 bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] text-white dark:text-[#04150A] text-[13px] font-semibold px-5 py-3 rounded-lg">{{ $isFr ? 'Faire une demande de partenariat' : 'Request a partnership' }}</a>
             </div>
 
             {{-- Add-partner form (project adaptation: PNG's CTA links here since the design has no separate creation screen) --}}
@@ -280,7 +280,7 @@
                         <input type="checkbox" name="is_active" value="1" checked class="ui-check">
                         {{ $isFr ? 'Actif (visible publiquement)' : 'Active (publicly visible)' }}
                     </label>
-                    <button type="submit" class="bg-[#0F4824] hover:bg-[#14652F] text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2">
+                    <button type="submit" class="bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] text-white dark:text-[#04150A] text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Ajouter' : 'Add' }}
                     </button>
                 </form>

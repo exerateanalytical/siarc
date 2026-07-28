@@ -22,8 +22,8 @@
     @endif
 
     <div>
-        <h1 class="text-[19px] font-bold text-[#1B1B18]">{{ $pageTitle }}</h1>
-        <p class="mt-1.5 text-[13px] text-[#55524A] leading-relaxed max-w-[560px]">
+        <h1 class="text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $pageTitle }}</h1>
+        <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[560px]">
             {{ $isFr
                ? 'Les artisans retenus au SIARC 2026 ont déjà une fiche sur la plateforme, créée à partir du dossier de la compétition. Si l\'une d\'elles est la vôtre, récupérez-la : vous en devenez propriétaire et pourrez la corriger avant toute publication.'
                : 'Artisans selected for SIARC 2026 already have a profile here, created from the competition records. If one of them is yours, claim it — you become its owner and can correct it before anything is published.' }}
@@ -39,10 +39,10 @@
     --}}
     @if($candidates->isNotEmpty())
     <div class="ui-card">
-        <h2 class="text-[14px] font-bold text-[#1B1B18]">
+        <h2 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
             {{ $isFr ? 'Ce que la récupération implique' : 'What claiming means' }}
         </h2>
-        <ul class="mt-2 space-y-1.5 text-[12.5px] text-[#55524A] leading-relaxed">
+        <ul class="mt-2 space-y-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
             <li>
                 {{ $isFr
                    ? 'La récupération est gratuite. La fiche devient la vôtre : vous pouvez la corriger, la compléter ou demander sa suppression, sans rien payer.'
@@ -58,7 +58,7 @@
                 {{ $isFr
                    ? 'Apparaître publiquement demande une cotisation annuelle, à partir de'
                    : 'Appearing publicly requires a yearly subscription, from' }}
-                <strong class="text-[#1B1B18]">{{ number_format($entryPlan['price_yearly'], 0, ',', ' ') }} {{ $entryPlan['currency'] }}</strong>
+                <strong class="text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($entryPlan['price_yearly'], 0, ',', ' ') }} {{ $entryPlan['currency'] }}</strong>
                 {{ $isFr ? 'par an (formule ' : 'per year (' }}{{ $entryPlan['name'] }}{{ $isFr ? ').' : ' plan).' }}
                 {{ $isFr
                    ? 'Le paiement se fait par mobile money et n\'est enregistré qu\'après vérification par un administrateur.'
@@ -74,7 +74,7 @@
         <div class="ui-card-head">
             <div class="min-w-0">
                 <p class="ui-eyebrow">SIARC {{ $c->siarc_code }}</p>
-                <h2 class="text-[16px] font-bold text-[#1B1B18] mt-0.5">{{ $c->name_fr }}</h2>
+                <h2 class="text-[16px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] mt-0.5">{{ $c->name_fr }}</h2>
             </div>
             <span class="ui-pill ui-pill-warn shrink-0">{{ $isFr ? 'Non revendiquée' : 'Unclaimed' }}</span>
         </div>
@@ -102,7 +102,7 @@
 
         @if($c->description_fr)
         <hr class="ui-divider">
-        <p class="text-[12.5px] text-[#55524A] leading-relaxed">{{ $c->description_fr }}</p>
+        <p class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $c->description_fr }}</p>
         @endif
 
         <form method="POST" action="{{ route('siarc.claim.assign', ['business' => $c->id]) }}" class="mt-4"
@@ -134,7 +134,7 @@
             {{ $isFr
                ? 'Aucune fiche SIARC ne correspond à votre nom ou à votre numéro de téléphone.'
                : 'No SIARC profile matches your name or phone number.' }}
-            <p class="mt-2 text-[12px] text-[#8A857A] max-w-[440px] mx-auto leading-relaxed">
+            <p class="mt-2 text-[12px] text-[#8A857A] dark:text-[#868778] max-w-[440px] mx-auto leading-relaxed">
                 {{ $isFr
                    ? 'Vérifiez que le nom et le téléphone de votre compte sont bien ceux transmis lors de la compétition, puis revenez ici. Sinon, créez simplement votre entreprise.'
                    : 'Check that your account name and phone match what you gave at the competition, then come back. Otherwise, just create your business.' }}

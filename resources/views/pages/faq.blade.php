@@ -42,7 +42,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
+<body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -56,15 +56,15 @@
 <main class="max-w-[820px] mx-auto px-5 py-10 pb-20">
     @if($hasDbFaqs)
         @foreach($faqCategories as $cat)
-        <h2 class="mt-6 first:mt-0 mb-3 text-[14px] font-bold tracking-[0.06em] text-[#14652F] uppercase">{{ $isFr ? $cat->name_fr : ($cat->name_en ?? $cat->name_fr) }}</h2>
+        <h2 class="mt-6 first:mt-0 mb-3 text-[14px] font-bold tracking-[0.06em] text-[#14652F] dark:text-[#339B56] uppercase">{{ $isFr ? $cat->name_fr : ($cat->name_en ?? $cat->name_fr) }}</h2>
         <div class="space-y-3">
             @foreach($cat->faqs as $faq)
-            <details class="bg-white border border-[#ECECEA] rounded-xl px-5 py-4">
-                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18]">
+            <details class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
+                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $isFr ? $faq->question_fr : ($faq->question_en ?? $faq->question_fr) }}
-                    <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] transition-transform"></i>
+                    <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
-                <p class="mt-3 text-[13px] text-[#55524A] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
+                <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
             </details>
             @endforeach
         </div>
@@ -72,12 +72,12 @@
         @if($uncategorizedFaqs->isNotEmpty())
         <div class="mt-6 space-y-3">
             @foreach($uncategorizedFaqs as $faq)
-            <details class="bg-white border border-[#ECECEA] rounded-xl px-5 py-4">
-                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18]">
+            <details class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
+                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $isFr ? $faq->question_fr : ($faq->question_en ?? $faq->question_fr) }}
-                    <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] transition-transform"></i>
+                    <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
-                <p class="mt-3 text-[13px] text-[#55524A] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
+                <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
             </details>
             @endforeach
         </div>
@@ -85,20 +85,20 @@
     @else
         <div class="space-y-3">
             @foreach($fallbackFaqs as [$fq, $fa])
-            <details class="bg-white border border-[#ECECEA] rounded-xl px-5 py-4">
-                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18]">
+            <details class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
+                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $fq }}
-                    <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] transition-transform"></i>
+                    <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
-                <p class="mt-3 text-[13px] text-[#55524A] leading-relaxed">{{ $fa }}</p>
+                <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $fa }}</p>
             </details>
             @endforeach
         </div>
     @endif
 
-    <div class="mt-8 bg-[#EFF5F0] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
-        <i data-lucide="message-circle" class="w-[28px] h-[28px] shrink-0 text-[#14652F]" style="stroke-width:1.6"></i>
-        <p class="flex-1 min-w-[240px] text-[13px] text-[#3B382F]">
+    <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
+        <i data-lucide="message-circle" class="w-[28px] h-[28px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
+        <p class="flex-1 min-w-[240px] text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
             <span class="font-bold">{{ $isFr ? 'Vous ne trouvez pas votre réponse ?' : 'Can\'t find your answer?' }}</span>
             {{ $isFr ? 'Écrivez-nous, nous répondons rapidement.' : 'Write to us — we reply quickly.' }}
         </p>

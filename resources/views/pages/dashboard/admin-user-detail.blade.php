@@ -13,7 +13,7 @@
 
     <div class="ui-card mb-4">
         <div class="flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 rounded-full bg-[#E2F3E8] flex items-center justify-center text-[#0F4824] font-bold">
+            <div class="w-12 h-12 rounded-full bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center text-[#0F4824] dark:text-[#339B56] font-bold">
                 {{ strtoupper(substr($user->name ?? '?', 0, 1)) }}
             </div>
             <div>
@@ -35,32 +35,32 @@
 
     @if($user->business)
     <div class="ui-card mb-4 flex items-center gap-3">
-        <i data-lucide="building-2" class="w-5 h-5 text-blue-500 shrink-0"></i>
+        <i data-lucide="building-2" class="w-5 h-5 text-blue-500 dark:text-[#8FB6F5] shrink-0"></i>
         <div class="flex-1 min-w-0">
             <p class="ui-dd">{{ $user->business->name_fr }}</p>
             <p class="ui-dt">{{ ucfirst($user->business->status) }}</p>
         </div>
-        <a href="{{ route('admin.businesses.detail', ['id' => $user->business->id]) }}" class="text-xs text-[#157A43] hover:underline">{{ $lang === 'fr' ? 'Voir' : 'View' }}</a>
+        <a href="{{ route('admin.businesses.detail', ['id' => $user->business->id]) }}" class="text-xs text-[#157A43] dark:text-[#339B56] hover:underline">{{ $lang === 'fr' ? 'Voir' : 'View' }}</a>
     </div>
     @endif
 
     <div class="grid grid-cols-2 gap-3 mb-4">
         <div class="ui-card text-center">
-            <p class="text-[21px] font-bold text-[#1B1B18] leading-tight">{{ $conversationCount }}</p>
+            <p class="text-[21px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $conversationCount }}</p>
             <p class="ui-dt">{{ $lang === 'fr' ? 'Conversations' : 'Conversations' }}</p>
         </div>
         <div class="ui-card text-center">
-            <p class="text-[21px] font-bold text-[#1B1B18] leading-tight">{{ $reviewCount }}</p>
+            <p class="text-[21px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $reviewCount }}</p>
             <p class="ui-dt">{{ $lang === 'fr' ? 'Avis laissés' : 'Reviews left' }}</p>
         </div>
     </div>
 
     @if($auditAsActor->isNotEmpty())
     <div class="ui-card ui-card--flush">
-        <div class="px-5 py-3.5 border-b border-[#F5F1E8]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Actions effectuées' : 'Actions taken' }}</h2></div>
+        <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Actions effectuées' : 'Actions taken' }}</h2></div>
         @foreach($auditAsActor as $entry)
-        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] last:border-0">
-            <span class="flex-1 text-[12.5px] text-[#3B382F]">{{ $entry->action }}</span>
+        <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
+            <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $entry->action }}</span>
             <span class="ui-dt">{{ $entry->created_at->diffForHumans() }}</span>
         </div>
         @endforeach

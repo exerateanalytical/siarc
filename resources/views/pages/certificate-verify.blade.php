@@ -108,7 +108,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FEFEFE] text-[#1B1B18] antialiased">
+<body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
 <!-- Header -->
 {{-- Canonical platform chrome (consolidated 2026-07-03) --}}
@@ -133,13 +133,13 @@
     </section>
 
     <!-- Verify card -->
-    <section class="mt-6 bg-white border border-[#EDEDEB] rounded-2xl shadow-sm overflow-hidden">
-        <div class="grid grid-cols-2 border-b border-[#EDEDEB]">
-            <button type="button" id="tab-num" class="flex items-center justify-center gap-2.5 py-4 text-[13px] font-bold tracking-[0.06em] uppercase text-[#14532D] border-b-2 border-[#14532D] bg-white">
+    <section class="mt-6 bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm overflow-hidden">
+        <div class="grid grid-cols-2 border-b border-[#EDEDEB] dark:border-[#262B21]">
+            <button type="button" id="tab-num" class="flex items-center justify-center gap-2.5 py-4 text-[13px] font-bold tracking-[0.06em] uppercase text-[#14532D] dark:text-[#339B56] border-b-2 border-[#14532D] bg-white dark:bg-[#12150F]">
                 <i data-lucide="file-text" class="w-[18px] h-[18px]"></i>
                 {{ $isFr ? 'Vérifier par numéro' : 'Verify by number' }}
             </button>
-            <button type="button" id="tab-qr" class="flex items-center justify-center gap-2.5 py-4 text-[13px] font-bold tracking-[0.06em] uppercase text-[#8A857A] bg-[#FAFAF8]">
+            <button type="button" id="tab-qr" class="flex items-center justify-center gap-2.5 py-4 text-[13px] font-bold tracking-[0.06em] uppercase text-[#8A857A] dark:text-[#868778] bg-[#FAFAF8] dark:bg-[#12150F]">
                 <i data-lucide="qr-code" class="w-[18px] h-[18px]"></i>
                 {{ $isFr ? 'Vérifier par QR Code' : 'Verify by QR Code' }}
             </button>
@@ -153,8 +153,8 @@
                     {{ $isFr ? 'Vérifier le certificat' : 'Verify the certificate' }}
                 </button>
             </form>
-            <p class="mt-5 flex items-center justify-center gap-2.5 text-[12.5px] text-[#55524A]">
-                <i data-lucide="shield-check" class="w-[18px] h-[18px] text-[#14532D]" style="fill:#14532D;color:white"></i>
+            <p class="mt-5 flex items-center justify-center gap-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
+                <i data-lucide="shield-check" class="w-[18px] h-[18px] text-[#14532D] dark:text-[#339B56]" style="fill:#14532D;color:white"></i>
                 {{ $isFr
                     ? "Ce service est sécurisé et certifié par la Artisan Hub 237."
                     : 'This service is secured and certified by Artisan Hub 237.'
@@ -162,8 +162,8 @@
             </p>
         </div>
         <div id="panel-qr" class="hidden px-6 sm:px-10 py-7 text-center">
-            <div id="qr-tab-code" class="inline-block bg-white p-2 border border-[#E4E2DD] rounded-lg"></div>
-            <p class="mt-4 text-[13px] text-[#55524A] max-w-md mx-auto">
+            <div id="qr-tab-code" class="inline-block bg-white dark:bg-[#12150F] p-2 border border-[#E4E2DD] dark:border-[#262B21] rounded-lg"></div>
+            <p class="mt-4 text-[13px] text-[#55524A] dark:text-[#B4B5A6] max-w-md mx-auto">
                 {{ $isFr
                     ? 'Scannez le QR Code présent sur le certificat avec l\'appareil photo de votre téléphone pour vérifier instantanément son authenticité.'
                     : 'Scan the QR Code on the certificate with your phone camera to instantly verify its authenticity.'
@@ -174,8 +174,8 @@
 
     <!-- Result card (only after a number is submitted) -->
     @if($searched)
-    <section class="mt-6 bg-white border border-[#EDEDEB] rounded-2xl shadow-sm overflow-hidden">
-        <div class="flex flex-wrap items-center justify-between gap-3 px-6 sm:px-8 py-4 border-b border-[#EDEFEA]" style="background-color: {{ $state[1] }}">
+    <section class="mt-6 bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-6 sm:px-8 py-4 border-b border-[#EDEFEA] dark:border-[#262B21]" style="background-color: {{ $state[1] }}">
             <div class="flex items-center gap-4">
                 <span class="w-[46px] h-[46px] rounded-full flex items-center justify-center shrink-0" style="background-color: {{ $state[0] }}">
                     <i data-lucide="{{ $state[5] }}" class="w-6 h-6 text-white" style="stroke-width:3.2"></i>
@@ -191,7 +191,7 @@
             </div>
             @if($found)
             <div class="text-right">
-                <p class="flex items-center justify-end gap-2 text-[12px] text-[#55524A]">
+                <p class="flex items-center justify-end gap-2 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">
                     {{ $isFr ? 'Vérifié le' : 'Verified on' }} {{ now()->translatedFormat('d F Y - H:i') }}
                     <span class="w-2 h-2 rounded-full" style="background-color: {{ $state[0] }}"></span>
                 </p>
@@ -205,17 +205,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-8 px-6 sm:px-8 py-7">
             @include('pages.partials.certificate-canvas', $certCanvas)
             <div>
-                <h3 class="text-[16.5px] font-bold text-[#14532D] pb-3 border-b border-[#EDEDEB]">{{ $isFr ? 'Informations du certificat' : 'Certificate information' }}</h3>
+                <h3 class="text-[16.5px] font-bold text-[#14532D] dark:text-[#339B56] pb-3 border-b border-[#EDEDEB] dark:border-[#262B21]">{{ $isFr ? 'Informations du certificat' : 'Certificate information' }}</h3>
                 <dl class="mt-4 space-y-4">
                     @foreach($certInfo as [$ciIcon, $ciLabel, $ciValue, $ciPill])
                     <div class="flex items-start gap-3.5">
-                        <i data-lucide="{{ $ciIcon }}" class="w-[22px] h-[22px] shrink-0 text-[#2E7D4F] mt-0.5" style="stroke-width:1.6"></i>
+                        <i data-lucide="{{ $ciIcon }}" class="w-[22px] h-[22px] shrink-0 text-[#2E7D4F] dark:text-[#339B56] mt-0.5" style="stroke-width:1.6"></i>
                         <div>
-                            <dt class="text-[12px] text-[#8A857A]">{{ $ciLabel }}</dt>
+                            <dt class="text-[12px] text-[#8A857A] dark:text-[#868778]">{{ $ciLabel }}</dt>
                             @if($ciPill)
                             <dd class="mt-1"><span class="inline-block text-[12.5px] font-bold px-3 py-1 rounded-md" style="background-color: {{ $state[1] }}; color: {{ $state[0] }}">{{ $ciValue }}</span></dd>
                             @else
-                            <dd class="text-[14.5px] font-semibold text-[#1B1B18]">{{ $ciValue }}</dd>
+                            <dd class="text-[14.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $ciValue }}</dd>
                             @endif
                         </div>
                     </div>
@@ -225,7 +225,7 @@
         </div>
         @else
         <div class="px-6 sm:px-8 py-10 text-center">
-            <p class="text-[14px] text-[#55524A] max-w-[480px] mx-auto">{{ $isFr ? 'Vérifiez le numéro saisi et réessayez. Un certificat authentique porte un numéro au format AH237-AAAA-XXXXXXX.' : 'Check the number entered and try again. A genuine certificate has a number in the AH237-YYYY-XXXXXXX format.' }}</p>
+            <p class="text-[14px] text-[#55524A] dark:text-[#B4B5A6] max-w-[480px] mx-auto">{{ $isFr ? 'Vérifiez le numéro saisi et réessayez. Un certificat authentique porte un numéro au format AH237-AAAA-XXXXXXX.' : 'Check the number entered and try again. A genuine certificate has a number in the AH237-YYYY-XXXXXXX format.' }}</p>
         </div>
         @endif
     </section>
@@ -233,12 +233,12 @@
 
     <!-- Info cards -->
     <section class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="bg-white border border-[#EDEDEB] rounded-2xl shadow-sm p-6">
+        <div class="bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm p-6">
             <div class="flex items-center gap-3.5">
                 <img src="{{ asset('images/landing/cert-card-icon-1.png') }}" alt="" class="w-[46px] h-[46px]" aria-hidden="true">
-                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity' }}</h3>
+                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity' }}</h3>
             </div>
-            <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">
+            <p class="mt-3.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                 {{ $isFr
                     {{-- "Infalsifiable" was never true of a web page. What is true
                          is that the number is checked against the live record here,
@@ -248,26 +248,26 @@
                 }}
             </p>
         </div>
-        <div class="bg-white border border-[#EDEDEB] rounded-2xl shadow-sm p-6">
+        <div class="bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm p-6">
             <div class="flex items-center gap-3.5">
                 <img src="{{ asset('images/landing/cert-card-icon-2.png') }}" alt="" class="w-[46px] h-[46px]" aria-hidden="true">
-                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Éléments de sécurité' : 'Security features' }}</h3>
+                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Éléments de sécurité' : 'Security features' }}</h3>
             </div>
             <ul class="mt-3.5 space-y-2">
                 @foreach($securityChecks as $check)
-                <li class="flex items-center gap-2.5 text-[12.5px] text-[#55524A]">
-                    <i data-lucide="check" class="w-4 h-4 text-[#157A43] shrink-0" style="stroke-width:2.6"></i>
+                <li class="flex items-center gap-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
+                    <i data-lucide="check" class="w-4 h-4 text-[#157A43] dark:text-[#339B56] shrink-0" style="stroke-width:2.6"></i>
                     {{ $check }}
                 </li>
                 @endforeach
             </ul>
         </div>
-        <div class="bg-white border border-[#EDEDEB] rounded-2xl shadow-sm p-6">
+        <div class="bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm p-6">
             <div class="flex items-center gap-3.5">
                 <img src="{{ asset('images/landing/cert-card-icon-3.png') }}" alt="" class="w-[46px] h-[46px]" aria-hidden="true">
-                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'À propos de ce certificat' : 'About this certificate' }}</h3>
+                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'À propos de ce certificat' : 'About this certificate' }}</h3>
             </div>
-            <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">
+            <p class="mt-3.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                 {{ $isFr
                     ? "Ce certificat prouve que l'artisan ou entrepreneur mentionné fait partie du réseau des artisans membres d'Artisan Hub 237 et bénéficie des avantages et services de la plateforme."
                     : 'This certificate proves that the mentioned artisan or entrepreneur is part of the Artisan Hub 237 member network and benefits from the platform\'s advantages and services.'
@@ -278,11 +278,11 @@
 
     <!-- QR + help -->
     <section class="mt-6 mb-10 grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="bg-white border border-[#EDEDEB] rounded-2xl shadow-sm p-6 flex items-center gap-5">
-            <div id="qr-code" class="shrink-0 bg-white"></div>
+        <div class="bg-white dark:bg-[#12150F] border border-[#EDEDEB] dark:border-[#262B21] rounded-2xl shadow-sm p-6 flex items-center gap-5">
+            <div id="qr-code" class="shrink-0 bg-white dark:bg-[#12150F]"></div>
             <div>
-                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] uppercase">{{ $isFr ? 'Scannez pour vérifier' : 'Scan to verify' }}</h3>
-                <p class="mt-2 text-[12.5px] text-[#55524A] leading-relaxed">
+                <h3 class="text-[13.5px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Scannez pour vérifier' : 'Scan to verify' }}</h3>
+                <p class="mt-2 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                     {{ $isFr
                         ? 'Scannez le QR Code présent sur le certificat pour vérifier instantanément son authenticité.'
                         : 'Scan the QR Code on the certificate to instantly verify its authenticity.'
@@ -331,16 +331,16 @@
     function setTab(isNum) {
         panelNum.classList.toggle('hidden', !isNum);
         panelQr.classList.toggle('hidden', isNum);
-        tabNum.classList.toggle('text-[#14532D]', isNum);
+        tabNum.classList.toggle('text-[#14532D] dark:text-[#339B56]', isNum);
         tabNum.classList.toggle('border-b-2', isNum);
         tabNum.classList.toggle('border-[#14532D]', isNum);
-        tabNum.classList.toggle('text-[#8A857A]', !isNum);
-        tabNum.classList.toggle('bg-[#FAFAF8]', !isNum);
-        tabQr.classList.toggle('text-[#14532D]', !isNum);
+        tabNum.classList.toggle('text-[#8A857A] dark:text-[#868778]', !isNum);
+        tabNum.classList.toggle('bg-[#FAFAF8] dark:bg-[#12150F]', !isNum);
+        tabQr.classList.toggle('text-[#14532D] dark:text-[#339B56]', !isNum);
         tabQr.classList.toggle('border-b-2', !isNum);
         tabQr.classList.toggle('border-[#14532D]', !isNum);
-        tabQr.classList.toggle('text-[#8A857A]', isNum);
-        tabQr.classList.toggle('bg-[#FAFAF8]', isNum);
+        tabQr.classList.toggle('text-[#8A857A] dark:text-[#868778]', isNum);
+        tabQr.classList.toggle('bg-[#FAFAF8] dark:bg-[#12150F]', isNum);
     }
     tabNum.addEventListener('click', () => setTab(true));
     tabQr.addEventListener('click', () => setTab(false));

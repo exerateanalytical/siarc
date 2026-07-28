@@ -19,7 +19,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FBF8F2] text-[#1D1B16] antialiased">
+<body class="bg-[#FBF8F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 @include('pages.partials.directory-header')
 
 {{-- Hero --}}
@@ -57,21 +57,21 @@
             $pImg = $product->primaryImage ? asset('storage/'.$product->primaryImage->file_path) : asset('images/landing/default-product-arts-decoration.png');
             $pBiz = $product->business;
         @endphp
-        <article class="bg-white border border-[#ECECEA] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+        <article class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
             <a href="{{ route('products.show', ['slug' => $product->slug, 'lang' => $lang]) }}">
                 <img src="{{ $pImg }}" alt="{{ $pName }}" class="w-full h-[168px] object-cover">
             </a>
             <div class="p-3">
-                <h3 class="text-[13px] font-bold text-[#1D1B16] truncate">
-                    <a href="{{ route('products.show', ['slug' => $product->slug, 'lang' => $lang]) }}" class="hover:text-leaf transition-colors">{{ $pName }}</a>
+                <h3 class="text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">
+                    <a href="{{ route('products.show', ['slug' => $product->slug, 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $pName }}</a>
                 </h3>
                 @if($pBiz)
-                <p class="mt-1 text-[11.5px] text-[#6F6B60] truncate">{{ $isFr ? $pBiz->name_fr : ($pBiz->name_en ?? $pBiz->name_fr) }}</p>
+                <p class="mt-1 text-[11.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $isFr ? $pBiz->name_fr : ($pBiz->name_en ?? $pBiz->name_fr) }}</p>
                 @endif
             </div>
         </article>
         @empty
-        <p class="col-span-full text-center py-14 text-[13px] text-[#6F6B60]">{{ $isFr ? 'Aucun produit dans cette collection pour le moment.' : 'No products in this collection yet.' }}</p>
+        <p class="col-span-full text-center py-14 text-[13px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucun produit dans cette collection pour le moment.' : 'No products in this collection yet.' }}</p>
         @endforelse
     </div>
 
@@ -80,13 +80,13 @@
         @if($products->onFirstPage())
         <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
         @else
-        <a href="{{ $products->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+        <a href="{{ $products->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
         @endif
         @foreach(range(1, $products->lastPage()) as $pageNum)
-        <a href="{{ $products->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center rounded-md text-[12.5px] {{ $pageNum === $products->currentPage() ? 'bg-[#0A3020] text-white' : 'text-[#3A3A35] hover:bg-[#F2F5F2]' }}">{{ $pageNum }}</a>
+        <a href="{{ $products->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center rounded-md text-[12.5px] {{ $pageNum === $products->currentPage() ? 'bg-[#0A3020] text-white' : 'text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09]' }}">{{ $pageNum }}</a>
         @endforeach
         @if($products->hasMorePages())
-        <a href="{{ $products->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] hover:bg-[#F2F5F2] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+        <a href="{{ $products->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
         @else
         <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
         @endif

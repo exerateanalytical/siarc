@@ -159,7 +159,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-cream text-[#1D1B16] antialiased">
+<body class="bg-cream dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 {{-- Canonical platform chrome (consolidated 2026-07-03) --}}
 @include('pages.partials.directory-header')
@@ -176,7 +176,7 @@
                 <h1 class="font-serif text-[30px] sm:text-[37px] xl:text-[44px] leading-[1.14] text-white font-medium">
                     <span id="hero-l1">{{ $heroSlides[0]['l1'] }}</span><br>
                     <span id="hero-l2">{{ $heroSlides[0]['l2'] }}</span><br>
-                    <span id="hero-gold" class="text-gold italic">{{ $heroSlides[0]['gold'] }}</span>
+                    <span id="hero-gold" class="text-gold dark:text-[#EDB33A] italic">{{ $heroSlides[0]['gold'] }}</span>
                 </h1>
                 <div class="mt-6 h-px w-full max-w-[600px]" style="background:linear-gradient(90deg,#B0821A 0%,#B0821A 16%,rgba(18,85,39,0.55) 30%,rgba(9,11,9,0) 45%,rgba(9,11,9,0) 55%,rgba(193,9,19,0.45) 72%,#B0821A 84%,#B0821A 100%)"></div>
                 <p id="hero-sub" class="mt-6 text-[14px] text-white/85 leading-relaxed whitespace-pre-line">{{ $heroSlides[0]['sub'] }}</p>
@@ -187,7 +187,7 @@
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                     <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
-                        class="inline-flex items-center gap-2.5 border border-golddk text-gold hover:bg-gold/10 text-[13px] font-medium px-5 py-3 rounded transition-colors">
+                        class="inline-flex items-center gap-2.5 border border-golddk text-gold dark:text-[#EDB33A] hover:bg-gold/10 text-[13px] font-medium px-5 py-3 rounded transition-colors">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         {{ $isFr ? 'Découvrir les artisans' : 'Discover the artisans' }}
                     </a>
@@ -218,16 +218,16 @@
 
 <!-- Stats band -->
 <section class="max-w-[1280px] mx-auto px-5 lg:px-8">
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 sm:divide-x divide-[#E2DCCF] py-9">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 sm:divide-x divide-[#E2DCCF] dark:divide-[#262B21] py-9">
         @foreach($statItems as $stat)
         <div class="flex items-center gap-3.5 px-2 lg:px-4 py-3 sm:py-1">
             <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0" style="background:{{ $stat['color'] }}">
                 <i data-lucide="{{ $stat['icon'] }}" class="w-6 h-6 text-white"></i>
             </div>
             <div class="leading-tight">
-                <p class="text-[19px] font-semibold text-[#1D1B16] whitespace-nowrap">{{ $stat['n'] }}</p>
-                <p class="text-[13px] font-semibold text-[#1D1B16] whitespace-nowrap">{{ $stat['label'] }}</p>
-                <p class="text-[11px] text-muted mt-1 leading-snug max-w-[130px]">{{ $stat['cap'] }}</p>
+                <p class="text-[19px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['n'] }}</p>
+                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['label'] }}</p>
+                <p class="text-[11px] text-muted dark:text-[#868778] mt-1 leading-snug max-w-[130px]">{{ $stat['cap'] }}</p>
             </div>
         </div>
         @endforeach
@@ -236,17 +236,17 @@
 
 <!-- Industry sectors -->
 <section class="max-w-[1280px] mx-auto px-5 lg:px-8 pt-8 pb-4">
-    <h2 class="text-center text-[15px] font-semibold tracking-[0.25em] text-[#1D1B16] uppercase">
+    <h2 class="text-center text-[15px] font-semibold tracking-[0.25em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">
         {{ $isFr ? 'Industry Sectors' : 'Industry Sectors' }}
     </h2>
 
     <div class="relative mt-8">
         <button id="sector-prev" aria-label="{{ $isFr ? 'Précédent' : 'Previous' }}"
-            class="hidden lg:flex absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] hover:text-[#1D1B16]">
+            class="hidden lg:flex absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]">
             <i data-lucide="chevron-left" class="w-7 h-7"></i>
         </button>
         <button id="sector-next" aria-label="{{ $isFr ? 'Suivant' : 'Next' }}"
-            class="hidden lg:flex absolute -right-7 top-1/2 -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] hover:text-[#1D1B16]">
+            class="hidden lg:flex absolute -right-7 top-1/2 -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]">
             <i data-lucide="chevron-right" class="w-7 h-7"></i>
         </button>
 
@@ -256,13 +256,13 @@
         <div id="sector-track" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory">
             @foreach($sectorCards as [$scIcon, $scLabel, $scHref])
             <a href="{{ $scHref }}"
-                class="relative snap-start shrink-0 w-[calc((100%-1rem)/2)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)] min-h-[218px] bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-7 pb-6 px-3 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center">
+                class="relative snap-start shrink-0 w-[calc((100%-1rem)/2)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/5)] min-h-[218px] bg-parch dark:bg-[#0A0C09] border border-sand dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] pt-7 pb-6 px-3 text-center overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center justify-center">
                 {{-- The icon crops are 110px squares holding a 94px circle: the round
                      mask + 117% zoom clips the white corners so only the circle shows --}}
                 <span class="block w-20 h-20 rounded-full overflow-hidden shrink-0">
                     <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
                 </span>
-                <p class="mt-4 text-[13px] font-medium text-[#1D1B16] leading-[1.4] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
+                <p class="mt-4 text-[13px] font-medium text-[#1D1B16] dark:text-[#F3EFE7] leading-[1.4] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
                 <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
                     <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
                 </span>
@@ -272,7 +272,7 @@
     </div>
 
     <div class="mt-8 text-center">
-        <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2 text-[13px] font-semibold text-leaf hover:text-[#1B5E33]">
+        <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
             {{ $isFr ? 'Voir tous les secteurs' : 'View all sectors' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -281,49 +281,49 @@
 
 <!-- Featured businesses -->
 <section class="max-w-[1280px] mx-auto px-5 lg:px-8 pt-10 pb-4">
-    <h2 class="text-center text-[15px] font-semibold tracking-[0.25em] text-[#1D1B16] uppercase">
+    <h2 class="text-center text-[15px] font-semibold tracking-[0.25em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">
         {{ $isFr ? 'Featured Businesses' : 'Featured Businesses' }}
     </h2>
 
     <div class="relative mt-8">
         <button id="biz-prev" aria-label="{{ $isFr ? 'Précédent' : 'Previous' }}"
-            class="hidden lg:flex absolute -left-7 top-[45%] -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] hover:text-[#1D1B16]">
+            class="hidden lg:flex absolute -left-7 top-[45%] -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]">
             <i data-lucide="chevron-left" class="w-7 h-7"></i>
         </button>
         <button id="biz-next" aria-label="{{ $isFr ? 'Suivant' : 'Next' }}"
-            class="hidden lg:flex absolute -right-7 top-[45%] -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] hover:text-[#1D1B16]">
+            class="hidden lg:flex absolute -right-7 top-[45%] -translate-y-1/2 w-7 h-9 items-center justify-center text-[#8A857A] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]">
             <i data-lucide="chevron-right" class="w-7 h-7"></i>
         </button>
 
         <div id="biz-track" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x">
             @forelse($featured as $business)
             <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}"
-                class="snap-start shrink-0 w-[188px] bg-white border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] p-1.5 hover:shadow-md transition-shadow group">
-                <div class="h-[128px] rounded-lg overflow-hidden bg-sand/40">
+                class="snap-start shrink-0 w-[188px] bg-white dark:bg-[#12150F] border border-sand dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] p-1.5 hover:shadow-md transition-shadow group">
+                <div class="h-[128px] rounded-lg overflow-hidden bg-sand/40 dark:bg-[#0A0C09/40]">
                     <img src="{{ $business->cover_image ? asset('storage/' . $business->cover_image) : asset('images/landing/' . $bizFallbacks[$loop->index % 6]) }}"
                         alt="{{ $business->name_fr }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300">
                 </div>
                 <div class="px-2.5 pt-3 pb-2.5">
-                    <h3 class="text-[14px] font-semibold text-[#1D1B16] leading-snug line-clamp-1">
+                    <h3 class="text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-1">
                         {{ $isFr ? $business->name_fr : ($business->name_en ?? $business->name_fr) }}
                     </h3>
-                    <p class="mt-0.5 text-[11.5px] text-muted line-clamp-1">
+                    <p class="mt-0.5 text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">
                         {{ $isFr ? ($business->industry->name_fr ?? '') : ($business->industry->name_en ?? $business->industry->name_fr ?? '') }}
                     </p>
-                    <p class="mt-2 flex items-center gap-1 text-[11.5px] text-[#6B665C]">
+                    <p class="mt-2 flex items-center gap-1 text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6]">
                         <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
                         <span class="line-clamp-1">{{ $business->region->name_fr ?? ($business->city->name_fr ?? 'Cameroun') }} {{ $business->region ? 'Region' : '' }}</span>
                     </p>
                 </div>
             </a>
             @empty
-            <p class="text-[13px] text-muted py-8 mx-auto">{{ $isFr ? 'Aucune entreprise en vedette pour le moment.' : 'No featured businesses yet.' }}</p>
+            <p class="text-[13px] text-muted dark:text-[#868778] py-8 mx-auto">{{ $isFr ? 'Aucune entreprise en vedette pour le moment.' : 'No featured businesses yet.' }}</p>
             @endforelse
         </div>
     </div>
 
     <div class="mt-8 text-center">
-        <a href="{{ route('businesses.index', ['lang' => $lang, 'featured' => 1]) }}" class="inline-flex items-center gap-2 text-[13px] font-semibold text-leaf hover:text-[#1B5E33]">
+        <a href="{{ route('businesses.index', ['lang' => $lang, 'featured' => 1]) }}" class="inline-flex items-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
             {{ $isFr ? 'Voir toutes les entreprises' : 'View all businesses' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -345,7 +345,7 @@
             <div class="flex items-start justify-between gap-4">
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-3">
-                        <span class="text-[11px] font-semibold tracking-[0.18em] text-gold uppercase">
+                        <span class="text-[11px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">
                             {{ $isFr ? 'Focus' : 'Focus' }}{{ $evIndustry ? ' — ' . mb_strtoupper(\Illuminate\Support\Str::before($evIndustry, ' &')) : '' }}
                         </span>
                         <span class="border border-white/25 rounded px-2.5 py-1 text-[9.5px] font-medium tracking-[0.12em] text-white/85 uppercase">
@@ -394,64 +394,64 @@
         @endif
 
         <!-- Current events -->
-        <div class="bg-[#FDFBF6] border border-sand rounded-xl p-5 flex flex-col">
-            <h3 class="text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] uppercase">{{ $isFr ? 'Current Events' : 'Current Events' }}</h3>
+        <div class="bg-[#FDFBF6] dark:bg-[#12150F] border border-sand dark:border-[#262B21] rounded-xl p-5 flex flex-col">
+            <h3 class="text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Current Events' : 'Current Events' }}</h3>
 
-            <div class="mt-2 flex-1 divide-y divide-[#EEE8DB]">
+            <div class="mt-2 flex-1 divide-y divide-[#EEE8DB] dark:divide-[#262B21]">
                 @forelse($upcomingEvents as $ev)
                 <a href="{{ route('events.show', $ev->slug) }}" class="flex gap-3 py-3.5 group">
                     <img src="{{ $ev->cover_image ? asset('storage/' . $ev->cover_image) : asset('images/landing/' . $eventFallbacks[$loop->index % 3]) }}" alt=""
                         class="w-14 h-14 rounded-md object-cover shrink-0">
                     <div class="min-w-0">
-                        <p class="text-[13px] font-semibold text-[#1D1B16] leading-snug line-clamp-2 group-hover:text-leaf transition-colors">
+                        <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 group-hover:text-leaf group-hover:dark:text-[#339B56] transition-colors">
                             {{ $isFr ? $ev->name_fr : ($ev->name_en ?? $ev->name_fr) }}
                         </p>
-                        <p class="mt-1 text-[11.5px] text-muted">{{ $dateRange($ev->starts_at, $ev->ends_at) }}</p>
-                        <p class="text-[11.5px] text-muted line-clamp-1">{{ $isFr ? $ev->location_fr : ($ev->location_en ?? $ev->location_fr) }}</p>
+                        <p class="mt-1 text-[11.5px] text-muted dark:text-[#868778]">{{ $dateRange($ev->starts_at, $ev->ends_at) }}</p>
+                        <p class="text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">{{ $isFr ? $ev->location_fr : ($ev->location_en ?? $ev->location_fr) }}</p>
                     </div>
                 </a>
                 @empty
-                <p class="py-6 text-[12.5px] text-muted">{{ $isFr ? 'Aucun événement programmé pour le moment.' : 'No scheduled events at the moment.' }}</p>
+                <p class="py-6 text-[12.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'Aucun événement programmé pour le moment.' : 'No scheduled events at the moment.' }}</p>
                 @endforelse
             </div>
 
-            <a href="{{ route('events.index') }}" class="mt-3 pt-3.5 border-t border-[#EEE8DB] flex items-center justify-center gap-2 text-[13px] font-semibold text-leaf hover:text-[#1B5E33]">
+            <a href="{{ route('events.index') }}" class="mt-3 pt-3.5 border-t border-[#EEE8DB] dark:border-[#262B21] flex items-center justify-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
                 {{ $isFr ? 'Voir tous les événements' : 'View all events' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
         </div>
 
         <!-- Partners -->
-        <div class="bg-[#F3EDE1] rounded-xl p-5 flex flex-col">
-            <h3 class="text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] uppercase">{{ $isFr ? 'Our Partners' : 'Our Partners' }}</h3>
+        <div class="bg-[#F3EDE1] dark:bg-[#0A0C09] rounded-xl p-5 flex flex-col">
+            <h3 class="text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Our Partners' : 'Our Partners' }}</h3>
 
             <div class="mt-4 flex-1 grid grid-cols-4 gap-2.5 content-start">
                 @forelse($partners as $partner)
                 @php $tile = $partnerTiles[$partner->name_fr] ?? null; @endphp
                 @if($tile)
-                <div class="{{ $partner->name_fr === 'Union Européenne' ? 'col-span-2' : '' }} bg-white rounded-lg overflow-hidden flex items-center justify-center" title="{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}">
+                <div class="{{ $partner->name_fr === 'Union Européenne' ? 'col-span-2' : '' }} bg-white dark:bg-[#12150F] rounded-lg overflow-hidden flex items-center justify-center" title="{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}">
                     <img src="{{ asset('images/landing/' . $tile) }}" alt="{{ $partner->name_fr }}" class="w-full h-auto">
                 </div>
                 @else
-                <div class="bg-white rounded-lg flex flex-col items-center justify-center gap-1.5 py-3 px-1 min-h-[50px]" title="{{ $partner->name_fr }}">
+                <div class="bg-white dark:bg-[#12150F] rounded-lg flex flex-col items-center justify-center gap-1.5 py-3 px-1 min-h-[50px]" title="{{ $partner->name_fr }}">
                     @if($partner->logo ?? false)
                     <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name_fr }}" class="h-8 w-full object-contain px-1">
                     @else
-                    <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf text-[10px] font-bold flex items-center justify-center">
+                    <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf dark:text-[#339B56] text-[10px] font-bold flex items-center justify-center">
                         {{ mb_strtoupper(mb_substr($partner->name_fr, 0, 2)) }}
                     </span>
                     @endif
-                    <span class="text-[8.5px] text-muted text-center leading-tight w-full px-0.5 truncate">
+                    <span class="text-[8.5px] text-muted dark:text-[#868778] text-center leading-tight w-full px-0.5 truncate">
                         {{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}
                     </span>
                 </div>
                 @endif
                 @empty
-                <p class="col-span-4 py-6 text-[12.5px] text-muted">{{ $isFr ? 'Nos partenaires seront annoncés bientôt.' : 'Our partners will be announced soon.' }}</p>
+                <p class="col-span-4 py-6 text-[12.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'Nos partenaires seront annoncés bientôt.' : 'Our partners will be announced soon.' }}</p>
                 @endforelse
             </div>
 
-            <a href="{{ route('partners.index') }}" class="mt-3 pt-3.5 flex items-center justify-center gap-2 text-[13px] font-semibold text-leaf hover:text-[#1B5E33]">
+            <a href="{{ route('partners.index') }}" class="mt-3 pt-3.5 flex items-center justify-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
                 {{ $isFr ? 'Voir tous les partenaires' : 'View all partners' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -489,7 +489,7 @@
 </div>
 
 <!-- Mobile bottom navigation -->
-<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
+<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-[#12150F] border-t border-gray-200 dark:border-[#262B21] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
     @php
         $bottomTabs = [
             ['href' => route('home', ['lang' => $lang]), 'icon' => 'home', 'label' => $isFr ? 'Accueil' : 'Home', 'active' => true],
@@ -500,7 +500,7 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
         <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>

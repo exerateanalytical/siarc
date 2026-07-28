@@ -13,15 +13,15 @@ $pageTitle = $lang === 'fr' ? 'Messagerie' : 'Messages';
 <div class="max-w-2xl">
 
     <div class="flex items-center gap-2 mb-4">
-        <a href="{{ route('messages.inbox') }}" class="p-2 -ml-2 rounded-lg hover:bg-[#F1EDE4] lg:hidden">
-            <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A]"></i>
+        <a href="{{ route('messages.inbox') }}" class="p-2 -ml-2 rounded-lg hover:bg-[#F1EDE4] dark:hover:bg-[#242A1E] lg:hidden">
+            <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
         </a>
-        <div class="w-9 h-9 rounded-full bg-forest-50 flex items-center justify-center shrink-0">
-            <i data-lucide="{{ $isBuyer ? 'building-2' : 'user' }}" class="w-4 h-4 text-forest-500"></i>
+        <div class="w-9 h-9 rounded-full bg-forest-50 dark:bg-[#0C3D1D] flex items-center justify-center shrink-0">
+            <i data-lucide="{{ $isBuyer ? 'building-2' : 'user' }}" class="w-4 h-4 text-forest-500 dark:text-[#339B56]"></i>
         </div>
         <div class="min-w-0">
-            <p class="text-sm font-bold text-[#1B1B18] truncate">{{ $otherName ?: ($lang === 'fr' ? 'Utilisateur' : 'User') }}</p>
-            <p class="text-xs text-[#A8A296] truncate">{{ $conversation->subject }}</p>
+            <p class="text-sm font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $otherName ?: ($lang === 'fr' ? 'Utilisateur' : 'User') }}</p>
+            <p class="text-xs text-[#A8A296] dark:text-[#868778] truncate">{{ $conversation->subject }}</p>
         </div>
         @if($conversation->product)
         <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $conversation->product->slug]) }}" class="ui-btn ui-btn-secondary ui-btn-sm ml-auto shrink-0">
@@ -35,9 +35,9 @@ $pageTitle = $lang === 'fr' ? 'Messagerie' : 'Messages';
         @forelse($conversation->messages as $message)
             @php $mine = $message->sender_id === $user->id; @endphp
             <div class="flex {{ $mine ? 'justify-end' : 'justify-start' }}">
-                <div class="max-w-[80%] {{ $mine ? 'bg-forest-500 text-white' : 'bg-[#F1EDE4] text-[#262521]' }} rounded-2xl px-3.5 py-2.5">
+                <div class="max-w-[80%] {{ $mine ? 'bg-forest-500 dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-[#F1EDE4] dark:bg-[#1A1E16] text-[#262521] dark:text-[#F3EFE7] ' }} rounded-2xl px-3.5 py-2.5">
                     <p class="text-sm whitespace-pre-line">{{ $message->body }}</p>
-                    <p class="text-[10px] mt-1 {{ $mine ? 'text-white/70' : 'text-[#A8A296]' }}">{{ $message->created_at->format('d/m H:i') }}</p>
+                    <p class="text-[10px] mt-1 {{ $mine ? 'text-white/70' : 'text-[#A8A296] dark:text-[#868778] ' }}">{{ $message->created_at->format('d/m H:i') }}</p>
                 </div>
             </div>
         @empty

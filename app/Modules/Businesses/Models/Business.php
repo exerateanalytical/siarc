@@ -23,6 +23,10 @@ class Business extends Model
         'phone', 'whatsapp', 'email', 'website',
         'address_fr', 'address_en', 'gps_lat', 'gps_lng',
         'year_established', 'employee_count', 'ownership_type', 'vendor_type',
+        // Set only by `demo:artisan`. A true here means every figure on the
+        // profile is fabricated for the mockups and none of it is a claim about
+        // a living artisan.
+        'is_demo',
         // SIARC 2026 import identity — without these, mass assignment drops
         // them silently and every imported profile loses the code the claim
         // flow matches on.
@@ -39,6 +43,7 @@ class Business extends Model
             'export_countries'  => 'array',
             'languages_spoken'  => 'array',
             'is_featured'       => 'boolean',
+            'is_demo'           => 'boolean',
             'featured_until'    => 'datetime',
             'gps_lat'           => 'float',
             'gps_lng'           => 'float',

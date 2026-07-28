@@ -9,10 +9,10 @@
             <div class="inline-flex items-center justify-center w-14 h-14 bg-forest-500 rounded-2xl mb-4 shadow-lg">
                 <i data-lucide="shield-check" class="w-7 h-7 text-white"></i>
             </div>
-            <h1 class="text-2xl font-bold text-gray-900">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-[#F3EFE7]">
                 {{ $lang === 'fr' ? 'Nouveau mot de passe' : 'Set New Password' }}
             </h1>
-            <p class="text-gray-500 text-sm mt-1">
+            <p class="text-gray-500 dark:text-[#868778] text-sm mt-1">
                 {{ $lang === 'fr' ? 'Entrez votre nouveau mot de passe ci-dessous.' : 'Enter your new password below.' }}
             </p>
         </div>
@@ -70,7 +70,7 @@
             </form>
             @else
             <div class="text-center py-4">
-                <p class="text-sm text-gray-500 mb-4">
+                <p class="text-sm text-gray-500 dark:text-[#868778] mb-4">
                     {{ $lang === 'fr'
                         ? 'Ce lien de réinitialisation est invalide ou a expiré (les liens expirent après 60 minutes).'
                         : 'This password reset link is invalid or has expired (links expire after 60 minutes).' }}
@@ -82,8 +82,8 @@
             </div>
             @endif
 
-            <div class="mt-6 pt-5 border-t border-gray-100 text-center">
-                <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center gap-1 text-sm text-forest-500 font-semibold hover:text-forest-600 transition-colors">
+            <div class="mt-6 pt-5 border-t border-gray-100 dark:border-[#262B21] text-center">
+                <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center gap-1 text-sm text-forest-500 dark:text-[#339B56] font-semibold hover:text-forest-600 hover:dark:text-[#339B56] transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     {{ $lang === 'fr' ? 'Retour à la connexion' : 'Back to login' }}
                 </a>

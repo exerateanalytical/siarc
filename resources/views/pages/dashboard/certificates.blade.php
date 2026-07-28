@@ -267,7 +267,7 @@ $signatureLabels = [
                  yet marked, each with the one concrete step that reaches it. --}}
             <div>
                 <p class="ui-eyebrow">{{ $isFr ? 'Les sept niveaux' : 'The seven levels' }}</p>
-                <ol class="mt-2 divide-y divide-[#F0F1F0]">
+                <ol class="mt-2 divide-y divide-[#F0F1F0] dark:divide-[#262B21]">
                     @foreach($rungs as $n => [$label, $note])
                     @php $attained = $level >= $n; @endphp
                     <li class="flex items-start gap-3 py-2.5"
@@ -301,14 +301,14 @@ $signatureLabels = [
                  it can never read as a box we ticked "no". --}}
             <div>
                 <p class="ui-eyebrow">{{ $isFr ? 'Ce que nous avons contrôlé' : 'What we checked' }}</p>
-                <ul class="mt-2 divide-y divide-[#F0F1F0]">
+                <ul class="mt-2 divide-y divide-[#F0F1F0] dark:divide-[#262B21]">
                     @foreach($checks as $key => $passed)
                     <li class="flex items-start gap-3 py-2" data-check="{{ $key }}" data-outcome="{{ $passed ? 'yes' : 'no' }}">
                         <span class="mt-0.5 shrink-0">
                             @if($passed)
                                 <i data-lucide="check" class="w-4 h-4 ui-green"></i>
                             @else
-                                <i data-lucide="minus" class="w-4 h-4 text-[#B8B2A6]"></i>
+                                <i data-lucide="minus" class="w-4 h-4 text-[#B8B2A6] dark:text-[#868778]"></i>
                             @endif
                         </span>
                         <div class="min-w-0">
@@ -384,7 +384,7 @@ $signatureLabels = [
                        ? 'Chaque ligne indique sur quoi elle se fonde. Une dimension non évaluée signifie que personne ne l\'a encore mesurée — pas qu\'elle a été jugée insuffisante.'
                        : 'Each row states what it rests on. An unassessed dimension means nobody has measured it yet — not that it was found wanting.' }}
                 </p>
-                <ul class="mt-2 divide-y divide-[#F0F1F0]">
+                <ul class="mt-2 divide-y divide-[#F0F1F0] dark:divide-[#262B21]">
                     @foreach($assessment['categories'] as $dim => $cat)
                     <li class="py-2.5" data-dimension="{{ $dim }}" data-max="{{ $cat['max'] }}">
                         <div class="flex items-baseline justify-between gap-3">
@@ -442,7 +442,7 @@ $signatureLabels = [
                 $cert = $row['certificate'];
                 $sig  = $row['signature'];
             @endphp
-            <div class="px-4 py-3.5 border-b border-[#F0F1F0] last:border-0" data-product="{{ $p->slug }}">
+            <div class="px-4 py-3.5 border-b border-[#F0F1F0] dark:border-[#262B21] last:border-0" data-product="{{ $p->slug }}">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <p class="text-[13px] font-semibold ui-ink min-w-0">{{ $isFr ? $p->name_fr : ($p->name_en ?? $p->name_fr) }}</p>
                     <span class="ui-pill {{ $cert ? 'ui-pill-ok' : 'ui-pill-neutral' }}">
@@ -501,7 +501,7 @@ $signatureLabels = [
             </p>
             @foreach($flagRows as $fr)
             @php $f = $fr['flag']; @endphp
-            <div class="py-2 border-t border-[#F0F1F0] first:border-0" data-flag="{{ $f->flag }}">
+            <div class="py-2 border-t border-[#F0F1F0] dark:border-[#262B21] first:border-0" data-flag="{{ $f->flag }}">
                 <p class="text-[13px] ui-ink">
                     {{ $flagLabels[$f->flag] ?? $f->flag }} —
                     {{ $isFr ? $fr['product']->name_fr : ($fr['product']->name_en ?? $fr['product']->name_fr) }}

@@ -56,9 +56,9 @@
             </div>
 
             {{-- Tabs --}}
-            <div class="mt-4 flex items-center gap-6 border-b border-[#EFEBE2] overflow-x-auto">
+            <div class="mt-4 flex items-center gap-6 border-b border-[#EFEBE2] dark:border-[#262B21] overflow-x-auto">
                 @foreach($tabs as [$tLabel, $tActive])
-                <span class="pb-3 whitespace-nowrap text-[13px] font-semibold {{ $tActive ? 'text-[#14652F] border-b-2 border-[#14652F]' : 'text-[#8A857A]' }}">{{ $tLabel }}</span>
+                <span class="pb-3 whitespace-nowrap text-[13px] font-semibold {{ $tActive ? 'text-[#14652F] dark:text-[#339B56] border-b-2 border-[#14652F] dark:border-[#2E9250] ' : 'text-[#8A857A] dark:text-[#868778] ' }}">{{ $tLabel }}</span>
                 @endforeach
             </div>
 
@@ -67,8 +67,8 @@
                 @foreach($cards as [$cIcon, $cColor, $cTile, $cValue, $cLabel])
                 <div class="ui-card">
                     <span class="w-[44px] h-[44px] rounded-xl flex items-center justify-center" style="background-color: {{ $cTile }}"><i data-lucide="{{ $cIcon }}" class="w-[21px] h-[21px]" style="color: {{ $cColor }};stroke-width:1.8"></i></span>
-                    <p class="mt-3 text-[20px] font-bold text-[#1B1B18] leading-none">{{ is_numeric($cValue) ? $fmt($cValue) : $cValue }}</p>
-                    <p class="mt-1 text-[12px] font-semibold text-[#3B382F]">{{ $cLabel }}</p>
+                    <p class="mt-3 text-[20px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ is_numeric($cValue) ? $fmt($cValue) : $cValue }}</p>
+                    <p class="mt-1 text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $cLabel }}</p>
                 </div>
                 @endforeach
             </section>
@@ -80,13 +80,13 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Informations Générales' : 'General Information' }}</h2>
                         <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                             @foreach($infoLeft as [$iLabel, $iVal])
-                            <div class="flex items-start justify-between gap-3 border-b border-[#EFEBE2] pb-2.5"><dt class="text-[12px] text-[#6F6B60]">{{ $iLabel }}</dt><dd class="text-[12.5px] font-semibold text-[#1B1B18] text-right">{{ $iVal }}</dd></div>
+                            <div class="flex items-start justify-between gap-3 border-b border-[#EFEBE2] dark:border-[#262B21] pb-2.5"><dt class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $iLabel }}</dt><dd class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] text-right">{{ $iVal }}</dd></div>
                             @endforeach
                         </dl>
                         <div class="mt-4 flex items-center gap-3">
-                            <span class="w-9 h-9 rounded-full bg-[#F3F0E6] flex items-center justify-center"><i data-lucide="user-cog" class="w-4 h-4 text-[#14652F]"></i></span>
+                            <span class="w-9 h-9 rounded-full bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center"><i data-lucide="user-cog" class="w-4 h-4 text-[#14652F] dark:text-[#339B56]"></i></span>
                             {{-- Used to print one hardcoded name for every centre; now the region's real coordinator --}}
-                            <div><p class="text-[11px] text-[#6F6B60]">{{ $isFr ? 'Coordonnateur' : 'Coordinator' }}</p><p class="text-[12.5px] font-semibold text-[#1B1B18]">{{ $centre->coordinator ?: '—' }}</p></div>
+                            <div><p class="text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Coordonnateur' : 'Coordinator' }}</p><p class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $centre->coordinator ?: '—' }}</p></div>
                         </div>
                     </section>
 
@@ -94,12 +94,12 @@
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Répartition par Métiers' : 'Distribution by craft' }}</h2>
                         <div class="mt-4 flex items-center gap-6">
-                            <span class="w-[120px] h-[120px] rounded-full shrink-0 relative" style="background: {{ $metierConic }}"><span class="absolute inset-[26px] rounded-full bg-white"></span></span>
+                            <span class="w-[120px] h-[120px] rounded-full shrink-0 relative" style="background: {{ $metierConic }}"><span class="absolute inset-[26px] rounded-full bg-white dark:bg-[#12150F]"></span></span>
                             <div class="flex-1 space-y-2">
                                 @forelse($metierRows as $mi => $m)
-                                <div class="flex items-center justify-between text-[12px]"><span class="flex items-center gap-2 text-[#3B382F]"><span class="w-2.5 h-2.5 rounded-sm" style="background-color: {{ $palette[$mi % 8] }}"></span>{{ $isFr ? $m->name_fr : ($m->name_en ?? $m->name_fr) }}</span><span class="font-semibold text-[#1B1B18]">{{ round($m->n / $metierTotal * 100, 1) }}% ({{ $m->n }})</span></div>
+                                <div class="flex items-center justify-between text-[12px]"><span class="flex items-center gap-2 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2.5 h-2.5 rounded-sm" style="background-color: {{ $palette[$mi % 8] }}"></span>{{ $isFr ? $m->name_fr : ($m->name_en ?? $m->name_fr) }}</span><span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ round($m->n / $metierTotal * 100, 1) }}% ({{ $m->n }})</span></div>
                                 @empty
-                                <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Aucun artisan répertorié dans cette région pour le moment.' : 'No artisans listed in this region yet.' }}</p>
+                                <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucun artisan répertorié dans cette région pour le moment.' : 'No artisans listed in this region yet.' }}</p>
                                 @endforelse
                             </div>
                         </div>
@@ -110,13 +110,13 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Artisans & Boutiques du centre' : 'Artisans & Shops of the centre' }}</h2>
                         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                             @forelse($businesses as $b)
-                            <a href="{{ route('admin.businesses.detail', ['id' => $b->id, 'lang' => $lang]) }}" class="flex items-center gap-3 border border-[#EFEBE2] rounded-xl px-3.5 py-3 hover:border-[#14652F]">
+                            <a href="{{ route('admin.businesses.detail', ['id' => $b->id, 'lang' => $lang]) }}" class="flex items-center gap-3 border border-[#EFEBE2] dark:border-[#262B21] rounded-xl px-3.5 py-3 hover:border-[#14652F] dark:hover:border-[#2E9250]">
                                 @if($b->logo)<img src="{{ asset('storage/' . $b->logo) }}" alt="" class="w-10 h-10 rounded-lg object-cover shrink-0">
-                                @else<span class="w-10 h-10 rounded-lg bg-[#14652F] text-white text-[14px] font-bold flex items-center justify-center shrink-0">{{ mb_strtoupper(mb_substr($b->name_fr,0,1)) }}</span>@endif
-                                <span class="min-w-0"><span class="block text-[12.5px] font-semibold text-[#1B1B18] truncate">{{ $b->name_fr }}</span><span class="block text-[11px] text-[#8A857A]">{{ $isFr ? 'Voir le profil' : 'View profile' }}</span></span>
+                                @else<span class="w-10 h-10 rounded-lg bg-[#14652F] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[14px] font-bold flex items-center justify-center shrink-0">{{ mb_strtoupper(mb_substr($b->name_fr,0,1)) }}</span>@endif
+                                <span class="min-w-0"><span class="block text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $b->name_fr }}</span><span class="block text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Voir le profil' : 'View profile' }}</span></span>
                             </a>
                             @empty
-                            <p class="text-[12px] text-[#6F6B60] col-span-full">{{ $isFr ? 'Aucune boutique répertoriée dans cette région.' : 'No shops listed in this region.' }}</p>
+                            <p class="text-[12px] text-[#6F6B60] dark:text-[#868778] col-span-full">{{ $isFr ? 'Aucune boutique répertoriée dans cette région.' : 'No shops listed in this region.' }}</p>
                             @endforelse
                         </div>
                     </section>
@@ -127,21 +127,21 @@
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Informations de Contact' : 'Contact Information' }}</h2>
                         <dl class="mt-3.5 space-y-2.5 text-[12px]">
-                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Responsable' : 'Manager' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->coordinator ?: '—' }}</dd></div>
-                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Téléphone' : 'Phone' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->contact_phone }}</dd></div>
-                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">Email</dt><dd class="font-semibold text-[#1B1B18] truncate">{{ $centre->contact_email ?? config('legal.company.email') }}</dd></div>
-                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60]">{{ $isFr ? 'Ville' : 'City' }}</dt><dd class="font-semibold text-[#1B1B18]">{{ $centre->city ?? $centre->chef_lieu }}</dd></div>
+                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Responsable' : 'Manager' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $centre->coordinator ?: '—' }}</dd></div>
+                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Téléphone' : 'Phone' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $centre->contact_phone }}</dd></div>
+                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60] dark:text-[#868778]">Email</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $centre->contact_email ?? config('legal.company.email') }}</dd></div>
+                            <div class="flex items-center justify-between"><dt class="text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Ville' : 'City' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $centre->city ?? $centre->chef_lieu }}</dd></div>
                         </dl>
                     </section>
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions Rapides' : 'Quick Actions' }}</h2>
                         <div class="mt-3 space-y-2">
-                            <a href="{{ route('admin.regions', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-[#EFF6F1] hover:bg-[#E2F3E8] rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-[#14652F]"><i data-lucide="pencil" class="w-4 h-4"></i>{{ $isFr ? 'Modifier le Centre' : 'Edit Centre' }}</a>
-                            <a href="{{ route('admin.businesses', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-[#F0EAFB] hover:bg-[#E7DCFA] rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-[#7C4FE0]"><i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Ajouter un Artisan' : 'Add an Artisan' }}</a>
-                            <a href="{{ route('centres.show', ['slug'=>$centre->slug, 'lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-[#E8EFFB] hover:bg-[#DBE8FA] rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-[#3565DE]"><i data-lucide="external-link" class="w-4 h-4"></i>{{ $isFr ? 'Voir la page publique' : 'View public page' }}</a>
+                            <a href="{{ route('admin.regions', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-[#EFF6F1] dark:bg-[#1A1E16] hover:bg-[#E2F3E8] dark:hover:bg-[#0C3D1D] rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-[#14652F] dark:text-[#339B56]"><i data-lucide="pencil" class="w-4 h-4"></i>{{ $isFr ? 'Modifier le Centre' : 'Edit Centre' }}</a>
+                            <a href="{{ route('admin.businesses', ['lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-[#F0EAFB] dark:bg-[#1E1733] hover:bg-[#E7DCFA] dark:hover:bg-[#1E1733] rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-[#7C4FE0] dark:text-[#BCA4F0]"><i data-lucide="plus" class="w-4 h-4"></i>{{ $isFr ? 'Ajouter un Artisan' : 'Add an Artisan' }}</a>
+                            <a href="{{ route('centres.show', ['slug'=>$centre->slug, 'lang'=>$lang]) }}" class="flex items-center gap-2.5 bg-[#E8EFFB] dark:bg-[#101C33] hover:bg-[#DBE8FA] dark:hover:bg-[#101C33] rounded-lg px-3.5 py-2.5 text-[12.5px] font-semibold text-[#3565DE] dark:text-[#8FB6F5]"><i data-lucide="external-link" class="w-4 h-4"></i>{{ $isFr ? 'Voir la page publique' : 'View public page' }}</a>
                         </div>
                     </section>
                 </aside>
             </div>
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

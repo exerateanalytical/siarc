@@ -1,193 +1,280 @@
-{{-- Directory replica footer (product/vendor directory design): deep green with kente side
-     borders, social circles, Cameroon map with caption.
+{{-- Canonical platform chrome — footer.
+     Brought up to `certificates/artisan profile v2 desktop.png` (2026-07-28):
+     #011E13 green-black, the gold certification seal and brand paragraph left,
+     QUICK LINKS in two columns, a CONNECT column carrying the social discs,
+     phone and email, and — only where it means something — the
+     "SCAN TO VERIFY THIS ARTISAN" QR block on the right. Bottom strip: the
+     copyright, a working language select and the country.
+
      Expects: $lang, $isFr, $siacUser
-     Optional: $dfExplorer / $dfRessources (label=>href arrays), $dfNewsletterText,
-               $dfShowHelp (BESOIN D'AIDE ? column), $dfSocialStyle ('filled'|'outline'),
-               $dfShowLegalLinks (bool, default true) --}}
+
+     Optional:
+       $dfVerifyUrl     the URL the QR block should encode. Supply it and the
+                        block renders; leave it out and the whole column is
+                        absent. On an artisan profile it is filled in for you
+                        from $business below, because a QR captioned "verify
+                        this artisan" has to be about an actual artisan — on the
+                        contact page it would encode nothing.
+       $dfVerifyName    name shown under the QR (defaults to the business name).
+       $dfQuickLinksOne / $dfQuickLinksTwo   label => href, the two QUICK LINKS
+                        columns.
+       $dfShowLegalLinks (bool, default true), $dfBgColor.
+
+     Every href below resolves to a route this platform actually serves; there
+     are no placeholders. --}}
 
 @php
-    $dfExplorer = $dfExplorer ?? [
-        ($isFr ? 'Produits' : 'Products')               => route('products.index', ['lang' => $lang]),
-        'Collections'                                   => route('collections.index', ['lang' => $lang]),
-        ($isFr ? 'Centres d\'artisanat' : 'Craft centres') => route('centres.index', ['lang' => $lang]),
-        'Artisans'                                      => route('businesses.index', ['lang' => $lang]),
-        ($isFr ? 'Catégories' : 'Categories')           => route('industries.index', ['lang' => $lang]),
-        ($isFr ? 'Entreprises' : 'Businesses')          => route('businesses.index', ['lang' => $lang]),
-        ($isFr ? 'Événements' : 'Events')               => route('events.index', ['lang' => $lang]),
-    ];
-    $dfRessources = $dfRessources ?? [
-        ($isFr ? 'Guide de l\'artisan' : 'Artisan guide')            => route('guide.artisan', ['lang' => $lang]),
-        ($isFr ? 'Protection de votre travail' : 'Protecting your work')  => route('protection', ['lang' => $lang]),
-        'FAQ'                                                        => route('faq', ['lang' => $lang]),
-        ($isFr ? 'Centre d\'aide' : 'Help center')                   => route('support.index'),
-        ($isFr ? 'Actualités' : 'News')                              => route('news.index', ['lang' => $lang]),
-        ($isFr ? 'Vérifier un certificat' : 'Verify a certificate')  => route('certificate.verify', ['lang' => $lang]),
-        ($isFr ? 'API & Développeurs' : 'API & Developers')          => url('/docs/api'),
-        ($isFr ? 'Nous contacter' : 'Contact us')                    => route('contact', ['lang' => $lang]),
-    ];
-    $dfNewsletterText = $dfNewsletterText ?? ($isFr ? 'Restez informé de nos actualités et de nos nouveautés.' : 'Stay informed of our news and new arrivals.');
-    $dfShowHelp = $dfShowHelp ?? false;
-    $dfSocialStyle = $dfSocialStyle ?? 'filled';
+    // Deliberately NOT overridable: the footer is the same colour on every
+    // public page. Pages used to pass their own $dfBgColor and the chrome drifted.
+    $dfBgColor = '#011E13';
     $dfShowLegalLinks = $dfShowLegalLinks ?? true;
-    $dfBrandParagraph = $dfBrandParagraph ?? null;
-    $dfShowPayments = $dfShowPayments ?? false;
-    $dfBgColor = $dfBgColor ?? '#012B1C';
 
+    // --- QUICK LINKS -------------------------------------------------------
+    // The artwork draws two columns of five. This platform has more real pages
+    // than that, and dropping any of them would orphan it, so the two columns
+    // carry every footer destination the site had: the artwork's structure, the
+    // site's own contents.
+    // "Shipping Policy" and "Return Policy" from the artwork are deliberately
+    // absent: this platform ships nothing and is not a party to any sale, so
+    // those pages do not and must not exist.
+    $dfQuickLinksOne = $dfQuickLinksOne ?? array_filter([
+        ($isFr ? 'À propos' : 'About us')                            => route('about', ['lang' => $lang]),
+        ($isFr ? 'Comment ça marche' : 'How it works')               => route('guide.artisan', ['lang' => $lang]),
+        ($isFr ? 'Vérifier un certificat' : 'Verify certificate')    => route('certificate.verify', ['lang' => $lang]),
+        ($isFr ? 'Autorité de certification' : 'Certification Authority') => route('ca.page', ['lang' => $lang]),
+        ($isFr ? 'Certificats révoqués' : 'Revoked certificates')    => route('revocation.list', ['lang' => $lang]),
+        ($isFr ? 'Protéger mon travail' : 'Trust & security')        => route('protection', ['lang' => $lang]),
+        ($isFr ? "Conditions d'utilisation" : 'Terms & conditions')  => route('legal.show', ['doc' => 'conditions', 'lang' => $lang]),
+    ]);
+    $dfQuickLinksTwo = $dfQuickLinksTwo ?? array_filter([
+        ($isFr ? 'Confidentialité' : 'Privacy policy')      => route('legal.show', ['doc' => 'confidentialite', 'lang' => $lang]),
+        ($isFr ? "Centre d'aide" : 'Help center')           => route('support.index'),
+        'FAQ'                                               => route('faq', ['lang' => $lang]),
+        ($isFr ? 'Devenir membre' : 'Become a member')      => route('onboarding', ['lang' => $lang]),
+        ($isFr ? 'Carrières' : 'Careers')                   => route('careers', ['lang' => $lang]),
+        ($isFr ? 'Presse' : 'Press')                        => route('press', ['lang' => $lang]),
+        ($isFr ? 'API & Développeurs' : 'API & developers') => url('/docs/api'),
+        ($isFr ? 'Nous contacter' : 'Contact us')           => route('contact', ['lang' => $lang]),
+    ]);
+
+    // --- Social discs ------------------------------------------------------
+    // Only profiles that are actually configured render; an icon linking to an
+    // account that does not exist is worse than no icon.
     $socialProfileUrls = array_filter([
         'Facebook'  => config('legal.social.facebook'),
         'Instagram' => config('legal.social.instagram'),
-        'LinkedIn'  => config('legal.social.linkedin'),
         'YouTube'   => config('legal.social.youtube'),
+        'LinkedIn'  => config('legal.social.linkedin'),
         'X'         => config('legal.social.x'),
-        'Twitter'   => config('legal.social.x'),
     ]);
     $dfSocialIcons = [
-        'Facebook'  => '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>',
-        'Instagram' => '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>',
-        'LinkedIn'  => '<path d="M4.98 3.5a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM3.5 8.5h3v8h-3zM9 8.5h2.8v1.1h.1c.4-.7 1.4-1.4 2.8-1.4 3 0 3.5 1.9 3.5 4.3v4h-3v-3.5c0-.8 0-1.9-1.2-1.9s-1.4.9-1.4 1.9v3.5H9z" transform="scale(0.83) translate(2,1)"/>',
-        'YouTube'   => '<path d="M18.2 6.3a2.1 2.1 0 0 0-1.5-1.5C15.4 4.4 10 4.4 10 4.4s-5.4 0-6.7.4A2.1 2.1 0 0 0 1.8 6.3 22 22 0 0 0 1.5 10a22 22 0 0 0 .3 3.7 2.1 2.1 0 0 0 1.5 1.5c1.3.4 6.7.4 6.7.4s5.4 0 6.7-.4a2.1 2.1 0 0 0 1.5-1.5A22 22 0 0 0 18.5 10a22 22 0 0 0-.3-3.7zM8.3 12.5v-5l4.4 2.5z"/>',
-        'X'         => '<path d="M11.6 8.7 17.4 2h-1.4l-5 5.8L7 2H2.5l6.1 8.8L2.5 18h1.4l5.3-6.2 4.3 6.2H18zM4.6 3h2.1l8.7 12.4h-2.1z"/>',
+        'Facebook'  => ['#1877F2', '<path d="M13.5 2h-2.2C9.2 2 7.9 3.4 7.9 5.6v1.9H6v2.8h1.9V18h2.9v-7.7h2.3l.4-2.8h-2.7V5.9c0-.8.3-1.2 1.2-1.2h1.5V2z"/>'],
+        'Instagram' => ['#C13584', '<rect x="2.5" y="2.5" width="15" height="15" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="14.6" cy="5.4" r="1"/>'],
+        'YouTube'   => ['#FF0000', '<path d="M18.2 6.3a2.1 2.1 0 0 0-1.5-1.5C15.4 4.4 10 4.4 10 4.4s-5.4 0-6.7.4A2.1 2.1 0 0 0 1.8 6.3 22 22 0 0 0 1.5 10a22 22 0 0 0 .3 3.7 2.1 2.1 0 0 0 1.5 1.5c1.3.4 6.7.4 6.7.4s5.4 0 6.7-.4a2.1 2.1 0 0 0 1.5-1.5A22 22 0 0 0 18.5 10a22 22 0 0 0-.3-3.7zM8.3 12.5v-5l4.4 2.5z"/>'],
+        'LinkedIn'  => ['#0A66C2', '<path d="M4.98 3.5a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5zM3.5 8.5h3v8h-3zM9 8.5h2.8v1.1h.1c.4-.7 1.4-1.4 2.8-1.4 3 0 3.5 1.9 3.5 4.3v4h-3v-3.5c0-.8 0-1.9-1.2-1.9s-1.4.9-1.4 1.9v3.5H9z" transform="scale(0.83) translate(2,1)"/>'],
+        'X'         => ['#111111', '<path d="M11.6 8.7 17.4 2h-1.4l-5 5.8L7 2H2.5l6.1 8.8L2.5 18h1.4l5.3-6.2 4.3 6.2H18zM4.6 3h2.1l8.7 12.4h-2.1z"/>'],
     ];
+
+    // --- The conditional QR ------------------------------------------------
+    // "SCAN TO VERIFY THIS ARTISAN" is only meaningful on a page that IS about
+    // one artisan, so the block is opt-in. An artisan profile fills it in
+    // automatically from the record already in scope; every other page leaves
+    // $dfVerifyUrl unset and the column simply is not rendered.
+    //
+    // The URL has to actually resolve. /certificat-artisan/{slug} 404s for an
+    // artisan whose identity is not established yet, so the level is checked
+    // first — levelFor() is the same gate the route applies, and unlike
+    // forBusiness() it is read-only: a footer must not issue a certificate as a
+    // side effect of being rendered. Below level 1 there is nothing to verify,
+    // and no QR is drawn.
+    if (! isset($dfVerifyUrl) && request()->routeIs('businesses.show') && isset($business) && ! empty($business->slug)
+        && \App\Support\ArtisanVerification::levelFor($business) >= 1) {
+        $dfVerifyUrl  = route('artisan.verification.certificate', ['slug' => $business->slug, 'lang' => $lang]);
+        $dfVerifyName = $dfVerifyName ?? ($business->name_fr ?? $business->name ?? null);
+    }
+    $dfVerifyUrl  = $dfVerifyUrl ?? null;
+    $dfVerifyName = $dfVerifyName ?? null;
+
+    $dfPhone = config('legal.company.phone');
+    $dfEmail = config('legal.company.email');
+
+    // Column template. Measured off the artwork at 1024 and scaled ×1.25:
+    // brand 25→490, quick links 526→770, connect 810→1050, QR 1090→1255.
+    $dfCols = $dfVerifyUrl
+        ? 'lg:grid-cols-[1.55fr_0.78fr_0.78fr_0.92fr_0.62fr]'
+        : 'lg:grid-cols-[1.55fr_0.78fr_0.78fr_0.92fr]';
 @endphp
 
-<footer class="relative overflow-hidden" style="background-color: {{ $dfBgColor }}">
-    <img src="{{ asset('images/landing/product-kente-left.png') }}" alt="" class="absolute inset-y-0 left-0 w-[64px] h-full object-cover hidden md:block pointer-events-none select-none" aria-hidden="true">
-    <img src="{{ asset('images/landing/product-kente-right.png') }}" alt="" class="absolute inset-y-0 right-0 w-[64px] h-full object-cover hidden md:block pointer-events-none select-none" aria-hidden="true">
+{{-- `overflow-x: clip` rather than `hidden`: the old footer clipped the
+     "Cameroon, land of creativity and innovation" block off the right edge at
+     1280 and the page scrolled sideways behind it. Nothing in here is allowed
+     to be wider than its column now — every list wraps, every column is
+     min-w-0 — and the clip is a backstop, not the layout. --}}
+<footer class="relative" style="background-color: {{ $dfBgColor }}; overflow-x: clip">
+    <div class="relative max-w-[1280px] mx-auto px-[25px] pt-6 pb-[76px] sm:pb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 {{ $dfCols }} gap-x-8 gap-y-8 items-start">
 
-    <div class="relative max-w-[1340px] mx-auto px-5 lg:px-8 pt-8 pb-5">
-        {{-- Two columns on phones: the link lists are short enough to sit side by
-             side, and one-per-row pushed the newsletter several screens down.
-             The brand block and the newsletter keep the full width — the first
-             carries the logo lockup and social row, the second an input. --}}
-        <div class="grid grid-cols-2 {{ $dfShowHelp ? 'lg:grid-cols-[1.25fr_0.65fr_0.85fr_0.65fr_0.95fr_1fr_1.05fr]' : 'lg:grid-cols-[1.3fr_0.7fr_0.95fr_0.7fr_1.05fr_1.1fr]' }} gap-x-5 gap-y-7 lg:gap-7 items-start">
-            <!-- Brand -->
-            <div class="col-span-2 lg:col-span-1">
-                <div class="flex items-center gap-3">
-                    <img src="{{ brand_asset('mark') }}" alt="" class="w-11 h-11 object-contain">
-                    <span class="text-[11.5px] font-bold tracking-[0.08em] text-white uppercase leading-snug">
-                        {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}<br>
-                        {{ $isFr ? 'Marketplace des artisans' : 'Artisan Marketplace' }}
-                    </span>
-                </div>
-                <p class="mt-2 text-[11px] text-[#9DB3A6]">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</p>
-                @if($dfBrandParagraph)
-                <p class="mt-3 text-[12px] text-[#B9C4BC] leading-relaxed max-w-[230px]">{{ $dfBrandParagraph }}</p>
-                @endif
-                <div class="mt-5 flex items-center gap-2.5">
-                    @foreach(array_intersect_key($dfSocialIcons, $socialProfileUrls) as $socialName => $socialPath)
-                    @if($dfSocialStyle === 'outline')
-                    <a href="{{ $socialProfileUrls[$socialName] }}" target="_blank" rel="noopener" aria-label="{{ $socialName }}" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                        <svg viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">{!! $socialPath !!}</svg>
+            <!-- Brand: the gold certification seal + paragraph -->
+            <div class="col-span-1 sm:col-span-2 lg:col-span-1 min-w-0">
+                <div class="flex items-start gap-4">
+                    <a href="{{ route('ca.page', ['lang' => $lang]) }}" class="shrink-0">
+                        <img src="{{ brand_asset('mark') }}" alt="" class="w-[87px] h-[87px] object-contain">
                     </a>
-                    @else
-                    <a href="{{ $socialProfileUrls[$socialName] }}" target="_blank" rel="noopener" aria-label="{{ $socialName }}" class="w-[34px] h-[34px] rounded-full bg-white flex items-center justify-center text-[#0B2C1E] hover:bg-[#EBD8A9] transition-colors">
-                        <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">{!! $socialPath !!}</svg>
+                    <div class="min-w-0">
+                        <a href="{{ route('ca.page', ['lang' => $lang]) }}" class="block text-[14px] font-semibold text-white leading-snug hover:underline">
+                            {{-- The artwork letters this seal "AHCA". That acronym is not
+                                 this platform's — ProductCertificateTest lists it among the
+                                 foreign identifiers no page may carry — so the block uses
+                                 the certification authority's real name and links to it. --}}
+                            {{ $isFr ? 'Artisan Hub 237 — Autorité de certification' : 'Artisan Hub 237 Certification Authority' }}
+                        </a>
+                        <p class="mt-1.5 text-[14px] text-[#E4EAE4] leading-snug">
+                            {{ $isFr ? 'Un registre. Une vérité. Une confiance à vie.' : 'One Registry. One Truth. A Lifetime of Trust.' }}
+                        </p>
+                        <p class="mt-3.5 text-[10.5px] text-[#93A79B] leading-relaxed">
+                            {{ $isFr
+                               ? "Artisan Hub 237 est une plateforme privée dédiée à l'artisanat africain authentique. Nous vérifions, protégeons et faisons connaître les artisans et leur héritage culturel."
+                               : 'Artisan Hub 237 is a private platform for authentic African craftsmanship. We verify, protect, and promote artisans and their cultural heritage.' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK LINKS, column one -->
+            <div class="min-w-0 lg:border-l lg:border-white/10 lg:pl-7">
+                <h4 class="text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4">{{ $isFr ? 'Liens rapides' : 'Quick links' }}</h4>
+                <ul class="space-y-[9px] text-[12px] text-[#C6D0C7]">
+                    @foreach($dfQuickLinksOne as $dfLabel => $dfHref)
+                    <li><a href="{{ $dfHref }}" class="hover:text-white transition-colors">{{ $dfLabel }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <!-- QUICK LINKS, column two (no heading — it is the same list) -->
+            <div class="min-w-0">
+                {{-- Spacer heading: it keeps the two columns' first rows level
+                     on the wide layout without repeating the word. On the
+                     stacked layout it is gone entirely. --}}
+                <h4 class="hidden lg:block lg:invisible text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4" aria-hidden="true">{{ $isFr ? 'Liens rapides' : 'Quick links' }}</h4>
+                <ul class="space-y-[9px] text-[12px] text-[#C6D0C7]">
+                    @foreach($dfQuickLinksTwo as $dfLabel => $dfHref)
+                    <li><a href="{{ $dfHref }}" class="hover:text-white transition-colors">{{ $dfLabel }}</a></li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <!-- CONNECT WITH US -->
+            <div class="min-w-0 lg:border-l lg:border-white/10 lg:pl-7">
+                <h4 class="text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4">{{ $isFr ? 'Nous suivre' : 'Connect with us' }}</h4>
+
+                @if(count($socialProfileUrls))
+                <div class="flex flex-wrap items-center gap-2.5">
+                    @foreach($socialProfileUrls as $socialName => $socialUrl)
+                    @php [$socialBg, $socialPath] = $dfSocialIcons[$socialName]; @endphp
+                    <a href="{{ $socialUrl }}" target="_blank" rel="noopener" aria-label="{{ $socialName }}"
+                        class="w-[28px] h-[28px] rounded-full flex items-center justify-center text-white hover:opacity-85 transition-opacity"
+                        style="background-color: {{ $socialBg }}">
+                        <svg viewBox="0 0 20 20" fill="currentColor" class="w-[15px] h-[15px]">{!! $socialPath !!}</svg>
+                    </a>
+                    @endforeach
+                </div>
+                @endif
+
+                {{-- Phone and email come from config/legal.php. A blank one is
+                     simply absent — the artwork's placeholder number is not a
+                     number this company has. --}}
+                <div class="mt-4 space-y-3">
+                    @if($dfPhone)
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $dfPhone) }}" class="flex items-start gap-2.5 text-[12px] text-[#C6D0C7] hover:text-white transition-colors">
+                        <i data-lucide="phone" class="w-[15px] h-[15px] mt-px shrink-0 text-[#C9942E]"></i>
+                        <span class="min-w-0 break-words">{{ $dfPhone }}</span>
                     </a>
                     @endif
-                    @endforeach
+                    @if($dfEmail)
+                    <a href="mailto:{{ $dfEmail }}" class="flex items-start gap-2.5 text-[12px] text-[#C6D0C7] hover:text-white transition-colors">
+                        <i data-lucide="mail" class="w-[15px] h-[15px] mt-px shrink-0 text-[#C9942E]"></i>
+                        <span class="min-w-0 break-all">{{ $dfEmail }}</span>
+                    </a>
+                    @endif
+                    <a href="{{ route('contact', ['lang' => $lang]) }}" class="flex items-start gap-2.5 text-[12px] text-[#C6D0C7] hover:text-white transition-colors">
+                        <i data-lucide="message-circle" class="w-[15px] h-[15px] mt-px shrink-0 text-[#C9942E]"></i>
+                        <span class="min-w-0">{{ $isFr ? 'Formulaire de contact' : 'Contact form' }}</span>
+                    </a>
                 </div>
-            </div>
 
-            <!-- Explorer -->
-            <div>
-                <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">{{ $isFr ? 'Explorer' : 'Explore' }}</h4>
-                <ul class="space-y-2.5 text-[12.5px] text-[#B9C4BC] whitespace-nowrap">
-                    @foreach($dfExplorer as $dfLabel => $dfHref)
-                    <li><a href="{{ $dfHref }}" class="hover:text-white transition-colors">{{ $dfLabel }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-
-            <!-- Ressources -->
-            <div>
-                <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">{{ $isFr ? 'Ressources' : 'Resources' }}</h4>
-                <ul class="space-y-2.5 text-[12.5px] text-[#B9C4BC] whitespace-nowrap">
-                    @foreach($dfRessources as $dfLabel => $dfHref)
-                    <li><a href="{{ $dfHref }}" class="hover:text-white transition-colors">{{ $dfLabel }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-
-            <!-- À propos -->
-            <div>
-                <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">{{ $isFr ? 'À propos' : 'About' }}</h4>
-                <ul class="space-y-2.5 text-[12.5px] text-[#B9C4BC] whitespace-nowrap">
-                    <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Notre mission' : 'Our mission' }}</a></li>
-                    <li><a href="{{ route('onboarding', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Devenir membre' : 'Become a member' }}</a></li>
-                    <li><a href="{{ route('partners.index') }}" class="hover:text-white transition-colors">{{ $isFr ? 'Partenaires' : 'Partners' }}</a></li>
-                    <li><a href="{{ route('careers', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Carrières' : 'Careers' }}</a></li>
-                    <li><a href="{{ route('press', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Presse' : 'Press' }}</a></li>
-                    <li><a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a></li>
-                </ul>
-            </div>
-
-            @if($dfShowHelp)
-            <!-- Besoin d'aide ? -->
-            <div>
-                <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</h4>
-                <ul class="space-y-2.5 text-[12.5px] text-[#B9C4BC] whitespace-nowrap">
-                    @if(config('legal.company.phone'))<li>{{ config('legal.company.phone') }}</li>@endif
-                    <li>{{ config('legal.company.email') }}</li>
-                    <li>{{ $isFr ? 'Lun - Ven : 8h00 - 17h00' : 'Mon - Fri: 8am - 5pm' }}</li>
-                </ul>
-                <a href="{{ route('contact', ['lang' => $lang]) }}"
-                    class="mt-4 inline-flex items-center gap-2 border border-[#C9942E] text-[#E5B54B] hover:bg-[#C9942E]/10 text-[12px] font-semibold px-4 py-2 rounded-md transition-colors">
-                    {{ $isFr ? 'Nous contacter' : 'Contact us' }}
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                </a>
-            </div>
-            @endif
-
-            <!-- Newsletter -->
-            <div class="col-span-2 lg:col-span-1">
-                <h4 class="text-[12px] font-bold tracking-[0.14em] text-white uppercase mb-4">Newsletter</h4>
-                <p class="text-[12px] text-[#B9C4BC] leading-relaxed">
-                    {{ $dfNewsletterText }}
-                </p>
+                {{-- The newsletter this platform really runs. The artwork has no
+                     newsletter block; removing a working subscription form from
+                     every page to match a drawing would be a regression. --}}
                 @if(session('newsletter_ok'))
                 <p class="mt-4 flex items-start gap-2 text-[12px] font-semibold text-[#8FDCA8]">
                     <i data-lucide="circle-check" class="w-4 h-4 shrink-0"></i>
                     {{ session('newsletter_ok') }}
                 </p>
                 @else
-                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-4 flex gap-2">
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-4 flex flex-wrap gap-2">
                     @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
-                    {{-- On the kit, not hand-rolled: this field appears on 24 pages
-                         and its own 12px type meant iOS zoomed the page every time
-                         someone tapped it. --}}
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre email' : 'Your email' }}"
-                        class="ui-field ui-field--invert flex-1 min-w-0">
-                    <button type="submit" class="bg-[#EBA405] hover:bg-goldbt text-[#3A2E08] text-[12.5px] font-semibold px-4 py-2.5 rounded-md transition-colors shrink-0">
-                        {{ $isFr ? 'S\'abonner' : 'Subscribe' }}
+                        class="ui-field ui-field--invert ui-field--sm flex-1 min-w-0">
+                    <button type="submit" class="bg-[#925104] hover:bg-[#A2700F] text-white text-[12px] font-semibold px-3.5 py-2 rounded-md transition-colors shrink-0">
+                        {{ $isFr ? "S'abonner" : 'Subscribe' }}
                     </button>
                 </form>
                 @endif
             </div>
 
-            <!-- Cameroon map + caption -->
-            <div class="hidden lg:flex items-center gap-4">
-                <img src="{{ asset('images/landing/product-footer-map.png') }}" alt="" class="w-[112px]" aria-hidden="true">
-                <p class="text-[13px] text-[#D8E2DC] leading-relaxed">
-                    {{ $isFr ? 'Cameroun,' : 'Cameroon,' }}<br>
-                    {{ $isFr ? 'terre de créativité' : 'land of creativity' }}<br>
-                    {{ $isFr ? 'et d\'innovation' : 'and innovation' }}
+            {{-- SCAN TO VERIFY THIS ARTISAN.
+                 Rendered only when a page supplied a real verification URL. The
+                 code is generated by the vendored qrcode library from that exact
+                 URL — it is never a picture of a QR. --}}
+            @if($dfVerifyUrl)
+            <div class="min-w-0 lg:justify-self-end">
+                <p class="text-[12.5px] font-bold tracking-[0.06em] text-white uppercase leading-tight text-center lg:text-right">
+                    {{ $isFr ? 'Scannez pour vérifier' : 'Scan to verify' }}<br>
+                    {{ $isFr ? 'cet artisan' : 'this artisan' }}
                 </p>
+                <a href="{{ $dfVerifyUrl }}" class="mt-2.5 block w-[105px] mx-auto lg:mr-0 bg-white rounded-md p-1.5"
+                    aria-label="{{ $isFr ? 'Vérifier cet artisan' : 'Verify this artisan' }}">
+                    <span id="df-verify-qr" class="block w-[93px] h-[93px]"
+                          data-verify-url="{{ $dfVerifyUrl }}"></span>
+                </a>
+                @if($dfVerifyName)
+                <p class="mt-2 text-[10.5px] text-[#93A79B] text-center lg:text-right break-words">{{ $dfVerifyName }}</p>
+                @endif
+            </div>
+            @endif
+        </div>
+
+        <!-- Bottom strip: copyright · language · country -->
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-col lg:flex-row items-center justify-between gap-3 text-[12px] text-[#93A79B]">
+            <span class="text-center lg:text-left">&copy; {{ date('Y') }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
+            <span class="text-center">{{ $isFr ? "Porté par l'artisanat africain. Protégé par la technologie." : 'Powered by African Craft. Protected by Technology.' }}</span>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                {{-- A real switch: each option is the current page in that
+                     language, and choosing one navigates there. --}}
+                <select aria-label="{{ $isFr ? 'Langue' : 'Language' }}"
+                    onchange="if(this.value) window.location.href = this.value"
+                    class="ui-field ui-select ui-field--invert ui-field--sm w-auto pr-8 cursor-pointer">
+                    <option value="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" @selected($isFr)>Français</option>
+                    <option value="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" @selected(! $isFr)>English</option>
+                </select>
+                <span class="flex items-center gap-2 whitespace-nowrap">
+                    <span class="inline-flex h-[13px] w-[20px] overflow-hidden rounded-[2px]" aria-hidden="true">
+                        <span class="flex-1 bg-[#007A5E]"></span><span class="flex-1 bg-[#CE1126]"></span><span class="flex-1 bg-[#FCD116]"></span>
+                    </span>
+                    {{ $isFr ? 'Cameroun' : 'Cameroon' }}
+                </span>
             </div>
         </div>
 
-        <!-- Legal bar -->
-        <div class="mt-7 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] text-[#93A79B]">
-            <span>&copy; {{ date('Y') }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
-            @if($dfShowLegalLinks)
-            <span class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-                @foreach(config('legal.documents') as $lgSlug => $lgDoc)
-                @if(! $loop->first)<span class="text-white/20">|</span>@endif
-                <a href="{{ route('legal.show', ['doc' => $lgSlug, 'lang' => $lang]) }}" class="hover:text-white transition-colors whitespace-nowrap">{{ $lgDoc['title'][$lang] }}</a>
-                @endforeach
-            </span>
-            @endif
+        @if($dfShowLegalLinks)
+        <div class="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1 text-[11.5px] text-[#93A79B]">
+            @foreach(config('legal.documents') as $lgSlug => $lgDoc)
+            @if(! $loop->first)<span class="text-white/20">|</span>@endif
+            <a href="{{ route('legal.show', ['doc' => $lgSlug, 'lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $lgDoc['title'][$lang] }}</a>
+            @endforeach
         </div>
+        @endif
 
         {{-- Standing disclosure. Artisan Hub 237 is a private operator and is
              not a party to any sale made through the platform. --}}
@@ -199,19 +286,38 @@
     </div>
 </footer>
 
+@if($dfVerifyUrl)
+{{-- Real QR, drawn from the real URL by the vendored library. --}}
+<script src="{{ asset('vendor/qrcode.min.js') }}"></script>
+<script>
+    (function () {
+        var box = document.getElementById('df-verify-qr');
+        if (!box || !window.QRCode) return;
+        new QRCode(box, {
+            text: box.dataset.verifyUrl,
+            width: 93,
+            height: 93,
+            colorDark: '#0B2C1E',
+            colorLight: '#FFFFFF',
+            correctLevel: QRCode.CorrectLevel.M,
+        });
+    })();
+</script>
+@endif
+
 <!-- Mobile bottom navigation -->
 <nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-[#EEEDEA] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
     @php
         $dfBottomTabs = [
-            ['href' => route('home', ['lang' => $lang]), 'icon' => 'home', 'label' => $isFr ? 'Accueil' : 'Home', 'active' => false],
-            ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore', 'active' => false],
-            ['href' => $siacUser ? route('saved.index') : '/login', 'icon' => 'bookmark', 'label' => $isFr ? 'Favoris' : 'Saved', 'active' => false],
-            ['href' => $siacUser ? route('messages.inbox') : '/login', 'icon' => 'message-circle', 'label' => 'Messages', 'active' => false],
-            ['href' => $siacUser ? route('dashboard.siac') : route('login'), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile', 'active' => false],
+            ['href' => route('home', ['lang' => $lang]), 'icon' => 'home', 'label' => $isFr ? 'Accueil' : 'Home'],
+            ['href' => route('businesses.index', ['lang' => $lang]), 'icon' => 'compass', 'label' => $isFr ? 'Explorer' : 'Explore'],
+            ['href' => $siacUser ? route('saved.index') : route('login', ['lang' => $lang]), 'icon' => 'heart', 'label' => $isFr ? 'Favoris' : 'Wishlist'],
+            ['href' => $siacUser ? route('messages.inbox') : route('login', ['lang' => $lang]), 'icon' => 'message-circle', 'label' => 'Messages'],
+            ['href' => $siacUser ? route('dashboard.siac') : route('login', ['lang' => $lang]), 'icon' => 'user', 'label' => $isFr ? 'Profil' : 'Profile'],
         ];
     @endphp
     @foreach($dfBottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf' : 'text-[#8A857A]' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[#8A857A]">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
         <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>

@@ -5,10 +5,10 @@
 
     // ── Status → pill meta (label + classes + dot color) matching the design badges
     $payStatusMeta = [
-        'active'    => [$isFr ? 'Réussi' : 'Paid',       'bg-[#E2F3E8] text-[#157A43]', '#157A43'],
-        'pending'   => [$isFr ? 'En attente' : 'Pending', 'bg-[#FDF3E0] text-[#C97A16]', '#E9A83A'],
-        'expired'   => [$isFr ? 'Expiré' : 'Expired',     'bg-[#EEECE6] text-[#6F6B60]', '#8A857A'],
-        'cancelled' => [$isFr ? 'Échoué' : 'Failed',      'bg-[#FDE8E8] text-[#DC2626]', '#DC2626'],
+        'active'    => [$isFr ? 'Réussi' : 'Paid',       'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]', '#157A43'],
+        'pending'   => [$isFr ? 'En attente' : 'Pending', 'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]', '#E9A83A'],
+        'expired'   => [$isFr ? 'Expiré' : 'Expired',     'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778]', '#8A857A'],
+        'cancelled' => [$isFr ? 'Échoué' : 'Failed',      'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C]', '#DC2626'],
     ];
 
     // FCFA formatter for real numbers only
@@ -70,10 +70,10 @@
 
     // ── Quick actions (PNG bottom-right block)
     $quickActions = [
-        ['plus-circle', $isFr ? 'Nouveau paiement' : 'New payment',   'bg-[#0F4824] hover:bg-[#14652F] text-white'],
+        ['plus-circle', $isFr ? 'Nouveau paiement' : 'New payment',   'bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] text-white dark:text-[#04150A]'],
         ['arrow-up-circle', $isFr ? 'Demande de retrait' : 'Withdrawal request', 'bg-[#7C4FE0] hover:bg-[#6B41CC] text-white'],
         ['rotate-ccw', $isFr ? 'Remboursement' : 'Refund',            'bg-[#3565DE] hover:bg-[#2A54BC] text-white'],
-        ['download',   $isFr ? 'Rapport financier' : 'Financial report', 'bg-[#E6B201] hover:bg-[#D4A400] text-white'],
+        ['download',   $isFr ? 'Rapport financier' : 'Financial report', 'bg-[#E6B201] dark:bg-[#3A2B06] hover:bg-[#D4A400] dark:hover:bg-[#3A2B06] text-white'],
     ];
 
     // Date formatter
@@ -89,11 +89,11 @@
     {{-- Title + breadcrumb + top action buttons (project adaptation: layout owns the top bar) --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-1 pb-1">
         <div>
-            <h1 class="text-[26px] font-bold text-[#1B1B18] leading-tight">{{ $isFr ? 'Gestion des Paiements & Retraits' : 'Payments & Withdrawals Management' }}</h1>
-            <nav class="mt-1 flex items-center gap-1.5 text-[12.5px] text-[#8A857A]">
-                <a href="{{ route('dashboard.admin', ['lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+            <h1 class="text-[26px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $isFr ? 'Gestion des Paiements & Retraits' : 'Payments & Withdrawals Management' }}</h1>
+            <nav class="mt-1 flex items-center gap-1.5 text-[12.5px] text-[#8A857A] dark:text-[#868778]">
+                <a href="{{ route('dashboard.admin', ['lang' => $lang]) }}" class="hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                <span class="text-[#3B382F] font-medium">{{ $isFr ? 'Paiements & Retraits' : 'Payments & Withdrawals' }}</span>
+                <span class="text-[#3B382F] dark:text-[#B4B5A6] font-medium">{{ $isFr ? 'Paiements & Retraits' : 'Payments & Withdrawals' }}</span>
             </nav>
         </div>
         <div class="flex items-center gap-2.5">
@@ -113,9 +113,9 @@
             <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center" style="background-color: {{ $pcTile }}">
                 <i data-lucide="{{ $pcIcon }}" class="w-5 h-5" style="color: {{ $pcColor }};stroke-width:1.8"></i>
             </span>
-            <p class="mt-3 text-[10px] font-bold tracking-[0.06em] text-[#8A857A] uppercase">{{ $pcLabel }}</p>
-            <p class="mt-1 text-[19px] font-bold text-[#1B1B18] leading-tight">{{ $pcValue }}</p>
-            <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $pcSub }}</p>
+            <p class="mt-3 text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase">{{ $pcLabel }}</p>
+            <p class="mt-1 text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $pcValue }}</p>
+            <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $pcSub }}</p>
         </div>
         @endforeach
     </section>
@@ -129,7 +129,7 @@
             <form method="GET" class="flex flex-wrap items-center gap-2.5">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <div class="ui-field-group flex-1 min-w-[180px]">
-                    <i data-lucide="search" class="w-4 h-4 text-[#8A857A]"></i>
+                    <i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $isFr ? 'Rechercher un paiement...' : 'Search a payment...' }}" class="ui-field-bare flex-1 min-w-0">
                 </div>
                 <select name="type" class="ui-field ui-select">
@@ -157,7 +157,7 @@
             <div class="ui-table-wrap mt-4">
                 <table class="ui-table min-w-[760px]">
                     <thead>
-                        <tr class="border-b border-[#EFEBE2]">
+                        <tr class="border-b border-[#EFEBE2] dark:border-[#262B21]">
                             <th>{{ $isFr ? 'Référence' : 'Reference' }}</th>
                             <th>Type</th>
                             <th>{{ $isFr ? 'Utilisateur' : 'User' }}</th>
@@ -171,7 +171,7 @@
                     <tbody>
                         @forelse($subPayments as $tx)
                         @php
-                            [$stLabel, $stCls, $stDot] = $payStatusMeta[$tx->status] ?? [$tx->status, 'bg-[#EEECE6] text-[#6F6B60]', '#8A857A'];
+                            [$stLabel, $stCls, $stDot] = $payStatusMeta[$tx->status] ?? [$tx->status, 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778]', '#8A857A'];
                             $ref = 'PAY-' . str_pad($tx->id, 6, '0', STR_PAD_LEFT);
                             [$dDate, $dTime] = $payDate($tx->created_at ?? $tx->started_at);
                             $curr = $tx->plan_currency ?? 'FCFA';
@@ -179,38 +179,38 @@
                         <tr>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <span class="w-9 h-9 rounded-lg bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-[18px] h-[18px] text-[#14652F]"></i></span>
+                                    <span class="w-9 h-9 rounded-lg bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-[18px] h-[18px] text-[#14652F] dark:text-[#339B56]"></i></span>
                                     <span class="min-w-0">
-                                        <span class="block text-[12.5px] font-semibold text-[#1B1B18] truncate">{{ $ref }}</span>
-                                        <span class="block text-[11px] text-[#8A857A] truncate">{{ $tx->plan_name ?? '—' }}</span>
+                                        <span class="block text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $ref }}</span>
+                                        <span class="block text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $tx->plan_name ?? '—' }}</span>
                                     </span>
                                 </div>
                             </td>
                             <td><span class="ui-pill ui-pill-ok">{{ $isFr ? 'Paiement' : 'Payment' }}</span></td>
                             <td>
-                                <span class="block text-[12.5px] font-semibold text-[#1B1B18] truncate max-w-[180px]">{{ $tx->biz_name ?? '—' }}</span>
-                                <span class="block text-[11px] text-[#8A857A]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
+                                <span class="block text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate max-w-[180px]">{{ $tx->biz_name ?? '—' }}</span>
+                                <span class="block text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
                             </td>
-                            <td class="font-semibold text-[#1B1B18] whitespace-nowrap">{{ number_format((float) $tx->amount, 0, ',', ' ') }} {{ $curr }}</td>
+                            <td class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ number_format((float) $tx->amount, 0, ',', ' ') }} {{ $curr }}</td>
                             <td>
                                 <span class="flex items-center gap-2">
-                                    <span class="w-7 h-7 rounded-md bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-[15px] h-[15px] text-[#55524A]"></i></span>
-                                    <span class="text-[12px] text-[#3B382F]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
+                                    <span class="w-7 h-7 rounded-md bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-[15px] h-[15px] text-[#55524A] dark:text-[#B4B5A6]"></i></span>
+                                    <span class="text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
                                 </span>
                             </td>
                             <td><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
-                            <td class="whitespace-nowrap">{{ $dDate }}<br><span class="text-[11px] text-[#8A857A]">{{ $dTime }}</span></td>
+                            <td class="whitespace-nowrap">{{ $dDate }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $dTime }}</span></td>
                             <td>
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] hover:border-[#14652F] flex items-center justify-center text-[#55524A]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
+                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
+                                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr><td colspan="8" class="py-12 text-center">
-                            <i data-lucide="credit-card" class="w-8 h-8 text-[#C9C4B8] mx-auto"></i>
-                            <p class="mt-2 text-[13px] text-[#6F6B60]">{{ $isFr ? 'Aucune transaction pour le moment.' : 'No transactions yet.' }}</p>
+                            <i data-lucide="credit-card" class="w-8 h-8 text-[#C9C4B8] dark:text-[#868778] mx-auto"></i>
+                            <p class="mt-2 text-[13px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune transaction pour le moment.' : 'No transactions yet.' }}</p>
                         </td></tr>
                         @endforelse
                     </tbody>
@@ -219,11 +219,11 @@
 
             {{-- Footer count --}}
             <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <p class="text-[12px] text-[#6F6B60]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $subPayments->count() > 0 ? 1 : 0 }} {{ $isFr ? 'à' : 'to' }} {{ $subPayments->count() }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($subPayments->count()) }} {{ $isFr ? 'transactions' : 'transactions' }}</p>
+                <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $subPayments->count() > 0 ? 1 : 0 }} {{ $isFr ? 'à' : 'to' }} {{ $subPayments->count() }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($subPayments->count()) }} {{ $isFr ? 'transactions' : 'transactions' }}</p>
                 <div class="flex items-center gap-1.5">
-                    <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
-                    <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md">1</span>
-                    <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                    <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                    <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[12.5px] font-semibold rounded-md">1</span>
+                    <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                 </div>
             </div>
         </section>
@@ -235,7 +235,7 @@
             <section class="ui-card">
                 <div class="flex items-center justify-between">
                     <h2 class="ui-card-title">{{ $isFr ? 'Répartition par statut' : 'Breakdown by status' }}</h2>
-                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
+                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                 </div>
 
                 <div class="mt-4 flex items-center justify-center">
@@ -253,8 +253,8 @@
                             @endif
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-[16px] font-bold text-[#1B1B18] leading-none">{{ number_format($statusGrand, 0, ',', ' ') }}</span>
-                            <span class="text-[10px] text-[#8A857A] mt-0.5">FCFA Total</span>
+                            <span class="text-[16px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ number_format($statusGrand, 0, ',', ' ') }}</span>
+                            <span class="text-[10px] text-[#8A857A] dark:text-[#868778] mt-0.5">FCFA Total</span>
                         </div>
                     </div>
                 </div>
@@ -262,12 +262,12 @@
                 <div class="mt-4 space-y-2.5">
                     @foreach($donut as $seg)
                     <div class="flex items-center justify-between text-[12px]">
-                        <span class="flex items-center gap-2 text-[#3B382F]"><span class="w-2.5 h-2.5 rounded-sm" style="background-color: {{ $seg['color'] }}"></span>{{ $seg['label'] }}</span>
-                        <span class="text-[#1B1B18]">{{ number_format($seg['amt'], 0, ',', ' ') }} <span class="text-[#8A857A]">({{ number_format($seg['pct'], 1) }}%)</span></span>
+                        <span class="flex items-center gap-2 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2.5 h-2.5 rounded-sm" style="background-color: {{ $seg['color'] }}"></span>{{ $seg['label'] }}</span>
+                        <span class="text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($seg['amt'], 0, ',', ' ') }} <span class="text-[#8A857A] dark:text-[#868778]">({{ number_format($seg['pct'], 1) }}%)</span></span>
                     </div>
                     @endforeach
                     @if($statusGrand <= 0)
-                    <p class="text-[11.5px] text-[#8A857A] text-center pt-1">{{ $isFr ? 'Aucune donnée disponible.' : 'No data available.' }}</p>
+                    <p class="text-[11.5px] text-[#8A857A] dark:text-[#868778] text-center pt-1">{{ $isFr ? 'Aucune donnée disponible.' : 'No data available.' }}</p>
                     @endif
                 </div>
             </section>
@@ -276,11 +276,11 @@
             <section class="ui-card">
                 <div class="flex items-center justify-between">
                     <h2 class="ui-card-title">{{ $isFr ? 'Volumes par mois (FCFA)' : 'Volumes by month (FCFA)' }}</h2>
-                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
+                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                 </div>
-                <div class="mt-4 h-[120px] flex flex-col items-center justify-center rounded-xl bg-[#FAF8F2] border border-dashed border-[#EAE5D8]">
-                    <i data-lucide="bar-chart-3" class="w-6 h-6 text-[#C9C4B8]"></i>
-                    <p class="mt-1.5 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune donnée mensuelle' : 'No monthly data' }}</p>
+                <div class="mt-4 h-[120px] flex flex-col items-center justify-center rounded-xl bg-[#FAF8F2] dark:bg-[#12150F] border border-dashed border-[#EAE5D8] dark:border-[#262B21]">
+                    <i data-lucide="bar-chart-3" class="w-6 h-6 text-[#C9C4B8] dark:text-[#868778]"></i>
+                    <p class="mt-1.5 text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée mensuelle' : 'No monthly data' }}</p>
                 </div>
             </section>
 
@@ -288,17 +288,17 @@
             <section class="ui-card">
                 <div class="flex items-center justify-between">
                     <h2 class="ui-card-title">{{ $isFr ? 'Méthodes de paiement' : 'Payment methods' }}</h2>
-                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
+                    <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Voir le rapport' : 'View report' }}</a>
                 </div>
                 <div class="mt-3.5 flex items-center gap-3 py-2">
-                    <span class="w-8 h-8 rounded-md bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-[16px] h-[16px] text-[#55524A]"></i></span>
-                    <span class="flex-1 text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
-                    <span class="text-[12.5px] font-semibold text-[#1B1B18]">{{ number_format($revenue, 0, ',', ' ') }} FCFA</span>
+                    <span class="w-8 h-8 rounded-md bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-[16px] h-[16px] text-[#55524A] dark:text-[#B4B5A6]"></i></span>
+                    <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Abonnement' : 'Subscription' }}</span>
+                    <span class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($revenue, 0, ',', ' ') }} FCFA</span>
                 </div>
                 <div class="flex items-center gap-3 py-2">
-                    <span class="w-8 h-8 rounded-md bg-[#F3F0E6] flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-[16px] h-[16px] text-[#55524A]"></i></span>
-                    <span class="flex-1 text-[12.5px] text-[#3B382F]">{{ $isFr ? 'Autres méthodes' : 'Other methods' }}</span>
-                    <span class="text-[12.5px] font-semibold text-[#8A857A]">—</span>
+                    <span class="w-8 h-8 rounded-md bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center shrink-0"><i data-lucide="credit-card" class="w-[16px] h-[16px] text-[#55524A] dark:text-[#B4B5A6]"></i></span>
+                    <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Autres méthodes' : 'Other methods' }}</span>
+                    <span class="text-[12.5px] font-semibold text-[#8A857A] dark:text-[#868778]">—</span>
                 </div>
             </section>
 
@@ -323,13 +323,13 @@
             <span class="w-[42px] h-[42px] rounded-xl flex items-center justify-center" style="background-color: {{ $bsTile }}">
                 <i data-lucide="{{ $bsIcon }}" class="w-5 h-5" style="color: {{ $bsColor }};stroke-width:1.8"></i>
             </span>
-            <p class="mt-3 text-[10px] font-bold tracking-[0.06em] text-[#8A857A] uppercase">{{ $bsLabel }}</p>
-            <p class="mt-1 text-[18px] font-bold text-[#1B1B18] leading-tight">{{ $bsValue }}</p>
-            <p class="mt-1 text-[11px] text-[#6F6B60]">{{ $bsSub }}</p>
+            <p class="mt-3 text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase">{{ $bsLabel }}</p>
+            <p class="mt-1 text-[18px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $bsValue }}</p>
+            <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $bsSub }}</p>
         </div>
         @endforeach
     </section>
 
-    <p class="mt-6 text-center text-[11.5px] text-[#8A857A]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+    <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 
 @endsection

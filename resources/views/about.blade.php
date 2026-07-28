@@ -139,7 +139,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-cream text-[#1D1B16] antialiased">
+<body class="bg-cream dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 {{-- Canonical platform chrome (consolidated 2026-07-03) --}}
 @include('pages.partials.directory-header')
@@ -181,7 +181,7 @@
         <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-7 max-w-2xl">
             @foreach($heroItems as [$hiIcon, $hiText])
             <div>
-                <i data-lucide="{{ $hiIcon }}" class="w-8 h-8 text-gold" stroke-width="1.4"></i>
+                <i data-lucide="{{ $hiIcon }}" class="w-8 h-8 text-gold dark:text-[#EDB33A]" stroke-width="1.4"></i>
                 <p class="mt-3.5 text-[12.5px] text-white/90 leading-relaxed whitespace-pre-line">{{ $hiText }}</p>
             </div>
             @endforeach
@@ -190,15 +190,15 @@
 </section>
 
 <!-- Vision / Mission -->
-<section class="bg-cream">
+<section class="bg-cream dark:bg-[#0A0C09]">
     <div class="max-w-[1280px] mx-auto px-5 lg:px-8 py-12 lg:py-14">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_170px_1fr] gap-10 items-start">
             <div>
-                <p class="text-[11.5px] font-semibold tracking-[0.2em] text-gold uppercase">{{ $isFr ? 'Notre vision' : 'Our vision' }}</p>
-                <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] font-medium">
+                <p class="text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre vision' : 'Our vision' }}</p>
+                <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] dark:text-[#F3EFE7] font-medium">
                     {{ $isFr ? 'Un artisanat camerounais reconnu, valorisé et durable' : 'Cameroonian craftsmanship that is recognised, valued and sustainable' }}
                 </h2>
-                <p class="mt-5 text-[13px] text-[#6B665C] leading-relaxed">
+                <p class="mt-5 text-[13px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">
                     {{ $isFr
                         ? "Nous aspirons à un Cameroun où chaque artisan, chaque création et chaque tradition est reconnue, protégée et transmise, contribuant au rayonnement culturel, économique et touristique du pays."
                         : "We aspire to a Cameroon where every artisan, every creation and every tradition is recognised, protected and passed on, contributing to the country's cultural, economic and tourism influence."
@@ -211,11 +211,11 @@
             </div>
 
             <div>
-                <p class="text-[11.5px] font-semibold tracking-[0.2em] text-gold uppercase">{{ $isFr ? 'Notre mission' : 'Our mission' }}</p>
-                <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] font-medium">
+                <p class="text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre mission' : 'Our mission' }}</p>
+                <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] dark:text-[#F3EFE7] font-medium">
                     {{ $isFr ? 'Valoriser, connecter, préserver et promouvoir' : 'Showcase, connect, preserve and promote' }}
                 </h2>
-                <p class="mt-5 text-[13px] text-[#6B665C] leading-relaxed">
+                <p class="mt-5 text-[13px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">
                     {{ $isFr
                         ? "Nous valorisons le savoir-faire artisanal, connectons les acteurs aux opportunités locales et internationales, préservons notre patrimoine et encourageons l'innovation pour un développement durable et inclusif."
                         : "We showcase artisan know-how, connect stakeholders to local and international opportunities, preserve our heritage and encourage innovation for sustainable, inclusive development."
@@ -233,7 +233,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 sm:divide-x divide-gold/25 py-10">
             @foreach($aboutTiles as [$asIcon, $asNum, $asLabel, $asCap])
             <div class="flex items-start gap-3.5 px-2 lg:px-6 py-3 sm:py-0">
-                <i data-lucide="{{ $asIcon }}" class="w-7 h-7 text-gold shrink-0 mt-1" stroke-width="1.4"></i>
+                <i data-lucide="{{ $asIcon }}" class="w-7 h-7 text-gold dark:text-[#EDB33A] shrink-0 mt-1" stroke-width="1.4"></i>
                 <div class="leading-tight">
                     <p class="font-serif text-[27px] text-goldlt whitespace-nowrap">{{ $asNum }}</p>
                     <p class="mt-1 text-[11.5px] font-semibold tracking-[0.08em] text-white uppercase whitespace-nowrap">{{ $asLabel }}</p>
@@ -247,16 +247,16 @@
 
 <!-- Nos valeurs -->
 <section class="max-w-[1280px] mx-auto px-5 lg:px-8 pt-12 pb-4">
-    <h2 class="text-center text-[15px] font-semibold tracking-[0.25em] text-gold uppercase">{{ $isFr ? 'Nos valeurs' : 'Our values' }}</h2>
+    <h2 class="text-center text-[15px] font-semibold tracking-[0.25em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Nos valeurs' : 'Our values' }}</h2>
     <div class="mt-2.5 mx-auto h-[2px] w-8 bg-gold"></div>
 
     <div class="mt-9 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         @foreach($values as [$vIcon, $vColor, $vTitle, $vDesc])
-        <div class="bg-parch border border-sand rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.05)] px-3.5 pt-8 pb-6 text-center">
+        <div class="bg-parch dark:bg-[#12150F] border border-sand dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.05)] px-3.5 pt-8 pb-6 text-center">
             <i data-lucide="{{ $vIcon }}" class="w-10 h-10 mx-auto" stroke-width="1.4" style="color:{{ $vColor }}"></i>
-            <h3 class="mt-6 text-[13.5px] font-semibold text-[#1D1B16]">{{ $vTitle }}</h3>
+            <h3 class="mt-6 text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $vTitle }}</h3>
             <div class="mt-2.5 mx-auto h-[2px] w-5 bg-gold/70"></div>
-            <p class="mt-3.5 text-[11.5px] text-[#6B665C] leading-relaxed">{{ $vDesc }}</p>
+            <p class="mt-3.5 text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">{{ $vDesc }}</p>
         </div>
         @endforeach
     </div>
@@ -270,17 +270,17 @@
             class="w-full h-full min-h-[280px] object-cover">
 
         <div class="py-9 px-5 lg:pl-12 lg:pr-8 xl:pr-[120px] flex flex-col justify-center">
-            <h2 class="text-[13.5px] font-semibold tracking-[0.18em] text-gold uppercase">{{ $isFr ? 'Ce que nous faisons' : 'What we do' }}</h2>
+            <h2 class="text-[13.5px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Ce que nous faisons' : 'What we do' }}</h2>
 
             <div class="mt-6 space-y-6">
                 @foreach($weDo as [$wdIcon, $wdTitle, $wdDesc])
                 <div class="flex items-start gap-4">
                     <span class="w-10 h-10 rounded-full bg-[#1F4030] flex items-center justify-center shrink-0">
-                        <i data-lucide="{{ $wdIcon }}" class="w-[18px] h-[18px] text-gold" stroke-width="1.5"></i>
+                        <i data-lucide="{{ $wdIcon }}" class="w-[18px] h-[18px] text-gold dark:text-[#EDB33A]" stroke-width="1.5"></i>
                     </span>
                     <div>
-                        <h3 class="text-[13.5px] font-semibold text-[#1D1B16]">{{ $wdTitle }}</h3>
-                        <p class="mt-1.5 text-[12px] text-[#6B665C] leading-relaxed whitespace-pre-line">{{ $wdDesc }}</p>
+                        <h3 class="text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $wdTitle }}</h3>
+                        <p class="mt-1.5 text-[12px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $wdDesc }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -291,14 +291,14 @@
 
 <!-- À qui nous nous adressons -->
 <section class="max-w-[1280px] mx-auto px-5 lg:px-8 pt-12 pb-14">
-    <h2 class="text-center text-[15px] font-semibold tracking-[0.22em] text-gold uppercase">{{ $isFr ? 'À qui nous nous adressons' : 'Who we serve' }}</h2>
+    <h2 class="text-center text-[15px] font-semibold tracking-[0.22em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'À qui nous nous adressons' : 'Who we serve' }}</h2>
 
     <div class="mt-9 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
         @foreach($audiences as [$auIcon, $auColor, $auTitle, $auDesc])
         <div class="text-center">
             <i data-lucide="{{ $auIcon }}" class="w-9 h-9 mx-auto" stroke-width="1.4" style="color:{{ $auColor }}"></i>
-            <h3 class="mt-4 text-[12.5px] font-semibold text-[#1D1B16] leading-snug whitespace-pre-line">{{ $auTitle }}</h3>
-            <p class="mt-2.5 text-[11px] text-[#6B665C] leading-relaxed whitespace-pre-line">{{ $auDesc }}</p>
+            <h3 class="mt-4 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug whitespace-pre-line">{{ $auTitle }}</h3>
+            <p class="mt-2.5 text-[11px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $auDesc }}</p>
         </div>
         @endforeach
     </div>
@@ -312,7 +312,7 @@
             {{ $isFr ? 'Rejoignez-nous pour faire rayonner l\'artisanat camerounais !' : 'Join us in making Cameroonian craftsmanship shine!' }}
         </h2>
         <a href="{{ route('industries.index', ['lang' => $lang]) }}"
-            class="mt-7 inline-flex items-center gap-3 bg-goldbt hover:bg-[#c9942e] text-[#4a3a0b] text-[13px] font-semibold px-6 py-3 rounded-md transition-colors">
+            class="mt-7 inline-flex items-center gap-3 bg-goldbt hover:bg-[#c9942e] text-[#4a3a0b] dark:text-[#EDB33A] text-[13px] font-semibold px-6 py-3 rounded-md transition-colors">
             {{ $isFr ? 'Découvrir nos collections' : 'Discover our collections' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -327,7 +327,7 @@
 @include('pages.partials.directory-footer')
 
 <!-- Mobile bottom navigation -->
-<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
+<nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-[#12150F] border-t border-gray-200 dark:border-[#262B21] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
     @php
         $bottomTabs = [
             ['href' => route('home', ['lang' => $lang]), 'icon' => 'home', 'label' => $isFr ? 'Accueil' : 'Home', 'active' => false],
@@ -338,7 +338,7 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
         <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>

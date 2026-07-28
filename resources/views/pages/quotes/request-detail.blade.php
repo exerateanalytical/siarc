@@ -25,7 +25,7 @@ $meta = $statusMeta[$rfq->status] ?? $statusMeta['pending'];
         </div>
     @endif
 
-    <a href="{{ $isOwner ? route('dashboard.quotes') : route('quotes.index') }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#55524A] hover:text-[#14652F]">
+    <a href="{{ $isOwner ? route('dashboard.quotes') : route('quotes.index') }}" class="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#55524A] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>
         {{ $isFr ? 'Retour aux demandes' : 'Back to requests' }}
     </a>
@@ -34,7 +34,7 @@ $meta = $statusMeta[$rfq->status] ?? $statusMeta['pending'];
         <div class="ui-card-head">
             <div class="min-w-0">
                 <p class="ui-eyebrow">{{ $rfq->reference }}</p>
-                <h1 class="text-[17px] font-bold text-[#1B1B18] mt-0.5">{{ $rfq->title }}</h1>
+                <h1 class="text-[17px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] mt-0.5">{{ $rfq->title }}</h1>
             </div>
             <span class="ui-pill {{ $meta[1] }} shrink-0">{{ $meta[0] }}</span>
         </div>
@@ -46,7 +46,7 @@ $meta = $statusMeta[$rfq->status] ?? $statusMeta['pending'];
                     @if($isOwner)
                         {{ $rfq->buyer?->name ?? '—' }}
                     @elseif($rfq->business)
-                        <a href="{{ route('businesses.show', ['slug' => $rfq->business->slug, 'lang' => $lang]) }}" class="hover:text-[#14652F]">{{ $rfq->business->name_fr }}</a>
+                        <a href="{{ route('businesses.show', ['slug' => $rfq->business->slug, 'lang' => $lang]) }}" class="hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $rfq->business->name_fr }}</a>
                     @else
                         —
                     @endif
@@ -67,9 +67,9 @@ $meta = $statusMeta[$rfq->status] ?? $statusMeta['pending'];
         <hr class="ui-divider">
         <div>
             <p class="ui-eyebrow">{{ $isFr ? 'Votre besoin' : 'Your requirement' }}</p>
-            <p class="mt-2 text-[13px] text-[#3B382F] leading-relaxed whitespace-pre-line">{{ $rfq->description }}</p>
+            <p class="mt-2 text-[13px] text-[#3B382F] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $rfq->description }}</p>
             @if($rfq->message)
-            <p class="mt-3 text-[12.5px] text-[#55524A] leading-relaxed whitespace-pre-line border-l-2 border-[#ECECEA] pl-3">{{ $rfq->message }}</p>
+            <p class="mt-3 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line border-l-2 border-[#ECECEA] dark:border-[#262B21] pl-3">{{ $rfq->message }}</p>
             @endif
         </div>
     </div>
@@ -78,7 +78,7 @@ $meta = $statusMeta[$rfq->status] ?? $statusMeta['pending'];
     <div>
         <h2 class="ui-card-title mb-3">
             {{ $isFr ? 'Propositions' : 'Proposals' }}
-            <span class="text-xs text-[#8A857A] font-normal">({{ $rfq->proposals->count() }})</span>
+            <span class="text-xs text-[#8A857A] dark:text-[#868778] font-normal">({{ $rfq->proposals->count() }})</span>
         </h2>
 
         @if($rfq->proposals->isEmpty())
@@ -99,16 +99,16 @@ $meta = $statusMeta[$rfq->status] ?? $statusMeta['pending'];
         @else
         <div class="ui-card ui-card--flush">
             @foreach($rfq->proposals as $p)
-            <a href="{{ route('quotes.detail', ['proposal' => $p->id, 'lang' => $lang]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-[#F5F1E8] last:border-0 hover:bg-[#FAFBFA]">
+            <a href="{{ route('quotes.detail', ['proposal' => $p->id, 'lang' => $lang]) }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0 hover:bg-[#FAFBFA] dark:hover:bg-[#242A1E]">
                 <div class="flex-1 min-w-0">
-                    <p class="text-[13px] font-semibold text-[#1B1B18]">{{ $p->reference }} <span class="text-[11.5px] font-normal text-[#8A857A]">v{{ $p->version }}</span></p>
-                    <p class="text-[11.5px] text-[#8A857A] mt-0.5">
+                    <p class="text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $p->reference }} <span class="text-[11.5px] font-normal text-[#8A857A] dark:text-[#868778]">v{{ $p->version }}</span></p>
+                    <p class="text-[11.5px] text-[#8A857A] dark:text-[#868778] mt-0.5">
                         {{ $p->created_at?->translatedFormat('d M Y') }}
                         @if($p->valid_until) · {{ $isFr ? 'valable jusqu\'au' : 'valid until' }} {{ $p->valid_until->translatedFormat('d M Y') }}@endif
                     </p>
                 </div>
-                <p class="text-[13.5px] font-bold text-[#1B1B18] shrink-0 whitespace-nowrap">{{ number_format((int) $p->total, 0, ',', ' ') }} FCFA</p>
-                <i data-lucide="chevron-right" class="w-4 h-4 text-[#B4B0A6] shrink-0"></i>
+                <p class="text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] shrink-0 whitespace-nowrap">{{ number_format((int) $p->total, 0, ',', ' ') }} FCFA</p>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#B4B0A6] dark:text-[#868778] shrink-0"></i>
             </a>
             @endforeach
         </div>

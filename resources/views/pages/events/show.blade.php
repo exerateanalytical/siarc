@@ -170,7 +170,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FEFEFE] text-[#1D1B16] antialiased">
+<body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -178,14 +178,14 @@
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-4 pb-12">
 
     <nav class="flex flex-wrap items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] hover:text-leaf transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <a href="{{ route('events.index') }}" class="text-[#6F6B60] hover:text-leaf transition-colors">{{ $isFr ? 'Événements' : 'Events' }}</a>
+        <a href="{{ route('events.index') }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Événements' : 'Events' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
-        <span class="text-[#1D1B16]">{{ $name }}</span>
+        <span class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $name }}</span>
     </nav>
 
-    <a href="{{ route('events.index') }}" class="mt-3 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#14532D] hover:underline">
+    <a href="{{ route('events.index') }}" class="mt-3 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>
         {{ $isFr ? 'Retour aux événements' : 'Back to events' }}
     </a>
@@ -195,7 +195,7 @@
         <!-- Main column -->
         <section class="min-w-0">
             <!-- Hero ticket -->
-            <div class="flex flex-col md:flex-row rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.10)] border border-[#EFEDEA]">
+            <div class="flex flex-col md:flex-row rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.10)] border border-[#EFEDEA] dark:border-[#262B21]">
                 <!-- Stub -->
                 <div class="relative md:w-[168px] shrink-0 bg-[#06301A] flex md:flex-col items-center justify-center gap-3 md:gap-0 py-5 px-5 text-center">
                     <p class="text-[40px] font-bold leading-none text-white">{{ $day }}</p>
@@ -208,30 +208,30 @@
                         <span>{{ $meta['city'] }}<br>{{ $meta['venue'] }}</span>
                     </p>
                     <span class="hidden md:block mt-4 w-[76px] h-[20px] barcode" aria-hidden="true"></span>
-                    <span class="hidden md:block absolute -right-[10px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] bg-[#FEFEFE] rounded-full border border-[#EFEDEA]" aria-hidden="true"></span>
+                    <span class="hidden md:block absolute -right-[10px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] bg-[#FEFEFE] dark:bg-[#12150F] rounded-full border border-[#EFEDEA] dark:border-[#262B21]" aria-hidden="true"></span>
                 </div>
                 <!-- Panel -->
-                <div class="relative flex-1 bg-[#FAF5EC] overflow-hidden">
+                <div class="relative flex-1 bg-[#FAF5EC] dark:bg-[#0A0C09] overflow-hidden">
                     <img src="{{ asset('images/landing/edetail-art.png') }}" alt="" class="absolute right-0 inset-y-0 h-full w-auto object-cover hidden sm:block pointer-events-none select-none" aria-hidden="true">
                     <div class="relative p-6 max-w-[480px]">
                         <span class="inline-block text-[10px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-3 py-1.5" style="background-color: {{ $meta['badgeColor'] }}">{{ $meta['badge'] }}</span>
-                        <h1 class="mt-3.5 font-serif text-[27px] sm:text-[31px] leading-tight text-[#12432A] font-semibold">{{ $name }}</h1>
+                        <h1 class="mt-3.5 font-serif text-[27px] sm:text-[31px] leading-tight text-[#12432A] dark:text-[#339B56] font-semibold">{{ $name }}</h1>
                         @if($descriptionText)
-                        <p class="mt-3.5 text-[12.5px] text-[#55524A] leading-relaxed">{{ $descriptionText }}</p>
+                        <p class="mt-3.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $descriptionText }}</p>
                         @endif
                     </div>
                 </div>
             </div>
 
             <!-- Stats strip -->
-            <div class="mt-4 bg-white border border-[#ECECEA] rounded-xl px-5 py-4">
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:divide-x sm:divide-[#EFEDEA]">
+            <div class="mt-4 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:divide-x sm:divide-[#EFEDEA] sm:dark:divide-[#262B21]">
                     @foreach($eventStats as $esIdx => [$esIcon, $esValue, $esLabel])
                     <div class="flex items-center gap-3 {{ $esIdx > 0 ? 'sm:pl-4' : '' }}">
-                        <i data-lucide="{{ $esIcon }}" class="w-[22px] h-[22px] text-[#3A3A35] shrink-0" stroke-width="1.6"></i>
+                        <i data-lucide="{{ $esIcon }}" class="w-[22px] h-[22px] text-[#3A3A35] dark:text-[#F3EFE7] shrink-0" stroke-width="1.6"></i>
                         <div class="leading-tight">
-                            <p class="text-[15px] font-bold text-[#1D1B16]">{{ $esValue }}</p>
-                            <p class="mt-0.5 text-[10px] text-[#6F6B60]">{{ $esLabel }}</p>
+                            <p class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $esValue }}</p>
+                            <p class="mt-0.5 text-[10px] text-[#6F6B60] dark:text-[#868778]">{{ $esLabel }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -239,11 +239,11 @@
             </div>
 
             <!-- Tabs -->
-            <div class="mt-4 bg-white border border-[#ECECEA] rounded-xl overflow-hidden">
-                <div class="flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-[#EFEDEA] px-2">
+            <div class="mt-4 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl overflow-hidden">
+                <div class="flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-[#EFEDEA] dark:border-[#262B21] px-2">
                     @foreach($tabs as $ti => [$tabKey, $tabLabel, $tabIcon])
                     <button type="button" data-tab="{{ $tabKey }}"
-                        class="tab-btn relative shrink-0 flex items-center gap-2 px-3.5 py-3.5 text-[12.5px] {{ $ti === 0 ? 'font-semibold text-[#14532D]' : 'font-medium text-[#55524A] hover:text-[#1D1B16]' }} transition-colors">
+                        class="tab-btn relative shrink-0 flex items-center gap-2 px-3.5 py-3.5 text-[12.5px] {{ $ti === 0 ? 'font-semibold text-[#14532D] dark:text-[#339B56]' : 'font-medium text-[#55524A] dark:text-[#B4B5A6] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' }} transition-colors">
                         <i data-lucide="{{ $tabIcon }}" class="w-[13px] h-[13px]"></i>
                         {{ $tabLabel }}
                         <span class="tab-bar absolute left-2 right-2 bottom-0 h-[3px] bg-[#14532D] {{ $ti === 0 ? '' : 'hidden' }}"></span>
@@ -254,14 +254,14 @@
                     <div class="tab-panel" data-panel="apropos">
                         <div class="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-6">
                             <div>
-                                <h2 class="text-[15.5px] font-bold text-[#1D1B16]">{{ $isFr ? 'À propos de l\'événement' : 'About the event' }}</h2>
-                                <p class="mt-3 text-[12.5px] text-[#3A3A35] leading-relaxed">
+                                <h2 class="text-[15.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'À propos de l\'événement' : 'About the event' }}</h2>
+                                <p class="mt-3 text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
                                     {{ $descriptionText ?: ($isFr ? 'Aucune description disponible pour cet événement.' : 'No description available for this event.') }}
                                 </p>
-                                <h3 class="mt-5 text-[13.5px] font-bold text-[#1D1B16]">{{ $isFr ? 'Objectifs' : 'Objectives' }}</h3>
+                                <h3 class="mt-5 text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Objectifs' : 'Objectives' }}</h3>
                                 <ul class="mt-3 space-y-2.5">
                                     @foreach($objectifs as $objectif)
-                                    <li class="flex items-start gap-2.5 text-[12px] text-[#3A3A35]">
+                                    <li class="flex items-start gap-2.5 text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">
                                         <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0 mt-px"><circle cx="8" cy="8" r="7.2" fill="none" stroke="#17A34A" stroke-width="1.3"/><path d="M4.9 8.2 7 10.2l4-4.3" fill="none" stroke="#17A34A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         {{ $objectif }}
                                     </li>
@@ -277,74 +277,74 @@
                         @if($event->exhibitingBusinesses->isNotEmpty())
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             @foreach($event->exhibitingBusinesses as $exBiz)
-                            <a href="{{ route('businesses.show', ['slug' => $exBiz->slug, 'lang' => $lang]) }}" class="flex items-center gap-3 border border-[#EDE6D6] rounded-lg p-3 hover:border-[#14652F] transition-colors">
-                                <span class="w-9 h-9 rounded-lg bg-[#F6F1E4] flex items-center justify-center shrink-0"><i data-lucide="store" class="w-4 h-4 text-[#C9942E]"></i></span>
+                            <a href="{{ route('businesses.show', ['slug' => $exBiz->slug, 'lang' => $lang]) }}" class="flex items-center gap-3 border border-[#EDE6D6] dark:border-[#262B21] rounded-lg p-3 hover:border-[#14652F] transition-colors">
+                                <span class="w-9 h-9 rounded-lg bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center shrink-0"><i data-lucide="store" class="w-4 h-4 text-[#C9942E]"></i></span>
                                 <span>
-                                    <span class="block text-[12.5px] font-semibold text-[#1D1B16]">{{ $isFr ? $exBiz->name_fr : ($exBiz->name_en ?? $exBiz->name_fr) }}</span>
-                                    @if($exBiz->industry)<span class="block text-[11px] text-[#6F6B60]">{{ $isFr ? $exBiz->industry->name_fr : ($exBiz->industry->name_en ?? $exBiz->industry->name_fr) }}</span>@endif
+                                    <span class="block text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? $exBiz->name_fr : ($exBiz->name_en ?? $exBiz->name_fr) }}</span>
+                                    @if($exBiz->industry)<span class="block text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? $exBiz->industry->name_fr : ($exBiz->industry->name_en ?? $exBiz->industry->name_fr) }}</span>@endif
                                 </span>
                             </a>
                             @endforeach
                         </div>
                         @else
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'La liste des exposants sera annoncée prochainement.' : 'The list of exhibitors will be announced soon.' }}
-                            <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="font-semibold text-[#14532D] hover:underline">{{ $isFr ? 'Découvrir les artisans & entreprises' : 'Discover the artisans & businesses' }}</a></p>
+                        <p class="text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'La liste des exposants sera annoncée prochainement.' : 'The list of exhibitors will be announced soon.' }}
+                            <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Découvrir les artisans & entreprises' : 'Discover the artisans & businesses' }}</a></p>
                         @endif
                     </div>
                     <div class="tab-panel hidden" data-panel="programme">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Le programme détaillé (ateliers, conférences, concours) sera publié prochainement. Inscrivez-vous pour être notifié.' : 'The detailed programme (workshops, conferences, competitions) will be published soon. Sign up to be notified.' }}</p>
+                        <p class="text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Le programme détaillé (ateliers, conférences, concours) sera publié prochainement. Inscrivez-vous pour être notifié.' : 'The detailed programme (workshops, conferences, competitions) will be published soon. Sign up to be notified.' }}</p>
                     </div>
                     <div class="tab-panel hidden" data-panel="faq">
-                        <p class="text-[13px] text-[#55524A]">{{ $isFr ? 'Une question sur cet événement ? Contactez-nous via la page contact.' : 'A question about this event? Reach us via the contact page.' }}
-                            <a href="{{ route('contact', ['lang' => $lang]) }}" class="font-semibold text-[#14532D] hover:underline">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a></p>
+                        <p class="text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Une question sur cet événement ? Contactez-nous via la page contact.' : 'A question about this event? Reach us via the contact page.' }}
+                            <a href="{{ route('contact', ['lang' => $lang]) }}" class="font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a></p>
                     </div>
                 </div>
             </div>
 
             <!-- Highlights -->
-            <h2 class="mt-7 text-[16px] font-bold text-[#1D1B16]">{{ $isFr ? 'Points forts de l\'événement' : 'Event highlights' }}</h2>
+            <h2 class="mt-7 text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Points forts de l\'événement' : 'Event highlights' }}</h2>
             <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 @foreach($highlights as [$hlImg, $hlTitle, $hlSub])
-                <div class="bg-white border border-[#ECECEA] rounded-xl p-4 text-center">
+                <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-4 text-center">
                     <img src="{{ asset('images/landing/' . $hlImg) }}" alt="" class="h-[42px] w-auto mx-auto object-contain">
-                    <p class="mt-3 text-[12px] font-bold text-[#1D1B16]">{{ $hlTitle }}</p>
-                    <p class="mt-1.5 text-[10.5px] text-[#6F6B60] leading-relaxed">{{ $hlSub }}</p>
+                    <p class="mt-3 text-[12px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $hlTitle }}</p>
+                    <p class="mt-1.5 text-[10.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $hlSub }}</p>
                 </div>
                 @endforeach
             </div>
 
             <!-- Participating regions -->
             <div class="mt-7 flex items-center justify-between">
-                <h2 class="text-[16px] font-bold text-[#1D1B16]">{{ $isFr ? 'Régions participantes' : 'Participating regions' }}</h2>
-                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#14532D] hover:underline">
+                <h2 class="text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Régions participantes' : 'Participating regions' }}</h2>
+                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">
                     {{ $isFr ? 'Voir toutes les régions' : 'See all regions' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>
             <div class="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-3">
                 @foreach($participatingRegions as [$prImg, $prLabel])
-                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="bg-white border border-[#ECECEA] hover:border-leaf rounded-xl p-3 text-center transition-colors">
+                <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] hover:border-leaf rounded-xl p-3 text-center transition-colors">
                     <img src="{{ asset('images/landing/' . $prImg) }}" alt="" class="h-[46px] w-auto mx-auto object-contain opacity-70">
-                    <p class="mt-2 text-[11px] font-semibold text-[#3A3A35]">{{ $prLabel }}</p>
+                    <p class="mt-2 text-[11px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7]">{{ $prLabel }}</p>
                 </a>
                 @endforeach
             </div>
 
             <!-- Official partners -->
-            <h2 class="mt-7 text-[16px] font-bold text-[#1D1B16]">{{ $isFr ? 'Partenaires officiels' : 'Official partners' }}</h2>
+            <h2 class="mt-7 text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Partenaires officiels' : 'Official partners' }}</h2>
             <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 @foreach($partners as [$paImg, $paName, $paSub])
-                <div class="bg-white border border-[#ECECEA] rounded-xl p-3.5 flex items-center gap-3">
+                <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-3.5 flex items-center gap-3">
                     <img src="{{ asset('images/landing/' . $paImg) }}" alt="" class="w-[34px] h-[34px] object-contain shrink-0">
                     <div class="min-w-0 leading-tight">
-                        <p class="text-[11.5px] font-bold text-[#1D1B16]">{{ $paName }}</p>
-                        @if($paSub)<p class="mt-0.5 text-[9.5px] text-[#6F6B60] leading-snug">{{ $paSub }}</p>@endif
+                        <p class="text-[11.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $paName }}</p>
+                        @if($paSub)<p class="mt-0.5 text-[9.5px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $paSub }}</p>@endif
                     </div>
                 </div>
                 @endforeach
             </div>
             <div class="mt-3 flex justify-end">
-                <a href="{{ route('partners.index') }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#14532D] hover:underline">
+                <a href="{{ route('partners.index') }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">
                     {{ $isFr ? 'Voir tous les partenaires' : 'See all partners' }}
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
@@ -362,7 +362,7 @@
                 <p class="mt-3 text-[22px] font-bold text-white">{{ $meta['price'] }}</p>
                 <p class="mt-1 text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Inscription obligatoire en ligne' : 'Online registration required' }}</p>
                 <a href="{{ $siacUser ? route('events.ticket', ['slug' => $event->slug, 'lang' => $lang]) : '/inscription?lang=' . $lang }}"
-                    class="mt-4 w-full h-[42px] bg-[#E9A825] hover:bg-goldbt text-[#3A2E08] rounded-lg flex items-center justify-center gap-2 text-[13px] font-bold transition-colors">
+                    class="mt-4 w-full h-[42px] bg-[#E9A825] hover:bg-goldbt hover:dark:bg-[#3A2B06] text-[#3A2E08] dark:text-[#EDB33A] rounded-lg flex items-center justify-center gap-2 text-[13px] font-bold transition-colors">
                     {{ $isFr ? 'S\'inscrire maintenant' : 'Sign up now' }}
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
@@ -393,80 +393,80 @@
             </div>
 
             <!-- Practical info -->
-            <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
-                <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Informations pratiques' : 'Practical information' }}</h2>
+            <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-5">
+                <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Informations pratiques' : 'Practical information' }}</h2>
                 <ul class="mt-4 space-y-3.5 text-[12px]">
                     <li class="flex items-start gap-3">
-                        <i data-lucide="calendar" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
+                        <i data-lucide="calendar" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6] mt-0.5 shrink-0"></i>
                         <div>
-                            <p class="font-semibold text-[#1D1B16]">Dates</p>
-                            <p class="mt-0.5 text-[#6F6B60]">{{ $dateLong }}</p>
+                            <p class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">Dates</p>
+                            <p class="mt-0.5 text-[#6F6B60] dark:text-[#868778]">{{ $dateLong }}</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
-                        <i data-lucide="clock" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
+                        <i data-lucide="clock" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6] mt-0.5 shrink-0"></i>
                         <div>
-                            <p class="font-semibold text-[#1D1B16]">{{ $isFr ? 'Heure' : 'Time' }}</p>
-                            <p class="mt-0.5 text-[#6F6B60]">{{ $timeTo ? $timeFrom . ' - ' . $timeTo : $timeFrom }} (GMT+1)</p>
+                            <p class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Heure' : 'Time' }}</p>
+                            <p class="mt-0.5 text-[#6F6B60] dark:text-[#868778]">{{ $timeTo ? $timeFrom . ' - ' . $timeTo : $timeFrom }} (GMT+1)</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
-                        <i data-lucide="map-pin" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
+                        <i data-lucide="map-pin" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6] mt-0.5 shrink-0"></i>
                         <div>
-                            <p class="font-semibold text-[#1D1B16]">{{ $isFr ? 'Lieu' : 'Venue' }}</p>
-                            <p class="mt-0.5 text-[#6F6B60]">{{ $meta['venue'] }}<br>{{ $meta['city'] }} - {{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
+                            <p class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Lieu' : 'Venue' }}</p>
+                            <p class="mt-0.5 text-[#6F6B60] dark:text-[#868778]">{{ $meta['venue'] }}<br>{{ $meta['city'] }} - {{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
-                        <i data-lucide="car" class="w-4 h-4 text-[#55524A] mt-0.5 shrink-0"></i>
+                        <i data-lucide="car" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6] mt-0.5 shrink-0"></i>
                         <div>
-                            <p class="font-semibold text-[#1D1B16]">{{ $isFr ? 'Accès' : 'Access' }}</p>
-                            <p class="mt-0.5 text-[#6F6B60]">{{ $isFr ? 'Parking disponible' : 'Parking available' }}<br>{{ $isFr ? 'Transports en commun' : 'Public transport' }}</p>
+                            <p class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Accès' : 'Access' }}</p>
+                            <p class="mt-0.5 text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Parking disponible' : 'Parking available' }}<br>{{ $isFr ? 'Transports en commun' : 'Public transport' }}</p>
                         </div>
                     </li>
                 </ul>
                 <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($meta['venue'] . ', ' . $meta['city'] . ', Cameroun') }}" target="_blank" rel="noopener"
-                    class="mt-4 w-full h-[36px] bg-[#F6F4EF] hover:bg-[#EFECE4] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#3A3A35] transition-colors">
+                    class="mt-4 w-full h-[36px] bg-[#F6F4EF] dark:bg-[#0A0C09] hover:bg-[#EFECE4] hover:dark:bg-[#0A0C09] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="map" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Voir sur la carte' : 'View on the map' }}
                 </a>
             </div>
 
             <!-- Organizer -->
-            <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
-                <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Organisateur' : 'Organiser' }}</h2>
+            <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-5">
+                <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Organisateur' : 'Organiser' }}</h2>
                 <div class="mt-4 flex items-start gap-3">
                     {{-- The organiser here IS the platform, so it uses the brand
                          mark rather than the separate edetail-org-logo.png the
                          design shipped for the same thing. --}}
                     <img src="{{ brand_asset('mark') }}" alt="" class="w-[38px] h-auto object-contain shrink-0">
                     <div>
-                        <p class="text-[12.5px] font-bold text-[#1D1B16]">Artisan Hub 237</p>
-                        <p class="mt-1 text-[11px] text-[#6F6B60] leading-snug">{{ $isFr ? 'Plateforme privée dédiée à l\'artisanat camerounais' : 'Private platform dedicated to Cameroonian craftsmanship' }}</p>
+                        <p class="text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">Artisan Hub 237</p>
+                        <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $isFr ? 'Plateforme privée dédiée à l\'artisanat camerounais' : 'Private platform dedicated to Cameroonian craftsmanship' }}</p>
                     </div>
                 </div>
                 <a href="{{ route('about', ['lang' => $lang]) }}"
-                    class="mt-4 w-full h-[36px] border border-[#DBDFDC] hover:border-leaf hover:text-leaf rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] transition-colors">
+                    class="mt-4 w-full h-[36px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     {{ $isFr ? 'En savoir plus sur nous' : 'Learn more about us' }}
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </a>
-                <p class="mt-4 text-[11.5px] font-semibold text-[#1D1B16]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
+                <p class="mt-4 text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
                 @if(config('legal.company.phone'))
-                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="phone" class="w-3 h-3"></i>{{ config('legal.company.phone') }}</p>
+                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60] dark:text-[#868778]"><i data-lucide="phone" class="w-3 h-3"></i>{{ config('legal.company.phone') }}</p>
                 @endif
-                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60]"><i data-lucide="mail" class="w-3 h-3"></i>{{ config('legal.company.email') }}</p>
+                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60] dark:text-[#868778]"><i data-lucide="mail" class="w-3 h-3"></i>{{ config('legal.company.email') }}</p>
             </div>
 
             <!-- Downloads -->
-            <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
-                <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Télécharger' : 'Download' }}</h2>
+            <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-5">
+                <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Télécharger' : 'Download' }}</h2>
                 <ul class="mt-3.5 space-y-1">
                     @foreach($downloads as $download)
                     <li>
-                        <a href="{{ route('contact', ['lang' => $lang]) }}" title="{{ $isFr ? 'Document disponible sur demande — contactez-nous' : 'Document available on request — contact us' }}" class="flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-[#FAFAF8] text-[12px] text-[#3A3A35]">
-                            <i data-lucide="file-text" class="w-[14px] h-[14px] text-[#55524A]"></i>
+                        <a href="{{ route('contact', ['lang' => $lang]) }}" title="{{ $isFr ? 'Document disponible sur demande — contactez-nous' : 'Document available on request — contact us' }}" class="flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-[#FAFAF8] hover:dark:bg-[#12150F] text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">
+                            <i data-lucide="file-text" class="w-[14px] h-[14px] text-[#55524A] dark:text-[#B4B5A6]"></i>
                             <span class="flex-1">{{ $download }}</span>
-                            <i data-lucide="download" class="w-[14px] h-[14px] text-[#55524A]"></i>
+                            <i data-lucide="download" class="w-[14px] h-[14px] text-[#55524A] dark:text-[#B4B5A6]"></i>
                         </a>
                     </li>
                     @endforeach
@@ -474,9 +474,9 @@
             </div>
 
             <!-- Stay informed -->
-            <div class="bg-white border border-[#ECECEA] rounded-xl p-5">
-                <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Restez informé' : 'Stay informed' }}</h2>
-                <p class="mt-2 text-[11.5px] text-[#6F6B60] leading-relaxed">{{ $isFr ? 'Recevez les dernières actualités sur cet événement.' : 'Receive the latest news about this event.' }}</p>
+            <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-5">
+                <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Restez informé' : 'Stay informed' }}</h2>
+                <p class="mt-2 text-[11.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? 'Recevez les dernières actualités sur cet événement.' : 'Receive the latest news about this event.' }}</p>
                 <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-3.5 flex gap-2">
                     @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">
@@ -505,9 +505,9 @@
             document.querySelectorAll('.tab-btn').forEach(b => {
                 const active = b === btn;
                 b.classList.toggle('font-semibold', active);
-                b.classList.toggle('text-[#14532D]', active);
+                b.classList.toggle('text-[#14532D] dark:text-[#339B56]', active);
                 b.classList.toggle('font-medium', !active);
-                b.classList.toggle('text-[#55524A]', !active);
+                b.classList.toggle('text-[#55524A] dark:text-[#B4B5A6]', !active);
                 b.querySelector('.tab-bar').classList.toggle('hidden', !active);
             });
             document.querySelectorAll('.tab-panel').forEach(p => {

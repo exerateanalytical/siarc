@@ -53,7 +53,7 @@ $tabs = [
     @if($products->isEmpty())
     <div class="ui-card text-center py-14 px-4">
         <i data-lucide="package" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="text-[12.5px] text-[#8A857A]">
+        <p class="text-[12.5px] text-[#8A857A] dark:text-[#868778]">
             {{ $q !== '' || $status
                ? ($isFr ? 'Aucun produit ne correspond à ce filtre.' : 'No product matches this filter.')
                : ($isFr ? 'Votre boutique est vide. Ajoutez votre premier produit.' : 'Your shop is empty. Add your first product.') }}
@@ -70,21 +70,21 @@ $tabs = [
             $name = $isFr ? $p->name_fr : ($p->name_en ?? $p->name_fr);
             $published = $p->status === 'published';
         @endphp
-        <div class="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3.5 border-b border-[#F0F1F0] last:border-0">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3.5 border-b border-[#F0F1F0] dark:border-[#262B21] last:border-0">
 
             <div class="flex items-center gap-3 flex-1 min-w-0">
-                <div class="w-12 h-12 rounded-lg bg-[#F5F1E9] border border-[#F0F1F0] shrink-0 overflow-hidden flex items-center justify-center">
+                <div class="w-12 h-12 rounded-lg bg-[#F5F1E9] dark:bg-[#1A1E16] border border-[#F0F1F0] dark:border-[#262B21] shrink-0 overflow-hidden flex items-center justify-center">
                     @if($p->primaryImage)
                         <img src="{{ asset('storage/' . $p->primaryImage->file_path) }}" alt="" class="w-full h-full object-cover">
                     @else
-                        <i data-lucide="image" class="w-4 h-4 text-[#CFC9BF]"></i>
+                        <i data-lucide="image" class="w-4 h-4 text-[#CFC9BF] dark:text-[#868778]"></i>
                     @endif
                 </div>
                 <div class="flex-1 min-w-0">
-                    <a href="{{ route('products.web-edit', ['slug' => $p->slug]) }}" class="block text-[13.5px] font-semibold text-[#1B1B18] hover:text-[#14652F] truncate">
+                    <a href="{{ route('products.web-edit', ['slug' => $p->slug]) }}" class="block text-[13.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] hover:text-[#14652F] dark:hover:text-[#339B56] truncate">
                         {{ $name }}
                     </a>
-                    <p class="text-[11.5px] text-[#8A857A] truncate mt-0.5">
+                    <p class="text-[11.5px] text-[#8A857A] dark:text-[#868778] truncate mt-0.5">
                         {{ $p->category ? ($isFr ? $p->category->name_fr : ($p->category->name_en ?? $p->category->name_fr)) : ($isFr ? 'Sans catégorie' : 'Uncategorised') }}
                         @if($p->price_amount)
                             · {{ number_format((float) $p->price_amount, 0, ',', ' ') }} FCFA

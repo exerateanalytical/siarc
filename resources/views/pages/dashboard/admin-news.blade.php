@@ -8,12 +8,12 @@
 
     // Category pill colours (table) — from "gestion d'actualites et annonces.png"
     $newsCatPill = [
-        'Événements' => 'bg-[#FDF0DC] text-[#C97A16]',
-        'Artisanat'  => 'bg-[#E3EDFB] text-[#2563EB]',
-        'Annonces'   => 'bg-[#E7E9FC] text-[#4F46E5]',
-        'Culture'    => 'bg-[#F1E8FB] text-[#8B3FC9]',
-        'Programmes' => 'bg-[#FDE5E7] text-[#DC2646]',
-        'Portraits'  => 'bg-[#F3E8FD] text-[#7C3AED]',
+        'Événements' => 'bg-[#FDF0DC] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]',
+        'Artisanat'  => 'bg-[#E3EDFB] dark:bg-[#101C33] text-[#2563EB] dark:text-[#8FB6F5]',
+        'Annonces'   => 'bg-[#E7E9FC] dark:bg-[#101C33] text-[#4F46E5] dark:text-[#8FB6F5]',
+        'Culture'    => 'bg-[#F1E8FB] dark:bg-[#1E1733] text-[#8B3FC9] dark:text-[#BCA4F0]',
+        'Programmes' => 'bg-[#FDE5E7] dark:bg-[#3A1013] text-[#DC2646] dark:text-[#F0555C]',
+        'Portraits'  => 'bg-[#F3E8FD] dark:bg-[#1E1733] text-[#7C3AED] dark:text-[#BCA4F0]',
     ];
     // Donut / legend colours (right panel)
     $newsCatDot = [
@@ -37,9 +37,9 @@
     };
 
     $statusPill = [
-        'published' => ['bg-[#E2F3E8] text-[#157A43]', $isFr ? 'Publié' : 'Published'],
-        'scheduled' => ['bg-[#E3EDFB] text-[#2563EB]', $isFr ? 'Planifiée' : 'Scheduled'],
-        'draft'     => ['bg-[#FDF0DC] text-[#C97A16]', $isFr ? 'Brouillon' : 'Draft'],
+        'published' => ['bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]', $isFr ? 'Publié' : 'Published'],
+        'scheduled' => ['bg-[#E3EDFB] dark:bg-[#101C33] text-[#2563EB] dark:text-[#8FB6F5]', $isFr ? 'Planifiée' : 'Scheduled'],
+        'draft'     => ['bg-[#FDF0DC] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A]', $isFr ? 'Brouillon' : 'Draft'],
     ];
 
     $curStatut = request('statut');
@@ -99,8 +99,8 @@
                         <i data-lucide="{{ $cIcon }}" class="w-[18px] h-[18px]" style="color: {{ $cColor }}"></i>
                     </span>
                     <div class="min-w-0">
-                        <p class="text-[10px] font-bold tracking-[0.06em] text-[#8A857A] uppercase truncate">{{ $cLabel }}</p>
-                        <p class="mt-0.5 text-[18px] font-bold text-[#1B1B18] leading-none">{{ $cValue }}</p>
+                        <p class="text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase truncate">{{ $cLabel }}</p>
+                        <p class="mt-0.5 text-[18px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $cValue }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -112,7 +112,7 @@
                     <form method="GET" class="flex flex-wrap items-center gap-2.5 px-4 pt-4 pb-3">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <div class="ui-field-group w-full sm:w-[230px]">
-                            <i data-lucide="search" class="w-[15px] h-[15px] shrink-0 text-[#8A857A]"></i>
+                            <i data-lucide="search" class="w-[15px] h-[15px] shrink-0 text-[#8A857A] dark:text-[#868778]"></i>
                             <input type="text" name="q" value="{{ $curQ }}" placeholder="{{ $isFr ? 'Rechercher une actualité...' : 'Search a news item...' }}" class="ui-field-bare flex-1 min-w-0">
                         </div>
                         <select name="statut" onchange="this.form.submit()" class="ui-field ui-select">
@@ -141,8 +141,8 @@
                             {{ $isFr ? 'Filtres' : 'Filters' }}
                         </button>
                         <span class="ml-auto hidden lg:flex items-center gap-1.5">
-                            <span class="w-[34px] h-[34px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#8A857A]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
-                            <span class="w-[34px] h-[34px] rounded-lg bg-[#0F4824] flex items-center justify-center text-white"><i data-lucide="list" class="w-4 h-4"></i></span>
+                            <span class="w-[34px] h-[34px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#8A857A] dark:text-[#868778]"><i data-lucide="layout-grid" class="w-4 h-4"></i></span>
+                            <span class="w-[34px] h-[34px] rounded-lg bg-[#0F4824] dark:bg-[#2E9250] flex items-center justify-center text-white dark:text-[#04150A]"><i data-lucide="list" class="w-4 h-4"></i></span>
                         </span>
                     </form>
 
@@ -162,27 +162,27 @@
                             </thead>
                             <tbody>
                                 @forelse($announcements as $a)
-                                @php [$stCls, $stLabel] = $statusPill[$a->status] ?? ['bg-[#EFEFED] text-[#55524A]', $a->status]; @endphp
+                                @php [$stCls, $stLabel] = $statusPill[$a->status] ?? ['bg-[#EFEFED] dark:bg-[#1A1E16] text-[#55524A] dark:text-[#B4B5A6]', $a->status]; @endphp
                                 <tr>
                                     <td>
                                         <div class="flex items-center gap-3 min-w-[240px] max-w-[300px]">
                                             @if($a->cover_image)
                                             <img src="{{ asset($a->cover_image) }}" alt="" class="shrink-0 w-[52px] h-[44px] rounded-lg object-cover">
                                             @else
-                                            <span class="shrink-0 w-[52px] h-[44px] rounded-lg bg-[#F1ECE0] flex items-center justify-center text-[#B8A66B]"><i data-lucide="image" class="w-5 h-5"></i></span>
+                                            <span class="shrink-0 w-[52px] h-[44px] rounded-lg bg-[#F1ECE0] dark:bg-[#1A1E16] flex items-center justify-center text-[#B8A66B] dark:text-[#EDB33A]"><i data-lucide="image" class="w-5 h-5"></i></span>
                                             @endif
                                             <div class="min-w-0">
-                                                <p class="text-[12px] font-bold text-[#1B1B18] leading-snug">{{ $isFr ? $a->title_fr : ($a->title_en ?? $a->title_fr) }}</p>
-                                                <p class="mt-0.5 text-[10.5px] text-[#8A857A] truncate">{{ $isFr ? $a->excerpt_fr : ($a->excerpt_en ?? $a->excerpt_fr) }}</p>
+                                                <p class="text-[12px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $isFr ? $a->title_fr : ($a->title_en ?? $a->title_fr) }}</p>
+                                                <p class="mt-0.5 text-[10.5px] text-[#8A857A] dark:text-[#868778] truncate">{{ $isFr ? $a->excerpt_fr : ($a->excerpt_en ?? $a->excerpt_fr) }}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $newsCatPill[$a->category] ?? 'bg-[#EFEFED] text-[#55524A]' }}">{{ $a->category ?? '—' }}</span>
+                                        <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold whitespace-nowrap {{ $newsCatPill[$a->category] ?? 'bg-[#EFEFED] dark:bg-[#1A1E16] text-[#55524A] dark:text-[#B4B5A6] ' }}">{{ $a->category ?? '—' }}</span>
                                     </td>
                                     <td>
-                                        <span class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] whitespace-nowrap">
-                                            <i data-lucide="{{ $newsTypeIcon[$a->type] ?? 'file' }}" class="w-[14px] h-[14px] text-[#8A857A]"></i>
+                                        <span class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] whitespace-nowrap">
+                                            <i data-lucide="{{ $newsTypeIcon[$a->type] ?? 'file' }}" class="w-[14px] h-[14px] text-[#8A857A] dark:text-[#868778]"></i>
                                             {{ $isFr ? ($a->type ?? '—') : ($newsTypeEn[$a->type] ?? ($a->type ?? '—')) }}
                                         </span>
                                     </td>
@@ -193,9 +193,9 @@
                                     <td class="text-right">{{ $a->status === 'published' ? number_format($a->views_count) : '-' }}</td>
                                     <td class="whitespace-nowrap">{{ $a->status === 'draft' ? '-' : $newsDate($a->published_at, $a->status === 'scheduled') }}</td>
                                     <td class="text-right whitespace-nowrap">
-                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#157A43] hover:border-[#157A43] transition-colors align-middle"><i data-lucide="eye" class="w-[14px] h-[14px]"></i></a>
-                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#C97A16] hover:border-[#C97A16] transition-colors align-middle"><i data-lucide="pencil" class="w-[14px] h-[14px]"></i></a>
-                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="Plus" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] items-center justify-center text-[#55524A] hover:text-[#1B1B18] transition-colors align-middle"><i data-lucide="more-vertical" class="w-[14px] h-[14px]"></i></a>
+                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Voir' : 'View' }}" class="inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] dark:border-[#262B21] items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#157A43] dark:hover:text-[#339B56] hover:border-[#157A43] dark:hover:border-[#2E9250] transition-colors align-middle"><i data-lucide="eye" class="w-[14px] h-[14px]"></i></a>
+                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="{{ $isFr ? 'Modifier' : 'Edit' }}" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] dark:border-[#262B21] items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C97A16] dark:hover:text-[#EDB33A] hover:border-[#C97A16] dark:hover:border-[#E9A81E] transition-colors align-middle"><i data-lucide="pencil" class="w-[14px] h-[14px]"></i></a>
+                                        <a href="{{ route('admin.news.detail', ['id' => $a->id, 'lang' => $lang]) }}" title="Plus" class="ml-1 inline-flex w-[28px] h-[28px] rounded-md border border-[#EAE5D8] dark:border-[#262B21] items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#1B1B18] dark:hover:text-[#F3EFE7] transition-colors align-middle"><i data-lucide="more-vertical" class="w-[14px] h-[14px]"></i></a>
                                     </td>
                                 </tr>
                                 @empty
@@ -206,36 +206,36 @@
                     </div>
 
                     {{-- Pagination --}}
-                    <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 border-t border-[#F5F1E8]">
-                        <p class="text-[11.5px] text-[#6F6B60]">
+                    <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 border-t border-[#F5F1E8] dark:border-[#262B21]">
+                        <p class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
                             {{ $isFr
                                 ? 'Affichage de ' . ($announcements->firstItem() ?? 0) . ' à ' . ($announcements->lastItem() ?? 0) . ' sur ' . $announcements->total() . ' publications'
                                 : 'Showing ' . ($announcements->firstItem() ?? 0) . ' to ' . ($announcements->lastItem() ?? 0) . ' of ' . $announcements->total() . ' publications' }}
                         </p>
                         <div class="flex items-center gap-1.5">
                             @if($announcements->onFirstPage())
-                            <span class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C4B8]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                            <span class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#C9C4B8] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                             @else
-                            <a href="{{ $announcements->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A] hover:border-[#14652F]"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                            <a href="{{ $announcements->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250]"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                             @endif
                             @for($p = 1; $p <= min($announcements->lastPage(), 5); $p++)
                                 @if($p === $announcements->currentPage())
-                                <span class="w-[30px] h-[30px] rounded-lg bg-[#0F4824] text-white text-[12px] font-bold flex items-center justify-center">{{ $p }}</span>
+                                <span class="w-[30px] h-[30px] rounded-lg bg-[#0F4824] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[12px] font-bold flex items-center justify-center">{{ $p }}</span>
                                 @else
-                                <a href="{{ $announcements->url($p) }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[12px] text-[#55524A] flex items-center justify-center hover:border-[#14652F]">{{ $p }}</a>
+                                <a href="{{ $announcements->url($p) }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] text-[#55524A] dark:text-[#B4B5A6] flex items-center justify-center hover:border-[#14652F] dark:hover:border-[#2E9250]">{{ $p }}</a>
                                 @endif
                             @endfor
                             @if($announcements->lastPage() > 5)
-                            <span class="px-1 text-[12px] text-[#8A857A]">…</span>
-                            <a href="{{ $announcements->url($announcements->lastPage()) }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] text-[12px] text-[#55524A] flex items-center justify-center hover:border-[#14652F]">{{ $announcements->lastPage() }}</a>
+                            <span class="px-1 text-[12px] text-[#8A857A] dark:text-[#868778]">…</span>
+                            <a href="{{ $announcements->url($announcements->lastPage()) }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] text-[#55524A] dark:text-[#B4B5A6] flex items-center justify-center hover:border-[#14652F] dark:hover:border-[#2E9250]">{{ $announcements->lastPage() }}</a>
                             @endif
                             @if($announcements->hasMorePages())
-                            <a href="{{ $announcements->nextPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#55524A] hover:border-[#14652F]"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                            <a href="{{ $announcements->nextPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250]"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                             @else
-                            <span class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] flex items-center justify-center text-[#C9C4B8]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                            <span class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] flex items-center justify-center text-[#C9C4B8] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                             @endif
                         </div>
-                        <span class="hidden md:inline-flex items-center gap-1.5 h-[30px] rounded-lg border border-[#EAE5D8] px-2.5 text-[11.5px] text-[#55524A]">10 / page <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A]"></i></span>
+                        <span class="hidden md:inline-flex items-center gap-1.5 h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] px-2.5 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">10 / page <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i></span>
                     </div>
                 </section>
 
@@ -245,21 +245,21 @@
                     <section class="ui-card">
                         <div class="flex items-center justify-between">
                             <h2 class="ui-card-title">{{ $isFr ? 'Répartition par catégorie' : 'Breakdown by category' }}</h2>
-                            <a href="{{ route('admin.reports') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
+                            <a href="{{ route('admin.reports') }}" class="text-[11px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <div class="mt-4 flex items-center gap-4">
                             <div class="relative shrink-0 w-[118px] h-[118px] rounded-full" style="background: {{ $donutCss }}">
-                                <div class="absolute inset-[17px] bg-white rounded-full flex flex-col items-center justify-center">
-                                    <span class="text-[19px] font-bold text-[#1B1B18] leading-none">{{ number_format($newsStats['total']) }}</span>
-                                    <span class="mt-0.5 text-[10px] text-[#8A857A]">Total</span>
+                                <div class="absolute inset-[17px] bg-white dark:bg-[#12150F] rounded-full flex flex-col items-center justify-center">
+                                    <span class="text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ number_format($newsStats['total']) }}</span>
+                                    <span class="mt-0.5 text-[10px] text-[#8A857A] dark:text-[#868778]">Total</span>
                                 </div>
                             </div>
                             <ul class="flex-1 min-w-0 space-y-1.5">
                                 @foreach($newsByCategory as $c)
                                 <li class="flex items-center gap-2 text-[11px]">
                                     <span class="shrink-0 w-[9px] h-[9px] rounded-[3px]" style="background: {{ $newsCatDot[$c->category] ?? '#9CA3AF' }}"></span>
-                                    <span class="flex-1 truncate text-[#3B382F]">{{ $c->category }}</span>
-                                    <span class="shrink-0 text-[#6F6B60]">{{ $c->total }} ({{ number_format($c->total / $catTotal * 100, 1) }}%)</span>
+                                    <span class="flex-1 truncate text-[#3B382F] dark:text-[#B4B5A6]">{{ $c->category }}</span>
+                                    <span class="shrink-0 text-[#6F6B60] dark:text-[#868778]">{{ $c->total }} ({{ number_format($c->total / $catTotal * 100, 1) }}%)</span>
                                 </li>
                                 @endforeach
                             </ul>
@@ -270,21 +270,21 @@
                     <section class="ui-card">
                         <div class="flex items-center justify-between">
                             <h2 class="ui-card-title">{{ $isFr ? 'Top articles par vues' : 'Top articles by views' }}</h2>
-                            <a href="{{ route('news.index') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
+                            <a href="{{ route('news.index') }}" class="text-[11px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
-                        <ul class="mt-3 divide-y divide-[#F5F1E8]">
+                        <ul class="mt-3 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                             @forelse($topAnnouncements as $t)
                             <li class="py-2 flex items-center gap-3">
                                 @if($t->cover_image)
                                 <img src="{{ asset($t->cover_image) }}" alt="" class="shrink-0 w-[34px] h-[30px] rounded-md object-cover">
                                 @else
-                                <span class="shrink-0 w-[34px] h-[30px] rounded-md bg-[#F1ECE0] flex items-center justify-center text-[#B8A66B]"><i data-lucide="image" class="w-4 h-4"></i></span>
+                                <span class="shrink-0 w-[34px] h-[30px] rounded-md bg-[#F1ECE0] dark:bg-[#1A1E16] flex items-center justify-center text-[#B8A66B] dark:text-[#EDB33A]"><i data-lucide="image" class="w-4 h-4"></i></span>
                                 @endif
-                                <p class="flex-1 min-w-0 text-[11.5px] font-medium text-[#1B1B18] leading-snug truncate">{{ $isFr ? $t->title_fr : ($t->title_en ?? $t->title_fr) }}</p>
-                                <span class="shrink-0 text-[11.5px] font-bold text-[#1B1B18]">{{ number_format($t->views_count) }}</span>
+                                <p class="flex-1 min-w-0 text-[11.5px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] leading-snug truncate">{{ $isFr ? $t->title_fr : ($t->title_en ?? $t->title_fr) }}</p>
+                                <span class="shrink-0 text-[11.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($t->views_count) }}</span>
                             </li>
                             @empty
-                            <li class="py-3 text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucun article publié.' : 'No published article.' }}</li>
+                            <li class="py-3 text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucun article publié.' : 'No published article.' }}</li>
                             @endforelse
                         </ul>
                     </section>
@@ -306,7 +306,7 @@
                     <section class="ui-card">
                         <div class="flex items-center justify-between">
                             <h2 class="ui-card-title">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
-                            <a href="{{ route('admin.audit-log') }}" class="text-[11px] font-semibold text-[#157A43] hover:text-[#14532D] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
+                            <a href="{{ route('admin.audit-log') }}" class="text-[11px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <ul class="mt-3 space-y-3">
                             @forelse($recentActivity as [$raIcon, $raColor, $raBg, $raTitle, $raSub, $raWhen])
@@ -315,13 +315,13 @@
                                     <i data-lucide="{{ $raIcon }}" class="w-[14px] h-[14px]" style="color: {{ $raColor }}"></i>
                                 </span>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-[11.5px] font-semibold text-[#1B1B18] leading-snug">{{ $raTitle }}</p>
-                                    <p class="mt-0.5 text-[10.5px] text-[#8A857A] truncate">{{ $raSub }}</p>
+                                    <p class="text-[11.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $raTitle }}</p>
+                                    <p class="mt-0.5 text-[10.5px] text-[#8A857A] dark:text-[#868778] truncate">{{ $raSub }}</p>
                                 </div>
-                                <span class="shrink-0 text-[10px] text-[#8A857A] whitespace-nowrap">{{ $raWhen }}</span>
+                                <span class="shrink-0 text-[10px] text-[#8A857A] dark:text-[#868778] whitespace-nowrap">{{ $raWhen }}</span>
                             </li>
                             @empty
-                            <li class="text-[11.5px] text-[#8A857A]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</li>
+                            <li class="text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucune activité récente.' : 'No recent activity.' }}</li>
                             @endforelse
                         </ul>
                     </section>
@@ -329,11 +329,11 @@
             </div>
 
             {{-- Footer strip --}}
-            <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAE5D8] pt-4">
-                <p class="text-[11px] text-[#6F6B60]">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAE5D8] dark:border-[#262B21] pt-4">
+                <p class="text-[11px] text-[#6F6B60] dark:text-[#868778]">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
                 <div class="flex items-center gap-5">
-                    <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>
-                    <a href="{{ route('contact') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] hover:text-[#14652F]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
+                    <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>
+                    <a href="{{ route('contact') }}" class="inline-flex items-center gap-1.5 text-[11px] text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
                 </div>
             </div>
 @endsection

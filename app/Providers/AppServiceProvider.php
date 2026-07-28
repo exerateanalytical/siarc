@@ -17,6 +17,23 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
         $this->shareNavTaxonomy();
+        $this->lockDocumentsToLightTheme();
+    }
+
+    /**
+     * Certificates and tickets are documents: they are printed, and they render
+     * light whatever the dark-mode toggle says. The list of which views count
+     * is App\Support\Theme; `pages/partials/theme.blade.php` acts on the flag.
+     *
+     * Done with a composer rather than a line in each of the nine views so the
+     * set has one definition, and so the flag reaches the partial through the
+     * view data it already inherits.
+     */
+    private function lockDocumentsToLightTheme(): void
+    {
+        View::composer(\App\Support\Theme::documentViews(), function ($view) {
+            $view->with('lockLightTheme', true);
+        });
     }
 
     /**

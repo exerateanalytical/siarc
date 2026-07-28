@@ -34,3 +34,4 @@ SIARC/
 
 # The Certification Authority signing key must never be committed.
 /storage/app/ca
+.gstack/

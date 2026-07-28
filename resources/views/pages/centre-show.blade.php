@@ -44,7 +44,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#FBF8F2] text-[#1D1B16] antialiased">
+<body class="bg-[#FBF8F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 @include('pages.partials.directory-header')
 
 {{-- Hero --}}
@@ -65,7 +65,7 @@
             <p class="mt-4 flex items-center gap-2 text-[12.5px] text-[#DCEAE0]"><i data-lucide="map-pin" class="w-4 h-4 text-[#E9C25A]"></i>{{ $centre->city ?? $centre->chef_lieu }}, {{ $regionName }}, {{ $isFr ? 'Cameroun' : 'Cameroon' }}</p>
             <div class="mt-5 flex items-center gap-3">
                 <a href="{{ route('businesses.index', ['lang'=>$lang, 'region'=>$centre->region_code]) }}" class="inline-flex items-center gap-2 bg-[#0F7A3D] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 h-[44px] rounded-lg"><i data-lucide="navigation" class="w-4 h-4"></i>{{ $isFr ? 'Itinéraire' : 'Directions' }}</a>
-                <a href="{{ route('contact', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-[#F5EEDD] text-[#1D1B16] text-[13px] font-semibold px-5 h-[44px] rounded-lg"><i data-lucide="phone" class="w-4 h-4"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
+                <a href="{{ route('contact', ['lang'=>$lang]) }}" class="inline-flex items-center gap-2 bg-[#F5EEDD] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] text-[13px] font-semibold px-5 h-[44px] rounded-lg"><i data-lucide="phone" class="w-4 h-4"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
                 <a href="{{ $siacUser ? route('saved.index', ['lang'=>$lang]) : '/login?lang='.$lang }}" class="w-[44px] h-[44px] rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white"><i data-lucide="heart" class="w-4 h-4"></i></a>
             </div>
         </div>
@@ -79,20 +79,20 @@
     <div class="space-y-6">
         {{-- À propos + chiffres --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-                <h2 class="flex items-center gap-2 text-[14px] font-bold text-[#1D1B16]"><i data-lucide="landmark" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'À propos du centre' : 'About the centre' }}</h2>
-                <p class="mt-3 text-[12.5px] text-[#55524A] leading-relaxed">{{ $isFr ? $centre->description_fr : ($centre->description_en ?? $centre->description_fr) }}</p>
+            <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-6 py-5">
+                <h2 class="flex items-center gap-2 text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]"><i data-lucide="landmark" class="w-4 h-4 text-[#C9942E]"></i>{{ $isFr ? 'À propos du centre' : 'About the centre' }}</h2>
+                <p class="mt-3 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $centre->description_fr : ($centre->description_en ?? $centre->description_fr) }}</p>
                 <div class="mt-5 grid grid-cols-3 gap-3 text-center">
                     @foreach($missions as [$mIcon, $mTitle, $mSub])
-                    <div><span class="w-11 h-11 mx-auto rounded-full bg-[#F6F1E4] flex items-center justify-center"><i data-lucide="{{ $mIcon }}" class="w-5 h-5 text-[#C9942E]"></i></span><p class="mt-2 text-[12px] font-bold text-[#1D1B16]">{{ $mTitle }}</p><p class="text-[10.5px] text-[#6F6B60] leading-snug">{{ $mSub }}</p></div>
+                    <div><span class="w-11 h-11 mx-auto rounded-full bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center"><i data-lucide="{{ $mIcon }}" class="w-5 h-5 text-[#C9942E]"></i></span><p class="mt-2 text-[12px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $mTitle }}</p><p class="text-[10.5px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $mSub }}</p></div>
                     @endforeach
                 </div>
             </section>
-            <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-                <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Chiffres clés' : 'Key figures' }}</h2>
+            <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-6 py-5">
+                <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Chiffres clés' : 'Key figures' }}</h2>
                 <div class="mt-3 grid grid-cols-2 gap-3">
                     @foreach($chiffres as [$chIcon, $chColor, $chVal, $chLabel])
-                    <div class="border border-[#EDE6D6] rounded-xl px-3.5 py-3"><i data-lucide="{{ $chIcon }}" class="w-5 h-5" style="color: {{ $chColor }}"></i><p class="mt-1.5 text-[18px] font-bold text-[#1D1B16] leading-none">{{ is_numeric($chVal) ? $fmt($chVal) : $chVal }}</p><p class="text-[10.5px] text-[#6F6B60]">{{ $chLabel }}</p></div>
+                    <div class="border border-[#EDE6D6] dark:border-[#262B21] rounded-xl px-3.5 py-3"><i data-lucide="{{ $chIcon }}" class="w-5 h-5" style="color: {{ $chColor }}"></i><p class="mt-1.5 text-[18px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ is_numeric($chVal) ? $fmt($chVal) : $chVal }}</p><p class="text-[10.5px] text-[#6F6B60] dark:text-[#868778]">{{ $chLabel }}</p></div>
                     @endforeach
                 </div>
             </section>
@@ -102,30 +102,30 @@
              every centre; artisan_centres holds no per-centre history, so it is gone. --}}
 
         {{-- Spécialités --}}
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-            <h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Spécialités du centre' : 'Centre specialties' }}</h2>
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-6 py-5">
+            <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Spécialités du centre' : 'Centre specialties' }}</h2>
             <div class="mt-4 flex flex-wrap gap-x-8 gap-y-4">
                 @foreach($specialites as $spec)
                 @php $ic = 'sparkles'; foreach($specIcons as $k=>$v){ if(stripos($spec,$k)!==false){$ic=$v;break;} } @endphp
-                <div class="text-center w-[80px]"><span class="w-12 h-12 mx-auto rounded-full bg-[#F6F1E4] flex items-center justify-center"><i data-lucide="{{ $ic }}" class="w-5 h-5 text-[#C9942E]"></i></span><p class="mt-2 text-[11px] font-medium text-[#3B382F] leading-snug">{{ $spec }}</p></div>
+                <div class="text-center w-[80px]"><span class="w-12 h-12 mx-auto rounded-full bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center"><i data-lucide="{{ $ic }}" class="w-5 h-5 text-[#C9942E]"></i></span><p class="mt-2 text-[11px] font-medium text-[#3B382F] dark:text-[#F3EFE7] leading-snug">{{ $spec }}</p></div>
                 @endforeach
             </div>
         </section>
 
         {{-- Artisans à la une --}}
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-6 py-5">
-            <div class="flex items-center justify-between"><h2 class="text-[14px] font-bold text-[#1D1B16]">{{ $isFr ? 'Artisans à la une' : 'Featured artisans' }}</h2><a href="{{ route('businesses.index', ['lang'=>$lang, 'region'=>$centre->region_code]) }}" class="text-[11.5px] font-semibold text-[#157A43]">{{ $isFr ? 'Voir tous les artisans' : 'View all artisans' }} →</a></div>
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-6 py-5">
+            <div class="flex items-center justify-between"><h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Artisans à la une' : 'Featured artisans' }}</h2><a href="{{ route('businesses.index', ['lang'=>$lang, 'region'=>$centre->region_code]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir tous les artisans' : 'View all artisans' }} →</a></div>
             <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                 @forelse($businesses as $b)
                 <a href="{{ route('businesses.show', ['slug'=>$b->slug, 'lang'=>$lang]) }}" class="text-center group">
-                    <div class="w-full h-[110px] rounded-xl overflow-hidden bg-[#F1EDE2]">
+                    <div class="w-full h-[110px] rounded-xl overflow-hidden bg-[#F1EDE2] dark:bg-[#0A0C09]">
                         <img src="{{ $b->cover_image ? asset('storage/'.$b->cover_image) : asset('images/landing/biz-'.(($loop->index%6)+1).'.png') }}" alt="{{ $b->name_fr }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                     </div>
-                    <p class="mt-2 text-[12px] font-semibold text-[#1D1B16] truncate">{{ $b->name_fr }}</p>
-                    <p class="text-[10.5px] text-[#6F6B60] truncate">{{ $b->industry->name_fr ?? '' }}</p>
+                    <p class="mt-2 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] truncate">{{ $b->name_fr }}</p>
+                    <p class="text-[10.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $b->industry->name_fr ?? '' }}</p>
                 </a>
                 @empty
-                <p class="text-[12px] text-[#6F6B60] col-span-full">{{ $isFr ? 'Artisans bientôt disponibles.' : 'Artisans coming soon.' }}</p>
+                <p class="text-[12px] text-[#6F6B60] dark:text-[#868778] col-span-full">{{ $isFr ? 'Artisans bientôt disponibles.' : 'Artisans coming soon.' }}</p>
                 @endforelse
             </div>
         </section>
@@ -133,31 +133,31 @@
 
     {{-- Right rail --}}
     <aside class="space-y-5">
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-5 py-5">
-            <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] uppercase">{{ $isFr ? 'Informations clés' : 'Key information' }}</h2>
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-5 py-5">
+            <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Informations clés' : 'Key information' }}</h2>
             <dl class="mt-3.5 space-y-2.5 text-[12px]">
                 @foreach($infosCles as [$iIcon, $iLabel, $iVal])
-                <div class="flex items-center justify-between border-b border-[#F1EDE2] pb-2"><dt class="flex items-center gap-2 text-[#6F6B60]"><i data-lucide="{{ $iIcon }}" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $iLabel }}</dt><dd class="font-semibold text-[#1D1B16]">{{ $iVal }}</dd></div>
+                <div class="flex items-center justify-between border-b border-[#F1EDE2] dark:border-[#262B21] pb-2"><dt class="flex items-center gap-2 text-[#6F6B60] dark:text-[#868778]"><i data-lucide="{{ $iIcon }}" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $iLabel }}</dt><dd class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $iVal }}</dd></div>
                 @endforeach
             </dl>
         </section>
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-5 py-5">
-            <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] uppercase">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</h2>
-            <div class="mt-3 space-y-2.5 text-[12px] text-[#3B382F]">
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-5 py-5">
+            <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</h2>
+            <div class="mt-3 space-y-2.5 text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">
                 <p class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->contact_phone }}</p>
                 <p class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->contact_email ?? config('legal.company.email') }}</p>
                 <p class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-[#C9942E]"></i>{{ $centre->address ?? ($centre->city . ', ' . $regionName) }}</p>
             </div>
             <a href="{{ route('contact', ['lang'=>$lang]) }}" class="mt-4 block text-center bg-[#0F7A3D] hover:bg-[#14652F] text-white text-[12.5px] font-semibold py-2.5 rounded-lg">{{ $isFr ? 'Envoyer un message' : 'Send a message' }}</a>
         </section>
-        <section class="bg-white border border-[#EDE6D6] rounded-2xl px-5 py-5 text-center">
-            <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] uppercase">{{ $isFr ? 'Labels & Reconnaissances' : 'Labels & Recognition' }}</h2>
+        <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-5 py-5 text-center">
+            <h2 class="text-[13px] font-bold tracking-[0.08em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Labels & Reconnaissances' : 'Labels & Recognition' }}</h2>
             <div class="mt-3 flex items-center justify-center gap-3">
-                <span class="w-14 h-14 rounded-full bg-[#F6F1E4] flex items-center justify-center"><i data-lucide="award" class="w-6 h-6 text-[#C9942E]"></i></span>
-                <span class="w-14 h-14 rounded-full bg-[#F6F1E4] flex items-center justify-center"><i data-lucide="globe" class="w-6 h-6 text-[#3565DE]"></i></span>
-                <span class="w-14 h-14 rounded-full bg-[#F6F1E4] flex items-center justify-center"><i data-lucide="badge-check" class="w-6 h-6 text-[#157A43]"></i></span>
+                <span class="w-14 h-14 rounded-full bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center"><i data-lucide="award" class="w-6 h-6 text-[#C9942E]"></i></span>
+                <span class="w-14 h-14 rounded-full bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center"><i data-lucide="globe" class="w-6 h-6 text-[#3565DE] dark:text-[#8FC2F0]"></i></span>
+                <span class="w-14 h-14 rounded-full bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center"><i data-lucide="badge-check" class="w-6 h-6 text-[#157A43] dark:text-[#339B56]"></i></span>
             </div>
-            <p class="mt-3 text-[10.5px] text-[#6F6B60] leading-snug">{{ $isFr ? 'Patrimoine Culturel National · UNESCO · Qualité Artisanale Certifiée' : 'National Cultural Heritage · UNESCO · Certified Craft Quality' }}</p>
+            <p class="mt-3 text-[10.5px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $isFr ? 'Patrimoine Culturel National · UNESCO · Qualité Artisanale Certifiée' : 'National Cultural Heritage · UNESCO · Certified Craft Quality' }}</p>
         </section>
     </aside>
 </div>

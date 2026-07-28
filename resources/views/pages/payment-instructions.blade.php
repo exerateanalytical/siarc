@@ -115,7 +115,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
 </head>
-<body class="bg-[#F5F3EE] text-[#1D1B16] antialiased">
+<body class="bg-[#F5F3EE] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
 @include('pages.partials.directory-header')
 
@@ -123,10 +123,10 @@
 
     <header class="mb-7">
         <span class="ui-pill ui-pill-neutral">{{ $isFr ? 'Frais de plateforme' : 'Platform fee' }}</span>
-        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] leading-tight">
+        <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] dark:text-[#339B56] leading-tight">
             {{ $pageTitle }}
         </h1>
-        <p class="mt-3 text-[13.5px] text-[#3A3A35] leading-relaxed">
+        <p class="mt-3 text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? "Cette page concerne uniquement les frais que la plateforme facture pour ses propres services : inscription, adhésion, renouvellement, vérification. Elle ne concerne jamais l'achat d'une pièce à un artisan : la plateforme n'est pas partie à ces ventes et n'encaisse aucun prix de produit."
                : 'This page is only about fees the platform charges for its own services: registration, membership, renewal, verification. It is never about buying a piece from an artisan: the platform is not a party to those sales and receives no product price.' }}
@@ -176,7 +176,7 @@
         </dl>
 
         {{-- The reference. The single most important string on the page. --}}
-        <div class="mt-5 rounded-[12px] border border-[#EFEBE2] bg-[#FBF9F4] p-4">
+        <div class="mt-5 rounded-[12px] border border-[#EFEBE2] dark:border-[#262B21] bg-[#FBF9F4] dark:bg-[#0A0C09] p-4">
             <span class="ui-eyebrow">{{ $isFr ? 'Référence à saisir dans le motif' : 'Reference to type in the reason field' }}</span>
             <p class="pay-ref mt-2" id="payref">{{ $payment->reference }}</p>
             <p class="ui-hint">
@@ -234,8 +234,8 @@
 
             <div class="mt-4 space-y-3">
                 @foreach($methods as $method)
-                <div class="rounded-[12px] border border-[#EFEBE2] p-4" data-method="{{ $method['code'] }}">
-                    <p class="text-[13px] font-semibold text-[#02301B]">{{ $method['label'] }}</p>
+                <div class="rounded-[12px] border border-[#EFEBE2] dark:border-[#262B21] p-4" data-method="{{ $method['code'] }}">
+                    <p class="text-[13px] font-semibold text-[#02301B] dark:text-[#339B56]">{{ $method['label'] }}</p>
 
                     @if($method['kind'] !== 'cash' && filled($method['number']))
                         {{-- data-account-number is asserted absent by the test for
@@ -387,7 +387,7 @@
     {{-- ───────────── 4. How this works, stated once ───────────── --}}
     <section class="ui-card p-5 sm:p-6">
         <h2 class="ui-card-title">{{ $isFr ? 'Comment fonctionne le règlement' : 'How settlement works' }}</h2>
-        <ol class="mt-3 space-y-2 text-[13px] text-[#3A3A35] leading-relaxed list-decimal pl-5">
+        <ol class="mt-3 space-y-2 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed list-decimal pl-5">
             <li>{{ $isFr ? "Vous envoyez le montant exact au compte indiqué, en mettant la référence dans le motif."
                           : 'You send the exact amount to the account shown, putting the reference in the reason field.' }}</li>
             <li>{{ $isFr ? "Vous nous le déclarez depuis cette page. C'est une déclaration : elle n'accorde rien."
