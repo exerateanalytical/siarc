@@ -142,4 +142,39 @@ class ProductCertificateTest extends TestCase
             ->assertOk()
             ->assertSee('does not prove');
     }
+
+    /**
+     * A certificate issued by Artisan Hub 237 must speak only for Artisan Hub
+     * 237. Naming another organisation on it — a competition the artisan
+     * entered, a ministry, a former brand — reads as that body having endorsed
+     * the product, which none of them has.
+     */
+    public function test_the_certificate_names_no_other_organisation(): void
+    {
+        $business = $this->makeBusiness();
+        $business->update(['siarc_code' => 'AD-1', 'status' => 'published']);
+
+        $product = $this->makeProduct($business);
+        $product->update(['status' => 'published']);
+
+        foreach (['', '?lang=en'] as $query) {
+            $html = $this->get('/certificat/' . $product->slug . $query)->assertOk()->getContent();
+
+            foreach ([
+                'SIARC', 'SIAC', 'GVN', 'GVNAC', 'AHCA',
+                'MINAC', 'MINCOMMERCE', 'UNESCO', 'Chambre des',
+                'Galerie Virtuelle',
+            ] as $foreign) {
+                $this->assertStringNotContainsString(
+                    $foreign,
+                    $html,
+                    "The certificate names \"{$foreign}\" — it must carry this platform's identifiers only."
+                );
+            }
+
+            // The artisan's reference is the platform's own, not an imported one.
+            $this->assertStringNotContainsString('AD-1', $html);
+            $this->assertStringContainsString('Artisan Hub 237', $html);
+        }
+    }
 }

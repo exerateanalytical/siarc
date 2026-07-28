@@ -171,10 +171,14 @@
                 </div>
             </div>
             <dl class="ui-dl ui-dl--2 mt-4">
-                @if($biz?->siarc_code)
+                {{-- The artisan's reference on THIS platform. An earlier version
+                     printed the SIARC 2026 competition code here; a certificate
+                     issued by Artisan Hub 237 should carry Artisan Hub 237's own
+                     identifiers, not another organisation's. --}}
+                @if($biz)
                 <div>
-                    <dt class="ui-dt">{{ $isFr ? 'Référence SIARC 2026' : 'SIARC 2026 reference' }}</dt>
-                    <dd class="ui-dd font-mono">{{ $biz->siarc_code }}</dd>
+                    <dt class="ui-dt">{{ $isFr ? 'Référence artisan' : 'Artisan reference' }}</dt>
+                    <dd class="ui-dd font-mono">{{ $biz->certificate_no ?: certNumberFor($biz->id, $biz->created_at) }}</dd>
                 </div>
                 @endif
                 @if($origin)
