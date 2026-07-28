@@ -154,7 +154,7 @@
         'number' => $avc?->certificate_no,
         'date'   => $date($avc?->issued_at),
         'doc'    => $avc && $business ? '/certificat-artisan/' . $business->slug . $q : null,
-        'verify' => null,
+        'verify' => $avc ? $verifyUrl($avc->certificate_no) : null,
         'state'  => $avc ? ($isFr ? 'Actif' : 'Active') : null,
         'ok'     => true,
         'reason' => $avc ? null : ($isFr
@@ -173,7 +173,7 @@
         'number' => $latestTransfer?->certificate_no,
         'date'   => $date($latestTransfer?->issued_at),
         'doc'    => $latestTransfer ? '/certificat-transfert/' . $latestTransfer->certificate_no . $q : null,
-        'verify' => null,
+        'verify' => $latestTransfer ? $verifyUrl($latestTransfer->certificate_no) : null,
         'state'  => $latestTransfer
             ? ($latestTransfer->status === 'active'
                 ? ($isFr ? 'En vigueur' : 'In force')
@@ -198,7 +198,8 @@
         'date'   => $date($latestConsignment?->issued_at),
         'doc'    => $latestConsignment && $latestConsignment->issued_at
             ? '/certificat-export/' . $latestConsignment->certificate_no . $q : null,
-        'verify' => null,
+        'verify' => $latestConsignment && $latestConsignment->issued_at
+            ? $verifyUrl($latestConsignment->certificate_no) : null,
         'state'  => $latestConsignment && $latestConsignment->issued_at
             ? ($isFr ? 'Émis' : 'Issued') : null,
         'ok'     => true,

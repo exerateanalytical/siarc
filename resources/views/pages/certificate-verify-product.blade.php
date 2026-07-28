@@ -6,6 +6,58 @@
     $product = $result['product'] ?? null;
     $status  = $result['status'] ?? null;
 
+    /*
+     * The platform issues six documents and every one of them prints a
+     * verification address. The route in front of this page asks the product
+     * register first, which answers for the Certificate of Authenticity; when it
+     * has never heard of the reference, the directory is asked, and it answers
+     * for the ownership transfer, artisan verification and export registers too.
+     *
+     * Only the notfound case falls through, so the Certificate of Authenticity
+     * path is untouched — it is not verified twice, and its counter is not
+     * incremented twice for one visit.
+     */
+    $doc = null;
+
+    if ($ref !== '' && $status === 'notfound') {
+        $doc = \App\Support\CertificateDirectory::resolve($ref, $pin ?: null);
+
+        if ($doc['status'] !== 'notfound') {
+            $status = $doc['status'];
+            $cert   = $doc['certificate'];
+        } else {
+            $doc = null;
+        }
+    }
+
+    // The product register answered, so the document is a Certificate of
+    // Authenticity. Named on the page for the same reason the other three are:
+    // a reader holding a printed sheet should be able to see that the page is
+    // talking about the document in their hand.
+    if (! $doc && $cert && $status !== null) {
+        $doc = [
+            'type'               => 'coa',
+            'status'             => $status,
+            'certificate'        => $cert,
+            'subject'            => $product
+                ? ['label' => $product->name_fr, 'url' => null]
+                : ['label' => null, 'url' => null],
+            'signature'          => $result['signature'] ?? \App\Support\ProductCertificate::signatureState($cert),
+            'issued_at'          => $cert->issued_at ?? null,
+            'expires_at'         => $cert->expires_at ?? null,
+            'verification_count' => isset($cert->verification_count) ? (int) $cert->verification_count : null,
+            'document_url'       => $product ? route('product.certificate', ['slug' => $product->slug, 'lang' => $lang]) : null,
+        ];
+    }
+
+    // pin_mismatch names the type but carries no certificate, so the number can
+    // be checked without the contents being handed over.
+    if (! $doc && $status === 'pin_mismatch') {
+        $docName = $isFr ? "Certificat d'authenticité" : 'Certificate of Authenticity';
+    }
+
+    $docName = $docName ?? ($doc ? \App\Support\CertificateDirectory::name($doc['type'], $lang) : null);
+
     // Each outcome gets its own wording. "Not found" and "the record changed
     // after issue" are different situations, and a buyer standing in a market
     // needs to tell them apart rather than seeing one generic failure.
@@ -26,6 +78,13 @@
             $isFr ? 'Code de vérification incorrect' : 'Verification PIN does not match',
             $isFr ? 'Le numéro existe mais le code ne correspond pas. Vérifiez les deux sur le certificat.'
                   : 'The number exists but the PIN does not match it. Check both against the certificate.'],
+        // Only the export certificate carries a real expiry window, and a
+        // window that has closed is a different thing from a revocation: the
+        // record stands, the authorisation to move the piece under it does not.
+        'expired' => ['ui-alert-warn', 'clock',
+            $isFr ? 'Certificat expiré' : 'Expired certificate',
+            $isFr ? 'La période de validité indiquée sur ce certificat est écoulée. L\'enregistrement subsiste, mais le document n\'est plus courant : demandez-en un à jour.'
+                  : 'The validity period printed on this certificate has passed. The registration stands, but the document is no longer current — ask for an up-to-date one.'],
         'notfound' => ['ui-alert-danger', 'search-x',
             $isFr ? 'Aucun certificat trouvé' : 'No certificate found',
             $isFr ? 'Aucun certificat ne porte cette référence. Vérifiez la saisie — et méfiez-vous si le vendeur insiste.'
@@ -98,6 +157,93 @@
     <div class="ui-alert {{ $v[0] }} mt-6">
         <i data-lucide="{{ $v[1] }}" class="w-4 h-4 shrink-0 mt-0.5"></i>
         <span><strong>{{ $v[2] }}</strong><br>{{ $v[3] }}</span>
+    </div>
+    @endif
+
+    {{-- The document itself: which of the six this reference belongs to, where
+         the full sheet is, and whether the authority's signature over it still
+         verifies. Every row is omitted when the register holds nothing for it —
+         a blank field on a verification page reads as a fact. --}}
+    @if($docName)
+    <div class="ui-card mt-5">
+        <div class="ui-card-head">
+            <h2 class="ui-card-title">{{ $isFr ? 'Document' : 'Document' }}</h2>
+            @if($doc && $doc['type'] !== 'coa')
+            <span class="ui-pill shrink-0 font-mono">{{ strtoupper($doc['type']) }}</span>
+            @endif
+        </div>
+
+        <p class="text-[15px] font-bold text-[#1D1B16]">{{ $docName }}</p>
+
+        @if($doc)
+        <dl class="ui-dl ui-dl--2 mt-3">
+            @if($doc['subject']['label'])
+            <div>
+                <dt class="ui-dt">{{ $isFr ? 'Objet du certificat' : 'What it certifies' }}</dt>
+                <dd class="ui-dd">
+                    @if($doc['subject']['url'])
+                    <a href="{{ $doc['subject']['url'] }}" class="text-[#157A43] font-semibold">{{ $doc['subject']['label'] }}</a>
+                    @else
+                    {{ $doc['subject']['label'] }}
+                    @endif
+                </dd>
+            </div>
+            @endif
+            @if($doc['issued_at'])
+            <div>
+                <dt class="ui-dt">{{ $isFr ? 'Émis le' : 'Issued' }}</dt>
+                <dd class="ui-dd">{{ \Illuminate\Support\Carbon::parse($doc['issued_at'])->translatedFormat('d F Y') }}</dd>
+            </div>
+            @endif
+            @if($doc['expires_at'])
+            <div>
+                <dt class="ui-dt">{{ $isFr ? 'Valable jusqu\'au' : 'Valid until' }}</dt>
+                <dd class="ui-dd">{{ \Illuminate\Support\Carbon::parse($doc['expires_at'])->translatedFormat('d F Y') }}</dd>
+            </div>
+            @endif
+            @if($doc['verification_count'] !== null)
+            <div>
+                <dt class="ui-dt">{{ $isFr ? 'Vérifications' : 'Times verified' }}</dt>
+                <dd class="ui-dd">{{ $doc['verification_count'] }}</dd>
+            </div>
+            @endif
+        </dl>
+
+        @php
+            $sig = $doc['signature'] ?? null;
+            $sigLabels = [
+                'valid'    => [$isFr ? 'Signature Ed25519 vérifiée' : 'Ed25519 signature verifies', 'ui-pill-ok'],
+                'invalid'  => [$isFr ? 'Signature Ed25519 non vérifiée' : 'Ed25519 signature does not verify', 'ui-pill-danger'],
+                'unsigned' => [$isFr ? 'Aucune signature de l\'autorité' : 'No authority signature', 'ui-pill-warn'],
+            ];
+            $sigLabel = $sig ? ($sigLabels[$sig['state']] ?? null) : null;
+        @endphp
+
+        @if($sigLabel)
+        <div class="mt-4 pt-4 border-t border-[#EFEBE2]">
+            <span class="ui-pill {{ $sigLabel[1] }}">{{ $sigLabel[0] }}</span>
+            @if($sig['kid'])
+            <p class="mt-2 ui-dt">{{ $isFr ? 'Identifiant de clé' : 'Key id' }}</p>
+            <p class="mt-1 font-mono text-[10.5px] text-[#55524A] break-all">{{ $sig['kid'] }}</p>
+            @endif
+            {{-- The point of publishing the key: this check does not depend on
+                 us being asked, or on our answer being believed. --}}
+            <p class="ui-hint mt-2">
+                {{ $isFr
+                   ? 'Cette signature est vérifiable sans nous, hors ligne, avec la clé publique publiée sur'
+                   : 'This signature is checkable without us, offline, against the public key published at' }}
+                <a href="{{ url('/.well-known/jwks.json') }}" class="font-mono text-[#157A43]">/.well-known/jwks.json</a>.
+            </p>
+        </div>
+        @endif
+
+        @if($doc['document_url'])
+        <a href="{{ $doc['document_url'] }}" class="ui-btn ui-btn-secondary ui-btn-sm mt-4">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            {{ $isFr ? 'Voir le document complet' : 'View the full document' }}
+        </a>
+        @endif
+        @endif
     </div>
     @endif
 
