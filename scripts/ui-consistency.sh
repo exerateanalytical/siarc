@@ -18,6 +18,23 @@ bad() { FAIL=$((FAIL+1)); printf '  \033[31mDRIFT\033[0m %s\n' "$1"; }
 tok() { curl -s -c "$1" -b "$1" "$2" -o "$T/tk.html"
         grep -o 'name="_token" value="[^"]*"' "$T/tk.html" | head -1 | sed 's/.*value="//;s/"//'; }
 
+# php is not on PATH in a default Laragon shell. Resolve it once, here, and stop
+# if it cannot be found: this script's only shell-out to php is the role grant,
+# and when that silently no-ops every admin page redirects to login and is
+# reported as interface drift. A check that cannot run has to fail loudly rather
+# than manufacture a finding.
+PHP="${PHP:-$(command -v php || true)}"
+if [ -z "$PHP" ]; then
+  for c in /c/laragon/bin/php/php-*/php.exe /c/laragon/bin/php/php-*/php; do
+    [ -x "$c" ] && PHP="$c" && break
+  done
+fi
+if [ -z "$PHP" ] || ! "$PHP" -v >/dev/null 2>&1; then
+  printf '[31mCannot find a working php binary.[0m Set PHP=/path/to/php and re-run.
+' >&2
+  exit 2
+fi
+
 # Sign up a throwaway account rather than relying on demo logins. The platform
 # ships with no demo accounts at all now, so a script that needed them would
 # only ever work on a developer's machine.
@@ -59,14 +76,18 @@ verify_email() { # verify_email <jar> <address>
 # against the model's default guard, but this platform registers its roles under
 # `sanctum`, so the helper silently no-ops here.
 grant_role() { # grant_role <email> <role>
-  php artisan tinker --execute="
+  "$PHP" artisan tinker --execute="
     \$u = \DB::table('users')->where('email','$1')->value('id');
     \$r = \DB::table('roles')->where('name','$2')->where('guard_name','sanctum')->value('id');
     if (\$u && \$r) {
       \DB::table('model_has_roles')->updateOrInsert(
         ['role_id'=>\$r,'model_type'=>'App\\\\Modules\\\\Auth\\\\Models\\\\User','model_id'=>\$u], []
       );
-    }" >/dev/null 2>&1
+    }
+    echo (\$u && \$r) ? 'GRANTED' : 'MISSING';" 2>/dev/null | grep -q GRANTED || {
+    printf '\033[31mCould not grant %s to %s.\033[0m Every admin page below would report false drift.\n' "$2" "$1" >&2
+    exit 3
+  }
 }
 
 # A seller with no shop is correctly redirected away from the product and
