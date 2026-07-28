@@ -51,6 +51,18 @@ Route::get('/certificat/{slug}', function (Request $request, string $slug) {
     ]);
 })->middleware('throttle:60,1')->name('product.certificate');
 
+// Local-only QA surface for the certificate security artwork. It is not part of
+// the product and must never be reachable in production, where an unlabelled
+// page of security marks would invite exactly the misreading the artwork is
+// designed to avoid.
+Route::get('/apercu-securite', function (Request $request) {
+    abort_unless(app()->environment('local'), 404);
+
+    return view('pages.dev.security-artwork', [
+        'lang' => in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr',
+    ]);
+})->name('dev.security.artwork');
+
 Route::get('/verifier', function (Request $request) {
     $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
     $ref  = trim((string) $request->query('ref', ''));
@@ -106,6 +118,74 @@ Route::get('/autorite-de-certification', function (Request $request) {
         'chain' => \App\Support\CertificationAuthority::verifyChain(),
     ]);
 })->middleware('throttle:30,1')->name('ca.page');
+
+/*
+ * The other three certificates the platform issues.
+ *
+ * All parameterised, so they are reachable only for a real record: there is no
+ * blank specimen of any of them, which is deliberate — a certificate template
+ * anyone can load is a forgery kit.
+ */
+Route::get('/certificat-enregistrement/{slug}', function (Request $request, string $slug) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $product = \App\Modules\Products\Models\Product::with([
+        'business.region', 'business.city', 'business.user', 'category', 'images', 'attributes.template',
+    ])->where('slug', $slug)->first();
+
+    abort_unless($product && $product->status === 'published' && $product->business_id, 404);
+
+    return view('pages.certificate-product-registration', [
+        'lang'        => $lang,
+        'product'     => $product,
+        'certificate' => \App\Support\ProductCertificate::forProduct($product),
+        'prn'         => \App\Support\ProvenanceRegistry::prnFor($product),
+        'oln'         => \App\Support\ProvenanceRegistry::olnFor($product),
+        'flags'       => \App\Support\ProductFlags::checks($product),
+        'owner'       => \App\Support\ProvenanceRegistry::currentOwner($product),
+    ]);
+})->middleware('throttle:60,1')->name('product.registration.certificate');
+
+Route::get('/certificat-transfert/{ref}', function (Request $request, string $ref) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $transfer = \Illuminate\Support\Facades\DB::table('ownership_transfers')->where('certificate_no', $ref)->first();
+    abort_unless($transfer, 404);
+
+    $product = \App\Modules\Products\Models\Product::with([
+        'business.region', 'business.city', 'business.user', 'category', 'images', 'attributes.template',
+    ])->find($transfer->product_id);
+    abort_unless($product, 404);
+
+    return view('pages.certificate-ownership-transfer', [
+        'lang'      => $lang,
+        'transfer'  => $transfer,
+        'product'   => $product,
+        'chain'     => \App\Support\ProvenanceRegistry::chain($product),
+        'flags'     => \App\Support\ProductFlags::checks($product),
+        'trail'     => \App\Support\ProvenanceRegistry::trail('otc', $transfer->id),
+        'coa'       => \App\Support\ProductCertificate::forProduct($product),
+    ]);
+})->where('ref', '[A-Za-z0-9\-]+')->middleware('throttle:60,1')->name('ownership.transfer.certificate');
+
+Route::get('/certificat-artisan/{slug}', function (Request $request, string $slug) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $business = \App\Modules\Businesses\Models\Business::with(['region', 'city', 'user', 'industry'])
+        ->where('slug', $slug)->first();
+    abort_unless($business, 404);
+
+    $certificate = \App\Support\ArtisanVerification::forBusiness($business);
+    abort_unless($certificate, 404);
+
+    return view('pages.certificate-artisan-verification', [
+        'lang'        => $lang,
+        'business'    => $business,
+        'certificate' => $certificate,
+        'gan'         => \App\Support\ProvenanceRegistry::ganFor($business),
+        'trail'       => \App\Support\ProvenanceRegistry::trail('avc', $certificate->id),
+    ]);
+})->middleware('throttle:60,1')->name('artisan.verification.certificate');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;
