@@ -19,8 +19,28 @@ a claim the code cannot keep.
 | `00-blueprint.md` | The AHTI blueprint, Levels 1–15. The owner's specification, recorded as authored. |
 | `01-volumes.md` | The AHCM volume plan (I–XV) and the four build phases. |
 | `10-identifiers.md` | Identifier formats, and the reconciliation between the blueprint's names and the ones already issued. |
+| `20-conflicts.md` | Where the parts contradict each other, contradict the build, or specify something the platform cannot do. Read this before implementing anything. |
 | `90-implementation.md` | What exists in this codebase today, mapped against the specification. |
 | `CHANGELOG.md` | Version history. |
+| `spec/*.json` | The machine-readable specification, recorded verbatim as authored. |
+
+### `spec/`
+
+| File | Part |
+|---|---|
+| `00-foundation.json` | Document, foundation, principles, governance, lifecycle |
+| `20-registries.json` | Registry architecture |
+| `30-identifiers.json` | Global Identity & Numbering System (GINS) |
+| `40-design-system.json` | Certificate Design System (CDS) |
+| `50-security-framework.json` | Security Framework (AHSF) |
+| `60-certificate-catalogue.json` | Certificate Catalogue (AHCC) |
+| `70a-trust-evaluation-engine.json` | Trust Evaluation Engine (ATEE) |
+| `70b-business-rule-engine.json` | Business Rule Engine (BRE) |
+| `70c-trust-intelligence-layer.json` | Trust Intelligence Layer (TIL) |
+| `70d-decision-governance-engine.json` | Decision & Governance Engine (DGE) |
+
+These are held as JSON rather than prose so they can be validated, diffed and
+read by code. All ten parse; a CI check should keep it that way.
 
 Related specs already written, referenced from here rather than duplicated:
 `docs/COA-DESIGN-SPEC.md`, `docs/PRC-DESIGN-SPEC.md`, `docs/OTC-DESIGN-SPEC.md`,

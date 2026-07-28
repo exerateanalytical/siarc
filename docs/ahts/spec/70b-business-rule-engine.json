@@ -1,0 +1,134 @@
+{
+  "business_rule_engine": {
+    "metadata": {
+      "name": "Business Rule Engine",
+      "abbreviation": "BRE",
+      "version": "2.0.0",
+      "description": "Executes deterministic trust evaluation rules before and during score calculation.",
+      "execution_mode": "DETERMINISTIC",
+      "default_rule_operator": "AND"
+    },
+    "engine_configuration": {
+      "stop_on_critical_failure": true,
+      "allow_parallel_rule_execution": true,
+      "retain_rule_history": true,
+      "retain_rule_results": true,
+      "retain_input_snapshot": true,
+      "retain_output_snapshot": true,
+      "allow_manual_rule_override": false,
+      "rule_versioning": true
+    },
+    "rule_execution_order": [
+      { "stage": 1, "name": "Eligibility Rules" },
+      { "stage": 2, "name": "Mandatory Rules" },
+      { "stage": 3, "name": "Integrity Rules" },
+      { "stage": 4, "name": "Scoring Constraints" },
+      { "stage": 5, "name": "Bonus Rules" },
+      { "stage": 6, "name": "Penalty Rules" },
+      { "stage": 7, "name": "Decision Rules" }
+    ],
+    "rule_result": { "PASS": true, "FAIL": false, "SKIPPED": null },
+    "rule_categories": [
+      "Identity", "Registry", "Evidence", "Ownership", "Certificate", "Security",
+      "Risk", "Scoring", "Compliance", "Export", "Museum", "Market"
+    ],
+    "mandatory_rules": [
+      { "rule_id": "MR001", "name": "Verified Artisan Required", "severity": "CRITICAL", "condition": "artisan.status == VERIFIED", "on_fail": ["STOP_SCORING", "RETURN_NOT_ELIGIBLE"] },
+      { "rule_id": "MR002", "name": "Registered Product Required", "severity": "CRITICAL", "condition": "product.registered == true", "on_fail": ["STOP_SCORING"] },
+      { "rule_id": "MR003", "name": "Registry Active", "severity": "CRITICAL", "condition": "registry.status == ACTIVE" },
+      { "rule_id": "MR004", "name": "No Revoked Certificate", "severity": "CRITICAL", "condition": "certificate.status != REVOKED" },
+      { "rule_id": "MR005", "name": "No Active Fraud Investigation", "severity": "CRITICAL", "condition": "fraud.active == false" }
+    ],
+    "integrity_rules": [
+      { "rule_id": "IR001", "name": "Certificate Hash Valid", "severity": "HIGH" },
+      { "rule_id": "IR002", "name": "Digital Signature Valid", "severity": "HIGH" },
+      { "rule_id": "IR003", "name": "QR Verification Successful", "severity": "HIGH" },
+      { "rule_id": "IR004", "name": "Ownership Chain Complete", "severity": "MEDIUM" },
+      { "rule_id": "IR005", "name": "Registry References Consistent", "severity": "HIGH" }
+    ],
+    "rule_library": {
+      "score_caps": [
+        { "rule_id": "CAP001", "score": "Authenticity", "condition": "artisan.not_verified", "maximum_score": 40, "reason": "Unverified artisan" },
+        { "rule_id": "CAP002", "score": "Provenance", "condition": "ownership_history < 50%", "maximum_score": 50 },
+        { "rule_id": "CAP003", "score": "Documentation", "condition": "required_documents_missing", "maximum_score": 45 },
+        { "rule_id": "CAP004", "score": "Market", "condition": "no_recent_valuation", "maximum_score": 60 },
+        { "rule_id": "CAP005", "score": "Export Readiness", "condition": "export_documents_missing", "maximum_score": 30 }
+      ],
+      "automatic_penalties": [
+        { "rule_id": "P001", "reason": "Duplicate Certificate", "deduction": 50 },
+        { "rule_id": "P002", "reason": "Certificate Revoked", "deduction": 100 },
+        { "rule_id": "P003", "reason": "Ownership Conflict", "deduction": 35 },
+        { "rule_id": "P004", "reason": "Hash Mismatch", "deduction": 75 },
+        { "rule_id": "P005", "reason": "Fraud Investigation", "deduction": 100 },
+        { "rule_id": "P006", "reason": "Missing Product Images", "deduction": 10 },
+        { "rule_id": "P007", "reason": "Evidence Incomplete", "deduction": 15 }
+      ],
+      "automatic_bonuses": [
+        { "rule_id": "B001", "reason": "Museum Collection", "bonus": 8 },
+        { "rule_id": "B002", "reason": "UNESCO Heritage Recognition", "bonus": 10 },
+        { "rule_id": "B003", "reason": "National Heritage Listing", "bonus": 8 },
+        { "rule_id": "B004", "reason": "Peer Reviewed Publication", "bonus": 4 },
+        { "rule_id": "B005", "reason": "International Exhibition", "bonus": 5 },
+        { "rule_id": "B006", "reason": "Independent Expert Authentication", "bonus": 6 }
+      ]
+    },
+    "trust_scoring_engine": {
+      "description": "Calculates normalized trust indicators after rule execution.",
+      "algorithm": "Weighted Hybrid Scoring",
+      "weights": {
+        "authenticity": 20, "provenance": 15, "documentation": 10, "craftsmanship": 10,
+        "heritage": 10, "condition": 10, "market": 10, "compliance": 5, "security": 5, "legacy": 5
+      },
+      "normalization": { "enabled": true, "method": "WeightedAverage" },
+      "maximum_score": 100,
+      "minimum_score": 0
+    },
+    "score_calculation_rules": {
+      "rounding": { "precision": 2 },
+      "maximum_total_bonus": 10,
+      "maximum_total_penalty": 100,
+      "score_floor": 0,
+      "score_ceiling": 100,
+      "apply_caps_before_bonus": true,
+      "apply_penalties_before_bonus": true
+    },
+    "score_constraints": [
+      { "constraint_id": "SC001", "description": "Overall Trust cannot exceed Authenticity Score by more than 10 points.", "expression": "overall <= authenticity + 10" },
+      { "constraint_id": "SC002", "description": "Overall Trust cannot exceed Provenance Score by more than 15 points.", "expression": "overall <= provenance + 15" },
+      { "constraint_id": "SC003", "description": "Security Score below 40 forces manual review.", "expression": "security < 40" },
+      { "constraint_id": "SC004", "description": "Risk Level Critical blocks certificate issuance.", "expression": "risk == CRITICAL" }
+    ],
+    "score_history": {
+      "retain_every_calculation": true,
+      "retain_previous_weights": true,
+      "retain_rule_versions": true,
+      "retain_algorithm_versions": true,
+      "allow_historical_replay": true
+    },
+    "rule_audit": {
+      "record_every_rule": true,
+      "record_execution_time": true,
+      "record_inputs": true,
+      "record_outputs": true,
+      "record_failure_reason": true,
+      "record_applied_bonus": true,
+      "record_applied_penalty": true
+    },
+    "events": {
+      "rules_started": true,
+      "rule_passed": true,
+      "rule_failed": true,
+      "score_capped": true,
+      "bonus_applied": true,
+      "penalty_applied": true,
+      "score_calculated": true
+    },
+    "future_reserved": {
+      "adaptive_weighting": false,
+      "machine_learning_weights": false,
+      "graph_based_relationship_scoring": false,
+      "behavioral_anomaly_detection": false,
+      "cross_registry_trust_exchange": false
+    }
+  }
+}

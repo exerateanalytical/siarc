@@ -1,0 +1,130 @@
+{
+  "design_system": {
+    "metadata": {
+      "name": "ArtisanHub237 Certificate Design System",
+      "abbreviation": "CDS",
+      "version": "1.0.0",
+      "authority": "ArtisanHub237 Certification Authority",
+      "description": "Enterprise design standards governing every official certificate, passport, verification document, ID card and registry extract."
+    },
+    "page": {
+      "default_size": "A4",
+      "orientation": ["PORTRAIT", "LANDSCAPE"],
+      "dpi": 300,
+      "minimum_dpi": 300,
+      "recommended_dpi": 600,
+      "color_mode": ["CMYK", "RGB"],
+      "bleed_mm": 3,
+      "safe_margin_mm": 10,
+      "print_ready": true,
+      "pdf_standard": "PDF/A-2b"
+    },
+    "grid_system": {
+      "columns": 12,
+      "baseline_grid_px": 8,
+      "gutter_px": 24,
+      "container_width_percent": 100,
+      "responsive": true
+    },
+    "typography": {
+      "primary_font": "Inter",
+      "secondary_font": "Merriweather",
+      "monospace_font": "JetBrains Mono",
+      "sizes": {
+        "document_title": 32,
+        "section_title": 20,
+        "subsection": 16,
+        "body": 11,
+        "caption": 9,
+        "footer": 8,
+        "microtext": 4
+      },
+      "weights": { "light": 300, "regular": 400, "medium": 500, "semibold": 600, "bold": 700 }
+    },
+    "colors": {
+      "primary": "#0E5A36",
+      "secondary": "#C89B3C",
+      "accent": "#0057B8",
+      "danger": "#D32F2F",
+      "warning": "#F57C00",
+      "success": "#2E7D32",
+      "neutral": "#37474F",
+      "background": "#FFFFFF",
+      "text": "#212121"
+    },
+    "certificate_classification": {
+      "COA": { "name": "Certificate of Authenticity", "color": "#0E5A36", "icon": "shield-check" },
+      "PPC": { "name": "Product Provenance Certificate", "color": "#6A1B9A", "icon": "history" },
+      "PRC": { "name": "Product Registration Certificate", "color": "#1565C0", "icon": "clipboard-check" },
+      "OTC": { "name": "Ownership Transfer Certificate", "color": "#8E24AA", "icon": "users" },
+      "AVC": { "name": "Artisan Verification Certificate", "color": "#00897B", "icon": "user-check" },
+      "VAC": { "name": "Valuation Certificate", "color": "#EF6C00", "icon": "coins" },
+      "EAC": { "name": "Export Authenticity Certificate", "color": "#003366", "icon": "ship" },
+      "RC": { "name": "Restoration Certificate", "color": "#5D4037", "icon": "hammer" },
+      "EC": { "name": "Exhibition Certificate", "color": "#00695C", "icon": "gallery" },
+      "DPP": { "name": "Digital Product Passport", "color": "#263238", "icon": "cpu" }
+    },
+    "layout": {
+      "header": {
+        "height_mm": 28,
+        "contains": ["Authority Logo", "Authority Name", "Certificate Name", "Certificate Number", "Version"]
+      },
+      "hero_panel": {
+        "enabled": true,
+        "contains": ["Primary Product Image", "Certificate Summary", "Current Verification Status"]
+      },
+      "information_panels": ["Product", "Artisan", "Owner", "Provenance", "Verification", "Timeline", "Security", "Signatures"],
+      "footer": {
+        "height_mm": 18,
+        "contains": ["Website", "Verification URL", "Copyright", "QR", "Version", "Document Classification"]
+      }
+    },
+    "components": {
+      "logo": { "required": true, "minimum_width_mm": 20 },
+      "qr_code": { "required": true, "minimum_size_mm": 30, "position": "bottom_right" },
+      "certificate_seal": { "required": true, "type": ["Embossed", "Gold Foil", "Digital"] },
+      "status_badge": { "allowed": ["ACTIVE", "PENDING", "REVOKED", "SUSPENDED", "ARCHIVED"] },
+      "timeline": { "enabled": true, "orientation": "horizontal" },
+      "map": { "enabled": true, "supports": ["Origin", "Journey", "Export Route", "Ownership History"] }
+    },
+    "images": {
+      "minimum_resolution": { "width": 3000, "height": 4200 },
+      "formats": ["PNG", "JPEG", "TIFF", "WEBP"],
+      "background": "transparent_preferred",
+      "maximum_images_per_certificate": 12
+    },
+    "accessibility": {
+      "minimum_contrast_ratio": "4.5:1",
+      "qr_text_alternative": true,
+      "screen_reader_labels": true,
+      "language_support": ["English", "French"]
+    },
+    "digital_version": {
+      "interactive": true,
+      "hyperlinks": true,
+      "clickable_qr": true,
+      "embedded_metadata": true,
+      "digital_signature_visible": true
+    },
+    "print_version": {
+      "vector_logos": true,
+      "embed_fonts": true,
+      "crop_marks": true,
+      "registration_marks": false,
+      "high_resolution_images": true
+    },
+    "branding": {
+      "logo_position": "top_left",
+      "certificate_title_alignment": "center",
+      "authority_alignment": "top_center",
+      "classification_band": "left_vertical",
+      "page_number_position": "bottom_center"
+    },
+    "future_reserved": {
+      "augmented_reality": false,
+      "3d_certificate": false,
+      "holographic_render": false,
+      "smart_paper": false
+    }
+  }
+}

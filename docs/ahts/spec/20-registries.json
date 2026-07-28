@@ -1,0 +1,144 @@
+{
+  "registries": {
+    "metadata": {
+      "version": "1.0.0",
+      "description": "Master registry architecture for the ArtisanHub237 Trust Infrastructure.",
+      "registry_authority": "ArtisanHub237 Certification Authority",
+      "default_status": "ACTIVE",
+      "default_visibility": "PRIVATE",
+      "immutable_events": true
+    },
+    "common": {
+      "status": ["PENDING", "ACTIVE", "SUSPENDED", "REVOKED", "ARCHIVED"],
+      "verification_status": ["UNVERIFIED", "PENDING", "VERIFIED", "REJECTED"],
+      "ownership_type": ["INDIVIDUAL", "COMPANY", "MUSEUM", "GALLERY", "GOVERNMENT", "FOUNDATION"],
+      "visibility": ["PRIVATE", "INTERNAL", "PUBLIC"],
+      "audit_actions": ["CREATE", "UPDATE", "DELETE", "VERIFY", "APPROVE", "REJECT", "RESTORE", "TRANSFER", "EXPORT", "ARCHIVE"]
+    },
+    "master_registry": {
+      "code": "MR",
+      "name": "Master Registry",
+      "description": "Central index of every registered entity within the Trust Infrastructure.",
+      "children": [
+        "artisan_registry", "workshop_registry", "product_registry", "ownership_registry",
+        "provenance_registry", "certificate_registry", "collection_registry",
+        "exhibition_registry", "restoration_registry", "insurance_registry",
+        "valuation_registry", "shipment_registry", "museum_registry"
+      ]
+    },
+    "artisan_registry": {
+      "code": "AR",
+      "entity": "Artisan",
+      "primary_identifier": "GAN",
+      "description": "Registry of verified artisans.",
+      "required_fields": ["gan", "full_name", "country", "region", "identity_verification", "verification_status", "registration_date", "status"],
+      "optional_fields": ["biography", "languages", "skills", "portfolio", "website", "social_links", "awards", "photo", "signature_image"],
+      "relationships": {
+        "workshops": "one_to_many",
+        "products": "one_to_many",
+        "certificates": "one_to_many",
+        "ownership_records": "one_to_many"
+      }
+    },
+    "workshop_registry": {
+      "code": "WR",
+      "entity": "Workshop",
+      "primary_identifier": "GWN",
+      "required_fields": ["gwn", "workshop_name", "country", "region", "owner_gan", "registration_date", "status"],
+      "relationships": { "owner": "many_to_one", "products": "one_to_many" }
+    },
+    "product_registry": {
+      "code": "PR",
+      "entity": "Product",
+      "primary_identifier": "GPN",
+      "required_fields": ["gpn", "title", "artisan_gan", "creation_date", "category", "material", "country_of_origin", "status"],
+      "optional_fields": ["dimensions", "weight", "description", "photos", "videos", "heritage_story", "collection", "limited_edition"],
+      "relationships": {
+        "artisan": "many_to_one",
+        "ownership": "one_to_many",
+        "provenance": "one_to_one",
+        "certificates": "one_to_many",
+        "valuations": "one_to_many",
+        "insurance": "one_to_many"
+      }
+    },
+    "ownership_registry": {
+      "code": "OR",
+      "entity": "Ownership",
+      "primary_identifier": "GOR",
+      "required_fields": ["gor", "product_gpn", "owner_type", "owner_identifier", "ownership_start", "status"],
+      "relationships": { "product": "many_to_one" }
+    },
+    "provenance_registry": {
+      "code": "PVR",
+      "entity": "Provenance",
+      "primary_identifier": "GPLN",
+      "required_fields": ["gpln", "product_gpn", "creation_event", "ownership_history", "verification_status"]
+    },
+    "certificate_registry": {
+      "code": "CR",
+      "entity": "Certificate",
+      "primary_identifier": "GCN",
+      "required_fields": ["gcn", "certificate_type", "product_gpn", "issue_date", "expiry_date", "status", "digital_signature"],
+      "relationships": { "product": "many_to_one", "issuer": "many_to_one" }
+    },
+    "collection_registry": {
+      "code": "CLR",
+      "entity": "Collection",
+      "primary_identifier": "GCOL",
+      "required_fields": ["gcol", "collection_name", "owner_identifier", "status"]
+    },
+    "exhibition_registry": {
+      "code": "ER",
+      "entity": "Exhibition",
+      "primary_identifier": "GEN",
+      "required_fields": ["gen", "title", "venue", "country", "start_date", "end_date", "status"]
+    },
+    "restoration_registry": {
+      "code": "RR",
+      "entity": "Restoration",
+      "primary_identifier": "GRN",
+      "required_fields": ["grn", "product_gpn", "restorer", "restoration_date", "report", "status"]
+    },
+    "valuation_registry": {
+      "code": "VR",
+      "entity": "Valuation",
+      "primary_identifier": "GVN",
+      "required_fields": ["gvn", "product_gpn", "valuator", "valuation_date", "currency", "market_value", "status"]
+    },
+    "insurance_registry": {
+      "code": "IR",
+      "entity": "Insurance",
+      "primary_identifier": "GIN",
+      "required_fields": ["gin", "product_gpn", "provider", "policy_number", "coverage_start", "coverage_end", "status"]
+    },
+    "shipment_registry": {
+      "code": "SR",
+      "entity": "Shipment",
+      "primary_identifier": "GSN",
+      "required_fields": ["gsn", "product_gpn", "origin_country", "destination_country", "carrier", "shipment_date", "status"]
+    },
+    "museum_registry": {
+      "code": "MRG",
+      "entity": "Museum",
+      "primary_identifier": "GMN",
+      "required_fields": ["gmn", "museum_name", "country", "city", "status"]
+    },
+    "audit": {
+      "enabled": true,
+      "immutable": true,
+      "capture": ["created_by", "created_at", "updated_by", "updated_at", "approved_by", "approved_at", "verified_by", "verified_at", "ip_address", "device", "session_id", "reason"]
+    },
+    "relationships": {
+      "artisan_creates_product": { "type": "ONE_TO_MANY" },
+      "product_has_certificates": { "type": "ONE_TO_MANY" },
+      "product_has_provenance": { "type": "ONE_TO_ONE" },
+      "product_has_ownership_history": { "type": "ONE_TO_MANY" },
+      "product_has_exhibitions": { "type": "ONE_TO_MANY" },
+      "product_has_restorations": { "type": "ONE_TO_MANY" },
+      "product_has_shipments": { "type": "ONE_TO_MANY" },
+      "product_has_valuations": { "type": "ONE_TO_MANY" },
+      "product_has_insurance": { "type": "ONE_TO_MANY" }
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "certificate_catalogue": {
+    "metadata": {
+      "name": "ArtisanHub237 Certificate Catalogue",
+      "abbreviation": "AHCC",
+      "version": "1.0.0",
+      "authority": "ArtisanHub237 Certification Authority",
+      "description": "Official catalogue of every certificate issued by the ArtisanHub237 Trust Infrastructure."
+    },
+    "common_schema": {
+      "certificate_number": { "type": "GCN", "required": true, "immutable": true },
+      "uuid": { "type": "UUIDv4", "required": true, "immutable": true },
+      "certificate_type": { "required": true },
+      "certificate_title": { "required": true },
+      "issue_date": { "type": "datetime", "required": true },
+      "effective_date": { "type": "datetime" },
+      "expiry_date": { "nullable": true },
+      "status": { "allowed": ["DRAFT", "PENDING", "ACTIVE", "SUSPENDED", "REVOKED", "ARCHIVED"] },
+      "language": { "default": "en" },
+      "country": { "standard": "ISO3166-1" },
+      "issuer": { "authority": "AHCA" },
+      "digital_signature": { "required": true },
+      "certificate_hash": { "algorithm": "SHA-256" },
+      "verification_url": {},
+      "verification_qr": {},
+      "related_certificates": [],
+      "attachments": [],
+      "audit_reference": {},
+      "version": "1.0"
+    },
+    "certificate_groups": [
+      {
+        "group_code": "IDENTITY",
+        "group_name": "Identity Certificates",
+        "certificates": [
+          { "code": "AVC", "name": "Artisan Verification Certificate", "purpose": "Verifies artisan identity and professional standing.", "primary_entity": "Artisan" },
+          { "code": "WVC", "name": "Workshop Verification Certificate", "primary_entity": "Workshop" },
+          { "code": "CVC", "name": "Collector Verification Certificate", "primary_entity": "Collector" },
+          { "code": "MVC", "name": "Museum Verification Certificate", "primary_entity": "Museum" }
+        ]
+      },
+      {
+        "group_code": "PRODUCT",
+        "group_name": "Product Certificates",
+        "certificates": [
+          { "code": "PRC", "name": "Product Registration Certificate" },
+          { "code": "COA", "name": "Certificate of Authenticity" },
+          { "code": "PPC", "name": "Product Provenance Certificate" },
+          { "code": "DPP", "name": "Digital Product Passport" },
+          { "code": "LEC", "name": "Limited Edition Certificate" }
+        ]
+      },
+      {
+        "group_code": "OWNERSHIP",
+        "group_name": "Ownership Certificates",
+        "certificates": [
+          { "code": "OTC", "name": "Ownership Transfer Certificate" },
+          { "code": "GTC", "name": "Gift Transfer Certificate" },
+          { "code": "DC", "name": "Donation Certificate" },
+          { "code": "IHC", "name": "Inheritance Certificate" }
+        ]
+      },
+      {
+        "group_code": "MARKET",
+        "group_name": "Market Certificates",
+        "certificates": [
+          { "code": "VAC", "name": "Valuation Certificate" },
+          { "code": "IC", "name": "Insurance Certificate" },
+          { "code": "GLC", "name": "Gallery Listing Certificate" },
+          { "code": "ALC", "name": "Auction Listing Certificate" }
+        ]
+      },
+      {
+        "group_code": "HERITAGE",
+        "group_name": "Heritage Certificates",
+        "certificates": [
+          { "code": "EC", "name": "Exhibition Certificate" },
+          { "code": "RC", "name": "Restoration Certificate" },
+          { "code": "CC", "name": "Conservation Certificate" },
+          { "code": "MAC", "name": "Museum Acquisition Certificate" }
+        ]
+      },
+      {
+        "group_code": "TRADE",
+        "group_name": "Trade Certificates",
+        "certificates": [
+          { "code": "EAC", "name": "Export Authenticity Certificate" },
+          { "code": "SVC", "name": "Shipment Verification Certificate" },
+          { "code": "CVCX", "name": "Customs Verification Certificate" },
+          { "code": "IOC", "name": "Import Clearance Certificate" }
+        ]
+      }
+    ],
+    "certificate_dependencies": {
+      "COA": ["PRC", "AVC"],
+      "PPC": ["COA", "PRC"],
+      "OTC": ["COA", "PPC"],
+      "EAC": ["COA", "PPC", "OTC"],
+      "MAC": ["PPC", "RC", "VAC"]
+    },
+    "certificate_lifecycle": {
+      "states": ["DRAFT", "SUBMITTED", "UNDER_REVIEW", "VERIFIED", "APPROVED", "ISSUED", "ACTIVE", "UPDATED", "SUSPENDED", "REVOKED", "ARCHIVED"]
+    },
+    "mandatory_security": ["UUID", "GCN", "QR Code", "Digital Signature", "Certificate Hash", "Audit Trail", "Official Seal", "Verification URL"],
+    "mandatory_visual_components": ["Header", "Hero Panel", "Product Summary", "Timeline", "Status Panel", "Security Panel", "QR Verification", "Footer"],
+    "issuance_rules": {
+      "requires_verified_artisan": true,
+      "requires_registered_product": true,
+      "requires_registry_record": true,
+      "requires_digital_signature": true,
+      "requires_audit_record": true
+    }
+  }
+}

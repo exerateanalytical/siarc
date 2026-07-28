@@ -1,0 +1,95 @@
+{
+  "identifiers": {
+    "metadata": {
+      "version": "1.0.0",
+      "name": "Global Identity & Numbering System (GINS)",
+      "description": "Defines globally unique identifiers used throughout the ArtisanHub237 Trust Infrastructure.",
+      "issuing_authority": "ArtisanHub237 Certification Authority",
+      "identifier_format_version": "1.0"
+    },
+    "general_rules": {
+      "case": "UPPERCASE",
+      "separator": "-",
+      "country_code_standard": "ISO-3166-1 alpha-2",
+      "date_format": "YYYYMMDD",
+      "random_characters": "A-Z0-9",
+      "minimum_random_length": 6,
+      "maximum_random_length": 16,
+      "allow_reuse": false,
+      "allow_manual_assignment": false,
+      "globally_unique": true,
+      "immutable": true,
+      "checksum": { "enabled": true, "algorithm": "MOD97" }
+    },
+    "identifier_types": [
+      { "code": "GAN", "name": "Global Artisan Number", "entity": "Artisan", "prefix": "GAN", "example": "GAN-CM-20260728-84ABXK-52", "description": "Unique identifier assigned to every verified artisan." },
+      { "code": "GWN", "name": "Global Workshop Number", "entity": "Workshop", "prefix": "GWN", "example": "GWN-CM-20260728-91PKTR-63" },
+      { "code": "GPN", "name": "Global Product Number", "entity": "Product", "prefix": "GPN", "example": "GPN-CM-20260728-BX7F5Q-28" },
+      { "code": "GCN", "name": "Global Certificate Number", "entity": "Certificate", "prefix": "GCN", "example": "GCN-CM-20260728-R91KQ8-17" },
+      { "code": "GPLN", "name": "Global Provenance Ledger Number", "entity": "Provenance", "prefix": "GPLN", "example": "GPLN-CM-20260728-HQ82TZ-93" },
+      { "code": "GOR", "name": "Global Ownership Record", "entity": "Ownership", "prefix": "GOR", "example": "GOR-CM-20260728-WM4KQJ-44" },
+      { "code": "GCOL", "name": "Global Collection Number", "entity": "Collection", "prefix": "GCOL", "example": "GCOL-CM-20260728-Z4XQ8N-14" },
+      { "code": "GEN", "name": "Global Exhibition Number", "entity": "Exhibition", "prefix": "GEN", "example": "GEN-CM-20260728-KR98LW-88" },
+      { "code": "GRN", "name": "Global Restoration Number", "entity": "Restoration", "prefix": "GRN", "example": "GRN-CM-20260728-T5PL8N-02" },
+      { "code": "GVN", "name": "Global Valuation Number", "entity": "Valuation", "prefix": "GVN", "example": "GVN-CM-20260728-JM4P9A-76" },
+      { "code": "GIN", "name": "Global Insurance Number", "entity": "Insurance", "prefix": "GIN", "example": "GIN-CM-20260728-LQ6XPT-81" },
+      { "code": "GSN", "name": "Global Shipment Number", "entity": "Shipment", "prefix": "GSN", "example": "GSN-CM-20260728-QP8NXR-54" },
+      { "code": "GMN", "name": "Global Museum Number", "entity": "Museum", "prefix": "GMN", "example": "GMN-CM-20260728-MX9RTK-70" }
+    ],
+    "uuid": {
+      "enabled": true,
+      "version": 4,
+      "storage": "CHAR(36)",
+      "immutable": true,
+      "required_for_all_entities": true,
+      "description": "Internal universally unique identifier used by all platform entities."
+    },
+    "barcode": {
+      "enabled": true,
+      "supported_formats": ["Code128", "Code39", "EAN13", "PDF417"],
+      "default_format": "Code128"
+    },
+    "qr_code": {
+      "enabled": true,
+      "minimum_size_mm": 25,
+      "error_correction": "H",
+      "dynamic": true,
+      "contains": ["uuid", "identifier", "verification_url", "certificate_hash"]
+    },
+    "nfc": {
+      "enabled": true,
+      "default_standard": "ISO14443",
+      "supported_memory_types": ["NTAG213", "NTAG215", "NTAG216"]
+    },
+    "identifier_generation": {
+      "steps": [
+        "Determine identifier type",
+        "Assign country code",
+        "Append creation date",
+        "Generate cryptographically secure random segment",
+        "Calculate checksum",
+        "Verify uniqueness",
+        "Persist identifier",
+        "Write immutable audit log"
+      ]
+    },
+    "validation_rules": {
+      "country_code": { "required": true, "length": 2, "standard": "ISO-3166-1 alpha-2" },
+      "date": { "required": true, "format": "YYYYMMDD" },
+      "random_segment": { "minimum_length": 6, "maximum_length": 16, "allowed_characters": "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" },
+      "checksum": { "required": true, "algorithm": "MOD97" }
+    },
+    "reserved_prefixes": ["SYS", "ADM", "ROOT", "TEST", "TMP", "DEV", "NULL", "VOID"],
+    "status_codes": [
+      { "code": "ACTIVE", "description": "Identifier is valid and in use." },
+      { "code": "SUSPENDED", "description": "Identifier is temporarily inactive." },
+      { "code": "REVOKED", "description": "Identifier has been permanently revoked." },
+      { "code": "ARCHIVED", "description": "Identifier retained for historical purposes." }
+    ],
+    "future_reserved": {
+      "did": { "enabled": false, "description": "Reserved for future decentralized identifiers." },
+      "blockchain_anchor": { "enabled": false, "description": "Reserved for optional blockchain anchoring." },
+      "gs1_mapping": { "enabled": false, "description": "Reserved for future GS1 interoperability." }
+    }
+  }
+}

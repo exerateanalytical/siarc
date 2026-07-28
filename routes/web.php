@@ -186,6 +186,69 @@ Route::get('/certificat-artisan/{slug}', function (Request $request, string $slu
         'trail'       => \App\Support\ProvenanceRegistry::trail('avc', $certificate->id),
     ]);
 })->middleware('throttle:60,1')->name('artisan.verification.certificate');
+
+/*
+ * The two multi-page documents. Both are dossiers rather than single sheets, so
+ * a page parameter selects which sheet is rendered; the view renders all pages
+ * in one response for print, and the parameter is for linking to a page.
+ */
+Route::get('/certificat-export/{ref}', function (Request $request, string $ref) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $c = \Illuminate\Support\Facades\DB::table('export_consignments')->where('certificate_no', $ref)->first();
+    abort_unless($c, 404);
+
+    $product = \App\Modules\Products\Models\Product::with([
+        'business.region', 'business.city', 'business.user', 'category', 'images', 'attributes.template',
+    ])->find($c->product_id);
+    abort_unless($product, 404);
+
+    return view('pages.certificate-export-authenticity', [
+        'lang'        => $lang,
+        'consignment' => $c,
+        'product'     => $product,
+        'exporter'    => $c->exporter_id ? \Illuminate\Support\Facades\DB::table('exporters')->find($c->exporter_id) : null,
+        'shipment'    => \Illuminate\Support\Facades\DB::table('shipments')->where('export_consignment_id', $c->id)->latest('id')->first(),
+        'condition'   => \Illuminate\Support\Facades\DB::table('condition_reports')->where('export_consignment_id', $c->id)->latest('id')->first(),
+        'owner'       => \App\Support\ProvenanceRegistry::currentOwner($product),
+        'chain'       => \App\Support\ProvenanceRegistry::chain($product),
+        'readiness'   => \App\Support\ExportRegister::readiness($c->id),
+        'risk'        => \App\Support\ExportRegister::risk($c->id),
+        'flags'       => \App\Support\ProductFlags::checks($product),
+        'trail'       => \App\Support\ProvenanceRegistry::trail('eac', $c->id),
+        'coa'         => \App\Support\ProductCertificate::forProduct($product),
+        'prn'         => \App\Support\ProvenanceRegistry::prnFor($product),
+        'oln'         => \App\Support\ProvenanceRegistry::olnFor($product),
+    ]);
+})->where('ref', '[A-Za-z0-9\-]+')->middleware('throttle:60,1')->name('export.certificate');
+
+Route::get('/certificat-provenance/{slug}', function (Request $request, string $slug) {
+    $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
+
+    $product = \App\Modules\Products\Models\Product::with([
+        'business.region', 'business.city', 'business.user', 'category', 'images', 'attributes.template',
+    ])->where('slug', $slug)->first();
+
+    abort_unless($product && $product->status === 'published' && $product->business_id, 404);
+
+    return view('pages.certificate-provenance', [
+        'lang'      => $lang,
+        'product'   => $product,
+        'coa'       => \App\Support\ProductCertificate::forProduct($product),
+        'prn'       => \App\Support\ProvenanceRegistry::prnFor($product),
+        'oln'       => \App\Support\ProvenanceRegistry::olnFor($product),
+        'gan'       => $product->business ? \App\Support\ProvenanceRegistry::ganFor($product->business) : null,
+        'chain'     => \App\Support\ProvenanceRegistry::chain($product),
+        'owner'     => \App\Support\ProvenanceRegistry::currentOwner($product),
+        'timeline'  => \App\Support\ProvenanceDossier::timeline($product),
+        'journey'   => \App\Support\ProvenanceDossier::journey($product),
+        'summary'   => \App\Support\ProvenanceDossier::summary($product),
+        'legacy'    => \App\Support\ProvenanceDossier::legacyIndex($product),
+        'events'    => \App\Support\ProvenanceDossier::events($product),
+        'flags'     => \App\Support\ProductFlags::checks($product),
+        'transfers' => \Illuminate\Support\Facades\DB::table('ownership_transfers')->where('product_id', $product->id)->orderBy('id')->get()->all(),
+    ]);
+})->middleware('throttle:60,1')->name('provenance.certificate');
 Route::get('/galerie/collections/{slug}', [FrontendController::class, 'collectionShow'])->name('collections.show');
 
 use App\Http\Controllers\MessagingWebController;

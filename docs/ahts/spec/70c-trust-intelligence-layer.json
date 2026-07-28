@@ -1,0 +1,172 @@
+{
+  "trust_intelligence_layer": {
+    "metadata": {
+      "name": "Trust Intelligence Layer",
+      "abbreviation": "TIL",
+      "version": "2.0.0",
+      "description": "Operational intelligence subsystem responsible for trust indicators, evidence management, confidence analysis, risk assessment, explainability, and trust classification.",
+      "parent_engine": "ATEE"
+    },
+    "trust_indicators": {
+      "version": "1.0",
+      "overall_trust_score": { "code": "OTS", "range": [0, 100], "source": "Trust Scoring Engine" },
+      "indicators": [
+        { "code": "AS", "name": "Authenticity Score", "description": "Confidence that the product is genuine." },
+        { "code": "PS", "name": "Provenance Score" },
+        { "code": "DS", "name": "Documentation Score" },
+        { "code": "CS", "name": "Craftsmanship Score" },
+        { "code": "HS", "name": "Heritage Score" },
+        { "code": "COS", "name": "Condition Score" },
+        { "code": "MS", "name": "Market Confidence Score" },
+        { "code": "CMS", "name": "Compliance Score" },
+        { "code": "SS", "name": "Security Score" },
+        { "code": "LI", "name": "Legacy Index" },
+        { "code": "ERS", "name": "Export Readiness Score" },
+        { "code": "SUS", "name": "Sustainability Score" },
+        { "code": "AQ", "name": "Assessment Quality" },
+        { "code": "VC", "name": "Verification Confidence" },
+        { "code": "RI", "name": "Registry Integrity" },
+        { "code": "EC", "name": "Evidence Completeness" },
+        { "code": "AI", "name": "Audit Integrity" },
+        { "code": "CCI", "name": "Chain of Custody Integrity" }
+      ]
+    },
+    "trust_classification": {
+      "classification_scale": [
+        { "grade": "AAA", "range": [98, 100], "classification": "Exceptional Trust" },
+        { "grade": "AA", "range": [95, 97.99], "classification": "Premium Institutional Trust" },
+        { "grade": "A", "range": [90, 94.99], "classification": "High Trust" },
+        { "grade": "BBB", "range": [80, 89.99], "classification": "Verified Trust" },
+        { "grade": "BB", "range": [70, 79.99], "classification": "Moderate Trust" },
+        { "grade": "B", "range": [60, 69.99], "classification": "Conditional Trust" },
+        { "grade": "CCC", "range": [40, 59.99], "classification": "Low Trust" },
+        { "grade": "CC", "range": [20, 39.99], "classification": "Very Low Trust" },
+        { "grade": "C", "range": [1, 19.99], "classification": "Minimal Trust" },
+        { "grade": "D", "range": [0, 0], "classification": "Untrusted" }
+      ]
+    },
+    "evidence_management_engine": {
+      "minimum_evidence_items": 1,
+      "evidence_categories": [
+        "Identity", "Ownership", "Product", "Workshop", "Material", "Photography", "Video",
+        "Expert Opinion", "Museum Record", "Gallery Record", "Insurance", "Shipment",
+        "Export", "Import", "Restoration", "Valuation", "Certificate", "Legal", "Research", "Media"
+      ],
+      "evidence_schema": {
+        "evidence_id": "UUID",
+        "type": "ENUM",
+        "title": "STRING",
+        "description": "STRING",
+        "submitted_by": "UUID",
+        "submission_date": "DATETIME",
+        "verified_by": "UUID",
+        "verification_date": "DATETIME",
+        "status": ["PENDING", "VERIFIED", "REJECTED", "SUPERSEDED"],
+        "confidence": "0-100",
+        "digital_signature": true,
+        "hash_algorithm": "SHA-256"
+      },
+      "quality_requirements": {
+        "minimum_image_resolution": "3000x3000",
+        "accepted_image_formats": ["PNG", "JPEG", "TIFF", "WEBP"],
+        "accepted_document_formats": ["PDF/A", "PDF", "DOCX"],
+        "accepted_video_formats": ["MP4", "MOV"]
+      },
+      "evidence_quality_score": {
+        "weights": { "completeness": 30, "authenticity": 25, "clarity": 15, "verification": 20, "relevance": 10 }
+      }
+    },
+    "confidence_engine": {
+      "description": "Measures confidence in every evaluation result.",
+      "confidence_formula": {
+        "evidence_quality": 30,
+        "evidence_quantity": 15,
+        "registry_consistency": 20,
+        "verification_quality": 20,
+        "expert_consensus": 15
+      },
+      "confidence_levels": [
+        { "level": "VERY_HIGH", "range": [95, 100] },
+        { "level": "HIGH", "range": [85, 94.99] },
+        { "level": "MEDIUM", "range": [70, 84.99] },
+        { "level": "LOW", "range": [50, 69.99] },
+        { "level": "VERY_LOW", "range": [0, 49.99] }
+      ],
+      "automatic_actions": [
+        { "condition": "confidence < 70", "action": "REQUEST_ADDITIONAL_EVIDENCE" },
+        { "condition": "confidence < 50", "action": "MANUAL_REVIEW" },
+        { "condition": "confidence < 30", "action": "STOP_CERTIFICATION" }
+      ]
+    },
+    "risk_assessment_engine": {
+      "risk_domains": [
+        "Counterfeit", "Forgery", "Ownership", "Documentation", "Legal", "Export",
+        "Conservation", "Financial", "Cybersecurity", "Operational", "Reputation"
+      ],
+      "risk_levels": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "risk_matrix": {
+        "likelihood": ["Rare", "Unlikely", "Possible", "Likely", "Almost Certain"],
+        "impact": ["Negligible", "Minor", "Moderate", "Major", "Severe"]
+      },
+      "automatic_escalation": [
+        { "risk": "CRITICAL", "action": "BLOCK_CERTIFICATION" },
+        { "risk": "HIGH", "action": "MANUAL_COMMITTEE_REVIEW" },
+        { "risk": "MEDIUM", "action": "REQUEST_MORE_EVIDENCE" }
+      ],
+      "risk_propagation": {
+        "enabled": true,
+        "inheritance_rules": [
+          { "from": "Artisan", "to": "Products" },
+          { "from": "Workshop", "to": "Products" },
+          { "from": "Product", "to": "Certificates" },
+          { "from": "Certificate", "to": "Ownership Records" }
+        ]
+      }
+    },
+    "trust_profile": {
+      "generated": true,
+      "fields": [
+        "Overall Trust Grade", "Overall Trust Score", "Confidence", "Risk Level",
+        "Evidence Score", "Verification Status", "Eligibility Status", "Recommendation",
+        "Audit Reference", "Evaluation Timestamp"
+      ]
+    },
+    "explainability": {
+      "enabled": true,
+      "decision_explanation": {
+        "include_applied_rules": true,
+        "include_failed_rules": true,
+        "include_score_breakdown": true,
+        "include_bonus_breakdown": true,
+        "include_penalty_breakdown": true,
+        "include_evidence_summary": true,
+        "include_risk_summary": true,
+        "include_confidence_summary": true
+      },
+      "human_readable_report": true,
+      "machine_readable_report": true
+    },
+    "continuous_monitoring": {
+      "enabled": true,
+      "recalculation_triggers": [
+        "New Evidence", "Ownership Transfer", "Certificate Revocation", "Registry Update",
+        "Risk Update", "Expert Review", "Restoration Record", "Insurance Update", "Export Approval"
+      ]
+    },
+    "analytics": {
+      "store_historical_profiles": true,
+      "trend_analysis": true,
+      "score_evolution": true,
+      "risk_evolution": true,
+      "confidence_evolution": true
+    },
+    "future_reserved": {
+      "computer_vision_evidence_analysis": false,
+      "ai_document_validation": false,
+      "voice_authentication": false,
+      "multimodal_evidence_analysis": false,
+      "international_trust_exchange": false,
+      "digital_twin_scoring": false
+    }
+  }
+}

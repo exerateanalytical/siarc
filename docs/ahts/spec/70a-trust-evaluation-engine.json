@@ -1,0 +1,144 @@
+{
+  "trust_evaluation_engine": {
+    "metadata": {
+      "name": "ArtisanHub237 Trust Evaluation Engine",
+      "abbreviation": "ATEE",
+      "version": "2.0.0",
+      "status": "STANDARD",
+      "authority": "ArtisanHub237 Certification Authority",
+      "owner": "ArtisanHub237 Trust Infrastructure",
+      "description": "Enterprise trust evaluation framework responsible for determining authenticity, trustworthiness, eligibility, confidence, risk, certification decisions, and explainable audit outcomes for all entities registered within ArtisanHub237.",
+      "supersedes": ["Part 7 - Trust Scoring Engine v1.0"]
+    },
+    "objectives": [
+      "Provide objective trust evaluation",
+      "Eliminate subjective certification",
+      "Guarantee explainable decisions",
+      "Support museum-grade verification",
+      "Support government-grade certification",
+      "Support export compliance",
+      "Support insurance underwriting",
+      "Support galleries and museums",
+      "Support collectors",
+      "Support judicial evidence",
+      "Support customs verification",
+      "Maintain complete auditability"
+    ],
+    "principles": [
+      "Integrity", "Transparency", "Consistency", "Repeatability", "Explainability",
+      "Fairness", "Evidence-Based Evaluation", "Least Privilege", "Defense in Depth",
+      "Zero Trust", "Privacy by Design", "Human Oversight"
+    ],
+    "supported_entities": [
+      "Artisan", "Workshop", "Product", "Collection", "Ownership", "Certificate",
+      "Museum", "Gallery", "Exhibition", "Restoration", "Shipment",
+      "Insurance Policy", "Valuation", "Export Record"
+    ],
+    "evaluation_scope": {
+      "identity": true, "authenticity": true, "provenance": true, "documentation": true,
+      "craftsmanship": true, "condition": true, "conservation": true, "market": true,
+      "legal_compliance": true, "export": true, "security": true, "risk": true, "trust": true
+    },
+    "configuration": {
+      "score_scale": { "minimum": 0, "maximum": 100, "precision": 2 },
+      "minimum_evidence_required": 1,
+      "minimum_documents_required": 1,
+      "default_confidence_threshold": 75,
+      "manual_review_threshold": 60,
+      "auto_approval_threshold": 90,
+      "auto_rejection_threshold": 25,
+      "algorithm_version": "2.0",
+      "ruleset_version": "1.0",
+      "allow_manual_override": true,
+      "manual_override_requires_committee": true,
+      "committee_minimum_members": 3,
+      "retain_score_history": true,
+      "retain_rule_history": true,
+      "retain_decision_history": true
+    },
+    "evaluation_pipeline": {
+      "pipeline_version": "2.0",
+      "execution_order": [
+        { "step": 1, "engine": "Identity Validation Engine" },
+        { "step": 2, "engine": "Eligibility Engine" },
+        { "step": 3, "engine": "Evidence Validation Engine" },
+        { "step": 4, "engine": "Business Rule Engine" },
+        { "step": 5, "engine": "Risk Assessment Engine" },
+        { "step": 6, "engine": "Trust Scoring Engine" },
+        { "step": 7, "engine": "Confidence Engine" },
+        { "step": 8, "engine": "Decision Engine" },
+        { "step": 9, "engine": "Explainability Engine" },
+        { "step": 10, "engine": "Audit Engine" }
+      ]
+    },
+    "identity_validation_engine": {
+      "enabled": true,
+      "checks": [
+        { "id": "ID001", "name": "UUID Exists", "mandatory": true },
+        { "id": "ID002", "name": "Entity Exists", "mandatory": true },
+        { "id": "ID003", "name": "Registry Status Active", "mandatory": true },
+        { "id": "ID004", "name": "Not Blacklisted", "mandatory": true },
+        { "id": "ID005", "name": "Identity Verification Complete", "mandatory": true }
+      ],
+      "failure_action": "STOP_PIPELINE"
+    },
+    "eligibility_engine": {
+      "enabled": true,
+      "description": "Determines whether an entity qualifies for trust evaluation before any score is calculated.",
+      "evaluation_mode": "ALL_RULES_REQUIRED",
+      "eligibility_states": ["ELIGIBLE", "PARTIALLY_ELIGIBLE", "NOT_ELIGIBLE", "UNDER_REVIEW"],
+      "mandatory_requirements": {
+        "registered_entity": { "required": true },
+        "valid_uuid": { "required": true },
+        "verified_owner": { "required": true },
+        "active_registry_record": { "required": true },
+        "no_active_fraud_case": { "required": true },
+        "not_revoked": { "required": true },
+        "minimum_required_documents": { "required": true, "minimum": 1 },
+        "minimum_required_images": { "required": true, "minimum": 3 },
+        "minimum_evidence": { "required": true, "minimum": 1 }
+      },
+      "entity_specific_requirements": {
+        "artisan": ["Identity Verified", "Government ID", "Photograph", "Address", "Workshop Linked"],
+        "workshop": ["Registered Workshop", "GPS Location", "Workshop Images", "Verified Owner"],
+        "product": ["Registered Product", "Verified Artisan", "Primary Images", "Category", "Material", "Creation Date"],
+        "certificate": ["Issuer", "Digital Signature", "Certificate Number", "Certificate Hash"],
+        "export_record": ["Export Certificate", "Destination Country", "Exporter", "Shipping Record"]
+      },
+      "eligibility_failures": [
+        { "code": "E001", "reason": "Entity Not Registered" },
+        { "code": "E002", "reason": "Identity Not Verified" },
+        { "code": "E003", "reason": "Registry Suspended" },
+        { "code": "E004", "reason": "Certificate Revoked" },
+        { "code": "E005", "reason": "Fraud Investigation Active" },
+        { "code": "E006", "reason": "Missing Required Documents" },
+        { "code": "E007", "reason": "Evidence Insufficient" },
+        { "code": "E008", "reason": "Ownership Conflict" }
+      ],
+      "failure_actions": {
+        "NOT_ELIGIBLE": ["Stop Evaluation", "Generate Report", "Notify Applicant", "Log Audit Event"],
+        "PARTIALLY_ELIGIBLE": ["Suspend Evaluation", "Request Additional Evidence", "Assign Reviewer"],
+        "UNDER_REVIEW": ["Escalate To Certification Committee"]
+      }
+    },
+    "pipeline_outputs": {
+      "eligibility_report": { "generated": true, "format": "JSON" },
+      "validation_report": { "generated": true },
+      "rule_execution_report": { "generated": true },
+      "audit_reference": { "generated": true }
+    },
+    "events": {
+      "pipeline_started": true,
+      "eligibility_passed": true,
+      "eligibility_failed": true,
+      "manual_review_requested": true,
+      "pipeline_completed": true
+    },
+    "future_reserved": {
+      "distributed_rule_execution": false,
+      "real_time_stream_processing": false,
+      "federated_identity": false,
+      "cross_platform_trust_exchange": false
+    }
+  }
+}
