@@ -190,9 +190,15 @@ class ProvenanceCertificateTest extends TestCase
     public function test_the_legacy_index_prints_the_registers_own_total_and_denominator(): void
     {
         $product = $this->documented();
-        $legacy  = ProvenanceDossier::legacyIndex($product);
 
-        $html = $this->certificate($product, 'en')->assertOk()->getContent();
+        // The register is read after the request, not before. Rendering the
+        // certificate is itself a registry act — the registry number is
+        // assigned on first use — so an index taken beforehand describes a file
+        // one document shorter than the one the reader is holding. Comparing
+        // the printed number against that stale reading would fail the view for
+        // being up to date.
+        $html   = $this->certificate($product, 'en')->assertOk()->getContent();
+        $legacy = ProvenanceDossier::legacyIndex($product->fresh());
 
         // The mockup designs in "96/100". The denominator here is whatever the
         // assessable categories add up to, and it must be the printed one.
@@ -207,7 +213,7 @@ class ProvenanceCertificateTest extends TestCase
     public function test_an_unassessed_category_is_not_printed_as_a_zero_score(): void
     {
         $product = $this->documented();
-        $legacy  = ProvenanceDossier::legacyIndex($product);
+        $legacy  = ProvenanceDossier::legacyIndex($product->fresh());
 
         // The fixture has no valuation and no conservation, so both come back
         // with max 0 — the exact case the mockup would have rendered as 0/20.
@@ -233,9 +239,11 @@ class ProvenanceCertificateTest extends TestCase
     public function test_every_assessed_category_shows_the_basis_it_scored_on(): void
     {
         $product = $this->documented();
-        $legacy  = ProvenanceDossier::legacyIndex($product);
 
-        $html = $this->certificate($product, 'en')->assertOk()->getContent();
+        // Read after the request, for the reason given above: the basis
+        // sentences describe the file as it stood when the sheet was drawn.
+        $html   = $this->certificate($product, 'en')->assertOk()->getContent();
+        $legacy = ProvenanceDossier::legacyIndex($product->fresh());
 
         foreach ($legacy['categories'] as $key => $category) {
             $this->assertStringContainsString(
@@ -250,9 +258,15 @@ class ProvenanceCertificateTest extends TestCase
 
     public function test_a_product_with_no_journey_says_so_rather_than_naming_a_country(): void
     {
-        // No transfer, no events: the maker's founding row carries no country
-        // on this fixture, so journey() is genuinely empty.
+        // No transfer, no events, and the maker's founding row left without a
+        // country — a real state, since a workshop may be registered before
+        // anybody records where it is. journey() is then genuinely empty, which
+        // is the case this test exists to pin down.
         $product = $this->product();
+        ProvenanceRegistry::chain($product);
+        \Illuminate\Support\Facades\DB::table('product_ownerships')
+            ->where('product_id', $product->id)->update(['country_code' => null]);
+
         $this->assertSame([], ProvenanceDossier::journey($product));
 
         $html = $this->certificate($product, 'en')->assertOk()->getContent();
