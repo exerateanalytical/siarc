@@ -664,8 +664,8 @@
                         repeating-linear-gradient(0deg, transparent 0 26px, #DFDACC 26px 28px),
                         repeating-linear-gradient(90deg, transparent 0 34px, #E4DFD2 34px 36px),
                         linear-gradient(115deg, #E9E4D6 0%, #F2EFE6 55%, #E3E7DB 100%)"></div>
-                <div class="absolute left-[8%] top-0 bottom-0 w-[14%] bg-[#CBD9E4] dark:bg-[#0E2436]/60" style="transform: skewX(-18deg)"></div>
-                <div class="absolute right-[18%] -top-4 w-10 h-10 rounded-full bg-[#D7E3CE] dark:bg-[#0C3D1D]/80"></div>
+                <div class="absolute left-[8%] top-0 bottom-0 w-[14%] bg-[#CBD9E4]/60 dark:bg-[#0E2436]/60" style="transform: skewX(-18deg)"></div>
+                <div class="absolute right-[18%] -top-4 w-10 h-10 rounded-full bg-[#D7E3CE]/80 dark:bg-[#0C3D1D]/80"></div>
                 <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-[#0A5C2E] dark:text-[#339B56]">
                     <i data-lucide="map-pin" class="w-7 h-7 fill-[#0A5C2E] dark:fill-[#339B56] text-[#0A5C2E] dark:text-[#339B56]"></i>
                 </span>
@@ -866,7 +866,7 @@
                     </a>
                     <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}"
                        aria-label="{{ $isFr ? 'Enregistrer' : 'Save' }}"
-                       class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 dark:bg-[#12150F/90] text-[#6F6B60] dark:text-[#868778] flex items-center justify-center hover:text-[#CC060E] hover:dark:text-[#F0555C] transition-colors">
+                       class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 dark:bg-[#12150F]/90 text-[#6F6B60] dark:text-[#868778] flex items-center justify-center hover:text-[#CC060E] hover:dark:text-[#F0555C] transition-colors">
                         <i data-lucide="heart" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>

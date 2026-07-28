@@ -63,7 +63,7 @@ $typeCls = ['principal' => 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:t
                 @else
                 <img src="{{ asset('images/landing/centre-hero.png') }}" alt="" class="w-full h-full object-cover opacity-90 group-hover:scale-[1.03] transition-transform">
                 @endif
-                <span class="absolute top-3 left-3 text-[10.5px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$centre->type] ?? 'bg-white/90 dark:bg-[#12150F/90] text-[#0F4824] dark:text-[#339B56]' }}">{{ $typeLabels[$centre->type] ?? $centre->type }}</span>
+                <span class="absolute top-3 left-3 text-[10.5px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$centre->type] ?? 'bg-white/90 dark:bg-[#12150F]/90 text-[#0F4824] dark:text-[#339B56]' }}">{{ $typeLabels[$centre->type] ?? $centre->type }}</span>
             </div>
             <div class="p-5 flex flex-col flex-1">
                 <h3 class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] group-hover:text-[#14652F] group-hover:dark:text-[#339B56]">{{ $isFr ? $centre->name_fr : ($centre->name_en ?? $centre->name_fr) }}</h3>

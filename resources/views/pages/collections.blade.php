@@ -43,7 +43,7 @@
         <article class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(30,25,15,0.06)] hover:shadow-md transition-shadow group">
             <div class="h-[180px] overflow-hidden bg-[#F1EDE2] dark:bg-[#0A0C09] relative">
                 <img src="{{ $cover }}" alt="{{ $c->name_fr }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                @if($c->category_fr)<span class="absolute top-3 left-3 bg-white/90 dark:bg-[#12150F/90] rounded-md px-2.5 py-1 text-[10.5px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ $c->category_fr }}</span>@endif
+                @if($c->category_fr)<span class="absolute top-3 left-3 bg-white/90 dark:bg-[#12150F]/90 rounded-md px-2.5 py-1 text-[10.5px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ $c->category_fr }}</span>@endif
             </div>
             <div class="p-5">
                 <h2 class="font-serif text-[18px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug">{{ $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr) }}</h2>

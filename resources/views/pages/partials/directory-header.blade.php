@@ -95,7 +95,7 @@
             <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
         </svg>
     </div>
-    <div class="flex-1 bg-[#FBB604] dark:bg-[#3A2B06] hidden sm:flex items-center justify-end pr-4 sm:pr-6 text-[#3A2E08] dark:text-[#EDB33A] font-medium whitespace-nowrap">
+    <div class="flex-1 bg-[#FBB604] hidden sm:flex items-center justify-end pr-4 sm:pr-6 text-[#3A2E08] font-medium whitespace-nowrap">
         <a href="{{ route('partners.index') }}" class="hover:underline">{{ $isFr ? 'Devenir partenaire' : 'Become a partner' }}</a>
         <span class="mx-2 opacity-50">|</span>
         <a href="{{ route('login', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Espace Artisan' : 'Artisan area' }}</a>
@@ -104,7 +104,7 @@
         <span class="mx-2 opacity-50">|</span>
         <a href="{{ route('contact', ['lang' => $lang]) }}" class="hover:underline">{{ $isFr ? 'Aide' : 'Help' }}</a>
     </div>
-    <div class="flex-1 bg-[#FBB604] dark:bg-[#3A2B06] sm:hidden"></div>
+    <div class="flex-1 bg-[#FBB604] sm:hidden"></div>
 </div>
 @else
 <div class="relative flex h-5 overflow-hidden">
@@ -114,13 +114,13 @@
             <path d="M12 1.5 14.7 8.6l7.6.3-6 4.7 2.1 7.3L12 16.6 5.6 20.9l2.1-7.3-6-4.7 7.6-.3z"/>
         </svg>
     </div>
-    <div class="flex-1 bg-[#FBB604] dark:bg-[#3A2B06]"></div>
+    <div class="flex-1 bg-[#FBB604]"></div>
 </div>
 @endif
 
 <!-- Topbar — measured off the artwork: 64px band at 1024 = 80px at 1280,
      cream #FBF6EF, content 1230 wide inside a 25px page margin. -->
-<header class="bg-[#FBF6EF] dark:bg-[#0A0C09] border-b border-[#EFE4D5] dark:border-[#6A5210]">
+<header class="bg-[#FBF6EF] dark:bg-[#12150F] border-b border-[#EFE4D5] dark:border-[#262B21]">
     <div class="max-w-[1280px] mx-auto px-[25px]">
         <div class="flex items-center justify-between gap-4 xl:gap-8 lg:h-[80px] py-3 lg:py-0">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-[15px] shrink-0">
@@ -203,7 +203,7 @@
                     @endif
                 </div>
 
-                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4] hover:dark:bg-[#0A0C09]/50" aria-label="Menu">
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]" aria-label="Menu">
                     <i data-lucide="menu" class="w-5 h-5 text-[#262521] dark:text-[#F3EFE7]"></i>
                 </button>
             </div>

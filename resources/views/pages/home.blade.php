@@ -299,7 +299,7 @@
             @forelse($featured as $business)
             <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}"
                 class="snap-start shrink-0 w-[188px] bg-white dark:bg-[#12150F] border border-sand dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.06)] p-1.5 hover:shadow-md transition-shadow group">
-                <div class="h-[128px] rounded-lg overflow-hidden bg-sand/40 dark:bg-[#0A0C09/40]">
+                <div class="h-[128px] rounded-lg overflow-hidden bg-sand/40 dark:bg-[#0A0C09]/40">
                     <img src="{{ $business->cover_image ? asset('storage/' . $business->cover_image) : asset('images/landing/' . $bizFallbacks[$loop->index % 6]) }}"
                         alt="{{ $business->name_fr }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300">
                 </div>

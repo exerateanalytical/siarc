@@ -31,13 +31,13 @@
             @csrf
             <input type="hidden" name="return_to" value="{{ url()->full() }}">
             <button type="submit" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                class="w-8 h-8 rounded-full bg-white/90 dark:bg-[#12150F/90] hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
+                class="w-8 h-8 rounded-full bg-white/90 dark:bg-[#12150F]/90 hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
                 <i data-lucide="heart" class="w-4 h-4" style="stroke-width:1.8"></i>
             </button>
         </form>
         @else
         <a href="/login?lang={{ $lang }}" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 dark:bg-[#12150F/90] hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
+            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 dark:bg-[#12150F]/90 hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
             <i data-lucide="heart" class="w-4 h-4" style="stroke-width:1.8"></i>
         </a>
         @endif

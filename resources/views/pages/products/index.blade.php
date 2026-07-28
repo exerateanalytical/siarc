@@ -241,7 +241,7 @@
                         <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
                         @endif
                         <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                            class="absolute top-2 right-2 w-8 h-8 bg-white/95 dark:bg-[#12150F/95] hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                            class="absolute top-2 right-2 w-8 h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                             <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
                         </a>
                     </div>

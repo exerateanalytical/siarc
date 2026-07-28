@@ -260,7 +260,7 @@
                 </select>
                 <span class="flex items-center gap-2 whitespace-nowrap">
                     <span class="inline-flex h-[13px] w-[20px] overflow-hidden rounded-[2px]" aria-hidden="true">
-                        <span class="flex-1 bg-[#007A5E]"></span><span class="flex-1 bg-[#CE1126]"></span><span class="flex-1 bg-[#FCD116] dark:bg-[#3A2B06]"></span>
+                        <span class="flex-1 bg-[#007A5E]"></span><span class="flex-1 bg-[#CE1126]"></span><span class="flex-1 bg-[#FCD116]"></span>
                     </span>
                     {{ $isFr ? 'Cameroun' : 'Cameroon' }}
                 </span>
