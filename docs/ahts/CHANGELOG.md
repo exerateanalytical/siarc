@@ -92,3 +92,31 @@ Fourteen specification files now recorded, all parsing as valid JSON.
   real-time sync in 80d — the two parts disagree, and neither is built.
 - `never_restored: true` as a default asserts a historical fact from an empty
   table; should read "no restoration recorded".
+
+## [1.0-draft] — 2026-07-28 (fourth intake: Parts 9-14)
+
+### Added
+- `spec/90-interoperability.json` (AIIF)
+- `spec/100-analytics-intelligence.json` (AIDSF)
+- `spec/110-marketplace-commerce.json` (MCEF)
+- `spec/120-sustainability-esg.json` (SCHEIF)
+- `spec/130-ai-automation.json` (AIASSF)
+- `spec/140-security-privacy-risk-compliance.json` (ESPRCF)
+
+Twenty specification files, all parsing. Parts 13 and 14 arrived containing the
+same ESPRCF block; it is stored once.
+
+### Conflicts recorded - items 10 and 11
+- **Item 10 is blocking.** The marketplace part specifies escrow, mobile money,
+  card payments, refunds and a tax engine. The legal copy and four issued
+  certificates state the platform is not a party to transactions and collects no
+  payments. Both cannot be true. Escrow makes the platform a payment
+  intermediary with licensing and AML obligations, which is why that same part
+  requires KYC and AML. Decide whether the platform takes money before building
+  anything from this part; if it does, the legal copy and every certificate
+  disclaimer must change first, and be dated.
+- **Item 11**: Parts 9-14 describe an estate that does not exist. Fine as a
+  target; nothing may cite ISO 27001 or SOC monitoring on a document until
+  audited. Sustainability defaults for forced labour and human rights compliance
+  default true and must default unassessed. The built perceptual fingerprint is
+  not AI.

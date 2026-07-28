@@ -1,0 +1,123 @@
+{
+  "analytics_intelligence_framework": {
+    "metadata": {
+      "name": "ArtisanHub237 Analytics, Intelligence & Decision Support Framework",
+      "abbreviation": "AIDSF",
+      "version": "1.0.0",
+      "status": "STANDARD",
+      "authority": "ArtisanHub237 Certification Authority",
+      "description": "Defines enterprise analytics, business intelligence, statistical reporting, predictive analytics, machine learning readiness, executive dashboards, KPI management, and decision support across the ArtisanHub237 Trust Infrastructure."
+    },
+    "objectives": [
+      "Support evidence-based decision making", "Provide national artisan statistics",
+      "Measure certification performance", "Monitor trust ecosystem health",
+      "Enable executive reporting", "Support policy formulation",
+      "Support cultural preservation analytics", "Improve operational efficiency",
+      "Enable predictive intelligence", "Provide open statistical reporting"
+    ],
+    "analytics_architecture": {
+      "architecture": "Lakehouse",
+      "data_sources": [
+        "Registry Services", "Trust Engine", "Digital Product Passport", "Certificate Registry",
+        "Ownership Registry", "Provenance Registry", "Export Registry", "Insurance Registry",
+        "Marketplace", "Verification Service", "Audit Logs", "API Gateway"
+      ],
+      "processing": ["Real-Time Streaming", "Near Real-Time", "Batch Processing"],
+      "data_refresh": { "operational": "Real-Time", "executive": "Hourly", "statistical": "Daily" }
+    },
+    "kpi_framework": {
+      "registry": ["Registered Artisans", "Verified Artisans", "Registered Workshops", "Registered Products", "Active Certificates", "Revoked Certificates"],
+      "trust": ["Average Trust Score", "Average Confidence Score", "AAA Products", "Risk Distribution", "Fraud Detection Rate", "Manual Review Rate"],
+      "passport": ["Active Passports", "Ownership Transfers", "Provenance Completion", "Digital Twin Coverage", "Verification Requests"],
+      "marketplace": ["Products Listed", "Products Sold", "Sales Volume", "Average Selling Price", "Export Sales"],
+      "government": ["Regional Production", "Certified Cultural Assets", "Employment Estimate", "Economic Contribution", "Export Value"]
+    },
+    "dashboard_catalogue": {
+      "executive_dashboard": {
+        "audience": ["Board", "Executive Management", "Government"],
+        "widgets": ["National KPI Summary", "Trust Overview", "Regional Distribution", "Export Summary", "Revenue Overview", "Risk Heatmap"]
+      },
+      "operations_dashboard": { "widgets": ["Pending Applications", "Certificates Issued", "Verification Queue", "Appeals", "Workflow Status"] },
+      "trust_dashboard": { "widgets": ["Trust Score Distribution", "Confidence Distribution", "Fraud Alerts", "Manual Reviews", "Rule Violations"] },
+      "passport_dashboard": { "widgets": ["Active Passports", "Ownership Timeline", "Provenance Quality", "Condition Monitoring", "Insurance Status"] },
+      "museum_dashboard": { "widgets": ["Collection Statistics", "Exhibitions", "Conservation Status", "Loans", "Research Activity"] },
+      "export_dashboard": { "widgets": ["Export Requests", "Approved Exports", "Destination Countries", "Export Value", "Compliance Status"] },
+      "marketplace_dashboard": { "widgets": ["Sales", "Revenue", "Orders", "Customer Analytics", "Product Performance"] }
+    },
+    "geospatial_analytics": {
+      "enabled": true,
+      "maps": ["Regional Artisan Distribution", "Workshop Density", "Product Origin", "Export Destinations", "Museum Locations", "Exhibition Map", "Supply Chain Routes"],
+      "spatial_analysis": ["Heat Maps", "Cluster Analysis", "Regional Comparison", "Production Density"]
+    },
+    "predictive_analytics": {
+      "enabled": true,
+      "models": [
+        "Certification Demand Forecast", "Export Forecast", "Market Price Prediction",
+        "Fraud Risk Prediction", "Trust Score Forecast", "Insurance Risk Prediction",
+        "Conservation Risk Prediction", "Visitor Forecast"
+      ]
+    },
+    "artificial_intelligence": {
+      "enabled": true,
+      "services": [
+        "Image Similarity Detection", "Forgery Detection", "Duplicate Product Detection",
+        "Risk Classification", "Document Classification", "Natural Language Search",
+        "Recommendation Engine", "Anomaly Detection"
+      ],
+      "human_validation_required": true
+    },
+    "statistical_reporting": {
+      "reports": [
+        "National Artisan Report", "Regional Performance Report", "Certification Report",
+        "Trust Report", "Export Report", "Museum Report", "Marketplace Report",
+        "Economic Impact Report", "Annual Cultural Heritage Report"
+      ],
+      "frequencies": ["Daily", "Weekly", "Monthly", "Quarterly", "Annual"]
+    },
+    "open_data": {
+      "enabled": true,
+      "datasets": ["Anonymous Regional Statistics", "Public Certification Statistics", "Public Export Statistics", "Marketplace Trends", "Cultural Heritage Indicators"],
+      "privacy_protection": true,
+      "aggregation_required": true
+    },
+    "alerts": {
+      "real_time": true,
+      "alert_types": ["Fraud Spike", "Trust Score Drop", "Verification Failure", "Certificate Revocation", "Export Delay", "Insurance Expiry", "System Health", "API Failure"]
+    },
+    "decision_support": {
+      "recommendations": [
+        "Approve Application", "Manual Review", "Additional Evidence Required",
+        "Conservation Recommended", "Insurance Recommended", "Export Eligible",
+        "High Market Potential", "High Cultural Significance"
+      ],
+      "explainability": true,
+      "confidence_score": true
+    },
+    "benchmarking": {
+      "comparison_levels": ["National", "Regional", "Workshop", "Artisan", "Product Category", "Time Period"],
+      "ranking_metrics": ["Trust", "Quality", "Sales", "Export", "Certification Performance"]
+    },
+    "data_governance": {
+      "data_catalog": true, "lineage_tracking": true, "quality_monitoring": true,
+      "metadata_registry": true, "retention_policy": true
+    },
+    "performance_monitoring": {
+      "system_metrics": ["API Response Time", "Certificate Generation Time", "Verification Latency", "Workflow Completion Time", "Database Performance", "Queue Processing Time"]
+    },
+    "export_formats": ["PDF/A", "CSV", "Excel", "JSON", "XML", "OpenDocument Spreadsheet"],
+    "interoperability": {
+      "business_intelligence_tools": ["Power BI", "Tableau", "Apache Superset", "Metabase", "Grafana"],
+      "machine_learning_platforms": ["TensorFlow", "PyTorch", "ONNX"]
+    },
+    "future_reserved": {
+      "generative_ai_advisors": false,
+      "autonomous_decision_support": false,
+      "federated_learning": false,
+      "knowledge_graphs": false,
+      "digital_economy_index": false,
+      "national_cultural_index": false,
+      "global_trust_analytics": false,
+      "quantum_analytics": false
+    }
+  }
+}

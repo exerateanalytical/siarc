@@ -307,6 +307,109 @@ that difference matters.
 
 ---
 
+## 10. Marketplace payments contradict the platform's legal position — decide first
+
+This is the most consequential item in the file, and it is not a technical
+question.
+
+`spec/110-marketplace-commerce.json` specifies a payment framework: mobile money
+(MTN MoMo, Orange Money), card payments, bank transfer, wallets, **escrow with
+release conditions**, installment payments, refunds to the original payment
+method, a **tax calculation engine**, KYC and AML screening.
+
+What the platform currently says, in `config/legal.php`:
+
+> "Artisan Hub 237 connects buyers with independent sellers. Each sale is a
+> direct contract between them. **We are not a party to it, we do not guarantee
+> it, and we do not receive the price.**"
+
+And on the face of **four issued certificates**:
+
+> "ArtisanHub237 is a private company. The platform is not a party to
+> transactions and collects no payments."
+
+These cannot both be true. Taking money into escrow makes the platform a party
+to the transaction and, in most jurisdictions, a payment intermediary — which
+brings licensing, anti-money-laundering obligations and liability for funds
+held. The specification already anticipates this by requiring KYC and AML
+screening; that requirement exists precisely because handling other people's
+money is regulated.
+
+The current position was a deliberate choice: settlement is offline, and the
+certificates were written to say so. Changing it is legitimate, but it is a
+business and regulatory decision that has to be made before anything is built,
+because:
+
+- Four certificates already in circulation carry the "collects no payments"
+  sentence. If the platform starts taking payments, those documents become
+  false, and they cannot be recalled.
+- Escrow requires a licence or a licensed partner in Cameroon and in every
+  destination market.
+- `spec/110` also enables **auctions**, which carry their own regulatory regime.
+
+**Recommendation, in order:**
+
+1. Decide whether the platform takes money. That is the whole question.
+2. If **no**: reduce the payment and escrow blocks to references to third-party
+   providers the parties use directly, keep order and logistics tracking, and
+   leave the legal copy as it stands.
+3. If **yes**: the legal copy and the disclaimer on every certificate must change
+   *before* the first payment is taken, and the change must be dated so older
+   certificates remain interpretable against the position that applied when they
+   were issued.
+
+Do not build from `spec/110` until this is settled. It is the one item here where
+implementing the specification as written would make an existing published
+statement untrue.
+
+---
+
+## 11. Parts 9 to 14 — capability claims far ahead of the platform
+
+These parts describe an enterprise estate: microservices, an API gateway, a
+service and schema registry, an event bus, a lakehouse, a security operations
+centre, SIEM, a CISO, phishing simulations, vendor risk management,
+geo-redundancy, and a full AI stack with a model registry, feature store, drift
+detection and computer-vision forgery detection.
+
+None of it exists. The platform is a single Laravel application with one signing
+key and a test suite.
+
+That is not a criticism — a standard should describe the target. It matters for
+exactly one reason: **`90-implementation.md` is the only file permitted to say
+something exists**, and none of this appears there. The risk is a certificate or
+a public page citing "ISO 27001" or "SOC monitoring" because the standard lists
+it. Naming a control framework nobody has been audited against is the same class
+of claim as a holographic seal on a screen.
+
+Items worth separating from the rest:
+
+- **`spec/130` AI.** Genuinely useful, entirely unbuilt. Its
+  `human_review.mandatory_review_for` list — revocation, ownership disputes,
+  fraud decisions, heritage classification, high-value valuations — is the right
+  instinct and should survive into whatever is eventually built. The perceptual
+  fingerprint already implemented is **not** AI and must not be presented as
+  satisfying this part.
+- **`spec/120` ESG.** `heritage_status` includes "UNESCO Candidate" and "UNESCO
+  Recognized", and `recognition_programs` lists seven awards. Same rule as
+  items 8 and 9: only from a verified record carrying an external reference. The
+  `esg_scoring` AAA–D rating grades an artisan's enterprise and needs the same
+  defensibility test as the craftsmanship score.
+- **`spec/120` defaults must be inverted.** `ethical_materials`,
+  `forced_labor_prohibited`, `human_rights_compliance` and
+  `traceable_supply_chain` all default to **true**, so an unassessed workshop
+  would report itself compliant with human-rights standards. **A false
+  human-rights assurance is materially worse than a false risk score.** These
+  must default to unassessed.
+- **`spec/100` open data.** Aggregation and privacy protection are already
+  required, which is right. Worth adding explicitly that regional statistics for
+  a region with few artisans can re-identify individuals, so a minimum cell size
+  is needed before publication.
+- **Parts 13 and 14 arrived containing the same ESPRCF block.** Stored once, as
+  `spec/140-security-privacy-risk-compliance.json`.
+
+---
+
 ## How to close these
 
 Each item above is a one-line decision. Record the choice in `CHANGELOG.md`,
