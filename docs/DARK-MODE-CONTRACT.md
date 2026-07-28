@@ -123,16 +123,34 @@ hand-rolls its own dark card is drift and will fail the check.
   dashboard/admin shells.
 - Respect `prefers-reduced-motion` — no cross-fade for anyone who asked for less.
 
-## Files currently owned by other agents — DO NOT EDIT
+## Where the machinery lives
 
-Four agents are mid-flight on the artisan profile rebuild. Editing these will
-lose their work:
+One file: `resources/views/pages/partials/theme.blade.php`, included by
+`pages/partials/ui-kit.blade.php`, which every page already includes.
 
-- `resources/views/pages/businesses/show.blade.php`
-- `resources/views/pages/businesses/partials/show-mobile.blade.php`
-- the shared `directory-header` / `directory-footer` partials
-- `app/Console/Commands/` and `public/images/demo/`
+- **The 48 inline `tailwind.config` views** are not hand-edited. The partial
+  *merges* `darkMode: 'class'` and the palette onto whatever config the page
+  already set and re-assigns `window.tailwind.config`, which makes the CDN
+  rebuild. Collision rule: a colour the page already defined wins, so no
+  existing light rendering shifts. A page added next month inherits it for
+  free. `DarkModeTest` enumerates the views from disk — never from a list —
+  and fails any that sets a config the ui-kit include cannot reach.
+- **The no-flash boot** is the inline blocking `<script>` in that partial, in
+  `<head>`, before `<body>`. It reads `localStorage['theme']`, falls back to
+  `prefers-color-scheme`, and defines `window.ArtisanTheme`.
+- **The toggle** is `pages/partials/theme-toggle.blade.php`, rendered by all
+  three shells: `directory-header` (utility row on desktop, phone menu below),
+  `layouts/dashboard`, `admin-heritage-header`. It renders **nothing** on a
+  locked document — seven certificate views include the public header, and a
+  document ships neither the theme API nor the click delegation, so a control
+  there would be dead furniture on a printed page. Clicks are wired by
+  delegation, so the partial can appear more than once per page.
+- **The floating fallback** mounts only on a page that uses none of the three
+  shells, and stands down as soon as the page contains a `.theme-toggle` or an
+  element carrying `data-theme-toggle-slot`.
 
-These get their dark variants in a follow-up pass once those agents land. Note
-in your report that they are outstanding, so the gap is recorded rather than
-assumed done.
+## Outstanding
+
+The foundation is finished. What remains is per-page `dark:` treatment in page
+*bodies*, which two other agents are completing; several public pages still
+render identically in both themes below the chrome.
