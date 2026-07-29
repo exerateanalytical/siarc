@@ -568,7 +568,7 @@ CREATE TABLE `businesses` (
   CONSTRAINT `businesses_industry_id_foreign` FOREIGN KEY (`industry_id`) REFERENCES `industries` (`id`) ON DELETE SET NULL,
   CONSTRAINT `businesses_region_id_foreign` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`) ON DELETE SET NULL,
   CONSTRAINT `businesses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1144 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1150 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `certificate_events`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -798,6 +798,25 @@ CREATE TABLE `condition_reports` (
   CONSTRAINT `condition_reports_export_consignment_id_foreign` FOREIGN KEY (`export_consignment_id`) REFERENCES `export_consignments` (`id`) ON DELETE SET NULL,
   CONSTRAINT `condition_reports_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `contact_messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `contact_messages` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subject` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lang` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'fr',
+  `status` enum('new','read','replied','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'new',
+  `mailed_at` timestamp NULL DEFAULT NULL,
+  `mail_error` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `contact_messages_status_created_at_index` (`status`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `conversations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1242,7 +1261,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `model_has_permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1351,7 +1370,7 @@ CREATE TABLE `otp_verifications` (
   KEY `otp_verifications_user_id_foreign` (`user_id`),
   KEY `otp_verifications_identifier_type_index` (`identifier`,`type`),
   CONSTRAINT `otp_verifications_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=359 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=387 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `ownership_transfers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -1864,7 +1883,7 @@ CREATE TABLE `product_views` (
   PRIMARY KEY (`id`),
   KEY `product_views_product_id_viewed_at_index` (`product_id`,`viewed_at`),
   CONSTRAINT `product_views_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -2315,7 +2334,7 @@ CREATE TABLE `search_queries` (
   KEY `search_queries_user_id_foreign` (`user_id`),
   KEY `search_queries_query_searched_at_index` (`query`,`searched_at`),
   CONSTRAINT `search_queries_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sectors`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -2969,7 +2988,7 @@ CREATE TABLE `workshops` (
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (1,'2026_07_01_000001_create_core_tables',1),(2,'2026_07_01_000002_create_auth_tables',1),(3,'2026_07_01_000003_create_businesses_tables',1),(4,'2026_07_01_000004_create_products_tables',1),(5,'2026_07_01_000005_create_messaging_tables',1),(6,'2026_07_01_000006_create_notification_tables',1),(7,'2026_07_01_000007_create_cms_tables',1),(8,'2026_07_01_000008_create_analytics_tables',1),(9,'2026_07_01_000009_create_api_tables',1),(10,'2026_07_01_000010_create_support_tables',1),(11,'2026_07_01_000011_create_admin_tables',1),(12,'2026_07_01_111913_add_price_fields_to_products_table',2),(13,'2026_07_01_135650_add_detail_fields_to_products_table',3),(14,'2026_07_01_135650_create_product_harvest_dates_table',3),(15,'2026_07_01_135651_add_deal_marked_at_to_conversations_table',3),(16,'2026_07_01_135651_create_business_reviews_table',3),(17,'2026_07_01_150642_add_category_to_product_images_table',4),(18,'2026_07_01_150642_add_category_to_product_videos_table',4),(19,'2026_07_01_150642_add_remaining_detail_fields_to_products_table',4),(20,'2026_07_01_150643_expand_document_type_enum_on_product_documents_table',5),(21,'2026_07_01_152459_add_product_type_to_products_table',6),(22,'2026_07_01_181142_create_user_notifications_table',7),(23,'2026_07_01_190222_add_assigned_region_to_users_table',8),(24,'2026_07_01_190723_create_partners_table',9),(25,'2026_07_01_192717_add_rejected_status_to_business_certifications_table',10),(26,'2026_07_01_194301_create_events_table',11),(27,'2026_07_01_194302_create_event_exhibitors_table',11),(28,'2026_07_01_194304_create_event_attendees_table',12),(29,'2026_07_02_003500_create_password_reset_tokens_table',13),(30,'2026_07_02_020000_add_account_security_tables',14),(31,'2026_07_02_120000_add_group_and_secret_to_system_settings',15),(32,'2026_07_02_101924_create_failed_jobs_table',16),(33,'2026_07_02_101924_create_job_batches_table',16),(34,'2026_07_02_101924_create_jobs_table',16),(35,'2026_07_02_140000_add_indexes_and_soft_deletes',17),(36,'2026_07_04_000001_create_newsletter_subscribers_table',18),(37,'2026_07_04_000002_create_quote_system_tables',19),(38,'2026_07_04_000003_rebrand_siac_to_siarc',20),(39,'2026_07_04_000004_sync_landing_and_categories_content',21),(40,'2026_07_04_000005_add_vendor_type_and_platform_settings',22),(41,'2026_07_04_000006_add_event_display_fields',23),(42,'2026_07_04_000007_create_heritage_collections_table',24),(43,'2026_07_04_000008_create_announcements_table',24),(44,'2026_07_04_000012_seed_kyc_verification_applications',25),(45,'2026_07_04_000013_seed_permissions_catalog',26),(46,'2026_07_04_000014_create_subscription_tables',27),(47,'2026_07_04_000015_add_sort_order_to_business_subscriptions',28),(48,'2026_07_04_000016_create_data_exports_table',29),(49,'2026_07_04_000015_regions_and_artisan_centres',30),(50,'2026_07_04_000016_create_backup_tables',31),(51,'2026_07_04_000017_enrich_partners',32),(52,'2026_07_04_000018_seed_support_and_notifications',33),(53,'2026_07_04_000019_diversify_partners',34),(54,'2026_07_05_000001_add_industry_hierarchy',35),(55,'2026_07_05_000002_fix_remaining_siac_mentions',36),(56,'2026_07_05_000003_fix_siac_in_user_names',37),(57,'2026_07_05_000004_seed_official_craft_taxonomy',38),(58,'2026_07_05_000005_restore_product_type_categories',39),(59,'2026_07_05_000006_attach_landing_tiles_to_official_trades',40),(60,'2026_07_05_000010_create_siarc_salon_tables',41),(61,'2026_07_05_000012_add_certificate_fields_to_businesses',42),(62,'2026_07_26_180114_add_geo_fields_to_cities_table',43),(63,'2026_07_26_180200_add_is_public_to_system_settings_table',44),(64,'2026_07_26_180300_seed_landing_page_setting',45),(65,'2026_07_27_132549_add_offline_payment_fields_to_invoices_table',46),(66,'2026_07_27_150000_add_search_and_image_order_indexes',47),(67,'2026_07_27_120000_drop_seeded_hero_stat_figures',48),(68,'2026_07_27_000001_drop_seeded_backup_fixtures',49),(69,'2026_07_27_160000_remove_fabricated_partners_and_events',50),(70,'2026_07_27_152125_add_account_type_to_users_table',51),(71,'2026_07_28_090000_remove_fabricated_centres_news_and_collections',52),(72,'2026_07_28_004627_add_siarc_identity_to_businesses_table',53),(74,'2026_07_28_080624_remove_non_craft_taxonomy',54),(75,'2026_07_28_081833_create_product_certificates_table',55),(76,'2026_07_28_140000_add_digital_identity_to_product_certificates',56),(77,'2026_07_28_170000_create_provenance_registry',57),(78,'2026_07_28_180000_add_hash_chain_and_ca_signatures',58),(79,'2026_07_28_190000_add_image_forensics_to_certificates',59),(80,'2026_07_28_191000_add_certificate_registers',59),(81,'2026_07_28_200000_create_export_register',60),(82,'2026_07_28_201000_create_provenance_events',60),(83,'2026_07_28_210000_create_workshop_register',61),(84,'2026_07_28_220000_create_certificate_revocations',62),(85,'2026_07_28_233000_add_unique_certificate_version_per_product',62),(86,'2026_07_29_090000_create_manual_payments',63),(87,'2026_07_29_120000_extend_reviews_and_awards',64),(88,'2026_07_30_090000_add_is_demo_to_businesses',65);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (1,'2026_07_01_000001_create_core_tables',1),(2,'2026_07_01_000002_create_auth_tables',1),(3,'2026_07_01_000003_create_businesses_tables',1),(4,'2026_07_01_000004_create_products_tables',1),(5,'2026_07_01_000005_create_messaging_tables',1),(6,'2026_07_01_000006_create_notification_tables',1),(7,'2026_07_01_000007_create_cms_tables',1),(8,'2026_07_01_000008_create_analytics_tables',1),(9,'2026_07_01_000009_create_api_tables',1),(10,'2026_07_01_000010_create_support_tables',1),(11,'2026_07_01_000011_create_admin_tables',1),(12,'2026_07_01_111913_add_price_fields_to_products_table',2),(13,'2026_07_01_135650_add_detail_fields_to_products_table',3),(14,'2026_07_01_135650_create_product_harvest_dates_table',3),(15,'2026_07_01_135651_add_deal_marked_at_to_conversations_table',3),(16,'2026_07_01_135651_create_business_reviews_table',3),(17,'2026_07_01_150642_add_category_to_product_images_table',4),(18,'2026_07_01_150642_add_category_to_product_videos_table',4),(19,'2026_07_01_150642_add_remaining_detail_fields_to_products_table',4),(20,'2026_07_01_150643_expand_document_type_enum_on_product_documents_table',5),(21,'2026_07_01_152459_add_product_type_to_products_table',6),(22,'2026_07_01_181142_create_user_notifications_table',7),(23,'2026_07_01_190222_add_assigned_region_to_users_table',8),(24,'2026_07_01_190723_create_partners_table',9),(25,'2026_07_01_192717_add_rejected_status_to_business_certifications_table',10),(26,'2026_07_01_194301_create_events_table',11),(27,'2026_07_01_194302_create_event_exhibitors_table',11),(28,'2026_07_01_194304_create_event_attendees_table',12),(29,'2026_07_02_003500_create_password_reset_tokens_table',13),(30,'2026_07_02_020000_add_account_security_tables',14),(31,'2026_07_02_120000_add_group_and_secret_to_system_settings',15),(32,'2026_07_02_101924_create_failed_jobs_table',16),(33,'2026_07_02_101924_create_job_batches_table',16),(34,'2026_07_02_101924_create_jobs_table',16),(35,'2026_07_02_140000_add_indexes_and_soft_deletes',17),(36,'2026_07_04_000001_create_newsletter_subscribers_table',18),(37,'2026_07_04_000002_create_quote_system_tables',19),(38,'2026_07_04_000003_rebrand_siac_to_siarc',20),(39,'2026_07_04_000004_sync_landing_and_categories_content',21),(40,'2026_07_04_000005_add_vendor_type_and_platform_settings',22),(41,'2026_07_04_000006_add_event_display_fields',23),(42,'2026_07_04_000007_create_heritage_collections_table',24),(43,'2026_07_04_000008_create_announcements_table',24),(44,'2026_07_04_000012_seed_kyc_verification_applications',25),(45,'2026_07_04_000013_seed_permissions_catalog',26),(46,'2026_07_04_000014_create_subscription_tables',27),(47,'2026_07_04_000015_add_sort_order_to_business_subscriptions',28),(48,'2026_07_04_000016_create_data_exports_table',29),(49,'2026_07_04_000015_regions_and_artisan_centres',30),(50,'2026_07_04_000016_create_backup_tables',31),(51,'2026_07_04_000017_enrich_partners',32),(52,'2026_07_04_000018_seed_support_and_notifications',33),(53,'2026_07_04_000019_diversify_partners',34),(54,'2026_07_05_000001_add_industry_hierarchy',35),(55,'2026_07_05_000002_fix_remaining_siac_mentions',36),(56,'2026_07_05_000003_fix_siac_in_user_names',37),(57,'2026_07_05_000004_seed_official_craft_taxonomy',38),(58,'2026_07_05_000005_restore_product_type_categories',39),(59,'2026_07_05_000006_attach_landing_tiles_to_official_trades',40),(60,'2026_07_05_000010_create_siarc_salon_tables',41),(61,'2026_07_05_000012_add_certificate_fields_to_businesses',42),(62,'2026_07_26_180114_add_geo_fields_to_cities_table',43),(63,'2026_07_26_180200_add_is_public_to_system_settings_table',44),(64,'2026_07_26_180300_seed_landing_page_setting',45),(65,'2026_07_27_132549_add_offline_payment_fields_to_invoices_table',46),(66,'2026_07_27_150000_add_search_and_image_order_indexes',47),(67,'2026_07_27_120000_drop_seeded_hero_stat_figures',48),(68,'2026_07_27_000001_drop_seeded_backup_fixtures',49),(69,'2026_07_27_160000_remove_fabricated_partners_and_events',50),(70,'2026_07_27_152125_add_account_type_to_users_table',51),(71,'2026_07_28_090000_remove_fabricated_centres_news_and_collections',52),(72,'2026_07_28_004627_add_siarc_identity_to_businesses_table',53),(74,'2026_07_28_080624_remove_non_craft_taxonomy',54),(75,'2026_07_28_081833_create_product_certificates_table',55),(76,'2026_07_28_140000_add_digital_identity_to_product_certificates',56),(77,'2026_07_28_170000_create_provenance_registry',57),(78,'2026_07_28_180000_add_hash_chain_and_ca_signatures',58),(79,'2026_07_28_190000_add_image_forensics_to_certificates',59),(80,'2026_07_28_191000_add_certificate_registers',59),(81,'2026_07_28_200000_create_export_register',60),(82,'2026_07_28_201000_create_provenance_events',60),(83,'2026_07_28_210000_create_workshop_register',61),(84,'2026_07_28_220000_create_certificate_revocations',62),(85,'2026_07_28_233000_add_unique_certificate_version_per_product',62),(86,'2026_07_29_090000_create_manual_payments',63),(87,'2026_07_29_120000_extend_reviews_and_awards',64),(88,'2026_07_30_090000_add_is_demo_to_businesses',65),(89,'2026_07_29_000001_create_contact_messages_table',66);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
