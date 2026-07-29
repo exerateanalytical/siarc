@@ -1,0 +1,9 @@
+/* Input for `public/vendor/app.css`. See tailwind.config.cjs for why this build
+   exists and how the per-page colour tokens resolve.
+
+   Preflight is included because the Tailwind Play CDN this replaced injected it
+   too — dropping it would change every margin, heading size and list style on
+   the site. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

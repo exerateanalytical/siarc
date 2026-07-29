@@ -78,27 +78,21 @@
     <meta name="description" content="{{ $isFr ? 'Annuaire des Artisans & Entreprises — Trouvez des partenaires de confiance et soutenez l\'économie locale.' : 'Artisans & Businesses directory — Find trusted partners and support the local economy.' }}">
     <title>{{ $isFr ? 'Annuaire des Artisans & Entreprises — Artisan Hub 237' : 'Artisans & Businesses directory — Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        leaf:   '#164C28',
-                        deepfc: '#02301B',
-                        gold:   '#E5A82E',
-                        goldbt: '#F0B93E',
-                    },
-                    fontFamily: {
-                        sans:  ['Poppins', 'system-ui', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-                    },
-                }
-            }
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-gold: 229 168 46;
+            --c-goldbt: 240 185 62;
+            --c-leaf: 22 76 40;
+            --f-serif: "Playfair Display", Georgia, serif;
         }
-    </script>
+    </style>
 
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
 
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
@@ -115,6 +109,8 @@
             : 'Artisans & Businesses directory — Find trusted partners and support the local economy.';
     @endphp
     @include('pages.partials.seo-head')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

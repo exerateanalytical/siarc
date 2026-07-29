@@ -55,21 +55,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $isFr ? 'Billet' : 'Ticket' }} — {{ $name }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { leaf: '#164C28', gold: '#E5A82E' },
-                    fontFamily: {
-                        sans:  ['Poppins', 'system-ui', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-                    },
-                }
-            }
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-gold: 229 168 46;
+            --c-leaf: 22 76 40;
+            --f-serif: "Playfair Display", Georgia, serif;
         }
-    </script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    </style>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
     <script src="{{ asset('vendor/qrcode.min.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
@@ -96,6 +94,8 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#FDFDFC] text-[#1D1B16] antialiased">
 

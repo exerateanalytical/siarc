@@ -137,15 +137,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $isFr ? 'Comment nous protégeons votre travail — Artisan Hub 237' : 'How We Protect Your Work — Artisan Hub 237' }}</title>
     <meta name="description" content="{{ $isFr ? 'Ce que la plateforme fait aujourd\'hui pour protéger le travail des artisans, ce qui est encore en développement, et ce qu\'aucune plateforme ne peut garantir.' : 'What the platform does today to protect artisans\' work, what is still in development, and what no platform can guarantee.' }}">
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { leaf: '#164C28', gold: '#D9A439', goldbt: '#E9A830' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-gold: 217 164 57;
+            --c-goldbt: 233 168 48;
+            --c-leaf: 22 76 40;
+        }
+    </style>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', system-ui, sans-serif; } html, body { overflow-x: clip; }
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 

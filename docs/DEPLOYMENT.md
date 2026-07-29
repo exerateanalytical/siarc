@@ -123,9 +123,14 @@ Nothing currently requires the scheduler.
 - **Rate limiting**: login, passkey, email-verification, newsletter and the
   quote write-endpoints are throttled; the contact form uses a manual
   RateLimiter (5 messages / 5 min / IP).
-- **Frontend**: Tailwind runs from the vendored Play runtime
-  (`public/vendor/tailwindcss.js`) — there is no npm build step; deploys
-  need no Node.js.
+- **Frontend**: the CSS and the icon set are **prebuilt and committed** —
+  `public/vendor/app.css` (Tailwind, from `tailwind.config.cjs`) and
+  `public/vendor/lucide-subset.js`. Deploys still need no Node.js: you build
+  them on a dev machine with `npm run build:assets` and upload the two files
+  like any other asset. They replaced the Tailwind Play runtime and the full
+  Lucide bundle, 818 KB of JavaScript that every page used to download and
+  execute. **Rebuild and re-upload them whenever markup changes**, or a newly
+  written utility class will have no rule.
 - **Accounts**: seeding creates exactly one user — the platform administrator.
   Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` before `db:seed`; without
   `ADMIN_PASSWORD` the seeder generates a random one and prints it once.

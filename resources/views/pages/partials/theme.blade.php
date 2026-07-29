@@ -2,27 +2,20 @@
      THE dark-mode foundation. One file. Included once per page by
      `pages/partials/ui-kit.blade.php`, which every page already includes.
 
-     Why here and not in 47 hand-edited copies
-     -----------------------------------------
-     The site loads Tailwind from a CDN bundle at runtime, and 47 views carry
-     their own inline `tailwind.config`. Every one of them needs
-     `darkMode: 'class'` or dark variants silently no-op on that page — the
-     single most likely way for this work to look finished while being broken.
+     Where `darkMode: 'class'` lives now
+     -----------------------------------
+     It used to be merged here, at runtime, onto each page's inline
+     `tailwind.config`, because the site compiled Tailwind in the browser from
+     the 407 KB Play CDN bundle. That bundle is gone: `public/vendor/app.css` is
+     built ahead of time by `tailwind.config.cjs`, which sets `darkMode: 'class'`
+     once, so every `dark:` variant on the site is already in the stylesheet and
+     there is nothing left to merge. The palette below, the light lock and the
+     no-flash boot script are unchanged and are still the source of truth.
 
-     Hand-editing 47 configs would leave the 48th page (added next month)
-     broken, and two of those files are owned by other agents right now.
-     Instead this partial *merges* onto whatever config the page already set:
-     it is included from the ui-kit, which in all 47 files is included later in
-     `<head>` than the page's own `tailwind.config = {…}` assignment. Assigning
-     `tailwind.config` again re-runs the CDN's build, so the merged result is
-     what ships. A page added tomorrow inherits `darkMode: 'class'` and the
-     palette for free, and `DarkModeTest` proves the ordering holds.
-
-     Collision rule: a colour the page already defined WINS. This partial only
-     fills gaps, so no existing light rendering shifts. The one exception is
-     `brand`, where pages define a 50–900 scale: the contract's brand colour is
-     injected as that scale's DEFAULT, so `bg-brand-500` keeps its old value
-     and `bg-brand` gains the contract colour.
+     Pages that used to declare a colour of their own now emit it as a
+     `--c-*` custom property in the same place their config script sat; the
+     stylesheet reads those, so a token meaning different shades on different
+     pages still resolves per page. See `tailwind.config.cjs`.
 
      The palette itself is `docs/DARK-MODE-CONTRACT.md`. Tokens are CSS custom
      properties in `rgb r g b` channel form (so `bg-surface/60` works) and are
@@ -157,58 +150,6 @@
         transition: none !important;
     }
 </style>
-
-<script>
-/* ── Tailwind config merge ──────────────────────────────────────────────
-   Runs after the page's own `tailwind.config = {…}` (the ui-kit is always
-   included later in <head> than that assignment — DarkModeTest proves it),
-   so this is the assignment the CDN builds from. */
-(function () {
-    if (typeof window.tailwind === 'undefined') return;   // page without Tailwind
-
-    var v = function (n) { return 'rgb(var(--t-' + n + ') / <alpha-value>)'; };
-    var tokens = {
-        'bg': v('bg'),
-        'surface': v('surface'),
-        'surface-2': v('surface-2'),
-        'inset': v('inset'),
-        'border': v('border'),
-        'border-strong': v('border-strong'),
-        'ink': v('ink'),
-        'ink-2': v('ink-2'),
-        'ink-3': v('ink-3'),
-        'brand-ink': v('brand-ink'),
-        'brand-deep': v('brand-deep'),
-        'gold-ink': v('gold-ink'),
-        'danger': v('danger'),
-        'success-bg': v('success-bg'),
-        'success-ink': v('success-ink'),
-        'gold': v('gold'),
-        'brand': v('brand')
-    };
-
-    var cfg = window.tailwind.config || {};
-    cfg.darkMode = 'class';
-    cfg.theme = cfg.theme || {};
-    cfg.theme.extend = cfg.theme.extend || {};
-
-    var colors = cfg.theme.extend.colors || {};
-    for (var k in tokens) {
-        if (!Object.prototype.hasOwnProperty.call(tokens, k)) continue;
-        var existing = colors[k];
-        if (existing === undefined) {
-            colors[k] = tokens[k];                 // free name — take it
-        } else if (existing && typeof existing === 'object' && existing.DEFAULT === undefined) {
-            existing.DEFAULT = tokens[k];          // page owns a 50–900 scale — add DEFAULT
-        }
-        /* else: the page defined this exact name as a colour. It wins, so no
-           existing light rendering shifts. */
-    }
-    cfg.theme.extend.colors = colors;
-
-    window.tailwind.config = cfg;                  // re-assign: the CDN rebuilds
-})();
-</script>
 
 @if ($themeLocked)
 <style>

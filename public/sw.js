@@ -31,7 +31,15 @@
 
 'use strict';
 
-var CACHE_VERSION = 'v1';
+/* v2 — the runtime Tailwind compiler (`/vendor/tailwindcss.js`, 407 KB) and the
+   full Lucide bundle (`/vendor/lucide.min.js`, 411 KB) were replaced by the
+   prebuilt `/vendor/app.css` and `/vendor/lucide-subset.js`. `/vendor/*` is
+   cached cache-first, so a returning phone still holding the v1 cache would
+   otherwise keep serving the two files it already has — and, worse, the old
+   HTML that referenced them is network-first and would come back new, giving a
+   page whose stylesheet never loads. Bumping the version makes `activate`
+   delete the v1 cache outright. */
+var CACHE_VERSION = 'v2';
 var CACHE_NAME = 'artisanhub237-' + CACHE_VERSION;
 var OFFLINE_URL = '/hors-ligne';
 

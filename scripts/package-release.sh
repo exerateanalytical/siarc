@@ -373,7 +373,11 @@ ${B}Included${N}
 ${B}Excluded, and why${N}
   .env, .env.*             live credentials. Never leaves this machine.
   .git/                    full history, old secrets, 100s of MB.
-  node_modules/            build-time only; this app ships no JS build step.
+  node_modules/            build-time only. The two build products it makes —
+                           public/vendor/app.css and public/vendor/lucide-subset.js
+                           — are committed and DO ship, inside public/. Rebuild
+                           them with 'npm run build:assets' before packaging if
+                           any markup changed.
   tests/, phpunit.xml      dev-only, and a public test runner is an attack surface.
   dev packages in vendor/  phpunit/faker/pint/collision — never on a live box.
   bootstrap/cache/*.php    compiled against THIS machine's paths and DB. On the

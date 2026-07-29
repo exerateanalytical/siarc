@@ -5,25 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Tableau de bord — Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        // Semantic scales re-pointed onto the canonical heritage palette,
-                        // so every existing forest-*/brand-* class inherits site branding.
-                        // brand = platform gold, forest = platform green.
-                        brand:  { 50:'#FBF1DD',100:'#F6E4BE',200:'#EFD08A',300:'#E9BC5C',400:'#E5A82E',500:'#C9942E',600:'#A87A22',700:'#8A6D1F',800:'#6B5318',900:'#4A3910' },
-                        forest: { 50:'#E2F3E8',100:'#CFE5D6',200:'#BFDCC8',300:'#8CC9A8',400:'#2E7D4F',500:'#157A43',600:'#14532D',700:'#0B3D28',800:'#02301B',900:'#01200F' },
-                        leaf:   '#14652F',
-                    },
-                    fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
-                }
-            }
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-brand-100: 246 228 190;
+            --c-brand-200: 239 208 138;
+            --c-brand-300: 233 188 92;
+            --c-brand-400: 229 168 46;
+            --c-brand-50: 251 241 221;
+            --c-brand-500: 201 148 46;
+            --c-brand-600: 168 122 34;
+            --c-brand-700: 138 109 31;
+            --c-brand-800: 107 83 24;
+            --c-brand-900: 74 57 16;
+            --c-forest-100: 207 229 214;
+            --c-forest-200: 191 220 200;
+            --c-forest-400: 46 125 79;
+            --c-forest-50: 226 243 232;
+            --c-forest-500: 21 122 67;
+            --c-forest-600: 20 83 45;
+            --c-forest-700: 11 61 40;
+            --c-forest-800: 2 48 27;
+            --c-forest-900: 1 32 15;
+            --c-leaf: 20 101 47;
         }
-    </script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    </style>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     <style>
         /* Nothing may scroll the page sideways on a phone; wide content
@@ -32,6 +43,8 @@
 body { font-family: 'Poppins', system-ui, sans-serif; }</style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

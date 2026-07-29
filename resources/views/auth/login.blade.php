@@ -29,34 +29,22 @@
     <meta name="description" content="{{ $isFr ? 'Connectez-vous à Artisan Hub 237.' : 'Sign in to Artisan Hub 237.' }}">
     <title>{{ $isFr ? 'Se connecter — Artisan Hub 237' : 'Sign in — Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream:  '#F7F2EC',
-                        sand:   '#E7E1D4',
-                        leaf:   '#164C28',
-                        pine:   '#0E1D13',
-                        panel:  '#091C10',
-                        deep:   '#0A331C',
-                        gold:   '#C9942E',
-                        goldlt: '#D9A439',
-                        goldbt: '#E0A52F',
-                        muted:  '#8A857A',
-                        sage:   '#A8B8AC',
-                    },
-                    fontFamily: {
-                        sans:  ['Poppins', 'system-ui', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-                    },
-                }
-            }
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-cream: 247 242 236;
+            --c-gold: 201 148 46;
+            --c-goldbt: 224 165 47;
+            --c-leaf: 22 76 40;
+            --f-serif: "Playfair Display", Georgia, serif;
         }
-    </script>
+    </style>
 
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
@@ -65,6 +53,8 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#F6F4F2] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

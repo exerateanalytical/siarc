@@ -104,5 +104,8 @@ class PwaTest extends TestCase
         // may not depend on the Tailwind runtime or any /vendor script.
         $this->assertStringNotContainsString('vendor/tailwindcss.js', $html);
         $this->assertStringNotContainsString('vendor/lucide.min.js', $html);
+        // Nor on the built stylesheet, which is a /vendor asset like any other:
+        // with an empty cache it would not be there either.
+        $this->assertStringNotContainsString('vendor/app.css', $html);
     }
 }

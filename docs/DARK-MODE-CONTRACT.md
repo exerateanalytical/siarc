@@ -10,11 +10,17 @@ Tailwind **`darkMode: 'class'`**, toggled by a `dark` class on `<html>`.
 Not `media`: the platform must honour an explicit user choice, and a member who
 picks light on a phone that is in dark mode has to get light.
 
-The site loads Tailwind from a CDN and **46 views carry their own inline
-`tailwind.config`**. Every one of them needs `darkMode: 'class'`, or dark
-variants silently do nothing on that page. This is the single most likely way
-for this work to look finished while being broken — a page renders fine in
-light, nobody notices it never switches.
+`darkMode: 'class'` is set once, in `tailwind.config.cjs`, and every `dark:`
+variant on the site is baked into `public/vendor/app.css` at build time.
+
+It did not used to be. The site compiled Tailwind in the visitor's browser from
+the Play CDN, 47 views carried their own inline `tailwind.config`, and any one
+of them missing `darkMode: 'class'` made dark variants silently do nothing on
+that page — the single most likely way for this work to look finished while
+being broken. That risk is gone with the runtime compiler. What replaced it as
+the thing to watch: a page that never loads `vendor/app.css`, or a stylesheet
+that was not rebuilt after a markup change. `DarkModeTest` asserts both,
+enumerated from disk rather than from a list.
 
 ## The palette
 
@@ -128,13 +134,18 @@ hand-rolls its own dark card is drift and will fail the check.
 One file: `resources/views/pages/partials/theme.blade.php`, included by
 `pages/partials/ui-kit.blade.php`, which every page already includes.
 
-- **The 48 inline `tailwind.config` views** are not hand-edited. The partial
-  *merges* `darkMode: 'class'` and the palette onto whatever config the page
-  already set and re-assigns `window.tailwind.config`, which makes the CDN
-  rebuild. Collision rule: a colour the page already defined wins, so no
-  existing light rendering shifts. A page added next month inherits it for
-  free. `DarkModeTest` enumerates the views from disk — never from a list —
-  and fails any that sets a config the ui-kit include cannot reach.
+- **`darkMode: 'class'` and the token registrations** now live in
+  `tailwind.config.cjs`, not here. The `--t-*` palette below is still declared
+  by this partial, and the `.dark` class still re-points it, so `bg-surface` is
+  correct in both themes without a `dark:` variant. `DarkModeTest` checks the
+  contract values against this file and the registrations against the build
+  config.
+- **Per-page colours.** 47 shells used to declare their own palette in an inline
+  `tailwind.config`, and the same token name meant different shades on different
+  pages. Those are compiled to `--c-*` custom properties and each page declares
+  its own values in a `:root` block where its config script used to sit, so
+  resolution is still page-scoped — including inside partials shared between
+  pages that disagree. See `tailwind.config.cjs`.
 - **The no-flash boot** is the inline blocking `<script>` in that partial, in
   `<head>`, before `<body>`. It reads `localStorage['theme']`, falls back to
   `prefers-color-scheme`, and defines `window.ArtisanTheme`.

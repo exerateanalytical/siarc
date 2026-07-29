@@ -52,24 +52,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $isFr ? 'Tableau de bord — Artisan Hub 237' : 'Dashboard — Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        herogr: '#03341B',
-                        leaf:   '#164C28',
-                    },
-                    fontFamily: {
-                        sans: ['Poppins', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-leaf: 22 76 40;
         }
-    </script>
+    </style>
 
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
@@ -80,6 +74,8 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#F5F5F3] dark:bg-[#1A1E16] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 

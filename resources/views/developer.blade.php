@@ -4,21 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Developer Portal — Artisan Hub 237 API</title>
-<script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    brand: { 50:'#fef9ee',100:'#fdf0d3',200:'#fada9a',300:'#f7c062',400:'#f4a32a',500:'#e8880e',600:'#cc6a09',700:'#a84e0b',800:'#873d10',900:'#6e3311' },
-                    forest: { 50:'#f0f9f4',100:'#dbf0e3',200:'#b8e0c9',300:'#8cc9a8',400:'#5ba883',500:'#2d6a4f',600:'#1b4332',700:'#0d2b1e',800:'#082018',900:'#03130e' },
-                },
-                fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
-            }
-        }
+<style>
+    /* This page's own colour tokens. They used to be an inline
+       `tailwind.config` compiled in the browser; the stylesheet is
+       static now and reads them from here, so a token that means a
+       different shade on another page still resolves per page —
+       including inside shared partials. See tailwind.config.cjs. */
+    :root {
+        --c-brand-100: 253 240 211;
+        --c-brand-200: 250 218 154;
+        --c-brand-300: 247 192 98;
+        --c-brand-400: 244 163 42;
+        --c-brand-50: 254 249 238;
+        --c-brand-500: 232 136 14;
+        --c-brand-600: 204 106 9;
+        --c-brand-700: 168 78 11;
+        --c-brand-800: 135 61 16;
+        --c-brand-900: 110 51 17;
+        --c-forest-100: 219 240 227;
+        --c-forest-200: 184 224 201;
+        --c-forest-400: 91 168 131;
+        --c-forest-50: 240 249 244;
+        --c-forest-500: 45 106 79;
+        --c-forest-600: 27 67 50;
+        --c-forest-700: 13 43 30;
+        --c-forest-800: 8 32 24;
+        --c-forest-900: 3 19 14;
     }
-</script>
-<script src="{{ asset('vendor/lucide.min.js') }}"></script>
+</style>
+<script src="{{ asset('vendor/lucide-subset.js') }}"></script>
 <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 <style>
         /* Nothing may scroll the page sideways on a phone; wide content
@@ -27,6 +41,8 @@
 body{font-family:'Poppins',system-ui,sans-serif;}</style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 

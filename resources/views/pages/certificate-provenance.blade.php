@@ -293,8 +293,7 @@
     <meta name="description" content="{{ $docTitle }} — {{ $name }}">
     <title>{{ $docTitle }} — {{ $certNo }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
@@ -378,6 +377,8 @@
             @page { size: A4 portrait; margin: 5mm; }
         }
     </style>
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-[#E9E5E6] text-[#241A1E] antialiased">
 

@@ -11,18 +11,25 @@ use Tests\TestCase;
 /**
  * Guards the dark-mode foundation.
  *
- * The failure this test exists to prevent: the site loads Tailwind from a CDN
- * bundle and 47 views carry their own inline `tailwind.config`. A config
- * without `darkMode: 'class'` makes every `dark:` variant on that page a silent
- * no-op — the page renders perfectly in light and simply never switches, which
+ * The failure this test exists to prevent: a page whose `dark:` variants are a
+ * silent no-op — it renders perfectly in light and simply never switches, which
  * is the one way this work can look finished while being broken.
  *
- * The foundation solves it by merging `darkMode: 'class'` onto whatever config
- * the page set, from `pages/partials/theme.blade.php`, which the ui-kit partial
- * includes and every page includes. That only works while the ui-kit is
- * included *later in <head>* than the page's own `tailwind.config` assignment,
- * so that ordering is asserted per file, enumerated from disk — a page added
- * next month is checked without anyone remembering to list it here.
+ * How that used to happen, and how it can happen now
+ * --------------------------------------------------
+ * The site used to compile Tailwind in the browser from the Play CDN, and 47
+ * views carried their own inline `tailwind.config`; one without
+ * `darkMode: 'class'` killed every dark variant on that page. That whole
+ * mechanism is gone. `public/vendor/app.css` is built ahead of time by
+ * `tailwind.config.cjs`, which sets `darkMode: 'class'` once, so the variants
+ * are in the stylesheet before the page is ever served.
+ *
+ * The remaining ways to break it are asserted below, enumerated from disk so a
+ * page added next month is checked without anyone remembering to list it here:
+ * a page that renders utilities but never loads the stylesheet, a page that
+ * loads it but not the `--t-*` palette the tokens resolve against, a stylesheet
+ * rebuilt from a config that lost `darkMode`, and a stale reference to either
+ * of the two deleted CDN bundles.
  *
  * The palette is docs/DARK-MODE-CONTRACT.md.
  */
@@ -57,57 +64,36 @@ class DarkModeTest extends TestCase
     /**
      * THE regression guard. Enumerated from disk, never from a hardcoded list.
      *
-     * A view that sets `tailwind.config` is covered if either
-     *   (a) it declares `darkMode: 'class'` in that config itself, or
-     *   (b) it includes the ui-kit — and does so after the config assignment,
-     *       because the ui-kit's merge is what supplies `darkMode` and the
-     *       palette, and a merge that runs first would be overwritten.
+     * A shell that renders Tailwind utilities has to load the one built
+     * stylesheet, and it has to load the `--t-*` palette those utilities resolve
+     * against. The palette rides on the ui-kit, so both are checked together.
+     * The stale CDN bundles are checked here too: a page still pointing at
+     * `vendor/tailwindcss.js` would 404 and render completely unstyled.
      */
-    public function test_every_view_with_an_inline_tailwind_config_gets_dark_mode_class(): void
+    public function test_every_view_that_renders_utilities_loads_the_built_stylesheet(): void
     {
-        $configured = [];
-        $offenders  = [];
+        $withStylesheet = [];
+        $offenders      = [];
 
         foreach ($this->bladeFiles() as $path) {
             $source = file_get_contents($path);
+            $rel    = ltrim(str_replace(str_replace('\\', '/', base_path()), '', $path), '/');
 
-            if (! str_contains($source, 'tailwind.config')) {
-                continue;
-            }
-
-            $rel   = ltrim(str_replace(str_replace('\\', '/', base_path()), '', $path), '/');
-            $lines = explode("\n", $source);
-
-            $configLine = null;
-            $uiKitLine  = null;
-            foreach ($lines as $i => $line) {
-                if ($configLine === null && preg_match('/tailwind\.config\s*=/', $line)) {
-                    $configLine = $i;
-                }
-                if ($uiKitLine === null && str_contains($line, "pages.partials.ui-kit")) {
-                    $uiKitLine = $i;
+            foreach (['vendor/tailwindcss.js', 'vendor/lucide.min.js'] as $dead) {
+                if (str_contains($source, $dead)) {
+                    $offenders[] = "$rel — still loads $dead, which no longer exists";
                 }
             }
 
-            if ($configLine === null) {
-                continue;   // mentions the name in prose only (this file, the partial's comments)
-            }
-
-            $configured[] = $rel;
-
-            if (preg_match("/darkMode\s*:\s*['\"]class['\"]/", $source)) {
-                continue;   // declares it itself
-            }
-
-            if ($uiKitLine === null) {
-                $offenders[] = "$rel — sets tailwind.config, declares no darkMode, and does not include pages.partials.ui-kit";
+            if (! str_contains($source, "asset('vendor/app.css')")) {
                 continue;
             }
 
-            if ($uiKitLine < $configLine) {
-                $offenders[] = "$rel — includes the ui-kit on line " . ($uiKitLine + 1)
-                    . ', before its own tailwind.config on line ' . ($configLine + 1)
-                    . '; the merge would be overwritten by the page config';
+            $withStylesheet[] = $rel;
+
+            if (! str_contains($source, 'pages.partials.ui-kit')) {
+                $offenders[] = "$rel — loads vendor/app.css but not the ui-kit, so the --t-* palette "
+                    . 'every colour token resolves against is never defined';
             }
         }
 
@@ -115,36 +101,95 @@ class DarkModeTest extends TestCase
         // would pass vacuously and the guard would be worthless.
         $this->assertGreaterThan(
             40,
-            count($configured),
-            'Expected to find the platform\'s inline tailwind.config views; the enumeration found only ' . count($configured) . '.'
+            count($withStylesheet),
+            'Expected to find the platform\'s shells loading vendor/app.css; the enumeration found only '
+            . count($withStylesheet) . '.'
         );
 
-        $this->assertSame(
-            [],
-            $offenders,
-            "These views set their own tailwind.config but never get darkMode: 'class', so every dark: variant on them is a silent no-op:\n  - "
-            . implode("\n  - ", $offenders) . "\n"
-        );
+        $this->assertSame([], $offenders, implode("\n  - ", array_merge([''], $offenders)) . "\n");
     }
 
-    public function test_the_shared_partial_is_what_supplies_dark_mode_class(): void
+    /**
+     * The stylesheet is a build artefact committed to the repo, because the
+     * production host has no Node. Nothing at request time can notice that it
+     * was rebuilt from a config that lost `darkMode`, or never rebuilt at all —
+     * so the file itself is inspected.
+     */
+    public function test_the_built_stylesheet_carries_the_dark_variants(): void
     {
-        $partial = $this->themePartial();
-
+        $config = file_get_contents(base_path('tailwind.config.cjs'));
         $this->assertMatchesRegularExpression(
-            "/cfg\.darkMode\s*=\s*'class'/",
-            $partial,
-            self::THEME_PARTIAL . " must set darkMode: 'class' on the merged config."
+            "/darkMode\s*:\s*'class'/",
+            $config,
+            "tailwind.config.cjs must set darkMode: 'class', or no dark: variant is emitted at all."
         );
+
+        $cssPath = public_path('vendor/app.css');
+        $this->assertFileExists($cssPath, 'Run `npm run build:assets` and commit public/vendor/app.css.');
+        $css = file_get_contents($cssPath);
+
+        // Tailwind 3.4 compiles `dark:x` to `.dark\:x:is(.dark *)`.
         $this->assertStringContainsString(
-            'window.tailwind.config = cfg',
-            $partial,
-            'The merged config has to be assigned back, or the CDN never rebuilds with it.'
+            ':is(.dark *)',
+            $css,
+            'The stylesheet contains no class-based dark variants, so nothing switches when .dark is set.'
         );
+
+        // The contract tokens have to survive compilation as the custom
+        // properties the theme partial re-points, or `bg-surface` would be
+        // frozen in one theme. Only the tokens the markup actually uses are
+        // emitted — Tailwind writes no rule for an unused class — so these two,
+        // which the markup does use, are what proves the wiring.
+        foreach (['var(--t-surface)', 'var(--t-gold)'] as $token) {
+            $this->assertStringContainsString(
+                $token,
+                $css,
+                "The stylesheet never references $token; the contract palette is not wired into the build."
+            );
+        }
+
         $this->assertStringContainsString(
             "@include('pages.partials.theme')",
             file_get_contents(base_path('resources/views/pages/partials/ui-kit.blade.php')),
             'The ui-kit is what carries the theme partial onto every page.'
+        );
+    }
+
+    /**
+     * Colour tokens whose meaning differed per page are compiled to `--c-*`
+     * custom properties and declared by each page in place of the inline
+     * `tailwind.config` it used to carry. A page that lost its block renders the
+     * fallback shade — visibly wrong, and silent.
+     */
+    public function test_pages_declare_their_own_colour_tokens(): void
+    {
+        $declaring = [];
+
+        foreach ($this->bladeFiles() as $path) {
+            $source = file_get_contents($path);
+            if (preg_match('/:root\s*\{[^}]*--c-[a-z0-9-]+\s*:/s', $source)) {
+                $declaring[] = $path;
+            }
+        }
+
+        // 40 of the 47 shells; the other seven (the quote documents) only ever
+        // used tokens that mean the same thing everywhere, and those are plain
+        // literals in the build config.
+        $this->assertGreaterThan(
+            35,
+            count($declaring),
+            'Expected the platform\'s pages to declare their own --c-* tokens; found only ' . count($declaring) . '.'
+        );
+
+        $home = file_get_contents(base_path('resources/views/pages/home.blade.php'));
+        $this->assertStringContainsString('--c-leaf: 22 76 40;', $home, 'The home page lost its own leaf green.');
+        $this->assertStringContainsString('--c-gold: 229 168 46;', $home, 'The home page lost its own gold.');
+
+        $dashboard = file_get_contents(base_path('resources/views/layouts/dashboard.blade.php'));
+        $this->assertStringContainsString(
+            '--c-leaf: 20 101 47;',
+            $dashboard,
+            'The dashboard shell must keep its own, different, leaf green — that collision is why the tokens exist.'
         );
     }
 
@@ -367,7 +412,8 @@ class DarkModeTest extends TestCase
             'success-ink'   => ['0 55 18',     '139 220 166'],
         ];
 
-        $partial = $this->themePartial();
+        $partial     = $this->themePartial();
+        $buildConfig = file_get_contents(base_path('tailwind.config.cjs'));
 
         [$light, $dark] = $this->splitThemeBlocks($partial);
 
@@ -389,19 +435,34 @@ class DarkModeTest extends TestCase
                 "Dark token --t-$token must be '$darkRgb' per docs/DARK-MODE-CONTRACT.md."
             );
 
-            // And each is registered as a Tailwind colour, so `bg-surface`,
-            // `text-ink-2`, `border-border-strong` resolve.
-            $this->assertStringContainsString(
-                "'$token': v('$token')",
-                $partial,
-                "Token '$token' is in the contract but is not registered as a Tailwind colour."
+            /* And each is registered as a Tailwind colour in the build config,
+               so `bg-surface`, `text-ink-2`, `border-border-strong` resolve.
+
+               Two names are shared with page-level tokens and so are wired
+               differently, both deliberately:
+                 · `brand` — 4 shells own a 50–900 ramp under that name, so the
+                   contract colour is the ramp's DEFAULT (`bg-brand`), exactly
+                   as the old runtime merge injected it.
+                 · `gold`  — 32 pages declare a gold of their own, so it is the
+                   *fallback* of `--c-gold`: declare one and yours wins, declare
+                   none and you get the contract's, still theme-aware. */
+            $expected = match ($token) {
+                'brand' => "/DEFAULT:\s*t\('brand'\)/",
+                'gold'  => "/gold:\s*v\('gold',\s*'var\(--t-gold\)'\)/",
+                default => "/'?" . preg_quote($token, '/') . "'?:\s*t\('" . preg_quote($token, '/') . "'\)/",
+            };
+
+            $this->assertMatchesRegularExpression(
+                $expected,
+                $buildConfig,
+                "Token '$token' is in the contract but is not registered as a Tailwind colour in tailwind.config.cjs."
             );
         }
 
         // Channel triplets rather than hex, so `/alpha` modifiers keep working.
         $this->assertStringContainsString(
-            "'rgb(var(--t-' + n + ') / <alpha-value>)'",
-            $partial,
+            "`rgb(var(--t-\${name}) / <alpha-value>)`",
+            $buildConfig,
             'Tokens must carry <alpha-value> or bg-surface/60 silently produces nothing.'
         );
     }

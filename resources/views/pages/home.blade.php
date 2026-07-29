@@ -111,39 +111,23 @@
     <meta name="description" content="{{ $isFr ? 'Artisan Hub 237 — Notre héritage, notre fierté, notre avenir. Découvrez les artisans et producteurs camerounais.' : 'Artisan Hub 237 — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.' }}">
     <title>{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream:  '#F8F3ED',
-                        parch:  '#FBF9F3',
-                        sand:   '#E7E1D4',
-                        leaf:   '#164C28',
-                        pineur: '#0E261C',
-                        deepgr: '#0A1F10',
-                        inkgr:  '#0F2D19',
-                        night:  '#0D0F0D',
-                        gold:   '#E5A82E',
-                        golddk: '#B0821A',
-                        goldic: '#D79326',
-                        flagg:  '#125527',
-                        flagr:  '#C10913',
-                        flagy:  '#EBAB1A',
-                        cocoa:  '#4A2E1E',
-                        muted:  '#8A857A',
-                    },
-                    fontFamily: {
-                        sans:  ['Poppins', 'system-ui', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-                    },
-                }
-            }
+    <style>
+        /* This page's own colour tokens. They used to be an inline
+           `tailwind.config` compiled in the browser; the stylesheet is
+           static now and reads them from here, so a token that means a
+           different shade on another page still resolves per page —
+           including inside shared partials. See tailwind.config.cjs. */
+        :root {
+            --c-cream: 248 243 237;
+            --c-gold: 229 168 46;
+            --c-leaf: 22 76 40;
+            --c-night: 13 15 13;
+            --c-parch: 251 249 243;
+            --f-serif: "Playfair Display", Georgia, serif;
         }
-    </script>
+    </style>
 
-    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
 
     <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
@@ -165,6 +149,8 @@
             : 'Artisan Hub 237 — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.';
     @endphp
     @include('pages.partials.seo-head')
+    {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
+    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
 </head>
 <body class="bg-cream dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
