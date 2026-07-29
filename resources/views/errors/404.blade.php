@@ -13,10 +13,10 @@ body{font-family:'Poppins',-apple-system,'Segoe UI',sans-serif;background:#F8F6F
 .code{font-size:6rem;font-weight:700;line-height:1;color:#DCE7DF;margin-bottom:.5rem;}
 h1{font-size:1.35rem;font-weight:700;margin-bottom:.5rem;color:#14532D;}
 p{color:#55524A;font-size:.9rem;margin-bottom:1.5rem;}
-.btn{display:inline-block;padding:.65rem 1.5rem;background:#0A3020;color:#fff;border-radius:8px;font-weight:600;font-size:.85rem;text-decoration:none;margin:.3rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.65rem 1.5rem;background:#0A3020;color:#fff;border-radius:8px;font-weight:600;font-size:.85rem;text-decoration:none;margin:.3rem;}
 .btn-sec{background:#fff;color:#14652F;border:1px solid #DCE7DF;}
 nav{background:#0A2C1D;padding:.85rem 1.5rem;display:flex;align-items:center;gap:.6rem;}
-.logo{color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:.6rem;text-transform:uppercase;letter-spacing:.02em;}
+.logo{color:#fff;min-height:44px;font-weight:700;font-size:.85rem;text-decoration:none;display:flex;align-items:center;gap:.6rem;text-transform:uppercase;letter-spacing:.02em;}
 .flag{display:inline-flex;height:20px;border-radius:3px;overflow:hidden;}
 .flag span{display:block;width:8px;height:20px;}
 .tricolor{display:flex;height:5px;}

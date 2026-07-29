@@ -79,7 +79,8 @@ $partnerTiles = [
         <input type="hidden" name="lang" value="{{ $lang }}">
         <div class="flex items-center gap-2 bg-white dark:bg-[#12150F] border border-[#E7E7E5] dark:border-[#262B21] rounded-lg px-3.5 h-[42px] flex-1 min-w-[200px]">
             <input type="text" name="q" value="{{ $pubQ }}" placeholder="{{ $isFr ? 'Rechercher un partenaire...' : 'Search a partner...' }}" class="ui-field-bare flex-1 min-w-0">
-            <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></button>
+            {{-- Icon stays 16px; the target around it does not. --}}
+            <button type="submit" class="w-11 h-11 md:w-4 md:h-4 -mr-2 md:mr-0 shrink-0 inline-flex items-center justify-center"><i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></button>
         </div>
         <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>
@@ -134,7 +135,7 @@ $partnerTiles = [
             <span class="font-bold">{{ $isFr ? 'Devenir partenaire ?' : 'Become a partner?' }}</span>
             {{ $isFr ? 'Rejoignez les institutions qui soutiennent l\'artisanat camerounais.' : 'Join the institutions supporting Cameroonian craftsmanship.' }}
         </p>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>
     </div>

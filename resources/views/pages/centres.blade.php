@@ -43,7 +43,10 @@ $typeCls = ['principal' => 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:t
         <input type="hidden" name="lang" value="{{ $lang }}">
         <div class="flex items-center gap-2 bg-white dark:bg-[#12150F] border border-[#E7E7E5] dark:border-[#262B21] rounded-lg px-3.5 h-[42px] flex-1 min-w-[220px]">
             <input type="text" name="q" value="{{ $q }}" placeholder="{{ $isFr ? 'Rechercher un centre...' : 'Search a centre...' }}" class="ui-field-bare flex-1 min-w-0">
-            <button type="submit"><i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></button>
+            {{-- A 16px icon is the drawn size; the target around it is not. The
+                 negative right margin gives the optical alignment back so the
+                 magnifier still sits where the artwork puts it. --}}
+            <button type="submit" class="w-11 h-11 md:w-4 md:h-4 -mr-2 md:mr-0 shrink-0 inline-flex items-center justify-center"><i data-lucide="search" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></button>
         </div>
         <select name="type" onchange="this.form.submit()" class="ui-field ui-select w-auto">
             <option value="">{{ $isFr ? 'Tous les types' : 'All types' }}</option>

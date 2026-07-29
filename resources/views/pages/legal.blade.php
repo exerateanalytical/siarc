@@ -12,7 +12,7 @@ $title = $doc['title'][$lang] . ' — Artisan Hub 237';
     <nav class="flex flex-wrap gap-1.5 mb-7">
         @foreach($allDocs as $slug => $d)
         <a href="{{ route('legal.show', ['doc' => $slug, 'lang' => $lang]) }}"
-           class="px-3 py-1.5 rounded-lg text-[12px] font-semibold border transition-colors
+           class="ui-tap px-3 py-1.5 rounded-lg text-[12px] font-semibold border transition-colors
                   {{ $slug === $activeSlug
                      ? 'bg-[#14532D] border-[#14532D] text-white'
                      : 'bg-white dark:bg-[#12150F] border-[#ECECEA] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:border-[#14652F] hover:text-[#14652F] hover:dark:text-[#339B56]' }}">
@@ -68,7 +68,7 @@ $title = $doc['title'][$lang] . ' — Artisan Hub 237';
         <p class="text-[12.5px] text-[#8A857A] dark:text-[#868778]">
             {{ $isFr ? 'Une question sur ce document ?' : 'A question about this document?' }}
         </p>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap-inset inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
             <i data-lucide="mail" class="w-4 h-4"></i>
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>

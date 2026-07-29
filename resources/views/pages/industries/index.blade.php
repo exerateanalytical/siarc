@@ -222,8 +222,8 @@
 
             @unless($current)
             <div class="mt-5 inline-flex items-center bg-[#F4F2ED] dark:bg-[#0A0C09] rounded-xl p-1 gap-1">
-                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' : 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
-                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[44px] md:h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' : 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[44px] md:h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
             </div>
             @endunless
 
@@ -308,7 +308,7 @@
                     </h2>
                     <div class="mx-auto mt-1.5 h-[2px] w-6 bg-[#E2B54D] rounded-full"></div>
                     <p class="mt-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
-                    <a href="{{ $href }}" class="mt-3.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
+                    <a href="{{ $href }}" class="ui-tap-inset mt-3.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                         {{ $leaf ? ($isFr ? 'Voir les artisans' : 'View artisans') : ($isFr ? 'Explorer' : 'Explore') }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>

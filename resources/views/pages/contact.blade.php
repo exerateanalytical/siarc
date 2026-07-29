@@ -232,7 +232,7 @@
                 <a href="https://www.google.com/maps/search/?api=1&query=Douala%2C+Cameroun"
                     target="_blank" rel="noopener"
                     aria-label="{{ $isFr ? 'Itinéraire vers Artisan Hub 237, Douala' : 'Directions to Artisan Hub 237, Douala' }}"
-                    class="mt-6 inline-flex items-center gap-2 border border-[#123D27] text-[#123D27] dark:text-[#339B56] hover:bg-[#123D27]/5 text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                    class="ui-tap mt-6 inline-flex items-center gap-2 border border-[#123D27] text-[#123D27] dark:text-[#339B56] hover:bg-[#123D27]/5 text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
                     <i data-lucide="map" class="w-4 h-4"></i>
                     {{ $isFr ? 'Voir sur la carte' : 'View on the map' }}
                 </a>

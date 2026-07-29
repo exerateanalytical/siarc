@@ -350,6 +350,14 @@
            controls a buyer meets on a phone. docs/RESPONSIVE-CONTRACT.md §4. */
         .ui-field--sm:not(.ui-textarea),
         .ui-field-group.ui-field--sm { height: 44px; }
+        /* The bare input takes `height: 100%` of its group, and 100% of a 44px
+           border-box is the 42px inside the borders — so the input a thumb
+           actually lands on came out 2–4px under the floor even where the group
+           was right. It paints nothing (no fill, no border), so growing it past
+           its group is invisible and only the hit area changes. Several pages
+           also hand-roll the group rather than using .ui-field-group, and this
+           reaches those too. */
+        .ui-field-bare { min-height: 44px; }
     }
 
     /* File input. Can't be a .ui-field — the control is the browser's own
@@ -407,6 +415,12 @@
     .ui-check-row {
         display: flex; align-items: flex-start; gap: 10px;
         font-size: 12.5px; color: var(--ui-body); line-height: 1.45;
+    }
+    /* The 16px box is a platform convention and stays 16px; the contract's
+       exemption for it holds only while the label around it is itself a 44px
+       target, so the row carries the floor. docs/RESPONSIVE-CONTRACT.md 4.2. */
+    @media (max-width: 767.98px) {
+        .ui-check-row { min-height: 44px; }
     }
 
     /* Field layout helpers */
@@ -469,6 +483,81 @@
     .ui-btn-sm { height: 32px; padding: 0 12px; font-size: 12px; }
     .ui-btn-lg { height: 44px; padding: 0 20px; font-size: 13.5px; }
     .ui-btn-block { width: 100%; }
+
+    /* Tap floor, docs/RESPONSIVE-CONTRACT.md section 4. Every size modifier sets
+       an explicit `height`, so this uses `min-height`: min-height clamps height
+       regardless of which rule wins the cascade, which means the floor holds
+       without an !important and without depending on where the modifiers sit in
+       this file. Desktop keeps the drawn 38/32px density. */
+    @media (max-width: 767.98px) {
+        .ui-btn, .ui-btn-sm, .ui-btn-lg { min-height: 44px; }
+    }
+
+    /* ── Tap floor for the two shared page patterns ─────────────
+       Breadcrumbs and disclosure rows are not kit components — every page
+       writes its own markup — but both are written the same way everywhere, so
+       both can be reached from here rather than from thirty page bodies.
+
+       Breadcrumb: the trail is 19px tall by design and appears on 21 public
+       pages. Growing the link to 44px would push every hero down 25px, so the
+       target grows and the flow does not: the negative block margins cancel
+       exactly the 24px the min-height adds, leaving the nav the height it was
+       drawn at while the anchor's own rect — the thing a thumb hits and the
+       thing the audit measures — is a full 44px. Selector is the ARIA role the
+       pages already carry, so a new page inherits it by being correct.
+
+       Disclosure: a <summary> is the primary control on the FAQ, and the rows
+       measure 20-41px. Padding is the page's business; the floor is not.
+
+       Both are phone-only. At 1280 the desktop artwork governs, as everywhere
+       else in this file. */
+    @media (max-width: 767.98px) {
+        nav[aria-label="Breadcrumb"] a {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            margin-top: -12px;
+            margin-bottom: -12px;
+        }
+        details > summary { min-height: 44px; }
+    }
+
+    /* Opt-in tap floor, for the controls the artwork draws smaller than 44px and
+       that are not kit components: a "Voir sur la carte" link at the foot of a
+       card, a 32px legal-nav chip, a 20px icon-and-label CTA.
+
+       Two variants because the answer depends on whether the element paints
+       anything:
+         .ui-tap        grows the box. Use where the control has a fill or a
+                        border — the visible chip grows with it, which on a
+                        phone is the correct outcome and leaves the desktop
+                        artwork untouched.
+         .ui-tap-inset  grows the box with padding and takes the growth straight
+                        back out of the flow with matching negative margins. Use
+                        on a bare text link, where the element paints nothing:
+                        the rect a thumb hits becomes 44px, the text stays
+                        centred in it, and the page does not move by a pixel.
+                        It deliberately does not touch `display`, so a truncating
+                        card title keeps its ellipsis.
+       Both are phone-only, so nothing here reaches the 1280 replica. */
+    @media (max-width: 767.98px) {
+        .ui-tap {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+        }
+        .ui-tap-inset {
+            min-height: 44px;
+            /* 14, not 12: `min-height` does nothing to an element that is still
+               inline (a card title's link inside a truncating h3), so there the
+               padding alone has to carry the box past 44 — and the smallest
+               such line on these pages is 17px, which 2x12 leaves at 41. */
+            padding-top: 14px;
+            padding-bottom: 14px;
+            margin-top: -14px;
+            margin-bottom: -14px;
+        }
+    }
 
     .ui-btn-primary   { background-color: var(--ui-green-dark); color: #fff; }
     .ui-btn-primary:hover:not(:disabled)   { background-color: var(--ui-green-deep); }

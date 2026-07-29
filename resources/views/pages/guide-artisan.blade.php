@@ -58,7 +58,7 @@
             </span>
             <h2 class="mt-4 text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $gsTitle }}</h2>
             <p class="mt-2 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed flex-1">{{ $gsDesc }}</p>
-            <a href="{{ $gsHref }}" class="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
+            <a href="{{ $gsHref }}" class="ui-tap-inset mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
                 {{ $gsCta }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -72,7 +72,7 @@
             <span class="font-bold">{{ $isFr ? 'Besoin d\'aide pour démarrer ?' : 'Need help getting started?' }}</span>
             {{ $isFr ? 'Notre équipe vous accompagne à chaque étape.' : 'Our team supports you at every step.' }}
         </p>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>
     </div>

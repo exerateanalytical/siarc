@@ -148,7 +148,12 @@
             <form method="GET" action="{{ route('certificate.verify') }}" class="flex flex-col sm:flex-row gap-3">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 <input name="numero" type="text" value="{{ $numero ?? '' }}" placeholder="Ex: AH237-2026-0000001"
-                    class="ui-field ui-field--lg flex-1">
+                    {{-- `sm:flex-1`, not `flex-1`: the form is a column below sm,
+                         and `flex: 1 1 0%` in a column sets the *height* basis to
+                         zero — the field collapsed to its 27px min-content on a
+                         phone, which is both unreadable and under the tap floor.
+                         It only needs to grow along the row. --}}
+                    class="ui-field ui-field--lg w-full sm:flex-1">
                 <button type="submit" class="ui-btn ui-btn-primary ui-btn-lg">
                     {{ $isFr ? 'Vérifier le certificat' : 'Verify the certificate' }}
                 </button>
@@ -305,7 +310,7 @@
                     }}
                 </p>
             </div>
-            <a href="{{ route('contact') }}" class="relative shrink-0 border border-white/70 hover:bg-white/10 text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors whitespace-nowrap">
+            <a href="{{ route('contact') }}" class="ui-tap relative shrink-0 border border-white/70 hover:bg-white/10 text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors whitespace-nowrap">
                 {{ $isFr ? 'Nous contacter' : 'Contact us' }}
             </a>
         </div>

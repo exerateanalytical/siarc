@@ -200,7 +200,10 @@
                     <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Découvrez des milliers de créations authentiques fabriquées par nos artisans et entreprises.' : 'Discover thousands of authentic creations made by our artisans and businesses.' }}</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <form method="GET" action="{{ route('products.index') }}" class="flex items-center gap-2 h-[40px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
+                    {{-- 44px on phones, the drawn 40px from `md` up: the sort box
+                         and the two view toggles all measured under the tap
+                         floor. docs/RESPONSIVE-CONTRACT.md 4. --}}
+                    <form method="GET" action="{{ route('products.index') }}" class="flex items-center gap-2 h-[46px] md:h-[40px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         @if($activeCat !== '')<input type="hidden" name="categorie" value="{{ $activeCat }}">@endif
                         <label for="sort-select" class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
@@ -210,12 +213,12 @@
                             <option value="name" {{ ($sort ?? '') === 'name' ? 'selected' : '' }}>{{ $isFr ? 'Nom (A–Z)' : 'Name (A–Z)' }}</option>
                         </select>
                     </form>
-                    <div class="flex items-center h-[40px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg overflow-hidden">
-                        <button type="button" id="view-grid" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}" class="w-[40px] h-full flex items-center justify-center bg-[#F2F5F2] dark:bg-[#0A0C09] text-[#0B3D28] dark:text-[#339B56]">
+                    <div class="flex items-center h-[46px] md:h-[40px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg overflow-hidden">
+                        <button type="button" id="view-grid" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}" class="w-[44px] md:w-[40px] h-full flex items-center justify-center bg-[#F2F5F2] dark:bg-[#0A0C09] text-[#0B3D28] dark:text-[#339B56]">
                             <i data-lucide="layout-grid" class="w-[17px] h-[17px]"></i>
                         </button>
                         <span class="h-[22px] w-px bg-[#E3E3E1] dark:bg-[#0A0C09]"></span>
-                        <button type="button" id="view-list" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}" class="w-[40px] h-full flex items-center justify-center text-[#8A857A] dark:text-[#868778]">
+                        <button type="button" id="view-list" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}" class="w-[44px] md:w-[40px] h-full flex items-center justify-center text-[#8A857A] dark:text-[#868778]">
                             <i data-lucide="list" class="w-[17px] h-[17px]"></i>
                         </button>
                     </div>
@@ -241,17 +244,17 @@
                         <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
                         @endif
                         <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                            class="absolute top-2 right-2 w-8 h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                            class="absolute top-2 right-2 w-11 h-11 md:w-8 md:h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                             <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
                         </a>
                     </div>
                     <div class="p-3">
                         <h3 class="text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">
-                            <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $product['name'] }}</a>
+                            <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}" class="ui-tap-inset hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $product['name'] }}</a>
                         </h3>
                         <p class="mt-1 text-[11.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $product['cat'] }}</p>
                         <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}"
-                            class="mt-3 w-full h-[34px] border border-[#E2E6E3] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[10.5px] font-bold tracking-[0.08em] text-[#26312B] dark:text-[#F3EFE7] uppercase transition-colors">
+                            class="mt-3 w-full h-[44px] md:h-[34px] border border-[#E2E6E3] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[10.5px] font-bold tracking-[0.08em] text-[#26312B] dark:text-[#F3EFE7] uppercase transition-colors">
                             <i data-lucide="message-square" class="w-[13px] h-[13px]"></i>
                             {{ $isFr ? 'Enquérir' : 'Inquire' }}
                         </a>
@@ -268,23 +271,23 @@
             @if($products->lastPage() > 1)
             <nav class="mt-8 flex items-center justify-center gap-1.5" aria-label="Pagination">
                 @if($products->onFirstPage())
-                <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                 @else
-                <a href="{{ $products->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                <a href="{{ $products->previousPageUrl() }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                 @endif
 
                 @foreach(range(1, $products->lastPage()) as $pageNum)
                 @if($pageNum === $products->currentPage())
-                <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
                 @else
-                <a href="{{ $products->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
+                <a href="{{ $products->url($pageNum) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
                 @endif
                 @endforeach
 
                 @if($products->hasMorePages())
-                <a href="{{ $products->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                <a href="{{ $products->nextPageUrl() }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                 @else
-                <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                 @endif
             </nav>
             @endif

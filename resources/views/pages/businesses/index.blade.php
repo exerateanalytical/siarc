@@ -234,11 +234,18 @@
                      force this card wider than a 360px viewport and drag the whole
                      page into horizontal scroll: "Artisans & Entreprises" cannot fit
                      on one line in a half-column. The card is now full-width and the
-                     labels wrap; it only becomes an auto-width sidecar at `lg`. --}}
-                <div class="w-full lg:w-auto lg:shrink-0 min-w-0 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-4 sm:px-5 py-4">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-4 lg:divide-x lg:divide-[#EFEDEA] lg:dark:divide-[#262B21]">
+                     labels wrap; it only becomes an auto-width sidecar at `xl`.
+
+                     `xl`, not `lg`: at exactly 1024 the `lg` sidebar is already
+                     taking its column, so an auto-width four-across strip in
+                     what is left measured 1038px inside a 1024px viewport and
+                     `shrink-0` forbade it from giving the 14px back. The strip
+                     goes four-across only once the artwork's own 1280 layout is
+                     in reach; 1024 keeps the two-by-two card. --}}
+                <div class="w-full xl:w-auto xl:shrink-0 min-w-0 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-4 sm:px-5 py-4">
+                    <div class="grid grid-cols-2 xl:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-4 xl:divide-x xl:divide-[#EFEDEA] xl:dark:divide-[#262B21]">
                         @foreach($statItems as $statIdx => [$statIcon, $statValue, $statLabel])
-                        <div class="min-w-0 {{ $statIdx > 0 ? 'lg:pl-6' : '' }}">
+                        <div class="min-w-0 {{ $statIdx > 0 ? 'xl:pl-6' : '' }}">
                             <i data-lucide="{{ $statIcon }}" class="w-[22px] h-[22px] text-[#E08A21]" stroke-width="1.8"></i>
                             <p class="mt-2.5 text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ $statValue }}</p>
                             <p class="mt-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $statLabel }}</p>
@@ -257,7 +264,11 @@
                     {{ $isFr ? ($businesses->total() === 1 ? 'artisan ou entreprise trouvé' : 'artisans & entreprises trouvés') : ($businesses->total() === 1 ? 'artisan or business found' : 'artisans & businesses found') }}
                 </p>
                 <div class="flex items-center gap-3">
-                    <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
+                    {{-- 44px on phones, the drawn 38px from `md` up. The sort
+                         box and the two view toggles are the only controls in
+                         this strip and all three measured 36–38px, under the
+                         contract's tap floor. docs/RESPONSIVE-CONTRACT.md 4. --}}
+                    <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[46px] md:h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <label for="sort-select" class="text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort-select" name="sort" onchange="this.form.submit()"
@@ -266,12 +277,12 @@
                             <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>{{ $isFr ? 'Nom (A–Z)' : 'Name (A–Z)' }}</option>
                         </select>
                     </form>
-                    <div class="flex items-center h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg overflow-hidden">
-                        <button type="button" id="view-grid" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}" class="w-[38px] h-full flex items-center justify-center bg-[#F2F5F2] dark:bg-[#0A0C09] text-[#0B3D28] dark:text-[#339B56]">
+                    <div class="flex items-center h-[46px] md:h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg overflow-hidden">
+                        <button type="button" id="view-grid" aria-label="{{ $isFr ? 'Vue grille' : 'Grid view' }}" class="w-[44px] md:w-[38px] h-full flex items-center justify-center bg-[#F2F5F2] dark:bg-[#0A0C09] text-[#0B3D28] dark:text-[#339B56]">
                             <i data-lucide="layout-grid" class="w-4 h-4"></i>
                         </button>
                         <span class="h-[20px] w-px bg-[#E3E3E1] dark:bg-[#0A0C09]"></span>
-                        <button type="button" id="view-list" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}" class="w-[38px] h-full flex items-center justify-center text-[#8A857A] dark:text-[#868778]">
+                        <button type="button" id="view-list" aria-label="{{ $isFr ? 'Vue liste' : 'List view' }}" class="w-[44px] md:w-[38px] h-full flex items-center justify-center text-[#8A857A] dark:text-[#868778]">
                             <i data-lucide="list" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -291,11 +302,11 @@
                         </a>
                         {{-- The heart is baked into the artwork; this transparent link makes it functional --}}
                         <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                            class="absolute top-1 right-1 w-10 h-10 rounded-full"></a>
+                            class="absolute top-1 right-1 w-11 h-11 md:w-10 md:h-10 rounded-full"></a>
                     </div>
                     <div class="p-3.5">
                         <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
-                            <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}" class="truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $vendor['name'] }}</a>
+                            <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}" class="ui-tap-inset truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $vendor['name'] }}</a>
                             @if($vendor['verified'])
                             <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0" aria-label="{{ $isFr ? 'Vérifié' : 'Verified' }}">
                                 <circle cx="8" cy="8" r="8" fill="#17A34A"/>
@@ -315,11 +326,11 @@
                         </div>
                         <div class="mt-3.5 flex items-center gap-2">
                             <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}"
-                                class="flex-1 h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                                class="flex-1 h-[44px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                                 {{ $isFr ? 'Voir le profil' : 'View profile' }}
                             </a>
                             <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Envoyer un message' : 'Send a message' }}"
-                                class="w-[38px] h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] transition-colors">
+                                class="w-[44px] h-[44px] md:w-[38px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] transition-colors">
                                 <i data-lucide="message-square" class="w-[15px] h-[15px]"></i>
                             </a>
                         </div>
@@ -336,23 +347,23 @@
             @if($businesses->lastPage() > 1)
             <nav class="mt-8 flex items-center justify-center gap-1.5" aria-label="Pagination">
                 @if($businesses->onFirstPage())
-                <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                 @else
-                <a href="{{ $businesses->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
+                <a href="{{ $businesses->previousPageUrl() }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page précédente' : 'Previous page' }}"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>
                 @endif
 
                 @foreach(range(1, $businesses->lastPage()) as $pageNum)
                 @if($pageNum === $businesses->currentPage())
-                <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
                 @else
-                <a href="{{ $businesses->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
+                <a href="{{ $businesses->url($pageNum) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
                 @endif
                 @endforeach
 
                 @if($businesses->hasMorePages())
-                <a href="{{ $businesses->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
+                <a href="{{ $businesses->nextPageUrl() }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md" aria-label="{{ $isFr ? 'Page suivante' : 'Next page' }}"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                 @else
-                <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[#B9B4A9]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                 @endif
             </nav>
             @endif

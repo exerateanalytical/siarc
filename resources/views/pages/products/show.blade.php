@@ -171,22 +171,22 @@
                     @csrf
                     <input type="hidden" name="return_to" value="{{ url()->full() }}">
                     <button type="submit" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                        class="w-9 h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                        class="w-11 h-11 md:w-9 md:h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                     </button>
                 </form>
                 @else
                 <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                    class="absolute top-3.5 right-3.5 w-9 h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                    class="absolute top-3.5 right-3.5 w-11 h-11 md:w-9 md:h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="heart" class="w-4 h-4"></i>
                 </a>
                 @endif
                 <button type="button" id="gal-prev" aria-label="{{ $isFr ? 'Image précédente' : 'Previous image' }}"
-                    class="absolute left-3.5 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                    class="absolute left-3.5 top-1/2 -translate-y-1/2 w-11 h-11 md:w-9 md:h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="chevron-left" class="w-[18px] h-[18px]"></i>
                 </button>
                 <button type="button" id="gal-next" aria-label="{{ $isFr ? 'Image suivante' : 'Next image' }}"
-                    class="absolute right-3.5 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                    class="absolute right-3.5 top-1/2 -translate-y-1/2 w-11 h-11 md:w-9 md:h-9 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="chevron-right" class="w-[18px] h-[18px]"></i>
                 </button>
             </div>
@@ -387,7 +387,7 @@
                     </div>
                 </div>
                 <a href="{{ route('businesses.show', ['slug' => $business->slug, 'lang' => $lang]) }}"
-                    class="mt-4 w-full h-[38px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                    class="mt-4 w-full h-[44px] md:h-[38px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     {{ $isFr ? 'Voir la boutique' : 'View the shop' }}
                 </a>
                 @php
@@ -447,7 +447,7 @@
                     </div>
                 </div>
                 <a href="{{ route('contact', ['lang' => $lang]) }}"
-                    class="mt-3.5 inline-flex items-center gap-2 bg-white dark:bg-[#12150F] border border-[#DBD8D0] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg px-4 py-2 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                    class="ui-tap mt-3.5 inline-flex items-center gap-2 bg-white dark:bg-[#12150F] border border-[#DBD8D0] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg px-4 py-2 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     {{ $isFr ? 'Nous contacter' : 'Contact us' }}
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                 </a>
@@ -513,7 +513,7 @@
                                 {{ $isFr ? 'Vous souhaitez un motif ou une taille différente ? Cet artisan peut réaliser des pièces sur mesure selon vos préférences.' : 'Would you like a different pattern or size? This artisan can craft custom pieces to your preferences.' }}
                             </p>
                             <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : route('login', ['lang' => $lang]) }}"
-                                class="mt-3.5 w-full h-[36px] bg-white dark:bg-[#12150F] border border-[#E0D9C6] dark:border-[#6A5210] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                                class="mt-3.5 w-full h-[44px] md:h-[36px] bg-white dark:bg-[#12150F] border border-[#E0D9C6] dark:border-[#6A5210] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                                 <i data-lucide="message-circle" class="w-[14px] h-[14px]"></i>
                                 {{ $isFr ? 'Demander une personnalisation' : 'Request a customisation' }}
                             </a>
@@ -602,14 +602,14 @@
                     </form>
                     @else
                     <a href="{{ route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                        class="absolute top-2 right-2 w-8 h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                        class="absolute top-2 right-2 w-11 h-11 md:w-8 md:h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                         <i data-lucide="heart" class="w-[15px] h-[15px]"></i>
                     </a>
                     @endif
                 </div>
                 <div class="p-3">
                     <h3 class="text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">
-                        <a href="{{ route('products.show', ['slug' => $rel->slug, 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $relName }}</a>
+                        <a href="{{ route('products.show', ['slug' => $rel->slug, 'lang' => $lang]) }}" class="ui-tap-inset hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $relName }}</a>
                     </h3>
                 </div>
             </article>

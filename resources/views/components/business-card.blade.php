@@ -31,20 +31,20 @@
             @csrf
             <input type="hidden" name="return_to" value="{{ url()->full() }}">
             <button type="submit" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-                class="w-8 h-8 rounded-full bg-white/90 dark:bg-[#12150F]/90 hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
+                class="w-11 h-11 md:w-8 md:h-8 rounded-full bg-white/90 dark:bg-[#12150F]/90 hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
                 <i data-lucide="heart" class="w-4 h-4" style="stroke-width:1.8"></i>
             </button>
         </form>
         @else
         <a href="/login?lang={{ $lang }}" aria-label="{{ $bcIsFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
-            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 dark:bg-[#12150F]/90 hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
+            class="absolute top-2 right-2 w-11 h-11 md:w-8 md:h-8 rounded-full bg-white/90 dark:bg-[#12150F]/90 hover:bg-white hover:dark:bg-[#12150F] shadow flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] hover:text-[#C0010C] hover:dark:text-[#F0555C] transition-colors">
             <i data-lucide="heart" class="w-4 h-4" style="stroke-width:1.8"></i>
         </a>
         @endif
     </div>
     <div class="p-3.5 flex-1 flex flex-col">
         <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
-            <a href="{{ $bcUrl }}" class="truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">
+            <a href="{{ $bcUrl }}" class="ui-tap-inset truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                 {{ $bcIsFr ? $business->name_fr : ($business->name_en ?? $business->name_fr) }}
             </a>
             @if($bcVerified)
@@ -68,11 +68,11 @@
         @endif
         <div class="mt-auto pt-3.5 flex items-center gap-2">
             <a href="{{ $bcUrl }}"
-                class="flex-1 h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                class="flex-1 h-[44px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                 {{ $bcIsFr ? 'Voir le profil' : 'View profile' }}
             </a>
             <a href="{{ $bcUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}" aria-label="{{ $bcIsFr ? 'Envoyer un message' : 'Send a message' }}"
-                class="w-[38px] h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] transition-colors">
+                class="w-[44px] h-[44px] md:w-[38px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6] transition-colors">
                 <i data-lucide="message-square" class="w-[15px] h-[15px]"></i>
             </a>
         </div>

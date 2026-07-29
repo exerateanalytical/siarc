@@ -65,7 +65,7 @@
             </p>
             <p class="mt-2 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ config('legal.company.email') }}</p>
             <p class="mt-1 text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">@if(config('legal.company.phone')){{ config('legal.company.phone') }} — @endif{{ $isFr ? 'Lun - Ven : 8h00 - 17h00' : 'Mon - Fri: 8am - 5pm' }}</p>
-            <a href="{{ route('contact', ['lang' => $lang]) }}" class="mt-4 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+            <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap mt-4 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
                 {{ $isFr ? 'Écrire au service presse' : 'Write to the press office' }}
             </a>
         </div>
@@ -80,7 +80,7 @@
                     {{ $isFr ? 'Le logo de la plateforme. Merci de ne pas le modifier ni le déformer.' : 'The platform logo. Please do not alter or distort it.' }}
                 </p>
             </div>
-            <a href="{{ brand_asset('mark') }}" download class="mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] px-5 py-2.5 rounded-lg transition-colors">
+            <a href="{{ brand_asset('mark') }}" download class="ui-tap mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] px-5 py-2.5 rounded-lg transition-colors">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 {{ $isFr ? 'Télécharger le logo' : 'Download the logo' }}
             </a>

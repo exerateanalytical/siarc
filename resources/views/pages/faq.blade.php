@@ -102,7 +102,7 @@
             <span class="font-bold">{{ $isFr ? 'Vous ne trouvez pas votre réponse ?' : 'Can\'t find your answer?' }}</span>
             {{ $isFr ? 'Écrivez-nous, nous répondons rapidement.' : 'Write to us — we reply quickly.' }}
         </p>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>
     </div>
