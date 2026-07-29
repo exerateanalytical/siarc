@@ -18,7 +18,7 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
 </head>
 <body class="min-h-screen bg-[#F3EFE7] dark:bg-[#0A0C09] flex items-center justify-center p-5">
     <main class="w-full max-w-[440px] bg-white dark:bg-[#12150F] rounded-3xl shadow-[0_24px_60px_-24px_rgba(2,48,27,.35)] p-8">
-        <a href="{{ url('/galerie') }}" class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#0F4824] dark:text-[#339B56] mb-4"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr ? 'Retour à la galerie' : 'Back to the gallery' }}</a>
+        <a href="{{ url('/galerie') }}" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[12.5px] font-semibold text-[#0F4824] dark:text-[#339B56] mb-2 lg:mb-4"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr ? 'Retour à la galerie' : 'Back to the gallery' }}</a>
         <h1 class="text-[24px] font-extrabold text-[#131313] dark:text-[#F3EFE7] leading-tight">{{ $isFr ? 'Créer un compte en 30 secondes' : 'Create an account in 30 seconds' }}</h1>
         <p class="text-[13px] text-[#6F6B60] dark:text-[#868778] mt-1.5">{{ $isFr ? 'Email et mot de passe suffisent — vous complèterez votre profil plus tard, à votre rythme.' : 'Email and password are enough — complete your profile later, at your own pace.' }}</p>
 

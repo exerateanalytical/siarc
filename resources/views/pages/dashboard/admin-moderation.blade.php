@@ -14,13 +14,6 @@ $reasonLabels = [
 @section('content')
 <div class="max-w-4xl">
 
-    @if(session('success'))
-        <div class="ui-alert ui-alert-ok mb-4">
-            <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
-            {{ session('success') }}
-        </div>
-    @endif
-
     @include('pages.partials.admin-moderation-tabs', ['isFr' => $lang === 'fr', 'modTab' => 'reports'])
 
     {{-- Product reports --}}

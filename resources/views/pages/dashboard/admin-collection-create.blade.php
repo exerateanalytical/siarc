@@ -26,8 +26,6 @@
                     </div>
                 </div>
 
-                @if($errors->any())<div class="ui-alert ui-alert-danger mt-4">{{ $errors->first() }}</div>@endif
-
                 {{-- Tabs --}}
                 <div class="mt-4 flex items-center gap-6 border-b border-[#EFEBE2] dark:border-[#262B21] overflow-x-auto">
                     @foreach($tabs as [$tIcon, $tLabel, $tActive])

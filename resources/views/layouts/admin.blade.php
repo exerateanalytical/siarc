@@ -114,20 +114,45 @@
         ])
 
         <main class="px-5 lg:px-7 pt-5 pb-8">
-            {{-- Failure flash, rendered once for every admin screen.
-                 Nothing in this console rendered session('error') — an admin
-                 redirected away from a record that cannot be shown simply
+            {{-- Every flash this console can raise, rendered once, here.
+                 An admin redirected away from a record that cannot be shown
                  arrived back at a list with no explanation, which is precisely
                  how a working guard reads as a broken link.
 
-                 Deliberately only `error`. session('success') is already
-                 rendered by 18 of these pages individually and $errors by 6, so
-                 repeating either here would print the same alert twice. Folding
-                 those into this block is a separate, mechanical pass. --}}
+                 These three were previously hand-rolled per page — success on
+                 18 screens, $errors on 6 — in four different icon-and-spacing
+                 dialects, and absent everywhere else. Any admin page that
+                 flashes one of these keys now gets the alert whether or not
+                 its author remembered to write the markup. Pages must not
+                 repeat these blocks; a page-level copy prints twice.
+
+                 Page-specific flash keys (payment_reviewed, review_moderated)
+                 stay with their pages: they are not this layout's vocabulary. --}}
+            @if(session('success'))
+                <div class="ui-alert ui-alert-ok mb-4 flex items-start gap-2.5" role="status">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             @if(session('error'))
                 <div class="ui-alert ui-alert-danger mb-4 flex items-start gap-2.5" role="alert">
                     <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
                     <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            {{-- Every message, not just ->first(). Half the pages this replaces
+                 showed only the first, so a form failing three rules told the
+                 admin about one and appeared to reject the other two silently. --}}
+            @if($errors->any())
+                <div class="ui-alert ui-alert-danger mb-4 flex items-start gap-2.5" role="alert">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    <span>
+                        @foreach($errors->all() as $error)
+                            <span class="block">{{ $error }}</span>
+                        @endforeach
+                    </span>
                 </div>
             @endif
 

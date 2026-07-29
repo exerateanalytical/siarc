@@ -14,12 +14,6 @@ $statusLabels = [
 @section('content')
 <div class="max-w-3xl">
 
-    @if(session('success'))
-    <div class="ui-alert ui-alert-ok mb-4">
-        <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
-    </div>
-    @endif
-
     <div class="flex gap-2 mb-4">
         @foreach(['open', 'in_progress', 'resolved', 'closed', 'all'] as $s)
         <a href="{{ route('admin.support', ['status' => $s]) }}" @class([

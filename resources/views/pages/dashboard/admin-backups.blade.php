@@ -45,10 +45,6 @@
 
 @section('content')
 
-            @if(session('success'))
-            <div class="ui-alert ui-alert-ok mt-1 mb-4"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>{{ session('success') }}</div>
-            @endif
-
             {{-- Stat cards --}}
             <section class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 @foreach($statCards as [$cIcon, $cColor, $cTile, $cLabel, $cValue, $cSub, $cBadge, $cBadgeCls])

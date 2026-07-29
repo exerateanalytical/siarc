@@ -3967,7 +3967,48 @@ Route::post('/contact', function (Request $request) {
             'is_staff'  => false,
         ]);
     } else {
-        // Guests: forward to the gallery inbox (goes to log when MAIL_MAILER=log)
+        /*
+         * Guests: the database row is the record, the email is a notification
+         * about it — in that order, and never the other way round.
+         *
+         * This used to be a Mail::raw() inside a try/catch that swallowed the
+         * exception, after which the visitor was told their message had been
+         * sent. Nothing was written anywhere. If the relay at
+         * mail.artisanhub237.com does not come up and MAIL_MAILER falls back to
+         * 'log' — which DEPLOY.md explicitly tells the owner to do — then every
+         * enquiry from a logged-out visitor became a line in a file nobody
+         * reads, while the sender was thanked for a message that had reached no
+         * one. On a marketplace in its first weeks almost every enquiry arrives
+         * this way, so that was most of the platform's early enquiries.
+         *
+         * Persist first. If the insert fails the visitor is told so, because
+         * the one outcome worse than a lost message is a lost message the
+         * sender believes arrived.
+         */
+        try {
+            $contactId = DB::table('contact_messages')->insertGetId([
+                'name'       => $data['name'],
+                'email'      => $data['email'],
+                'subject'    => $data['subject'],
+                'message'    => $data['message'],
+                'lang'       => $lang,
+                'status'     => 'new',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->withInput()->withErrors([
+                'message' => $isFr
+                    ? "Votre message n'a pas pu être enregistré. Merci de réessayer, ou de nous écrire directement à " . config('legal.company.email') . '.'
+                    : 'Your message could not be saved. Please try again, or write to us directly at ' . config('legal.company.email') . '.',
+            ]);
+        }
+
+        // The notification. Its failure is recorded against the row that
+        // already exists; it is not the visitor's problem and does not change
+        // what they are told, because their message *is* saved.
         try {
             \Illuminate\Support\Facades\Mail::raw(
                 "Nom : {$data['name']}\nEmail : {$data['email']}\n\n{$data['message']}",
@@ -3977,8 +4018,13 @@ Route::post('/contact', function (Request $request) {
                         ->subject('[Contact Artisan Hub 237] ' . $data['subject']);
                 }
             );
-        } catch (\Exception $e) {
-            // Mail failure is non-fatal in local/dev
+
+            DB::table('contact_messages')->where('id', $contactId)->update(['mailed_at' => now()]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            DB::table('contact_messages')->where('id', $contactId)
+                ->update(['mail_error' => \Illuminate\Support\Str::limit($e->getMessage(), 2000, '')]);
         }
     }
 
@@ -4050,12 +4096,28 @@ Route::get('/sitemap.xml', function () {
 })->name('sitemap');
 
 Route::get('/robots.txt', function () {
+    /*
+     * Only pages a crawler should skip, and nothing that is meant to be
+     * secret. robots.txt is world-readable and is the first file a scanner
+     * fetches, so naming a private URL here publishes it — the admin surface
+     * is protected by authorisation, not by omission from this list, and it
+     * already sits under /tableau-de-bord. Everything below is either behind
+     * a login, a one-time token or a checkout, i.e. nothing a search result
+     * should ever point at.
+     */
     $lines = [
         'User-agent: *',
         'Disallow: /tableau-de-bord',
         'Disallow: /login',
         'Disallow: /inscription',
+        'Disallow: /inscription-rapide',
+        'Disallow: /creer-mon-compte',
         'Disallow: /onboarding',
+        'Disallow: /forgot-password',
+        'Disallow: /reset-password',
+        'Disallow: /verification-email',
+        'Disallow: /paiement',
+        'Disallow: /api/',
         'Allow: /',
         '',
         'Sitemap: ' . url('/sitemap.xml'),

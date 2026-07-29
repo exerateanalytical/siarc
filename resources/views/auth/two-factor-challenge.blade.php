@@ -87,7 +87,7 @@
             {{-- Recovery code --}}
             <div class="pt-5 border-t border-gray-100 dark:border-[#262B21]">
                 <details>
-                    <summary class="text-xs text-gray-500 dark:text-[#868778] cursor-pointer hover:text-gray-700 hover:dark:text-[#B4B5A6]">
+                    <summary class="flex items-center min-h-[44px] lg:min-h-0 text-xs text-gray-500 dark:text-[#868778] cursor-pointer hover:text-gray-700 hover:dark:text-[#B4B5A6]">
                         {{ $lang === 'fr' ? 'Vous n\'avez pas accès à vos appareils ? Utilisez un code de récupération.' : 'Lost access to your devices? Use a recovery code.' }}
                     </summary>
                     <form method="POST" action="{{ route('login.challenge.verify') }}" class="mt-3 flex items-center gap-2">
@@ -103,7 +103,7 @@
             </div>
 
             <div class="mt-6 pt-5 border-t border-gray-100 dark:border-[#262B21] text-center">
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 hover:dark:text-[#B4B5A6] transition-colors">
+                <a href="{{ route('login') }}" class="inline-flex items-center justify-center min-h-[44px] lg:min-h-0 gap-1 text-xs text-gray-400 hover:text-gray-600 hover:dark:text-[#B4B5A6] transition-colors">
                     <i data-lucide="arrow-left" class="w-3 h-3"></i>
                     {{ $lang === 'fr' ? 'Retour à la connexion' : 'Back to login' }}
                 </a>

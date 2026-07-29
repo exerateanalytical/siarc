@@ -67,10 +67,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-    <div class="ui-alert ui-alert-ok mb-4"><i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}</div>
-    @endif
-
     <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-5">
         @foreach($evCards as [$ecIcon, $ecColor, $ecTile, $ecValue, $ecLabel])
         <div class="ui-card">

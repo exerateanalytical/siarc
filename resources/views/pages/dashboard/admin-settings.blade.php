@@ -119,20 +119,6 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
     <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Paramètres' : 'Settings' }}</span>
 </nav>
 
-@if(session('success'))
-    <div class="ui-alert ui-alert-ok mb-5">
-        <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
-        {{ session('success') }}
-    </div>
-@endif
-
-@if($errors->any())
-    <div class="ui-alert ui-alert-danger mb-5">
-        <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
-        {{ $errors->first() }}
-    </div>
-@endif
-
 {{-- ── Top tabs ─────────────────────────────────────────────────────────── --}}
 <div class="border-b border-[#EFEBE2] dark:border-[#262B21] mb-6 overflow-x-auto">
     <nav class="flex items-center gap-7 min-w-max">

@@ -7,10 +7,23 @@
     An admin can upload their own through Paramètres → Branding; that upload
     wins, and the packaged brand mark is the fallback.
 --}}
+{{--
+    The lookup is wrapped because this partial is included by the error views,
+    and the commonest reason a 500 page is being rendered at all is that the
+    database has just gone away. An uncaught query here means Laravel cannot
+    render errors::500 either, and the visitor gets Symfony's bare grey
+    "Oops! An Error Occurred" instead of the branded page — the one moment the
+    site most needs to look like itself. A missing custom favicon is not worth
+    a page; fall back to the packaged brand mark and carry on.
+--}}
 @php
-    $favSetting = \Illuminate\Support\Facades\DB::table('platform_settings')
-        ->whereIn('key', ['favicon_path', 'branding_favicon'])
-        ->value('value');
+    try {
+        $favSetting = \Illuminate\Support\Facades\DB::table('platform_settings')
+            ->whereIn('key', ['favicon_path', 'branding_favicon'])
+            ->value('value');
+    } catch (\Throwable $e) {
+        $favSetting = null;
+    }
 
     $favUrl = filled($favSetting) ? asset('storage/' . $favSetting) : brand_asset('mark');
 @endphp

@@ -10,8 +10,6 @@
 @endphp
 
 @section('content')
-            @if(session('success'))<div class="ui-alert ui-alert-ok mb-4"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>{{ session('success') }}</div>@endif
-
             {{-- Admin actions --}}
             <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <a href="{{ route('admin.news', ['lang'=>$lang]) }}" class="ui-btn ui-btn-secondary"><i data-lucide="arrow-left" class="w-4 h-4"></i>{{ $isFr?'Retour aux actualités':'Back to news' }}</a>

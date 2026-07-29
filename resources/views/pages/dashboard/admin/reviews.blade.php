@@ -61,13 +61,6 @@ $stateLabels = [
     </div>
     @endif
 
-    @if($errors->any())
-    <div class="ui-alert ui-alert-danger">
-        <i data-lucide="alert-circle" class="w-4 h-4"></i>
-        <span>{{ $errors->first() }}</span>
-    </div>
-    @endif
-
     {{-- ══ Reviews ══════════════════════════════════════════════════════════ --}}
 
     <div class="flex flex-wrap gap-1.5">

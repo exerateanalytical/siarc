@@ -131,12 +131,15 @@ else
   ok "error page is not a debug trace (GET unknown URL -> $c)"
 fi
 
-# Horizon is gated by a viewHorizon Gate, but the gate is only as good as the
-# deployment — check it in the open rather than assuming.
+# Horizon should not exist in production at all: it is a require-dev package,
+# `composer install --no-dev` leaves it out, and App\Providers\DevToolsServiceProvider
+# only registers it in local. Anything other than 404 means one of those three
+# failed on this deployment.
 c="$(code - /horizon "$T/hz.html")"
 case "$c" in
-  200) bad "GET /horizon -> 200 for an anonymous visitor" "The queue dashboard is public. Check app/Providers/HorizonServiceProvider.php." ;;
-  *)   ok "GET /horizon -> $c (not public)" ;;
+  404) ok "GET /horizon -> 404 (not deployed)" ;;
+  200) bad "GET /horizon -> 200 for an anonymous visitor" "The queue dashboard is public. Check app/Providers/DevToolsServiceProvider.php and that the build ran composer install --no-dev." ;;
+  *)   bad "GET /horizon -> $c (expected 404)" "Horizon routes are registered on a host that has no Redis. Check app/Providers/DevToolsServiceProvider.php." ;;
 esac
 
 # ─────────────────────────────────────────────────────────────────────────────

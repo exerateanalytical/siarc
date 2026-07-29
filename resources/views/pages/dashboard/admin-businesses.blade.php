@@ -116,12 +116,6 @@
                 </div>
             </div>
 
-            @if(session('success'))
-            <div class="ui-alert ui-alert-ok mt-3">
-                <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
-            </div>
-            @endif
-
             {{-- 6 stat cards --}}
             <section class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
                 @foreach($vbCards as [$vbIcon, $vbIconColor, $vbTile, $vbLabel, $vbValue])

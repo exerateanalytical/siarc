@@ -144,6 +144,50 @@ class LandingSyncTest extends TestCase
             ->assertDontSee('Atelier Test du Cuir');
     }
 
+    /**
+     * An event whose price column is empty is an event whose fee nobody has
+     * recorded. The listing and the detail page used to fill that silence with
+     * "Entrée libre" / "Entrée Gratuite", announcing free admission on the
+     * organiser's behalf — the mirror image of the invented ticket prices a
+     * migration once back-filled onto the demo events.
+     */
+    public function test_event_pages_do_not_claim_free_entry_when_no_price_is_recorded(): void
+    {
+        $priced = $this->makeEvent([
+            'name_fr'    => 'Salon Test Payant',
+            'event_type' => 'salons',
+            'price_fr'   => '1 500 FCFA',
+            'starts_at'  => now()->addDays(4),
+            'ends_at'    => now()->addDays(4)->addHours(8),
+        ]);
+        $unpriced = $this->makeEvent([
+            'name_fr'    => 'Atelier Test Sans Tarif',
+            'event_type' => 'ateliers',
+            'price_fr'   => null,
+            'price_en'   => null,
+            'starts_at'  => now()->addDays(6),
+            'ends_at'    => now()->addDays(6)->addHours(6),
+        ]);
+
+        // Listing: the recorded price shows, the absent one invents nothing.
+        $this->get('/evenements')
+            ->assertOk()
+            ->assertSee('1 500 FCFA')
+            ->assertSee('Atelier Test Sans Tarif')
+            ->assertDontSee('Entrée libre')
+            ->assertDontSee('Free entry');
+
+        // Detail page: same rule on the booking panel.
+        $this->get('/evenements/' . $priced->slug)
+            ->assertOk()
+            ->assertSee('1 500 FCFA');
+
+        $this->get('/evenements/' . $unpriced->slug)
+            ->assertOk()
+            ->assertDontSee('Entrée Gratuite')
+            ->assertDontSee('Free entry');
+    }
+
     public function test_featured_businesses_on_landing_come_from_the_database(): void
     {
         \Illuminate\Support\Facades\DB::table('platform_settings')->updateOrInsert(

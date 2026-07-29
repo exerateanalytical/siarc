@@ -165,7 +165,7 @@
              sliced off by the body's `overflow-x: clip`. The lockup may now
              shrink and the tagline wraps until there is room to keep it on one
              line. --}}
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 sm:gap-3 min-w-0 min-h-[44px]">
             <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] sm:w-[50px] sm:h-[50px] object-contain shrink-0">
             <span class="leading-tight min-w-0">
                 <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">Artisan Hub 237</span>
@@ -181,13 +181,13 @@
                 </span>
             </a>
             <div class="relative group">
-                <button class="flex items-center gap-1.5 border border-[#E5E3E0] dark:border-[#262B21] rounded-lg px-3.5 py-2 text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
+                <button class="flex items-center justify-center gap-1.5 min-h-[44px] lg:min-h-0 border border-[#E5E3E0] dark:border-[#262B21] rounded-lg px-3.5 py-2 text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ strtoupper($lang) }}
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i>
                 </button>
                 <div class="absolute right-0 top-full w-28 bg-white dark:bg-[#12150F] rounded-lg shadow-lg border border-[#E7E7E5] dark:border-[#262B21] py-1 hidden group-hover:block z-50">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="block px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">FR — Français</a>
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">EN — English</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="flex items-center min-h-[44px] lg:min-h-0 px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">FR — Français</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="flex items-center min-h-[44px] lg:min-h-0 px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">EN — English</a>
                 </div>
             </div>
         </div>
@@ -348,7 +348,7 @@
 
             <!-- ═══════ Step 2 — identity & security ═══════ -->
             <div id="panel-2" class="ob-panel hidden">
-                <button type="button" onclick="goToStep(1)" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
+                <button type="button" onclick="goToStep(1)" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     {{ $isFr ? 'Retour' : 'Back' }}
                 </button>
@@ -439,7 +439,7 @@
 
             <!-- ═══════ Step 3 — review & account creation ═══════ -->
             <div id="panel-3" class="ob-panel hidden">
-                <button type="button" onclick="goToStep(2)" class="inline-flex items-center gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
+                <button type="button" onclick="goToStep(2)" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     {{ $isFr ? 'Retour' : 'Back' }}
                 </button>

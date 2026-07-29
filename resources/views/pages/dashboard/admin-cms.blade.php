@@ -5,17 +5,6 @@
 @section('content')
 <div class="max-w-3xl">
 
-    @if(session('success'))
-    <div class="ui-alert ui-alert-ok mb-4">
-        <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
-    </div>
-    @endif
-    @if($errors->any())
-    <div class="ui-alert ui-alert-danger mb-4">
-        @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
-    </div>
-    @endif
-
     <!-- Pages -->
     <h2 class="ui-card-title mb-3">{{ $lang === 'fr' ? 'Pages statiques' : 'Static Pages' }}</h2>
     <div class="ui-card ui-card--flush mb-4">

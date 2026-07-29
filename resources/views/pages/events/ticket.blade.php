@@ -21,7 +21,9 @@
         'city' => $event->city_fr ?: (count($locParts) > 1 ? end($locParts) : ($location ?: '—')),
         'venue' => $locParts[0] ?? ($location ?: '—'),
         'badge' => $isFr ? 'Événement' : 'Event', 'badgeColor' => '#0E5A2F',
-        'free' => $ticketPrice === null, 'price' => $ticketPrice,
+        // An empty price column says nothing about the fee, so the stub says
+        // nothing either. Free events carry an explicit "Entrée libre".
+        'price' => $ticketPrice,
     ];
 
     $ticketId = 'GVC-' . $year . '-' . str_pad((string) ($event->id * 617), 8, '0', STR_PAD_LEFT);
@@ -210,11 +212,7 @@
                     <span class="self-stretch w-px bg-[#E3DFD6]"></span>
                     <div>
                         <p class="text-[12px] font-bold tracking-[0.06em] uppercase text-[#1D1B16]">{{ $isFr ? 'Entrée' : 'Entry' }}</p>
-                        @if($meta['free'])
-                        <p class="text-[21px] font-bold uppercase text-[#C1272D] leading-tight">{{ $isFr ? 'Gratuite' : 'Free' }}</p>
-                        @else
-                        <p class="text-[21px] font-bold text-[#C1272D] leading-tight">{{ $meta['price'] }}</p>
-                        @endif
+                        <p class="text-[21px] font-bold text-[#C1272D] leading-tight">{{ $meta['price'] ?: ($isFr ? 'Non précisée' : 'Not stated') }}</p>
                         <p class="mt-1 text-[10.5px] text-[#6F6B60] leading-snug">{{ $isFr ? 'Inscription obligatoire en ligne' : 'Online registration required' }}</p>
                     </div>
                 </div>

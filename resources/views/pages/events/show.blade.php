@@ -34,7 +34,8 @@
         'city'  => $event->city_fr ?: (count($locParts) > 1 ? end($locParts) : ($location ?: '—')),
         'venue' => $locParts[0] ?? ($location ?: '—'),
         'badge' => $badge, 'badgeColor' => $badgeColor,
-        'price' => ($isFr ? $event->price_fr : ($event->price_en ?? $event->price_fr)) ?: ($isFr ? 'Entrée Gratuite' : 'Free entry'),
+        // Unpriced means unstated, not free — the booking panel drops the line.
+        'price' => ($isFr ? $event->price_fr : ($event->price_en ?? $event->price_fr)) ?: null,
     ];
 
     $exhibitorRegionsCount = $event->exhibitingBusinesses->pluck('region_id')->filter()->unique()->count();
@@ -362,7 +363,9 @@
                     <svg viewBox="0 0 24 24" class="w-5 h-5 fill-[#E5A82E]"><path d="M12 2.5 14.9 9l7.1.4-5.5 4.6 1.8 6.9L12 17l-6.3 3.9 1.8-6.9L2 9.4 9.1 9z"/></svg>
                     {{ $isFr ? 'Réservez votre place' : 'Book your spot' }}
                 </p>
+                @if($meta['price'])
                 <p class="mt-3 text-[22px] font-bold text-white">{{ $meta['price'] }}</p>
+                @endif
                 <p class="mt-1 text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Inscription obligatoire en ligne' : 'Online registration required' }}</p>
                 <a href="{{ $siacUser ? route('events.ticket', ['slug' => $event->slug, 'lang' => $lang]) : '/inscription?lang=' . $lang }}"
                     class="mt-4 w-full h-[42px] bg-[#E9A825] hover:bg-goldbt text-[#3A2E08] rounded-lg flex items-center justify-center gap-2 text-[13px] font-bold transition-colors">

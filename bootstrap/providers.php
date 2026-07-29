@@ -2,6 +2,9 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    // Registers Horizon (and any future dev-only package) in local only, and
+    // only when the package is actually installed. See the class docblock.
+    App\Providers\DevToolsServiceProvider::class,
     App\Modules\Auth\Providers\AuthServiceProvider::class,
     App\Modules\Taxonomy\Providers\TaxonomyServiceProvider::class,
     App\Modules\Businesses\Providers\BusinessesServiceProvider::class,

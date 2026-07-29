@@ -180,18 +180,25 @@
                         placeholder="{{ $isFr ? 'Entrez votre mot de passe' : 'Enter your password' }}"
                         class="ui-field ui-field--lg pr-11 {{ $errors->has('password') ? 'ui-field--invalid' : '' }}"
                         required>
+                    {{-- 44x44 hit area, drawn from right-1 so the 20px eye still lands
+                         exactly 16px from the field's edge: 4 + (44-20)/2 = 16. The
+                         control looks identical and is now thumb-sized. --}}
                     <button type="button" id="password-toggle" aria-label="{{ $isFr ? 'Afficher le mot de passe' : 'Show password' }}"
-                        class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A857A] dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
+                        class="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-[#8A857A] dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
                         <i data-lucide="eye" class="w-5 h-5"></i>
                     </button>
                 </div>
 
-                <div class="mt-5 flex items-center justify-between">
-                    <label class="ui-check-row items-center cursor-pointer select-none">
+                {{-- Both controls carry a 44px min-height below lg so the row is
+                     thumb-sized on a phone; `lg:min-h-0` hands the desktop replica
+                     back its drawn height untouched. Type size and colour are
+                     unchanged — only the invisible box around them grows. --}}
+                <div class="mt-4 lg:mt-5 flex items-center justify-between">
+                    <label class="ui-check-row items-center cursor-pointer select-none min-h-[44px] lg:min-h-0">
                         <input type="checkbox" name="remember" value="1" class="ui-check">
                         <span class="text-[13px] font-medium text-[#26251F] dark:text-[#F3EFE7]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
                     </label>
-                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="text-[13px] font-semibold text-gold dark:text-[#EDB33A] hover:text-goldlt transition-colors">
+                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="inline-flex items-center min-h-[44px] lg:min-h-0 text-[13px] font-semibold text-gold dark:text-[#EDB33A] hover:text-goldlt transition-colors">
                         {{ $isFr ? 'Mot de passe oublié ?' : 'Forgot password?' }}
                     </a>
                 </div>
@@ -246,7 +253,7 @@
             </p>
 
             <p class="mt-4 text-center">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 text-[12.5px] text-muted dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center justify-center gap-1.5 min-h-[44px] lg:min-h-0 text-[12.5px] text-muted dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Continuer sans compte' : 'Browse as guest' }}
                 </a>

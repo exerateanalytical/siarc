@@ -39,7 +39,16 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    // Force-disabled in production for the same reason as demo_login below: the
+    // .env on the server is the file most likely to have been copied from a
+    // developer machine, and APP_DEBUG=true there does not merely show stack
+    // traces — Laravel's error page prints the whole environment, which on this
+    // deployment means the database password, the APP_KEY, the mail credentials
+    // and the S3 keys, to whoever triggered the error. It must not be possible
+    // to turn that on by editing one line, so it is not a setting in production.
+    'debug' => env('APP_ENV') === 'production'
+        ? false
+        : (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------

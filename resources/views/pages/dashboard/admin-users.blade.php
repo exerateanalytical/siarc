@@ -55,17 +55,6 @@
     </div>
 </div>
 
-@if(session('success'))
-<div class="ui-alert ui-alert-ok mt-4">
-    <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
-</div>
-@endif
-@if($errors->any())
-<div class="ui-alert ui-alert-danger mt-4">
-    @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
-</div>
-@endif
-
 {{-- Role tabs (real counts) --}}
 <div class="mt-4 flex flex-wrap items-stretch gap-1 bg-[#F1EDE3] dark:bg-[#1A1E16] border border-[#EAE5D8] dark:border-[#262B21] rounded-xl p-1 overflow-x-auto">
     @foreach($tabs as $key => $label)

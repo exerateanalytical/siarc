@@ -34,12 +34,6 @@
 
 @section('content')
 
-            @if(session('success'))
-            <div class="ui-alert ui-alert-ok mt-1 mb-4">
-                <i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>{{ session('success') }}
-            </div>
-            @endif
-
             {{-- Header --}}
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div class="bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] rounded-xl px-4 py-2.5 flex items-center gap-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">

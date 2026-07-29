@@ -27,12 +27,6 @@ $statusLabels = [
         </a>
     </div>
 
-    @if(session('success'))
-    <div class="ui-alert ui-alert-ok mb-4">
-        <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5"></i>{{ session('success') }}
-    </div>
-    @endif
-
     <!-- Header card -->
     <div class="ui-card mb-4">
         <div class="flex items-start justify-between gap-3 mb-3">

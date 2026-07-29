@@ -59,7 +59,9 @@
             'venue'     => $isFr ? ($ev->location_fr ?? '') : ($ev->location_en ?? $ev->location_fr ?? ''),
             'desc'      => \Illuminate\Support\Str::limit($isFr ? ($ev->description_fr ?? '') : ($ev->description_en ?? $ev->description_fr ?? ''), 140),
             'tags'      => $tags,
-            'price'     => $isFr ? ($ev->price_fr ?? 'Entrée libre') : ($ev->price_en ?? 'Free entry'),
+            // No price recorded means no claim about the price: the stub simply
+            // omits the line rather than announcing free entry on the event's behalf.
+            'price'     => ($isFr ? $ev->price_fr : ($ev->price_en ?? $ev->price_fr)) ?: null,
         ];
     })->all();
 
@@ -375,7 +377,9 @@
                     <div class="relative md:w-[132px] shrink-0 flex md:flex-col items-center justify-center gap-3 py-4 px-4 text-center" style="background-color: {{ $stub }}">
                         <span class="hidden md:block absolute -left-[9px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] bg-white dark:bg-[#12150F] rounded-full border border-[#EFEDEA] dark:border-[#262B21]" aria-hidden="true"></span>
                         <svg viewBox="0 0 24 24" class="w-7 h-7 {{ $onGold ? 'fill-[#0E3D26] dark:fill-[#339B56]' : 'fill-[#E5A82E]' }}"><path d="M12 2.5 14.9 9l7.1.4-5.5 4.6 1.8 6.9L12 17l-6.3 3.9 1.8-6.9L2 9.4 9.1 9z"/></svg>
+                        @if($event['price'])
                         <p class="text-[12px] font-bold uppercase tracking-[0.04em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['price'] }}</p>
+                        @endif
                         <a href="{{ route('events.show', ['slug' => $event['slug']]) }}"
                             class="inline-flex items-center justify-center px-4 h-[32px] rounded-md text-[11.5px] font-bold transition-colors {{ $onGold ? 'bg-white dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#F6F1E7] hover:dark:bg-[#0A0C09]' : 'bg-[#E9A825] text-[#3A2E08] dark:text-[#EDB33A] hover:bg-goldbt hover:dark:bg-[#3A2B06]' }}">
                             {{ $isFr ? 'Voir détails' : 'View details' }}

@@ -11,7 +11,6 @@
         "http-interop/http-factory-guzzle": "^1.2",
         "intervention/image-laravel": "^4.0",
         "laravel/framework": "^13.8",
-        "laravel/horizon": "^5.47",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^11.3",
@@ -25,6 +24,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
+        "laravel/horizon": "^5.47",
         "laravel/pail": "^1.2.5",
         "laravel/pint": "^1.29",
         "mockery/mockery": "^1.6",
@@ -84,7 +84,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/horizon"
+            ]
         }
     },
     "config": {

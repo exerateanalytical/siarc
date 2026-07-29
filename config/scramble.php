@@ -1,6 +1,6 @@
 <?php
 
-use Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess;
+use App\Http\Middleware\LocalOnly;
 
 return [
     /*
@@ -140,9 +140,17 @@ return [
      */
     'flatten_deep_query_parameters' => true,
 
+    /*
+     * Scramble's own RestrictedDocsAccess already blocks /docs/api outside
+     * local — but with a 403, which confirms to a scanner that the endpoint is
+     * there. App\Http\Middleware\LocalOnly answers 404 instead, so the docs UI
+     * is indistinguishable from a URL that was never written. There is no
+     * developer programme at launch (see routes/web.php, /developer), so
+     * nothing legitimate is behind this door in production.
+     */
     'middleware' => [
         'web',
-        RestrictedDocsAccess::class,
+        LocalOnly::class,
     ],
 
     'extensions' => [],

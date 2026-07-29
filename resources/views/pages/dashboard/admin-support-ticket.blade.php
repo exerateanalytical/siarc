@@ -24,8 +24,6 @@
 @endphp
 
 @section('content')
-            @if(session('success'))<div class="ui-alert ui-alert-ok mb-4"><i data-lucide="circle-check" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>{{ session('success') }}</div>@endif
-
             <div class="grid grid-cols-1 2xl:grid-cols-[1fr_320px] gap-5 items-start">
                 <div class="space-y-5">
                     {{-- Ticket header --}}
