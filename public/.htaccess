@@ -1,9 +1,42 @@
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
+# Directory listings off even where mod_negotiation is absent.
+Options -Indexes
+<IfModule mod_negotiation.c>
+    Options -MultiViews
+</IfModule>
 
+<IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Never serve a dot-file out of the web root.
+    #
+    # There should not be one here — .env lives a level above, outside the
+    # document root. This is the second lock: a stray copy of .env pasted in
+    # while debugging, an editor's .env.swp, a .git left behind by a future
+    # deploy, would otherwise be downloadable as plain text by anyone who
+    # guesses the name.
+    #
+    # /.well-known/ is exempt and must stay exempt: it carries
+    # /.well-known/jwks.json — the published signing key that lets a third party
+    # verify a certificate without asking this site anything — and the
+    # acme-challenge files your host writes when it renews the TLS certificate.
+    # Blocking it breaks certificate verification and, eventually, HTTPS itself.
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteRule (^|/)\. - [F]
+
+    # Force HTTPS.
+    #
+    # SESSION_SECURE_COOKIE=true in .env, so over plain http the browser is
+    # never given a session cookie: the login form posts, the CSRF token cannot
+    # be matched, and the visitor gets "page expired" with nothing to explain
+    # it. Anyone who types the bare domain arrives on http. Both scheme tests
+    # are needed — %{HTTPS} is off when TLS is terminated by a proxy in front of
+    # Apache, and X-Forwarded-Proto is what that proxy sets instead; requiring
+    # both to be absent keeps this from looping.
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+    RewriteCond %{HTTP_HOST} !\.test$ [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
