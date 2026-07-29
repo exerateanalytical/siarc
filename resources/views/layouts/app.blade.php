@@ -84,12 +84,6 @@
     $bottomNavLang = $lang ?? 'fr';
     $bottomTabs = [
         [
-            'href'   => route('home', ['lang' => $bottomNavLang]),
-            'icon'   => 'home',
-            'label'  => $bottomNavLang === 'fr' ? 'Accueil' : 'Home',
-            'active' => request()->is('/'),
-        ],
-        [
             'href'   => route('businesses.index', ['lang' => $bottomNavLang]),
             'icon'   => 'compass',
             'label'  => $bottomNavLang === 'fr' ? 'Explorer' : 'Explore',

@@ -1217,8 +1217,11 @@
      a signed-in reader and at the sign-in page otherwise, rather than at a
      page that would bounce them. --}}
 <nav class="mob-nav" aria-label="{{ $isFr ? 'Navigation principale' : 'Main navigation' }}">
-    <a href="{{ route('home', ['lang' => $lang]) }}"><i data-lucide="home"></i><span class="mob-nav-label">{{ $isFr ? 'Accueil' : 'Home' }}</span></a>
-    <a href="{{ route('industries.index', ['lang' => $lang]) }}"><i data-lucide="layout-grid"></i><span class="mob-nav-label">{{ $isFr ? 'Catégories' : 'Categories' }}</span></a>
+    {{-- "Secteurs" not "Catégories": at the mandated 16px, "Catégories" cannot
+         fit a bottom-bar column at 360px and wrapped mid-word. This is the term
+         the platform already uses for this same route elsewhere (see the contact
+         page's nav), so it is the site's own wording, not a new coinage. --}}
+    <a href="{{ route('industries.index', ['lang' => $lang]) }}"><i data-lucide="layout-grid"></i><span class="mob-nav-label">{{ $isFr ? 'Secteurs' : 'Sectors' }}</span></a>
     <a href="{{ route('certificate.verify') }}" class="mob-nav-mid">
         <span class="mob-disc"><img src="{{ brand_asset('mark') }}" alt=""></span>
         <span class="mob-nav-label">{{ $isFr ? 'Vérifier' : 'Verify' }}</span>
