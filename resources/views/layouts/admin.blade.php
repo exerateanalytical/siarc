@@ -161,6 +161,7 @@
     </div>
 </div>
 
+@include('pages.partials.admin-bulk-select')
 <script>lucide.createIcons();</script>
 </body>
 </html>

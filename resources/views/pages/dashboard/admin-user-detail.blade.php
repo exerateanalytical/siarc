@@ -100,7 +100,7 @@
         <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Actions effectuées' : 'Actions taken' }}</h2></div>
         @foreach($auditAsActor as $entry)
         <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
-            <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $entry->action }}</span>
+            <span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $entry->action }}</span>
             <span class="ui-dt">{{ $entry->created_at->diffForHumans() }}</span>
         </div>
         @endforeach

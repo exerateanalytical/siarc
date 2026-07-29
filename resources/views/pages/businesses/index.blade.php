@@ -57,7 +57,7 @@
     ];
 
     // Category filter options — the illustrated official categories (same tiles
-    // as the landing/products), so the dropdown stays curated, not all 349 trades.
+    // as the landing/products), so the dropdown stays curated, not every trade.
     $searchCats = $industries
         ->filter(fn ($ind) => $ind->image_icon)
         ->sortBy('sort_order')
@@ -263,11 +263,16 @@
                     {{ $fmtStat($businesses->total()) }}
                     {{ $isFr ? ($businesses->total() === 1 ? 'artisan ou entreprise trouvé' : 'artisans & entreprises trouvés') : ($businesses->total() === 1 ? 'artisan or business found' : 'artisans & businesses found') }}
                 </p>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-3">
                     {{-- 44px on phones, the drawn 38px from `md` up. The sort
                          box and the two view toggles are the only controls in
                          this strip and all three measured 36–38px, under the
-                         contract's tap floor. docs/RESPONSIVE-CONTRACT.md 4. --}}
+                         contract's tap floor. docs/RESPONSIVE-CONTRACT.md 4.
+                         flex-wrap on this holder (not just its flex-wrap parent)
+                         because at 320px the sort form + toggle group together
+                         are wider than the available row and, without their own
+                         wrap point, forced the whole page to scroll sideways
+                         instead of dropping the toggle group to its own line. --}}
                     <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[46px] md:h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         <label for="sort-select" class="text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>

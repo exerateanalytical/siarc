@@ -199,10 +199,15 @@
                     <h1 class="font-serif text-[30px] sm:text-[34px] leading-tight text-[#1D1B16] dark:text-[#F3EFE7] font-semibold">{{ $isFr ? 'Annuaire des produits' : 'Product directory' }}</h1>
                     <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Découvrez des milliers de créations authentiques fabriquées par nos artisans et entreprises.' : 'Discover thousands of authentic creations made by our artisans and businesses.' }}</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-3">
                     {{-- 44px on phones, the drawn 40px from `md` up: the sort box
                          and the two view toggles all measured under the tap
-                         floor. docs/RESPONSIVE-CONTRACT.md 4. --}}
+                         floor. docs/RESPONSIVE-CONTRACT.md 4.
+                         flex-wrap on this holder (not just its flex-wrap parent)
+                         because at 320px the sort form + toggle group together
+                         are wider than the available row and, without their own
+                         wrap point, forced the whole page to scroll sideways
+                         instead of dropping the toggle group to its own line. --}}
                     <form method="GET" action="{{ route('products.index') }}" class="flex items-center gap-2 h-[46px] md:h-[40px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         @if($activeCat !== '')<input type="hidden" name="categorie" value="{{ $activeCat }}">@endif

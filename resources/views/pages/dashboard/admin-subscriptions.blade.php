@@ -101,7 +101,7 @@
                                 <span class="w-[44px] h-[44px] shrink-0 rounded-xl grid place-items-center" style="background:{{ $cIcon[1] }};color:{{ $cIcon[2] }}" aria-hidden="true"><i data-lucide="{{ $cIcon[0] }}" class="w-[22px] h-[22px]" stroke-width="1.9"></i></span>
                                 <div class="min-w-0">
                                     <p class="text-[21px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $cValue }}</p>
-                                    <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
+                                    <p class="text-[13px] md:text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
                                 </div>
                             </div>
                             <img src="{{ asset('images/landing/' . $cSpark) }}" alt="" class="mt-3 w-full h-auto select-none pointer-events-none" aria-hidden="true">
@@ -190,24 +190,24 @@
                                                 @else<span class="w-9 h-9 rounded-full bg-[#14652F] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[13px] font-bold flex items-center justify-center shrink-0">{{ $initial }}</span>@endif
                                                 <span class="min-w-0">
                                                     <span class="block text-[13px] font-semibold text-[#23231F] dark:text-[#F3EFE7] truncate">{{ $s->owner_name ?? $s->business_name }}</span>
-                                                    <span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778] truncate">{{ $s->owner_email ?? '–' }}</span>
+                                                    <span class="block text-[13px] md:text-[11.5px] text-[#8A8578] dark:text-[#868778] truncate">{{ $s->owner_email ?? '–' }}</span>
                                                 </span>
                                             </div>
                                         </td>
-                                        <td><span class="inline-block rounded-lg px-3 py-1 text-[11.5px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
+                                        <td><span class="inline-block rounded-lg px-3 py-1 text-[13px] md:text-[11.5px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
                                         <td>
-                                            <span class="inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">
+                                            <span class="inline-flex items-center gap-2 text-[14px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">
                                                 <i data-lucide="{{ $planIcon }}" class="w-[18px] h-[18px] shrink-0" style="color: {{ $s->plan_color }}" aria-hidden="true"></i>
                                                 {{ $isFr ? $s->plan_fr : ($s->plan_en ?? $s->plan_fr) }}
                                             </span>
                                         </td>
-                                        <td class="whitespace-nowrap"><span class="inline-flex items-center gap-1.5 text-[12px] font-semibold {{ $stText }}"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
-                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ number_format($s->amount) }} FCFA</span><span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">/ {{ $isFr ? 'an' : 'year' }}</span></td>
+                                        <td class="whitespace-nowrap"><span class="inline-flex items-center gap-1.5 text-[14px] md:text-[12px] font-semibold {{ $stText }}"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background-color: {{ $stDot }}"></span>{{ $stLabel }}</span></td>
+                                        <td class="whitespace-nowrap"><span class="block text-[14px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ number_format($s->amount) }} FCFA</span><span class="block text-[13px] md:text-[11.5px] text-[#8A8578] dark:text-[#868778]">/ {{ $isFr ? 'an' : 'year' }}</span></td>
                                         <td class="whitespace-nowrap">
-                                            <span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $subDate($s->next_payment_at) }}</span>
-                                            @if($nextLine)<span class="block text-[11.5px] {{ $nextLineRed ? 'text-[#D0342C] dark:text-[#F0555C] font-medium' : 'text-[#8A8578] dark:text-[#868778] ' }}">{{ $nextLine }}</span>@endif
+                                            <span class="block text-[14px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $subDate($s->next_payment_at) }}</span>
+                                            @if($nextLine)<span class="block text-[13px] md:text-[11.5px] {{ $nextLineRed ? 'text-[#D0342C] dark:text-[#F0555C] font-medium' : 'text-[#8A8578] dark:text-[#868778] ' }}">{{ $nextLine }}</span>@endif
                                         </td>
-                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $subDate($s->started_at) }}</span><span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($s->started_at)->format('H:i') }}</span></td>
+                                        <td class="whitespace-nowrap"><span class="block text-[14px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $subDate($s->started_at) }}</span><span class="block text-[13px] md:text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($s->started_at)->format('H:i') }}</span></td>
                                         <td>
                                             <div class="flex items-center justify-end gap-1.5">
                                                 <a href="{{ route('admin.businesses.detail', ['id' => $s->business_id, 'lang' => $lang]) }}" class="w-[34px] h-[34px] rounded-[10px] bg-[#FFFDF8] dark:bg-[#12150F] border border-[#F0E2C9] dark:border-[#4A3A12] hover:border-[#C9942E] dark:hover:border-[#E9A81E] flex items-center justify-center text-[#8A6B3F] dark:text-[#EDB33A]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-[15px] h-[15px]"></i></a>
@@ -225,7 +225,7 @@
 
                         {{-- Pagination --}}
                         <div class="mt-4 pt-4 border-t border-[#F5EBDA] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
-                            <p class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
+                            <p class="text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
                                 {{ $isFr ? 'Affichage de' : 'Showing' }} {{ $subscriptions->firstItem() ?? 0 }} {{ $isFr ? 'à' : 'to' }} {{ $subscriptions->lastItem() ?? 0 }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($subscriptions->total()) }} {{ $isFr ? 'abonnements' : 'subscriptions' }}
                             </p>
                             <div class="flex items-center gap-1.5">
@@ -269,7 +269,7 @@
                             <span class="w-[44px] h-[44px] shrink-0 rounded-xl grid place-items-center" style="background:{{ $rIcon[1] }};color:{{ $rIcon[2] }}" aria-hidden="true"><i data-lucide="{{ $rIcon[0] }}" class="w-[22px] h-[22px]" stroke-width="1.9"></i></span>
                             <div class="min-w-0">
                                 <p class="text-[21px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $rValue }}</p>
-                                <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $rLabel }}</p>
+                                <p class="text-[13px] md:text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $rLabel }}</p>
                             </div>
                         </div>
                         <img src="{{ asset('images/landing/' . $rSpark) }}" alt="" class="mt-3 w-full h-auto select-none pointer-events-none" aria-hidden="true">
@@ -282,12 +282,12 @@
                             <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $planConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] dark:bg-[#12150F] m-[22px]"></span></span>
                             <div class="flex-1 space-y-2">
                                 @forelse($planLegend as [$plColor, $plName, $plValue])
-                                <div class="flex items-center justify-between gap-2 text-[11.5px]">
+                                <div class="flex items-center justify-between gap-2 text-[13px] md:text-[11.5px]">
                                     <span class="flex items-center gap-2 font-medium text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $plColor }}"></span>{{ $plName }}</span>
                                     <span class="font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $plValue }}</span>
                                 </div>
                                 @empty
-                                <p class="text-[11.5px] text-[#6E6B63] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
+                                <p class="text-[13px] md:text-[11.5px] text-[#6E6B63] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
                                 @endforelse
                             </div>
                         </div>
@@ -298,11 +298,11 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Résumé financier' : 'Financial summary' }}</h2>
                         <dl class="mt-4 space-y-3">
                             @foreach($financeRows as [$fLabel, $fValue, $fColor])
-                            <div class="flex items-center justify-between text-[12.5px]"><dt class="font-medium text-[#3B382F] dark:text-[#B4B5A6]">{{ $fLabel }}</dt><dd class="font-semibold" style="color: {{ $fColor }}">{{ $fValue }}</dd></div>
+                            <div class="flex items-center justify-between text-[14px] md:text-[12.5px]"><dt class="font-medium text-[#3B382F] dark:text-[#B4B5A6]">{{ $fLabel }}</dt><dd class="font-semibold" style="color: {{ $fColor }}">{{ $fValue }}</dd></div>
                             @endforeach
                         </dl>
                         <div class="mt-4 border-t border-[#F5EBDA] dark:border-[#262B21] pt-3.5">
-                            <div class="flex items-center justify-between text-[12.5px]">
+                            <div class="flex items-center justify-between text-[14px] md:text-[12.5px]">
                                 <p class="font-medium text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Revenus cette année' : 'Revenue this year' }}</p>
                                 <p class="font-bold text-[#157A43] dark:text-[#339B56]">{{ number_format($finance['year']) }} FCFA</p>
                             </div>
@@ -315,7 +315,7 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
-                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><i data-lucide="{{ $qIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#8A5A16] dark:text-[#EDB33A]" stroke-width="1.9" aria-hidden="true"></i><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
+                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><i data-lucide="{{ $qIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#8A5A16] dark:text-[#EDB33A]" stroke-width="1.9" aria-hidden="true"></i><span class="text-[14px] md:text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
                             @endforeach
                         </div>
                     </section>

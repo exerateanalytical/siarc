@@ -423,6 +423,19 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
+        // A published product whose business is still draft is a real, common
+        // state — a vendor's business starts in draft and they can publish a
+        // product before publishing the business itself. The public correctly
+        // gets a 404 for it: the platform never shows a product for a business
+        // it has not itself confirmed. But the vendor's own dashboard links
+        // straight to this URL under "View public page", and a bare 404 there
+        // reads as the platform being broken rather than as the true state
+        // (product live, business not yet). The vendor — and an admin, same
+        // preview pattern as FrontendController::businessShow — may therefore
+        // open it as an explicitly-labelled preview; nobody else can.
+        $siacUser = session('siac_user');
+        $isAdminPreview = ! empty($siacUser['is_admin']);
+
         $product = Product::with([
                 'images', 'documents', 'videos', 'attributes.template',
                 'category.sector.industry', 'originRegion', 'harvestDates',
@@ -431,21 +444,32 @@ class FrontendController extends Controller
             ])
             ->where('slug', $slug)
             ->where('status', 'published')
-            ->whereHas('business', fn ($q) => $q->where('status', 'published'))
             ->firstOrFail();
 
-        $product->increment('views_count');
+        $isOwnerPreview = $siacUser && $product->business && $product->business->user_id === $siacUser['id'];
+        $isPreview = ($isAdminPreview || $isOwnerPreview) && $product->business?->status !== 'published';
 
-        // Analytics row — must never break the page
-        try {
-            DB::table('product_views')->insert([
-                'product_id'  => $product->id,
-                'viewer_ip'   => $request->ip(),
-                'device_type' => $this->deviceType($request),
-                'viewed_at'   => now(),
-            ]);
-        } catch (\Throwable $e) {
-            // ignore
+        // Everyone else keeps the original rule exactly: product AND business
+        // both published, or a 404 — never leak an unpublished business's
+        // product to a visitor who isn't its owner or an admin.
+        if (! $isPreview && $product->business?->status !== 'published') {
+            abort(404);
+        }
+
+        if (! $isPreview) {
+            $product->increment('views_count');
+
+            // Analytics row — must never break the page
+            try {
+                DB::table('product_views')->insert([
+                    'product_id'  => $product->id,
+                    'viewer_ip'   => $request->ip(),
+                    'device_type' => $this->deviceType($request),
+                    'viewed_at'   => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // ignore
+            }
         }
 
         $otherProducts = Product::where('business_id', $product->business_id)
@@ -515,7 +539,7 @@ class FrontendController extends Controller
         return response(
             view('pages.products.show', compact(
                 'lang', 'product', 'otherProducts', 'similarProducts', 'sellerStats',
-                'myReview', 'isSaved', 'qualityScore', 'complaintRate'
+                'myReview', 'isSaved', 'qualityScore', 'complaintRate', 'isPreview'
             ))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
@@ -534,8 +558,8 @@ class FrontendController extends Controller
         $catSlug = $request->query('cat');
         $current = $catSlug ? $all->firstWhere('slug', $catSlug) : null;
 
-        // Root view mode: 'sectors' (default, the 3 sectors) or 'filieres' (all 14
-        // filières at once, grouped by sector). Ignored once you drill into a node.
+        // Root view mode: 'sectors' (default, the 3 sectors) or 'filieres' (every
+        // filière at once, grouped by sector). Ignored once you drill into a node.
         $view = $request->query('view') === 'filieres' ? 'filieres' : 'sectors';
         if ($current) {
             $children = $childrenByParent->get($current->id, collect())->sortBy('sort_order')->values();

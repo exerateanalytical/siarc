@@ -200,23 +200,7 @@ class AdminWebController extends Controller
      */
     private function isLastSuperAdmin(string $userId): bool
     {
-        $isSuper = \Illuminate\Support\Facades\DB::table('model_has_roles')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('model_has_roles.model_id', $userId)
-            ->where('roles.name', 'super_admin')
-            ->exists();
-        if (! $isSuper) {
-            return false;
-        }
-
-        return \Illuminate\Support\Facades\DB::table('model_has_roles')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->join('users', 'users.id', '=', 'model_has_roles.model_id')
-            ->where('roles.name', 'super_admin')
-            ->where('users.id', '!=', $userId)
-            ->whereNull('users.deleted_at')
-            ->where('users.status', 'active')
-            ->count() === 0;
+        return \App\Modules\Admin\Services\SuperAdminGuard::isLastSuperAdmin($userId);
     }
 
     /**

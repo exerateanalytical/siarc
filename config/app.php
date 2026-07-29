@@ -173,4 +173,20 @@ return [
     'platform_fee_percent' => env('PLATFORM_FEE_PERCENT', 2.5),
     'vat_percent'          => env('VAT_PERCENT', 19.25),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Host-imposed public document root
+    |--------------------------------------------------------------------------
+    |
+    | See ah_resolve_public_path() in app/Support/route_helpers.php. This must
+    | be read through config(), not env(), anywhere that runs on every request
+    | (AppServiceProvider::register(), for one): once `config:cache` runs,
+    | Laravel stops loading .env at boot, so a live env('APP_PUBLIC_PATH') call
+    | silently returns null and public_path() reverts to the wrong directory.
+    | Putting it here means config:cache bakes in the real value instead.
+    |
+    */
+
+    'public_path' => env('APP_PUBLIC_PATH'),
+
 ];

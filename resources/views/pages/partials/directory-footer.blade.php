@@ -50,6 +50,7 @@
         ($isFr ? 'Confidentialité' : 'Privacy policy')      => route('legal.show', ['doc' => 'confidentialite', 'lang' => $lang]),
         ($isFr ? "Centre d'aide" : 'Help center')           => route('support.index'),
         'FAQ'                                               => route('faq', ['lang' => $lang]),
+        ($isFr ? 'Tarifs' : 'Pricing')                      => route('pricing', ['lang' => $lang]),
         ($isFr ? 'Devenir membre' : 'Become a member')      => route('onboarding', ['lang' => $lang]),
         ($isFr ? 'Carrières' : 'Careers')                   => route('careers', ['lang' => $lang]),
         ($isFr ? 'Presse' : 'Press')                        => route('press', ['lang' => $lang]),

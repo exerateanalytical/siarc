@@ -432,6 +432,7 @@ use App\Http\Controllers\AdminWebController;
 Route::get('/tableau-de-bord/admin/entreprises', [AdminWebController::class, 'businesses'])->name('admin.businesses');
 Route::get('/tableau-de-bord/admin/entreprises/{id}', [AdminWebController::class, 'businessDetail'])->name('admin.businesses.detail');
 Route::post('/tableau-de-bord/admin/entreprises/{id}/statut', [AdminWebController::class, 'updateBusinessStatus'])->name('admin.businesses.update-status');
+Route::post('/tableau-de-bord/admin/entreprises/bulk', [\App\Http\Controllers\AdminBulkController::class, 'businessesBulk'])->name('admin.businesses.bulk')->middleware('throttle:20,1');
 // Verifications used to be its own list — a bare queue over the same
 // verification_applications rows the KYC Centre already lists, with the same
 // approve/reject pair. Two screens for one job. The queue is now the KYC
@@ -1374,6 +1375,7 @@ Route::post('/tableau-de-bord/admin/utilisateurs/{id}/coordonnees', [AdminWebCon
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/role', [AdminWebController::class, 'updateUserRole'])->name('admin.users.update-role');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/verifier-email', [AdminWebController::class, 'verifyUserEmail'])->name('admin.users.verify-email');
+Route::post('/tableau-de-bord/admin/utilisateurs/bulk', [\App\Http\Controllers\AdminBulkController::class, 'usersBulk'])->name('admin.users.bulk')->middleware('throttle:20,1');
 Route::get('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 'partners'])->name('admin.partners');
 Route::post('/tableau-de-bord/admin/partenaires', [AdminWebController::class, 'storePartner'])->name('admin.partners.store');
 Route::post('/tableau-de-bord/admin/partenaires/{id}', [AdminWebController::class, 'updatePartner'])->name('admin.partners.update');
@@ -4135,6 +4137,7 @@ Route::get('/sitemap.xml', function () {
         ['loc' => url('/faq'),                  'priority' => '0.6'],
         ['loc' => url('/actualites'),           'priority' => '0.6'],
         ['loc' => url('/guide-artisan'),        'priority' => '0.6'],
+        ['loc' => url('/tarifs'),               'priority' => '0.6'],
         ['loc' => url('/contact'),              'priority' => '0.5'],
         ['loc' => url('/carrieres'),            'priority' => '0.4'],
         ['loc' => url('/presse'),               'priority' => '0.4'],
@@ -4253,6 +4256,22 @@ Route::get('/presse', function (Request $request) {
     ];
     return view('pages.press', compact('lang', 'pressStats'));
 })->name('press');
+
+// Public tarifs/pricing page. Every plan shown comes straight off
+// `subscription_plans` via PlatformFees::plans() — see its own docblock for why
+// no price is ever invented in a template. /pricing is a stable English alias,
+// same pattern as /register + /inscription above.
+Route::get('/tarifs', function (Request $request) {
+    $lang = webLang($request);
+    return response(view('pages.pricing', [
+        'lang'  => $lang,
+        'plans' => \App\Support\PlatformFees::plans($lang),
+    ]))->cookie('lang', $lang, 60 * 24 * 30);
+})->name('pricing');
+
+Route::get('/pricing', function (Request $request) {
+    return redirect()->route('pricing', array_filter(['lang' => $request->query('lang')]));
+})->name('pricing.en');
 
 // ─────────────────────────────────────────────
 // Legal & policy documents
@@ -4490,6 +4509,56 @@ Route::post('/paiement/{reference}/signaler', function (Request $request, string
 Route::get('/tableau-de-bord/paiements', function (Request $request) {
     return view('pages.dashboard.payments', ['lang' => webLang($request)]);
 })->name('dashboard.payments')->middleware('verified.email');
+
+// Self-service plan selection, from the same page. Reuses
+// PlatformFees::openRegistration() exactly as the SIARC-claim flow does —
+// nothing about opening or pricing an intent is reimplemented here. A vendor
+// whose subscription is already active never reaches this form: the view
+// above hides the picker in that case, and this handler re-checks the same
+// gate itself rather than trusting the page it was posted from.
+Route::post('/tableau-de-bord/paiements/formule', function (Request $request) {
+    $siacUser = session('siac_user');
+    if (! $siacUser) {
+        return redirect('/login');
+    }
+
+    $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
+    $isFr = $lang === 'fr';
+
+    $business = \App\Modules\Businesses\Models\Business::where('user_id', $siacUser['id'])->first();
+    if (! $business) {
+        return redirect()->route('dashboard.payments', ['lang' => $lang]);
+    }
+
+    // Re-checked here, not assumed from the form: a vendor who already pays is
+    // never offered a second, duplicate registration intent.
+    if (\App\Support\PlatformFees::isActive($business)) {
+        return redirect()->route('dashboard.payments', ['lang' => $lang]);
+    }
+
+    $plans  = collect(\App\Support\PlatformFees::plans($lang));
+    $chosen = $plans->firstWhere('slug', (string) $request->input('plan'));
+
+    if (! $chosen) {
+        return back()->withErrors(['plan' => $isFr
+            ? 'Choisissez une formule valide dans la liste.'
+            : 'Choose a valid plan from the list.']);
+    }
+
+    try {
+        $payment = \App\Support\PlatformFees::openRegistration($business, $chosen['slug']);
+    } catch (\DomainException $e) {
+        // Typically no mobile-money account is configured yet. Say so rather
+        // than send the vendor to a payment page with no account on it.
+        report($e);
+
+        return back()->withErrors(['plan' => $isFr
+            ? "Aucun moyen de paiement n'est configuré pour le moment. Contactez-nous."
+            : 'No payment method is configured at the moment. Contact us.']);
+    }
+
+    return redirect()->route('payment.instructions', ['reference' => $payment->reference, 'lang' => $lang]);
+})->middleware(['throttle:10,1', 'verified.email'])->name('dashboard.plan.select');
 
 /* ── The reviewer's queue ────────────────────────────────────────────────────
    requireAdmin() is the same guard every other /tableau-de-bord/admin route

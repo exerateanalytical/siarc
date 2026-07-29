@@ -85,7 +85,7 @@ $statusLabels = [
         <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Produits' : 'Products' }}</h2></div>
         @forelse($business->products->take(8) as $product)
         <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
-            <span class="flex-1 truncate text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $product->name_fr }}</span>
+            <span class="flex-1 truncate text-[15px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $product->name_fr }}</span>
             <span class="ui-dt">{{ $product->status }}</span>
         </div>
         @empty
@@ -99,7 +99,7 @@ $statusLabels = [
         <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Historique de vérification' : 'Verification history' }}</h2></div>
         @foreach($business->verificationApplications as $app)
         <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
-            <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $lang === 'fr' ? 'Demande' : 'Request' }}: {{ $app->tier_requested }}</span>
+            <span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $lang === 'fr' ? 'Demande' : 'Request' }}: {{ $app->tier_requested }}</span>
             <span class="ui-dt">{{ $app->status }} — {{ $app->created_at->format('d/m/Y') }}</span>
         </div>
         @endforeach
@@ -112,7 +112,7 @@ $statusLabels = [
         <div class="px-5 py-3.5 border-b border-[#F5F1E8] dark:border-[#262B21]"><h2 class="ui-card-title">{{ $lang === 'fr' ? 'Actions administratives' : 'Admin actions' }}</h2></div>
         @foreach($auditEntries as $entry)
         <div class="flex items-center gap-3 px-5 py-2.5 border-b border-[#F5F1E8] dark:border-[#262B21] last:border-0">
-            <span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $entry->action }} — {{ $entry->user?->name }}</span>
+            <span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $entry->action }} — {{ $entry->user?->name }}</span>
             <span class="ui-dt">{{ $entry->created_at->diffForHumans() }}</span>
         </div>
         @endforeach

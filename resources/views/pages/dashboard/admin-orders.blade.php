@@ -99,7 +99,7 @@
                     @foreach($statusTabs as $tabKey => [$tabLabel, $tabCount])
                     <a href="{{ request()->fullUrlWithQuery(['statut' => $tabKey === 'toutes' ? null : $tabKey, 'page' => null]) }}"
                        class="block px-4 py-3.5 border-t-[3px] {{ $activeTab === $tabKey ? 'border-[#14652F] dark:border-[#2E9250] bg-[#F8F4EC] dark:bg-[#1A1E16] ' : 'border-transparent hover:bg-[#FCFAF5] dark:hover:bg-[#242A1E] ' }}">
-                        <span class="block text-[11.5px] {{ $activeTab === $tabKey ? 'font-semibold text-[#14652F] dark:text-[#339B56] ' : 'text-[#6F6B60] dark:text-[#868778] ' }}">{{ $tabLabel }}</span>
+                        <span class="block text-[13px] md:text-[11.5px] {{ $activeTab === $tabKey ? 'font-semibold text-[#14652F] dark:text-[#339B56] ' : 'text-[#6F6B60] dark:text-[#868778] ' }}">{{ $tabLabel }}</span>
                         <span class="block mt-0.5 text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($tabCount) }}</span>
                     </a>
                     @endforeach
@@ -156,33 +156,33 @@
                             @forelse($adminOrders as $o)
                             <tr>
                                 <td>
-                                    <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $o->reference ?? ('PO-' . $o->id) }}</p>
+                                    <p class="text-[15px] md:text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $o->reference ?? ('PO-' . $o->id) }}</p>
                                 </td>
                                 <td>
-                                    <p class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $o->client_name ?? '—' }}</p>
+                                    <p class="text-[15px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $o->client_name ?? '—' }}</p>
                                     @if($o->business_name)
-                                    <p class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $o->business_name }}</p>
+                                    <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $o->business_name }}</p>
                                     @endif
                                 </td>
                                 <td class="text-right font-semibold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ number_format($o->total, 0, ',', ' ') }} FCFA</td>
                                 <td class="text-center">
-                                    <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $statusPills[$o->status] ?? 'bg-[#F1EFE9] dark:bg-[#1A1E16] text-[#55524A] dark:text-[#B4B5A6] ' }}">{{ $statusLabels[$o->status] ?? $o->status }}</span>
+                                    <span class="inline-block rounded-md px-2.5 py-1 text-[12px] md:text-[10.5px] font-semibold {{ $statusPills[$o->status] ?? 'bg-[#F1EFE9] dark:bg-[#1A1E16] text-[#55524A] dark:text-[#B4B5A6] ' }}">{{ $statusLabels[$o->status] ?? $o->status }}</span>
                                 </td>
                                 <td>
                                     @if($o->payment_method)
                                         @php [$payIcon, $payClasses] = $payBadge($o->payment_method); @endphp
                                         <span class="inline-flex items-center gap-2">
                                             <span class="w-[22px] h-[22px] rounded-md flex items-center justify-center {{ $payClasses }}"><i data-lucide="{{ $payIcon }}" class="w-[13px] h-[13px]"></i></span>
-                                            <span class="text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $o->payment_method }}</span>
+                                            <span class="text-[14px] md:text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $o->payment_method }}</span>
                                         </span>
                                         @if($o->invoice_status)
-                                        <span class="ml-1.5 inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold {{ $o->invoice_status === 'paid' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDF0DC] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' }}">{{ $o->invoice_status === 'paid' ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</span>
+                                        <span class="ml-1.5 inline-block rounded-md px-2 py-0.5 text-[12px] md:text-[10px] font-semibold {{ $o->invoice_status === 'paid' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDF0DC] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' }}">{{ $o->invoice_status === 'paid' ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</span>
                                         @endif
                                     @elseif($o->invoice_status)
-                                        <span class="text-[12px] text-[#8A857A] dark:text-[#868778]">—</span>
-                                        <span class="ml-1.5 inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold {{ $o->invoice_status === 'paid' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDF0DC] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' }}">{{ $o->invoice_status === 'paid' ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</span>
+                                        <span class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">—</span>
+                                        <span class="ml-1.5 inline-block rounded-md px-2 py-0.5 text-[12px] md:text-[10px] font-semibold {{ $o->invoice_status === 'paid' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDF0DC] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' }}">{{ $o->invoice_status === 'paid' ? ($isFr ? 'Payée' : 'Paid') : ($isFr ? 'Impayée' : 'Unpaid') }}</span>
                                     @else
-                                        <span class="text-[12px] text-[#8A857A] dark:text-[#868778]">—</span>
+                                        <span class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">—</span>
                                     @endif
                                 </td>
                                 <td class="whitespace-nowrap">{{ $fmtDate($o->created_at) }}</td>
@@ -202,7 +202,7 @@
                 {{-- Pagination --}}
                 @if($adminOrders->total() > 0)
                 <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 border-t border-[#F5F1E8] dark:border-[#262B21]">
-                    <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">
+                    <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">
                         {{ $isFr
                             ? 'Affichage de ' . $adminOrders->firstItem() . ' à ' . $adminOrders->lastItem() . ' sur ' . number_format($adminOrders->total()) . ' commandes'
                             : 'Showing ' . $adminOrders->firstItem() . ' to ' . $adminOrders->lastItem() . ' of ' . number_format($adminOrders->total()) . ' orders' }}
@@ -214,9 +214,9 @@
                         </a>
                         @foreach($pgItems as $pg)
                             @if($pg === '…')
-                            <span class="inline-flex items-center justify-center w-[30px] h-[30px] text-[12px] text-[#8A857A] dark:text-[#868778]">…</span>
+                            <span class="inline-flex items-center justify-center w-[30px] h-[30px] text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">…</span>
                             @else
-                            <a href="{{ $adminOrders->url($pg) }}" class="inline-flex items-center justify-center min-w-[30px] h-[30px] px-1.5 rounded-lg text-[12px] font-semibold {{ $pg === $pgCurrent ? 'bg-[#0F4824] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'border border-[#EAE5D8] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250] hover:text-[#14652F] dark:hover:text-[#339B56] ' }}">{{ $pg }}</a>
+                            <a href="{{ $adminOrders->url($pg) }}" class="inline-flex items-center justify-center min-w-[44px] h-11 md:min-w-[30px] md:h-[30px] px-1.5 rounded-lg text-[14px] md:text-[12px] font-semibold {{ $pg === $pgCurrent ? 'bg-[#0F4824] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'border border-[#EAE5D8] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250] hover:text-[#14652F] dark:hover:text-[#339B56] ' }}">{{ $pg }}</a>
                             @endif
                         @endforeach
                         <a href="{{ $pgCurrent < $pgLast ? $adminOrders->url($pgCurrent + 1) : '#' }}" class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] {{ $pgCurrent < $pgLast ? 'hover:border-[#14652F] dark:hover:border-[#2E9250] hover:text-[#14652F] dark:hover:text-[#339B56]' : 'opacity-40 pointer-events-none' }}">
@@ -228,7 +228,7 @@
                 @endif
             </section>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-6 text-center text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                     ? '© 2025 Artisan Hub 237. Tous droits réservés.'
                     : '© 2025 Artisan Hub 237. All rights reserved.' }}

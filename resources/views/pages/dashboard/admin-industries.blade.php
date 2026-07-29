@@ -37,7 +37,7 @@
 <div class="max-w-[1400px]">
 
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <p class="flex items-center gap-1.5 text-[11.5px] text-[#8A857A] dark:text-[#868778]">
+        <p class="flex items-center gap-1.5 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
             <a href="{{ route('dashboard.admin') }}" class="hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
             <i data-lucide="chevron-right" class="w-3 h-3"></i><span>{{ $isFr ? 'Gestion du contenu' : 'Content management' }}</span>
             <i data-lucide="chevron-right" class="w-3 h-3"></i><span class="text-[#55524A] dark:text-[#B4B5A6]">{{ $pageTitle }}</span>
@@ -53,8 +53,8 @@
         <div class="ui-card">
             <span class="w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="background-color: {{ $ccTile }}"><i data-lucide="{{ $ccIcon }}" class="w-[19px] h-[19px]" style="color: {{ $ccColor }};stroke-width:1.8"></i></span>
             <p class="mt-3 text-[22px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $ccValue }}</p>
-            <p class="mt-1 text-[11.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $ccLabel }}</p>
-            <p class="mt-0.5 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $ccSub }}</p>
+            <p class="mt-1 text-[13px] md:text-[11.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $ccLabel }}</p>
+            <p class="mt-0.5 text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $ccSub }}</p>
         </div>
         @endforeach
     </section>
@@ -111,16 +111,16 @@
                                     @endif
                                     <div class="w-8 h-8 rounded-lg bg-[#F8F8F6] dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] flex items-center justify-center shrink-0"><i data-lucide="{{ $levelIcon[$lvl] ?? 'shapes' }}" class="w-4 h-4" style="color: {{ $levelColors[$lvl] ?? '#8A857A' }}"></i></div>
                                     <div class="min-w-0">
-                                        <a href="{{ request()->fullUrlWithQuery(['selected' => $row->id]) }}" class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] hover:text-[#157A43] dark:hover:text-[#339B56] truncate block max-w-[340px]">{{ $isFr ? $row->name_fr : ($row->name_en ?? $row->name_fr) }}</a>
-                                        @if($row->description_fr)<p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate max-w-[300px]">{{ $row->description_fr }}</p>@endif
+                                        <a href="{{ request()->fullUrlWithQuery(['selected' => $row->id]) }}" class="text-[15px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] hover:text-[#157A43] dark:hover:text-[#339B56] truncate block max-w-[340px]">{{ $isFr ? $row->name_fr : ($row->name_en ?? $row->name_fr) }}</a>
+                                        @if($row->description_fr)<p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] truncate max-w-[300px]">{{ $row->description_fr }}</p>@endif
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background-color: {{ $levelTile[$lvl] ?? '#F1F1EF' }}; color: {{ $levelColors[$lvl] ?? '#8A857A' }}">{{ $levelShort[$lvl] ?? ('N' . $lvl) }}</span></td>
+                            <td><span class="text-[13px] md:text-[11px] font-semibold px-2 py-0.5 rounded-full" style="background-color: {{ $levelTile[$lvl] ?? '#F1F1EF' }}; color: {{ $levelColors[$lvl] ?? '#8A857A' }}">{{ $levelShort[$lvl] ?? ('N' . $lvl) }}</span></td>
                             <td>{{ $hasKids ? number_format($row->sub_count) : '—' }}</td>
                             <td>{{ number_format($row->business_count) }}</td>
                             <td>{{ number_format($row->product_count) }}</td>
-                            <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $row->is_active ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C] ' }}">{{ $row->is_active ? ($isFr ? 'Active' : 'Active') : ($isFr ? 'Inactive' : 'Inactive') }}</span></td>
+                            <td><span class="text-[13px] md:text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $row->is_active ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C] ' }}">{{ $row->is_active ? ($isFr ? 'Active' : 'Active') : ($isFr ? 'Inactive' : 'Inactive') }}</span></td>
                             <td>
                                 <div class="flex items-center justify-end gap-1">
                                     <a href="{{ request()->fullUrlWithQuery(['selected' => $row->id]) }}" class="p-1.5 rounded-lg hover:bg-[#E2F3E8] dark:hover:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
@@ -138,11 +138,11 @@
             </div>
 
             <div class="px-5 py-3.5 border-t border-[#EFEBE2] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
-                <p class="text-[12px] text-[#8A857A] dark:text-[#868778]">{{ number_format($catKpis['total']) }} {{ $isFr ? 'catégories officielles réparties sur 4 niveaux' : 'official categories across 4 levels' }}</p>
+                <p class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">{{ number_format($catKpis['total']) }} {{ $isFr ? 'catégories officielles réparties sur 4 niveaux' : 'official categories across 4 levels' }}</p>
                 <div class="flex items-center gap-2">
-                    <button type="button" id="cat-expand-all" class="text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Tout déplier' : 'Expand all' }}</button>
+                    <button type="button" id="cat-expand-all" class="min-h-[44px] md:min-h-0 inline-flex items-center text-[14px] md:text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Tout déplier' : 'Expand all' }}</button>
                     <span class="text-[#D8D8D3] dark:text-[#868778]">·</span>
-                    <button type="button" id="cat-collapse-all" class="text-[12px] font-semibold text-[#8A857A] dark:text-[#868778] hover:underline">{{ $isFr ? 'Tout replier' : 'Collapse all' }}</button>
+                    <button type="button" id="cat-collapse-all" class="min-h-[44px] md:min-h-0 inline-flex items-center text-[14px] md:text-[12px] font-semibold text-[#8A857A] dark:text-[#868778] hover:underline">{{ $isFr ? 'Tout replier' : 'Collapse all' }}</button>
                 </div>
             </div>
         </div>
@@ -151,7 +151,7 @@
         <div class="space-y-5">
             @if($catSelected)
             <div class="ui-card">
-                <div class="flex items-center gap-2 text-[12.5px] font-semibold mb-4">
+                <div class="flex items-center gap-2 text-[14px] md:text-[12.5px] font-semibold mb-4">
                     <span class="text-[#157A43] dark:text-[#339B56] border-b-2 border-[#157A43] dark:border-[#2E9250] pb-1">{{ $isFr ? 'Détails' : 'Details' }}</span>
                     <a href="{{ request()->fullUrlWithQuery(['selected' => $catTop->first()->id ?? '']) }}" class="text-[#8A857A] dark:text-[#868778] pb-1">{{ $isFr ? 'Arborescence' : 'Tree' }}</a>
                 </div>
@@ -159,12 +159,12 @@
                     <div class="w-[52px] h-[52px] rounded-xl bg-[#F5EEDD] dark:bg-[#1A1E16] flex items-center justify-center shrink-0"><i data-lucide="{{ $catSelected->icon ?? 'shapes' }}" class="w-6 h-6 text-[#8A5A1F] dark:text-[#EDB33A]"></i></div>
                     <div class="min-w-0">
                         <p class="text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $isFr ? $catSelected->name_fr : ($catSelected->name_en ?? $catSelected->name_fr) }}</p>
-                        <span class="text-[10.5px] font-semibold px-1.5 py-0.5 rounded-full {{ $catSelected->is_active ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C] ' }}">{{ $catSelected->is_active ? ($isFr ? 'Active' : 'Active') : ($isFr ? 'Inactive' : 'Inactive') }}</span>
+                        <span class="text-[12px] md:text-[10.5px] font-semibold px-1.5 py-0.5 rounded-full {{ $catSelected->is_active ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C] ' }}">{{ $catSelected->is_active ? ($isFr ? 'Active' : 'Active') : ($isFr ? 'Inactive' : 'Inactive') }}</span>
                     </div>
                 </div>
-                <p class="text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed mb-4">{{ $catSelected->description_fr }}</p>
+                <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed mb-4">{{ $catSelected->description_fr }}</p>
 
-                <dl class="space-y-2 text-[12.5px] border-t border-[#EFEBE2] dark:border-[#262B21] pt-3">
+                <dl class="space-y-2 text-[14px] md:text-[12.5px] border-t border-[#EFEBE2] dark:border-[#262B21] pt-3">
                     <div class="flex justify-between gap-3"><dt class="text-[#8A857A] dark:text-[#868778] shrink-0">{{ $isFr ? 'Catégorie parente' : 'Parent category' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] text-right truncate">{{ $catSelectedParent->name_fr ?? '—' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Niveau' : 'Level' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ ($isFr ? 'Niveau' : 'Level') }} {{ $catSelected->level }} — {{ $levelShort[$catSelected->level] ?? '' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Sous-catégories' : 'Sub-categories' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $catSelectedSubs->count() }}</dd></div>
@@ -174,7 +174,7 @@
                     <div class="flex justify-between"><dt class="text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Dernière mise à jour' : 'Last updated' }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $fmtDate($catSelected->updated_at) }}</dd></div>
                 </dl>
 
-                <span class="mt-4 block w-full text-center border border-[#CFE0D4] dark:border-[#39402F] text-[#157A43] dark:text-[#339B56] text-[12.5px] font-semibold py-2 rounded-lg">{{ $isFr ? 'Modifier la catégorie' : 'Edit category' }}</span>
+                <span class="mt-4 block w-full text-center border border-[#CFE0D4] dark:border-[#39402F] text-[#157A43] dark:text-[#339B56] text-[14px] md:text-[12.5px] font-semibold py-2 rounded-lg">{{ $isFr ? 'Modifier la catégorie' : 'Edit category' }}</span>
             </div>
             @endif
 
@@ -182,7 +182,7 @@
                 <h3 class="ui-card-title mb-4">{{ $isFr ? 'RÉPARTITION PAR NIVEAU' : 'BREAKDOWN BY LEVEL' }}</h3>
                 <div class="flex items-center gap-4">
                     <span class="w-[80px] h-[80px] rounded-full shrink-0" style="background: {{ $levelConic }}"><span class="block w-[44px] h-[44px] rounded-full bg-white dark:bg-[#12150F] m-[18px]"></span></span>
-                    <ul class="space-y-1.5 text-[11.5px]">
+                    <ul class="space-y-1.5 text-[13px] md:text-[11.5px]">
                         @foreach($catLevelDist as $lvl => $c)
                         <li class="flex items-center gap-2 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $levelColors[$lvl] }}"></span>{{ $levelLong[$lvl] ?? ('N' . $lvl) }}<span class="font-semibold ml-auto whitespace-nowrap">{{ round($c / $levelTotal * 100, 1) }}% ({{ $c }})</span></li>
                         @endforeach
@@ -193,9 +193,9 @@
             <div class="ui-card">
                 <h3 class="ui-card-title mb-3">{{ $isFr ? 'ACTIONS RAPIDES' : 'QUICK ACTIONS' }}</h3>
                 <div class="space-y-1.5">
-                    <a href="#add-category" class="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="plus" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>{{ $isFr ? 'Ajouter une catégorie' : 'Add a category' }}</a>
-                    <a href="{{ route('admin.exports') }}" class="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="download" class="w-4 h-4 text-[#3565DE] dark:text-[#8FB6F5]"></i>{{ $isFr ? 'Exporter la structure' : 'Export the structure' }}</a>
-                    <a href="{{ route('industries.index', ['lang' => $lang]) }}" target="_blank" class="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="external-link" class="w-4 h-4 text-[#7C4FE0] dark:text-[#BCA4F0]"></i>{{ $isFr ? 'Voir la page publique' : 'View public page' }}</a>
+                    <a href="#add-category" class="flex items-center gap-2.5 px-2 py-2 min-h-[44px] md:min-h-0 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="plus" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>{{ $isFr ? 'Ajouter une catégorie' : 'Add a category' }}</a>
+                    <a href="{{ route('admin.exports') }}" class="flex items-center gap-2.5 px-2 py-2 min-h-[44px] md:min-h-0 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="download" class="w-4 h-4 text-[#3565DE] dark:text-[#8FB6F5]"></i>{{ $isFr ? 'Exporter la structure' : 'Export the structure' }}</a>
+                    <a href="{{ route('industries.index', ['lang' => $lang]) }}" target="_blank" class="flex items-center gap-2.5 px-2 py-2 min-h-[44px] md:min-h-0 rounded-lg hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="external-link" class="w-4 h-4 text-[#7C4FE0] dark:text-[#BCA4F0]"></i>{{ $isFr ? 'Voir la page publique' : 'View public page' }}</a>
                 </div>
             </div>
         </div>
@@ -204,7 +204,7 @@
     {{-- Add-category form (project adaptation: anchored section, PNG's toolbar button links here) --}}
     <div id="add-category" class="ui-card mt-5">
         <h2 class="ui-card-title mb-1">{{ $isFr ? 'AJOUTER UNE CATÉGORIE' : 'ADD A CATEGORY' }}</h2>
-        <p class="text-[12px] text-[#8A857A] dark:text-[#868778] mb-4">{{ $isFr ? 'La création de catégories se gère actuellement via les migrations de contenu — contactez un administrateur système pour ajouter une nouvelle catégorie ou sous-catégorie.' : 'Category creation is currently managed via content migrations — contact a system administrator to add a new category or sub-category.' }}</p>
+        <p class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778] mb-4">{{ $isFr ? 'La création de catégories se gère actuellement via les migrations de contenu — contactez un administrateur système pour ajouter une nouvelle catégorie ou sous-catégorie.' : 'Category creation is currently managed via content migrations — contact a system administrator to add a new category or sub-category.' }}</p>
     </div>
 </div>
 

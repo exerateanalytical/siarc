@@ -123,7 +123,7 @@
 
 @section('content')
             @if(session('status'))
-            <div class="mb-4 bg-[#E9F3DE] dark:bg-[#0C3D1D] border border-[#BFDCAA] dark:border-[#39402F] text-[#2E6B34] dark:text-[#339B56] text-[12.5px] font-medium rounded-xl px-4 py-2.5">{{ session('status') }}</div>
+            <div class="mb-4 bg-[#E9F3DE] dark:bg-[#0C3D1D] border border-[#BFDCAA] dark:border-[#39402F] text-[#2E6B34] dark:text-[#339B56] text-[14px] md:text-[12.5px] font-medium rounded-xl px-4 py-2.5">{{ session('status') }}</div>
             @endif
             <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_270px] gap-5 items-start">
 
@@ -137,8 +137,8 @@
                                 <span class="w-[46px] h-[46px] shrink-0 rounded-xl grid place-items-center text-white" style="background:{{ $cIcon[1] }}" aria-hidden="true"><i data-lucide="{{ $cIcon[0] }}" class="w-[23px] h-[23px]" stroke-width="1.9"></i></span>
                                 <div class="min-w-0">
                                     <p class="text-[20px] font-bold text-[#23231F] dark:text-[#F3EFE7] leading-tight">{{ $cValue }}</p>
-                                    <p class="text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
-                                    @if($cSub !== '')<p class="mt-1.5 text-[11px] font-semibold text-[#6F6B60] dark:text-[#868778]">{{ $cSub }}</p>@endif
+                                    <p class="text-[13px] md:text-[11.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] leading-snug">{{ $cLabel }}</p>
+                                    @if($cSub !== '')<p class="mt-1.5 text-[13px] md:text-[11px] font-semibold text-[#6F6B60] dark:text-[#868778]">{{ $cSub }}</p>@endif
                                 </div>
                             </div>
                         </div>
@@ -209,25 +209,25 @@
                                                 @php [$fiName, $fiLight, $fiDark] = $fileIcon[$e->format] ?? $fileIcon['csv']; @endphp
                                                 <i data-lucide="{{ $fiName }}" class="w-[26px] h-[26px] shrink-0 text-[{{ $fiLight }}] dark:text-[{{ $fiDark }}]" stroke-width="1.7" role="img" aria-label="{{ strtoupper($e->format) }}"></i>
                                                 <span class="min-w-0">
-                                                    <span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] truncate">{{ $e->name }}</span>
-                                                    <span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ number_format($e->records) }} {{ $e->counts_files ? ($isFr ? 'fichiers' : 'files') : ($isFr ? 'enregistrements' : 'records') }}</span>
+                                                    <span class="block text-[15px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] truncate">{{ $e->name }}</span>
+                                                    <span class="block text-[13px] md:text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ number_format($e->records) }} {{ $e->counts_files ? ($isFr ? 'fichiers' : 'files') : ($isFr ? 'enregistrements' : 'records') }}</span>
                                                 </span>
                                             </div>
                                         </td>
                                         <td class="whitespace-nowrap">{{ $datasets[$e->dataset] ?? $e->dataset }}</td>
-                                        <td><span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-bold tracking-[0.04em] {{ $fpCls }}">{{ $fpLabel }}</span></td>
+                                        <td><span class="inline-block rounded-md px-2.5 py-1 text-[12px] md:text-[10.5px] font-bold tracking-[0.04em] {{ $fpCls }}">{{ $fpLabel }}</span></td>
                                         <td class="whitespace-nowrap">
-                                            <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold {{ $stText }}">
+                                            <span class="inline-flex items-center gap-1.5 text-[14px] md:text-[12px] font-semibold {{ $stText }}">
                                                 @if($stIcon === 'dot')<span class="w-2 h-2 rounded-full shrink-0 {{ $e->status === 'en_cours' ? 'bg-[#DF860A] dark:bg-[#3A2B06] ' : 'bg-[#1B62BC]' }}"></span>
                                                 @else<i data-lucide="{{ $stIcon }}" class="w-[15px] h-[15px] shrink-0"></i>@endif
                                                 {{ $stLabel }}
                                             </span>
                                         </td>
                                         <td class="font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $dexSize($e->size_bytes) }}</td>
-                                        <td class="whitespace-nowrap"><span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $dexDate($e->created_at) }}</span><span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($e->created_at)->format('H:i') }}</span></td>
+                                        <td class="whitespace-nowrap"><span class="block text-[14px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $dexDate($e->created_at) }}</span><span class="block text-[13px] md:text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($e->created_at)->format('H:i') }}</span></td>
                                         <td class="whitespace-nowrap">
-                                            @if($e->expires_at)<span class="block text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $dexDate($e->expires_at) }}</span><span class="block text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($e->expires_at)->format('H:i') }}</span>
-                                            @else<span class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">–</span>@endif
+                                            @if($e->expires_at)<span class="block text-[14px] md:text-[12.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7]">{{ $dexDate($e->expires_at) }}</span><span class="block text-[13px] md:text-[11.5px] text-[#8A8578] dark:text-[#868778]">{{ \Carbon\Carbon::parse($e->expires_at)->format('H:i') }}</span>
+                                            @else<span class="text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">–</span>@endif
                                         </td>
                                         <td>
                                             <div class="flex items-center justify-end gap-1.5">
@@ -271,7 +271,7 @@
 
                         {{-- Pagination --}}
                         <div class="mt-4 pt-4 border-t border-[#F5EBDA] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
-                            <p class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
+                            <p class="text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
                                 {{ $isFr ? 'Affichage de' : 'Showing' }} {{ $exports->firstItem() ?? 0 }} {{ $isFr ? 'à' : 'to' }} {{ $exports->lastItem() ?? 0 }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($exports->total()) }} {{ $isFr ? 'exports' : 'exports' }}
                             </p>
                             <div class="flex items-center gap-1.5">
@@ -317,7 +317,7 @@
                             <span class="w-[88px] h-[88px] rounded-full shrink-0" style="background: {{ $dexConic }}"><span class="block w-[48px] h-[48px] rounded-full bg-[#FEFAF4] dark:bg-[#12150F] m-[20px]"></span></span>
                             <div class="flex-1 space-y-2">
                                 @foreach($dexLegend as [$dlColor, $dlName, $dlValue])
-                                <div class="flex items-center justify-between gap-2 text-[11px]">
+                                <div class="flex items-center justify-between gap-2 text-[13px] md:text-[11px]">
                                     <span class="flex items-center gap-1.5 font-medium text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $dlColor }}"></span>{{ $dlName }}</span>
                                     <span class="font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $dlValue }}</span>
                                 </div>
@@ -333,13 +333,13 @@
                             @forelse($typeBars as [$tIcon, $tLabel, $tValue, $tColor, $tPct])
                             <div>
                                 <div class="flex items-center justify-between gap-2">
-                                    <span class="flex items-center gap-2 text-[12px] font-medium text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="{{ $tIcon }}" class="w-[18px] h-[18px] shrink-0" style="color:{{ $tColor }}" aria-hidden="true"></i>{{ $tLabel }}</span>
-                                    <span class="text-[11.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $tValue }}</span>
+                                    <span class="flex items-center gap-2 text-[14px] md:text-[12px] font-medium text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="{{ $tIcon }}" class="w-[18px] h-[18px] shrink-0" style="color:{{ $tColor }}" aria-hidden="true"></i>{{ $tLabel }}</span>
+                                    <span class="text-[13px] md:text-[11.5px] font-semibold text-[#23231F] dark:text-[#F3EFE7] whitespace-nowrap">{{ $tValue }}</span>
                                 </div>
                                 <div class="mt-1.5 h-[6px] rounded-full bg-[#F3E9DA] dark:bg-[#1A1E16] overflow-hidden"><span class="block h-full rounded-full" style="width: {{ $tPct }}%; background-color: {{ $tColor }}"></span></div>
                             </div>
                             @empty
-                            <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
+                            <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée pour le moment.' : 'No data yet.' }}</p>
                             @endforelse
                         </div>
                     </section>
@@ -349,7 +349,7 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-3 space-y-1">
                             @foreach($quickActions as [$qIcon, $qLabel, $qUrl])
-                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 group"><i data-lucide="{{ $qIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#8A5A16] dark:text-[#EDB33A]" stroke-width="1.9" aria-hidden="true"></i><span class="text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
+                            <a href="{{ $qUrl }}" class="flex items-center gap-3 py-1.5 min-h-[44px] md:min-h-0 group"><i data-lucide="{{ $qIcon }}" class="w-[18px] h-[18px] shrink-0 text-[#8A5A16] dark:text-[#EDB33A]" stroke-width="1.9" aria-hidden="true"></i><span class="text-[14px] md:text-[12.5px] font-medium text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qLabel }}</span></a>
                             @endforeach
                         </div>
                     </section>

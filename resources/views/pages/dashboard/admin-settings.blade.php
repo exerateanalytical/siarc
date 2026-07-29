@@ -214,7 +214,7 @@ $tinyBtn  = 'ui-btn ui-btn-secondary ui-btn-sm';
                 <option value="home" @selected($p('landing_page', 'directory') === 'home')>{{ $isFr ? 'Accueil (hero, mise en avant)' : 'Home (hero, spotlight)' }}</option>
                 <option value="directory" @selected($p('landing_page', 'directory') === 'directory')>{{ $isFr ? 'Annuaire des artisans' : 'Artisan directory' }}</option>
             </select>
-            <p class="mt-1 text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
+            <p class="mt-1 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'La page affichée à la racine du site (/).' : 'The page shown at the site root (/).' }}</p>
         </div>
         <button type="submit" class="{{ $greenBtn }}">
             <i data-lucide="check" class="w-4 h-4"></i>
@@ -730,7 +730,7 @@ function removeChip(btn) {
             </div>
             <h3 class="ui-card-title">{{ $isFr ? 'Sauvegardes de la base de données' : 'Database backups' }}</h3>
         </div>
-        <p class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
+        <p class="text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]">
             {{ $isFr
                 ? 'Les sauvegardes de la base de données sont gérées au niveau de l\'infrastructure (sauvegarde quotidienne automatique du serveur). Toutes les actions d\'administration sont tracées dans le journal d\'audit et peuvent être consultées à tout moment.'
                 : 'Database backups are handled at the infrastructure level (automatic daily server backup). Every admin action is recorded in the audit log and can be reviewed at any time.' }}

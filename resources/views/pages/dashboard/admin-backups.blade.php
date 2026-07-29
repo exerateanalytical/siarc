@@ -52,12 +52,12 @@
                     <div class="flex items-start gap-3.5">
                         <span class="w-[46px] h-[46px] rounded-xl flex items-center justify-center shrink-0" style="background-color: {{ $cTile }}"><i data-lucide="{{ $cIcon }}" class="w-[22px] h-[22px]" style="color: {{ $cColor }};stroke-width:1.7"></i></span>
                         <div class="min-w-0">
-                            <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $cLabel }}</p>
+                            <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $cLabel }}</p>
                             <p class="text-[17px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $cValue }}</p>
-                            <p class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $cSub }}</p>
+                            <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $cSub }}</p>
                         </div>
                     </div>
-                    <span class="mt-2.5 inline-block rounded-md px-2 py-0.5 text-[10.5px] font-semibold {{ $cBadgeCls }}">{{ $cBadge }}</span>
+                    <span class="mt-2.5 inline-block rounded-md px-2 py-0.5 text-[12px] md:text-[10.5px] font-semibold {{ $cBadgeCls }}">{{ $cBadge }}</span>
                 </div>
                 @endforeach
             </section>
@@ -95,11 +95,11 @@
                                 <tbody>
                                     @foreach($backups as $b)
                                     <tr>
-                                        <td class="text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $dt($b->created_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">({{ $b->mode === 'manual' ? ($isFr?'Manuel':'Manual') : ($isFr?'Automatique':'Automatic') }})</span></td>
-                                        <td><a href="{{ route('admin.backups.detail', ['id'=>$b->id, 'lang'=>$lang]) }}" class="text-[12.5px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ $b->filename }}</a><br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $b->contents }}</span></td>
-                                        <td><span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold {{ $b->type === 'full' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#E8EFFB] dark:bg-[#101C33] text-[#3565DE] dark:text-[#8FB6F5] ' }}">{{ $b->type === 'full' ? ($isFr?'Complet':'Full') : ($isFr?'Base de données':'Database') }}</span></td>
+                                        <td class="text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $dt($b->created_at) }}<br><span class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">({{ $b->mode === 'manual' ? ($isFr?'Manuel':'Manual') : ($isFr?'Automatique':'Automatic') }})</span></td>
+                                        <td><a href="{{ route('admin.backups.detail', ['id'=>$b->id, 'lang'=>$lang]) }}" class="text-[15px] md:text-[12.5px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ $b->filename }}</a><br><span class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $b->contents }}</span></td>
+                                        <td><span class="inline-block rounded-md px-2 py-0.5 text-[13px] md:text-[11px] font-semibold {{ $b->type === 'full' ? 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] ' : 'bg-[#E8EFFB] dark:bg-[#101C33] text-[#3565DE] dark:text-[#8FB6F5] ' }}">{{ $b->type === 'full' ? ($isFr?'Complet':'Full') : ($isFr?'Base de données':'Database') }}</span></td>
                                         <td>{{ $sizeGb($b->size_mb) }}</td>
-                                        <td><span class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#157A43] dark:text-[#339B56]"><i data-lucide="circle-check" class="w-3.5 h-3.5"></i>{{ $isFr?'Réussi':'Success' }}</span></td>
+                                        <td><span class="inline-flex items-center gap-1.5 text-[14px] md:text-[12px] font-semibold text-[#157A43] dark:text-[#339B56]"><i data-lucide="circle-check" class="w-3.5 h-3.5"></i>{{ $isFr?'Réussi':'Success' }}</span></td>
                                         <td><div class="flex items-center justify-end gap-1.5">
                                             <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr?'Télécharger':'Download' }}"><i data-lucide="download" class="w-4 h-4"></i></a>
                                             <a href="{{ route('admin.backups.detail', ['id'=>$b->id, 'lang'=>$lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
@@ -111,13 +111,13 @@
                         </div>
                         @if($backups->hasPages())
                         <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                            <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $backups->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $backups->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $backups->total() }} {{ $isFr ? 'sauvegardes' : 'backups' }}</p>
+                            <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $backups->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $backups->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $backups->total() }} {{ $isFr ? 'sauvegardes' : 'backups' }}</p>
                             <div class="flex items-center gap-1.5">
                                 @if($backups->onFirstPage())<span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
                                 @else<a href="{{ $backups->previousPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md"><i data-lucide="chevron-left" class="w-4 h-4"></i></a>@endif
                                 @foreach($backups->getUrlRange(1, $backups->lastPage()) as $pn => $url)
-                                @if($pn === $backups->currentPage())<span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
-                                @else<a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pn }}</a>@endif
+                                @if($pn === $backups->currentPage())<span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[14px] md:text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
+                                @else<a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pn }}</a>@endif
                                 @endforeach
                                 @if($backups->hasMorePages())<a href="{{ $backups->nextPageUrl() }}" class="w-8 h-8 flex items-center justify-center text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md"><i data-lucide="chevron-right" class="w-4 h-4"></i></a>
                                 @else<span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>@endif
@@ -142,7 +142,7 @@
                                     @foreach($logs as $log)
                                     <tr>
                                         <td class="whitespace-nowrap">{{ \Carbon\Carbon::parse($log->logged_at)->format('d M Y, H:i:s') }}</td>
-                                        <td><span class="inline-block rounded-md px-2 py-0.5 text-[10.5px] font-bold {{ $log->level === 'warning' ? 'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' : ($log->level === 'error' ? 'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C] : 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]') }}">{{ strtoupper($log->level) }}</span></td>
+                                        <td><span class="inline-block rounded-md px-2 py-0.5 text-[12px] md:text-[10.5px] font-bold {{ $log->level === 'warning' ? 'bg-[#FDF3E0] dark:bg-[#3A2B06] text-[#C97A16] dark:text-[#EDB33A] ' : ($log->level === 'error' ? 'bg-[#FDE8E8] dark:bg-[#3A1013] text-[#DC2626] dark:text-[#F0555C] ' : 'bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56]') }}">{{ strtoupper($log->level) }}</span></td>
                                         <td class="font-medium text-[#1B1B18] dark:text-[#F3EFE7]">{{ $log->event }}</td>
                                         <td>{{ $log->description }}</td>
                                         <td>{{ $log->actor }}</td>
@@ -151,7 +151,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tous les logs' : 'View all logs' }} <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                        <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="mt-3 inline-flex items-center gap-1.5 text-[14px] md:text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tous les logs' : 'View all logs' }} <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
                     </section>
                 </div>
 
@@ -162,27 +162,27 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Utilisation du stockage' : 'Storage usage' }}</h2>
                         <div class="mt-4 flex items-center gap-4">
                             <span class="relative w-[100px] h-[100px] rounded-full shrink-0" style="background: conic-gradient(#157A43 0deg {{ $usedPct * 3.6 }}deg, #C9942E {{ $usedPct * 3.6 }}deg {{ ($usedPct + ($availGb/$stats['total_gb']*100)) * 3.6 }}deg, #E5E7E5 {{ ($usedPct + ($availGb/$stats['total_gb']*100)) * 3.6 }}deg 360deg)">
-                                <span class="absolute inset-[16px] rounded-full bg-white dark:bg-[#12150F] flex flex-col items-center justify-center"><span class="text-[18px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $usedPct }}%</span><span class="text-[9px] text-[#8A857A] dark:text-[#868778]">{{ $isFr?'Utilisé':'Used' }}</span></span>
+                                <span class="absolute inset-[16px] rounded-full bg-white dark:bg-[#12150F] flex flex-col items-center justify-center"><span class="text-[18px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $usedPct }}%</span><span class="text-[12px] md:text-[9px] text-[#8A857A] dark:text-[#868778]">{{ $isFr?'Utilisé':'Used' }}</span></span>
                             </span>
-                            <div class="flex-1 space-y-1.5 text-[11.5px]">
+                            <div class="flex-1 space-y-1.5 text-[13px] md:text-[11.5px]">
                                 <div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full bg-[#157A43] dark:bg-[#2E9250]"></span>{{ $isFr?'Utilisé':'Used' }}</span><span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $stats['used_gb'] }} GB</span></div>
                                 <div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full bg-[#C9942E] dark:bg-[#3A2B06]"></span>{{ $isFr?'Disponible':'Available' }}</span><span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($availGb, 1) }} GB</span></div>
                                 <div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full bg-[#E5E7E5] dark:bg-[#1A1E16]"></span>Total</span><span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $stats['total_gb'] }} GB</span></div>
                             </div>
                         </div>
-                        <div class="mt-3 bg-[#FBF6EA] dark:bg-[#1A1E16] border border-[#EAD9AC] dark:border-[#4A3A12] rounded-xl px-3.5 py-2.5 flex items-start gap-2.5 text-[11px] text-[#7A5A12] dark:text-[#EDB33A]"><i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i><span>{{ $isFr ? 'Nous vous recommandons de garder au moins 20% d\'espace libre pour de meilleures performances.' : 'We recommend keeping at least 20% free space for better performance.' }}</span></div>
+                        <div class="mt-3 bg-[#FBF6EA] dark:bg-[#1A1E16] border border-[#EAD9AC] dark:border-[#4A3A12] rounded-xl px-3.5 py-2.5 flex items-start gap-2.5 text-[13px] md:text-[11px] text-[#7A5A12] dark:text-[#EDB33A]"><i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i><span>{{ $isFr ? 'Nous vous recommandons de garder au moins 20% d\'espace libre pour de meilleures performances.' : 'We recommend keeping at least 20% free space for better performance.' }}</span></div>
                     </section>
                     @endif
 
                     @if($sysInfo)
                     <section class="ui-card">
                         <h2 class="ui-card-title">{{ $isFr ? 'Informations du système' : 'System information' }}</h2>
-                        <dl class="mt-3.5 space-y-2.5 text-[12px]">
+                        <dl class="mt-3.5 space-y-2.5 text-[14px] md:text-[12px]">
                             @foreach($sysInfo as [$sLabel, $sVal])
                             <div class="flex items-center justify-between gap-3"><dt class="text-[#6F6B60] dark:text-[#868778]">{{ $sLabel }}</dt><dd class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] text-right">{{ $sVal }}</dd></div>
                             @endforeach
                         </dl>
-                        <a href="{{ route('admin.settings', ['lang'=>$lang]) }}" class="mt-4 block text-center bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] rounded-lg py-2.5 text-[12.5px] font-semibold text-white dark:text-[#04150A] transition-colors">{{ $isFr ? 'Modifier les paramètres' : 'Edit settings' }}</a>
+                        <a href="{{ route('admin.settings', ['lang'=>$lang]) }}" class="mt-4 block text-center bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] rounded-lg py-2.5 text-[14px] md:text-[12.5px] font-semibold text-white dark:text-[#04150A] transition-colors">{{ $isFr ? 'Modifier les paramètres' : 'Edit settings' }}</a>
                     </section>
                     @endif
 
@@ -190,17 +190,17 @@
                         <h2 class="ui-card-title">{{ $isFr ? 'Actions rapides' : 'Quick actions' }}</h2>
                         <div class="mt-2 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                             <form method="POST" action="{{ route('admin.backups.create') }}">@csrf<input type="hidden" name="lang" value="{{ $lang }}">
-                                <button type="submit" class="w-full flex items-center gap-3 py-2.5 group text-left"><i data-lucide="database-backup" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Créer une sauvegarde maintenant' : 'Create a backup now' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></button>
+                                <button type="submit" class="w-full flex items-center gap-3 py-2.5 group text-left"><i data-lucide="database-backup" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Créer une sauvegarde maintenant' : 'Create a backup now' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></button>
                             </form>
-                            <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="download" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Télécharger tous les backups' : 'Download all backups' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></a>
+                            <a href="{{ route('admin.exports', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="download" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Télécharger tous les backups' : 'Download all backups' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></a>
                             <form method="POST" action="{{ route('admin.backups.clean') }}">@csrf<input type="hidden" name="lang" value="{{ $lang }}">
-                                <button type="submit" class="w-full flex items-center gap-3 py-2.5 group text-left"><i data-lucide="trash-2" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Nettoyer les backups anciens' : 'Clean old backups' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></button>
+                                <button type="submit" class="w-full flex items-center gap-3 py-2.5 group text-left"><i data-lucide="trash-2" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Nettoyer les backups anciens' : 'Clean old backups' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></button>
                             </form>
-                            <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="shield-check" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Vérifier l\'intégrité des backups' : 'Verify backup integrity' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></a>
+                            <a href="{{ route('admin.audit-log', ['lang'=>$lang]) }}" class="flex items-center gap-3 py-2.5 group"><i data-lucide="shield-check" class="w-[16px] h-[16px] text-[#157A43] dark:text-[#339B56]"></i><span class="flex-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $isFr ? 'Vérifier l\'intégrité des backups' : 'Verify backup integrity' }}</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9] dark:text-[#868778]"></i></a>
                         </div>
                     </section>
                 </aside>
             </div>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

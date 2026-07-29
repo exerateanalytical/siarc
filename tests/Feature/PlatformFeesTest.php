@@ -128,9 +128,9 @@ class PlatformFeesTest extends TestCase
         $this->withConfiguredMethod();
 
         $b = $this->importedProfile('AD-1', 'NOURIDINE HAMADOU');
-        $plan = $this->planRow('premium');
+        $plan = $this->planRow('cooperative');
 
-        $payment = PlatformFees::openRegistration($b, 'premium');
+        $payment = PlatformFees::openRegistration($b, 'cooperative');
 
         // bccomp, not ==: a float round trip through the decimal column is
         // exactly the bug this assertion exists to catch.

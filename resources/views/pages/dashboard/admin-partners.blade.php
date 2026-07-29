@@ -72,8 +72,8 @@
                         <i data-lucide="{{ $pcIcon }}" class="w-[22px] h-[22px]" style="color: {{ $pcColor }};stroke-width:1.8"></i>
                     </span>
                     <p class="mt-3 text-[24px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $pcValue }}</p>
-                    <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $pcLabel }}</p>
-                    <p class="mt-0.5 text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $pcSub }}</p>
+                    <p class="mt-1 text-[14px] md:text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $pcLabel }}</p>
+                    <p class="mt-0.5 text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $pcSub }}</p>
                     <svg viewBox="0 0 120 28" class="mt-2 w-full h-[26px]" preserveAspectRatio="none" aria-hidden="true">
                         <polyline points="0,20 15,16 30,18 45,10 60,14 75,7 90,11 105,5 120,8" fill="none" stroke="{{ $pcSpark }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
                     </svg>
@@ -144,17 +144,17 @@
                                                 @endif
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</p>
-                                                <p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $partner->contact_email }}</p>
+                                                <p class="text-[15px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</p>
+                                                <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $partner->contact_email }}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778] ' }}">{{ $partner->partner_type }}</span></td>
+                                    <td><span class="text-[13px] md:text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778] ' }}">{{ $partner->partner_type }}</span></td>
                                     <td><span class="inline-flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i>{{ $partner->country }}</span></td>
                                     <td>{{ $partner->sector_fr }}</td>
                                     <td>
                                         @php [$sCls, $sLabel] = $statusCls[$partner->status] ?? ['bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778]', $partner->status]; @endphp
-                                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $sCls }}">{{ $sLabel }}</span>
+                                        <span class="text-[13px] md:text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $sCls }}">{{ $sLabel }}</span>
                                     </td>
                                     <td>{{ $fmtDate($partner->start_date) }}</td>
                                     <td>
@@ -188,7 +188,7 @@
 
                     @if($partners->total() > 0)
                     <div class="px-5 py-3.5 border-t border-[#EFEBE2] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
-                        <p class="text-[12px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $partners->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $partners->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $partners->total() }} {{ $isFr ? 'partenaires' : 'partners' }}</p>
+                        <p class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $partners->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $partners->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $partners->total() }} {{ $isFr ? 'partenaires' : 'partners' }}</p>
                         <div class="flex items-center gap-1">
                             {{ $partners->onEachSide(1)->links() }}
                         </div>
@@ -204,7 +204,7 @@
                             <span class="w-[96px] h-[96px] rounded-full shrink-0" style="background: {{ $typeConic }}"><span class="block w-[52px] h-[52px] rounded-full bg-[#FEFAF4] dark:bg-[#12150F] m-[22px]"></span></span>
                             <ul class="space-y-1.5 min-w-0">
                                 @foreach($byTypePct as $tName => $pct)
-                                <li class="flex items-center gap-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">
+                                <li class="flex items-center gap-2 text-[14px] md:text-[12px] text-[#3B382F] dark:text-[#B4B5A6]">
                                     <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $donutColors[$tName] ?? '#8A857A' }}"></span>
                                     <span class="flex-1 truncate">{{ $tName }}</span>
                                     <span class="font-semibold shrink-0">{{ $pct }}% ({{ $byType[$tName] }})</span>
@@ -219,7 +219,7 @@
                         <div class="space-y-3">
                             @foreach($bySectorPct as $secName => $pct)
                             <div>
-                                <div class="flex items-center justify-between text-[12px] mb-1">
+                                <div class="flex items-center justify-between text-[14px] md:text-[12px] mb-1">
                                     <span class="text-[#3B382F] dark:text-[#B4B5A6] truncate">{{ $secName }}</span>
                                     <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7] shrink-0">{{ $pct }}% ({{ $bySector[$secName] }})</span>
                                 </div>
@@ -239,8 +239,8 @@
 
                     <div class="relative rounded-2xl p-5 text-white overflow-hidden" style="background: linear-gradient(135deg, #0A2E18, #0F4824)">
                         <img src="{{ asset('images/landing/hh-statue.png') }}" alt="" class="absolute right-2 bottom-0 h-[90%] w-auto opacity-90" aria-hidden="true">
-                        <p class="relative text-[12.5px] italic leading-relaxed max-w-[75%]">{{ $isFr ? 'Nos partenaires sont les piliers de notre mission. Ensemble, construisons un avenir durable.' : 'Our partners are the pillars of our mission. Together, let\'s build a sustainable future.' }}</p>
-                        <p class="relative mt-2 text-[10px] tracking-[0.2em] text-[#E9C25A]">••《•》••</p>
+                        <p class="relative text-[14px] md:text-[12.5px] italic leading-relaxed max-w-[75%]">{{ $isFr ? 'Nos partenaires sont les piliers de notre mission. Ensemble, construisons un avenir durable.' : 'Our partners are the pillars of our mission. Together, let\'s build a sustainable future.' }}</p>
+                        <p class="relative mt-2 text-[12px] md:text-[10px] tracking-[0.2em] text-[#E9C25A]">••《•》••</p>
                     </div>
                 </div>
             </div>
@@ -249,10 +249,10 @@
             <div class="ui-card mt-5 flex flex-wrap items-center gap-6 justify-between">
                 <div class="max-w-[520px]">
                     <h3 class="ui-card-title mb-1.5">{{ $isFr ? 'DEVENIR PARTENAIRE' : 'BECOME A PARTNER' }}</h3>
-                    <p class="text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? 'Rejoignez notre réseau de partenaires et contribuez à la valorisation de l\'artisanat camerounais et africain.' : 'Join our partner network and contribute to promoting Cameroonian and African craftsmanship.' }}</p>
+                    <p class="text-[14px] md:text-[12.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? 'Rejoignez notre réseau de partenaires et contribuez à la valorisation de l\'artisanat camerounais et africain.' : 'Join our partner network and contribute to promoting Cameroonian and African craftsmanship.' }}</p>
                     <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
                         @foreach(($isFr ? ['handshake'=>'Visibilité accrue','heart'=>'Impact durable','users'=>'Réseau influent','layers'=>'Projets collaboratifs'] : ['handshake'=>'Increased visibility','heart'=>'Lasting impact','users'=>'Influential network','layers'=>'Collaborative projects']) as $icon => $label)
-                        <span class="flex items-center gap-1.5 text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="{{ $icon }}" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>{{ $label }}</span>
+                        <span class="flex items-center gap-1.5 text-[14px] md:text-[12px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="{{ $icon }}" class="w-4 h-4 text-[#157A43] dark:text-[#339B56]"></i>{{ $label }}</span>
                         @endforeach
                     </div>
                 </div>

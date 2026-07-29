@@ -66,9 +66,9 @@
                 @foreach($tabs as [$tabKey, $tabLabel, $tabCount])
                 @php $tabActive = $curStatut === $tabKey; @endphp
                 <a href="{{ route('admin.artisans', array_filter(['lang' => $lang, 'statut' => $tabKey])) }}"
-                   class="inline-flex items-center gap-1.5 rounded-t-lg px-3.5 py-2 text-[12.5px] border border-b-0 {{ $tabActive ? 'bg-white dark:bg-[#12150F] border-[#EAE5D8] dark:border-[#262B21] font-bold text-[#0F4824] dark:text-[#339B56] ' : 'bg-transparent border-transparent text-[#6F6B60] dark:text-[#868778] hover:text-[#1B1B18] dark:hover:text-[#F3EFE7] ' }}">
+                   class="inline-flex items-center gap-1.5 rounded-t-lg px-3.5 py-2 min-h-[44px] md:min-h-0 text-[14px] md:text-[12.5px] border border-b-0 {{ $tabActive ? 'bg-white dark:bg-[#12150F] border-[#EAE5D8] dark:border-[#262B21] font-bold text-[#0F4824] dark:text-[#339B56] ' : 'bg-transparent border-transparent text-[#6F6B60] dark:text-[#868778] hover:text-[#1B1B18] dark:hover:text-[#F3EFE7] ' }}">
                     {{ $tabLabel }}
-                    <span class="text-[11px] {{ $tabActive ? 'text-[#157A43] dark:text-[#339B56] ' : 'text-[#8A857A] dark:text-[#868778] ' }}">({{ $fmtNum($tabCount) }})</span>
+                    <span class="text-[13px] md:text-[11px] {{ $tabActive ? 'text-[#157A43] dark:text-[#339B56] ' : 'text-[#8A857A] dark:text-[#868778] ' }}">({{ $fmtNum($tabCount) }})</span>
                 </a>
                 @endforeach
             </div>
@@ -146,18 +146,18 @@
                                         </div>
                                         @endif
                                         <div class="min-w-0">
-                                            <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $a->user_name ?? $a->business_name }}</p>
-                                            <p class="text-[11px] text-[#8A857A] dark:text-[#868778]">#{{ $ref }}</p>
+                                            <p class="text-[15px] md:text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $a->user_name ?? $a->business_name }}</p>
+                                            <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">#{{ $ref }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td>{{ $isFr ? ($a->region_fr ?? '—') : ($a->region_en ?? $a->region_fr ?? '—') }}</td>
                                 <td>{{ $isFr ? ($a->metier_fr ?? '—') : ($a->metier_en ?? $a->metier_fr ?? '—') }}</td>
                                 <td class="text-center">
-                                    <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $st['pill'] }}">{{ $st['label'] }}</span>
+                                    <span class="inline-block rounded-md px-2.5 py-1 text-[12px] md:text-[10.5px] font-semibold {{ $st['pill'] }}">{{ $st['label'] }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="inline-block rounded-md px-2.5 py-1 text-[10.5px] font-semibold {{ $ky['pill'] }}">{{ $ky['label'] }}</span>
+                                    <span class="inline-block rounded-md px-2.5 py-1 text-[12px] md:text-[10.5px] font-semibold {{ $ky['pill'] }}">{{ $ky['label'] }}</span>
                                 </td>
                                 <td class="whitespace-nowrap">{{ $fmtDate($a->created_at) }}</td>
                                 <td class="text-right whitespace-nowrap">
@@ -175,7 +175,7 @@
 
                 <!-- Pagination -->
                 <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 border-t border-[#F5F1E8] dark:border-[#262B21]">
-                    <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">
+                    <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">
                         {{ $isFr
                             ? 'Affichage de ' . ($artisans->firstItem() ?? 0) . ' à ' . ($artisans->lastItem() ?? 0) . ' sur ' . $fmtNum($artisans->total()) . ' artisans'
                             : 'Showing ' . ($artisans->firstItem() ?? 0) . ' to ' . ($artisans->lastItem() ?? 0) . ' of ' . $fmtNum($artisans->total()) . ' artisans' }}
@@ -195,21 +195,21 @@
                         @endif
 
                         @if($pgStart > 1)
-                        <a href="{{ $artisans->url(1) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">1</a>
-                        @if($pgStart > 2)<span class="px-1 text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">…</span>@endif
+                        <a href="{{ $artisans->url(1) }}" class="w-8 h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">1</a>
+                        @if($pgStart > 2)<span class="px-1 text-[14px] md:text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">…</span>@endif
                         @endif
 
                         @foreach(range($pgStart, $pgEnd) as $pageNum)
                         @if($pageNum === $pgCur)
-                        <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                        <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[14px] md:text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
                         @else
-                        <a href="{{ $artisans->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pageNum }}</a>
+                        <a href="{{ $artisans->url($pageNum) }}" class="w-8 h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pageNum }}</a>
                         @endif
                         @endforeach
 
                         @if($pgEnd < $pgLast)
-                        @if($pgEnd < $pgLast - 1)<span class="px-1 text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">…</span>@endif
-                        <a href="{{ $artisans->url($pgLast) }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $fmtNum($pgLast) }}</a>
+                        @if($pgEnd < $pgLast - 1)<span class="px-1 text-[14px] md:text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">…</span>@endif
+                        <a href="{{ $artisans->url($pgLast) }}" class="w-8 h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $fmtNum($pgLast) }}</a>
                         @endif
 
                         @if($artisans->hasMorePages())
@@ -218,7 +218,7 @@
                         <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
                         @endif
 
-                        <span class="ml-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">10 / page</span>
+                        <span class="ml-2 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">10 / page</span>
                     </nav>
                     @endif
                 </div>
@@ -235,7 +235,7 @@
                         </div>
                         <div class="leading-tight min-w-0">
                             <p class="text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $fmtNum($chipNum) }}</p>
-                            <p class="text-[11px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $chipLabel }}</p>
+                            <p class="text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $chipLabel }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -256,7 +256,7 @@
                     </div>
                     <div class="mt-1.5 flex gap-1.5">
                         @foreach($artisansPerMonth as $mo)
-                        <p class="flex-1 text-center text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ $mo['label'] }}</p>
+                        <p class="flex-1 text-center text-[12px] md:text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ $mo['label'] }}</p>
                         @endforeach
                     </div>
                 </section>
@@ -265,14 +265,14 @@
                 <section class="ui-card">
                     <div class="flex items-center justify-between">
                         <p class="ui-eyebrow">{{ $isFr ? 'Artisans par métier' : 'Artisans by craft' }}</p>
-                        <a href="{{ route('admin.industries', ['lang' => $lang]) }}" class="text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
+                        <a href="{{ route('admin.industries', ['lang' => $lang]) }}" class="text-[13px] md:text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'View all' }}</a>
                     </div>
                     <div class="mt-3 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                         @forelse($topMetiers as $tm)
                         <div class="flex items-center gap-2.5 py-2.5">
                             <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {{ $metierDots[$loop->index % count($metierDots)] }}"></span>
-                            <p class="flex-1 text-[12.5px] text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $isFr ? $tm->name_fr : ($tm->name_en ?? $tm->name_fr) }}</p>
-                            <p class="text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $fmtNum($tm->artisan_count) }} <span class="font-normal text-[#8A857A] dark:text-[#868778]">({{ number_format($tm->artisan_count / $topMetierTotal * 100, 1, $isFr ? ',' : '.', '') }}%)</span></p>
+                            <p class="flex-1 text-[15px] md:text-[12.5px] text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $isFr ? $tm->name_fr : ($tm->name_en ?? $tm->name_fr) }}</p>
+                            <p class="text-[14px] md:text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $fmtNum($tm->artisan_count) }} <span class="font-normal text-[#8A857A] dark:text-[#868778]">({{ number_format($tm->artisan_count / $topMetierTotal * 100, 1, $isFr ? ',' : '.', '') }}%)</span></p>
                         </div>
                         @empty
                         <p class="ui-empty">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>
@@ -281,7 +281,7 @@
                 </section>
             </div>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-6 text-center text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr ? '© 2025 Artisan Hub 237. Tous droits réservés.' : '© 2025 Artisan Hub 237. All rights reserved.' }}
             </p>
 @endsection

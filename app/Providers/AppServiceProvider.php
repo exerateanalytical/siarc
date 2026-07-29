@@ -19,10 +19,18 @@ class AppServiceProvider extends ServiceProvider
      * app/Support/route_helpers.php for why this exists; when APP_PUBLIC_PATH
      * is unset — every environment except shared hosting — this is a no-op and
      * Laravel's `<app>/public` default stands.
+     *
+     * Reads config('app.public_path') rather than calling ah_resolve_public_path()
+     * with no argument. This method runs on every single request, whereas .env is
+     * only loaded when config is NOT cached — once `php artisan config:cache` runs
+     * in production, a bare env('APP_PUBLIC_PATH') call here would silently return
+     * null and the public path would revert to the wrong directory on every
+     * request. config('app.public_path') survives caching because config:cache
+     * bakes in the value resolved from .env at cache-build time.
      */
     public function register(): void
     {
-        if ($publicPath = ah_resolve_public_path()) {
+        if ($publicPath = ah_resolve_public_path(config('app.public_path'))) {
             $this->app->usePublicPath($publicPath);
         }
     }
@@ -96,7 +104,7 @@ class AppServiceProvider extends ServiceProvider
             //
             // The industries table carries two things: the official craft
             // nomenclature (Artisanat d'Art / de Production / de Service, which
-            // hold all 349 métiers between them) and a handful of top-level rows
+            // hold all the métiers between them) and a handful of top-level rows
             // that exist only as parents for the product-category tree —
             // "Agriculture & Agro-industrie", "Textile & Mode Africaine" — plus,
             // on older databases, generic business sectors like "Banque &

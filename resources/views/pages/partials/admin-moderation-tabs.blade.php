@@ -29,10 +29,10 @@
     @foreach($modTabs as [$mtKey, $mtIcon, $mtLabel, $mtUrl, $mtCount])
     <a href="{{ $mtUrl }}"
        @if($mtKey === $modTab) aria-current="page" @endif
-       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $mtKey === $modTab ? 'bg-[#157A43] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:bg-[#F8F4EC] dark:hover:bg-[#242A1E]' }}">
+       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[44px] md:min-h-0 rounded-full text-[14px] md:text-xs font-semibold transition-colors {{ $mtKey === $modTab ? 'bg-[#157A43] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] text-[#55524A] dark:text-[#B4B5A6] hover:bg-[#F8F4EC] dark:hover:bg-[#242A1E]' }}">
         <i data-lucide="{{ $mtIcon }}" class="w-3.5 h-3.5"></i>
         {{ $mtLabel }}
-        <span class="{{ $mtKey === $modTab ? 'bg-white/20 dark:bg-black/15' : 'bg-[#F1EDE3] dark:bg-[#1A1E16]' }} px-1.5 rounded-full text-[10px]">{{ $mtCount }}</span>
+        <span class="{{ $mtKey === $modTab ? 'bg-white/20 dark:bg-black/15' : 'bg-[#F1EDE3] dark:bg-[#1A1E16]' }} px-1.5 rounded-full text-[12px] md:text-[10px]">{{ $mtCount }}</span>
     </a>
     @endforeach
 </div>

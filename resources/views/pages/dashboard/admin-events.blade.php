@@ -56,7 +56,7 @@
 
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
-            <p class="flex items-center gap-1.5 text-[11.5px] text-[#8A857A] dark:text-[#868778]">
+            <p class="flex items-center gap-1.5 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
                 <a href="{{ route('dashboard.admin') }}" class="hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Accueil' : 'Home' }}</a>
                 <i data-lucide="chevron-right" class="w-3 h-3"></i><span class="text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Événements & Festivals' : 'Events & Festivals' }}</span>
             </p>
@@ -72,7 +72,7 @@
         <div class="ui-card">
             <span class="w-[40px] h-[40px] rounded-xl flex items-center justify-center" style="background-color: {{ $ecTile }}"><i data-lucide="{{ $ecIcon }}" class="w-[19px] h-[19px]" style="color: {{ $ecColor }};stroke-width:1.8"></i></span>
             <p class="mt-3 text-[20px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $ecValue }}</p>
-            <p class="mt-1 text-[11.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $ecLabel }}</p>
+            <p class="mt-1 text-[13px] md:text-[11.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $ecLabel }}</p>
         </div>
         @endforeach
     </section>
@@ -123,15 +123,15 @@
                                         @if($event->cover_image)<img src="{{ asset('storage/' . $event->cover_image) }}" alt="" class="w-full h-full object-cover">@else<i data-lucide="calendar" class="w-4 h-4 text-[#B9B4A9] dark:text-[#868778]"></i>@endif
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate max-w-[200px]">{{ $isFr ? $event->name_fr : ($event->name_en ?? $event->name_fr) }}</p>
-                                        <p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $event->location_fr ?? $event->city_fr ?? '—' }}</p>
+                                        <p class="text-[15px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate max-w-[200px]">{{ $isFr ? $event->name_fr : ($event->name_en ?? $event->name_fr) }}</p>
+                                        <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $event->location_fr ?? $event->city_fr ?? '—' }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$event->event_type] ?? 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778] ' }}">{{ $typeLabels[$event->event_type] ?? $event->event_type }}</span></td>
+                            <td><span class="text-[13px] md:text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $typeCls[$event->event_type] ?? 'bg-[#EEECE6] dark:bg-[#1A1E16] text-[#6F6B60] dark:text-[#868778] ' }}">{{ $typeLabels[$event->event_type] ?? $event->event_type }}</span></td>
                             <td>{{ $evRegionLabels[$event->region_key] ?? ($event->city_fr ?? '—') }}</td>
                             <td>{{ $fmtDate($event->starts_at) }}</td>
-                            <td><span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $sCls }}">{{ $sLabel }}</span></td>
+                            <td><span class="text-[13px] md:text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $sCls }}">{{ $sLabel }}</span></td>
                             <td>{{ number_format($event->exhibitors_count + $event->attendees_count) }}</td>
                             <td>
                                 <div class="flex items-center justify-end gap-1">
@@ -164,7 +164,7 @@
 
             @if($events->total() > 0)
             <div class="px-5 py-3.5 border-t border-[#EFEBE2] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
-                <p class="text-[12px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $events->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $events->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $events->total() }} {{ $isFr ? 'événements' : 'events' }}</p>
+                <p class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $events->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $events->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ $events->total() }} {{ $isFr ? 'événements' : 'events' }}</p>
                 <div class="flex items-center gap-1">{{ $events->onEachSide(1)->links() }}</div>
             </div>
             @endif
@@ -178,13 +178,13 @@
                 </div>
                 <div class="flex items-center justify-between mb-2">
                     <a href="{{ request()->fullUrlWithQuery(['month' => $calMonth->copy()->subMonth()->format('Y-m')]) }}" class="p-1 rounded hover:bg-[#F1F1EF] dark:hover:bg-[#242A1E]"><i data-lucide="chevron-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></a>
-                    <span class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $calLabel }}</span>
+                    <span class="text-[14px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $calLabel }}</span>
                     <a href="{{ request()->fullUrlWithQuery(['month' => $calMonth->copy()->addMonth()->format('Y-m')]) }}" class="p-1 rounded hover:bg-[#F1F1EF] dark:hover:bg-[#242A1E]"><i data-lucide="chevron-right" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></a>
                 </div>
-                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-[#8A857A] dark:text-[#868778] mb-1">
+                <div class="grid grid-cols-7 gap-1 text-center text-[12px] md:text-[10px] font-semibold text-[#8A857A] dark:text-[#868778] mb-1">
                     @foreach(($isFr ? ['L','M','M','J','V','S','D'] : ['M','T','W','T','F','S','S']) as $d)<span>{{ $d }}</span>@endforeach
                 </div>
-                <div class="grid grid-cols-7 gap-1 text-center text-[11px]">
+                <div class="grid grid-cols-7 gap-1 text-center text-[13px] md:text-[11px]">
                     @for($i = 0; $i < $calLeadEmpty; $i++)<span></span>@endfor
                     @for($d = 1; $d <= $calEnd->day; $d++)
                         @php $hasEvent = $calDays->has((string) $d); $isToday = $now->isSameDay($calMonth->copy()->day($d)); @endphp
@@ -202,12 +202,12 @@
                     <a href="{{ route('events.show', ['slug' => $ue->slug]) }}" target="_blank" class="flex items-start gap-2.5 group">
                         <div class="w-9 h-9 rounded-lg bg-[#F8F8F6] dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] flex items-center justify-center shrink-0"><i data-lucide="calendar" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></div>
                         <div class="min-w-0">
-                            <p class="text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] group-hover:text-[#157A43] dark:group-hover:text-[#339B56] truncate">{{ $isFr ? $ue->name_fr : ($ue->name_en ?? $ue->name_fr) }}</p>
-                            <p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $fmtDate($ue->starts_at) }} · {{ $evRegionLabels[$ue->region_key] ?? '—' }}</p>
+                            <p class="text-[15px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] group-hover:text-[#157A43] dark:group-hover:text-[#339B56] truncate">{{ $isFr ? $ue->name_fr : ($ue->name_en ?? $ue->name_fr) }}</p>
+                            <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $fmtDate($ue->starts_at) }} · {{ $evRegionLabels[$ue->region_key] ?? '—' }}</p>
                         </div>
                     </a>
                     @empty
-                    <p class="text-[12px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucun événement à venir.' : 'No upcoming events.' }}</p>
+                    <p class="text-[14px] md:text-[12px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucun événement à venir.' : 'No upcoming events.' }}</p>
                     @endforelse
                 </div>
             </div>
@@ -220,13 +220,13 @@
             @if($evByType->isNotEmpty())
             <div class="flex items-center gap-4">
                 <span class="w-[84px] h-[84px] rounded-full shrink-0" style="background: {{ $typeConic }}"><span class="block w-[46px] h-[46px] rounded-full bg-white dark:bg-[#12150F] m-[19px]"></span></span>
-                <ul class="space-y-1.5 min-w-0 text-[11.5px]">
+                <ul class="space-y-1.5 min-w-0 text-[13px] md:text-[11.5px]">
                     @foreach($evByType as $t => $c)
                     <li class="flex items-center gap-2 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $typeColors[$t] ?? '#8A857A' }}"></span><span class="flex-1 truncate">{{ $typeLabels[$t] ?? $t }}</span><span class="font-semibold shrink-0">{{ round($c / $typeTotal * 100, 1) }}% ({{ $c }})</span></li>
                     @endforeach
                 </ul>
             </div>
-            @else<p class="text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>@endif
+            @else<p class="text-[14px] md:text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>@endif
         </div>
 
         <div class="ui-card">
@@ -234,10 +234,10 @@
             <div class="space-y-2.5">
                 @forelse($evByRegion as $row)
                 <div>
-                    <div class="flex items-center justify-between text-[12px] mb-1"><span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $evRegionLabels[$row->region_key] ?? $row->region_key }}</span><span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $row->c }}</span></div>
+                    <div class="flex items-center justify-between text-[14px] md:text-[12px] mb-1"><span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $evRegionLabels[$row->region_key] ?? $row->region_key }}</span><span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $row->c }}</span></div>
                     <div class="h-[6px] bg-[#F1F1EF] dark:bg-[#1A1E16] rounded-full overflow-hidden"><div class="h-full bg-[#157A43] dark:bg-[#2E9250] rounded-full" style="width: {{ round($row->c / $regionMax * 100, 1) }}%"></div></div>
                 </div>
-                @empty<p class="text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>@endforelse
+                @empty<p class="text-[14px] md:text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>@endforelse
             </div>
         </div>
 
@@ -247,13 +247,13 @@
             <div class="flex items-end gap-2 h-[90px]">
                 @foreach($evSeriesRaw->sortKeys() as $month => $val)
                 <div class="flex-1 flex flex-col items-center gap-1">
-                    <span class="text-[10px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ number_format($val) }}</span>
+                    <span class="text-[12px] md:text-[10px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ number_format($val) }}</span>
                     <div class="w-full bg-[#157A43] dark:bg-[#2E9250] rounded-t-md" style="height: {{ max(6, round($val / $maxSeries * 70)) }}px"></div>
-                    <span class="text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($month . '-01')->translatedFormat('M Y') }}</span>
+                    <span class="text-[12px] md:text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($month . '-01')->translatedFormat('M Y') }}</span>
                 </div>
                 @endforeach
             </div>
-            @else<p class="text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>@endif
+            @else<p class="text-[14px] md:text-[12.5px] text-[#B9B4A9] dark:text-[#868778]">{{ $isFr ? 'Aucune donnée.' : 'No data.' }}</p>@endif
         </div>
     </div>
 
@@ -261,10 +261,10 @@
     <div class="ui-card mt-5">
         <h3 class="ui-card-title mb-4">{{ $isFr ? 'STATISTIQUES RAPIDES' : 'QUICK STATS' }}</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div><p class="text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Exposants totaux' : 'Total exhibitors' }}</p><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($evKpis['exhibitors']) }}</p></div>
-            <div><p class="text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Inscrits totaux' : 'Total attendees' }}</p><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($evKpis['attendees']) }}</p></div>
-            <div><p class="text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Budget total' : 'Total budget' }}</p><p class="text-[18px] font-extrabold text-[#B9B4A9] dark:text-[#868778]">—</p></div>
-            <div><p class="text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Satisfaction' : 'Satisfaction' }}</p><p class="text-[18px] font-extrabold text-[#B9B4A9] dark:text-[#868778]">—</p></div>
+            <div><p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Exposants totaux' : 'Total exhibitors' }}</p><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($evKpis['exhibitors']) }}</p></div>
+            <div><p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Inscrits totaux' : 'Total attendees' }}</p><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($evKpis['attendees']) }}</p></div>
+            <div><p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Budget total' : 'Total budget' }}</p><p class="text-[18px] font-extrabold text-[#B9B4A9] dark:text-[#868778]">—</p></div>
+            <div><p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] uppercase tracking-wide mb-1">{{ $isFr ? 'Satisfaction' : 'Satisfaction' }}</p><p class="text-[18px] font-extrabold text-[#B9B4A9] dark:text-[#868778]">—</p></div>
         </div>
     </div>
 

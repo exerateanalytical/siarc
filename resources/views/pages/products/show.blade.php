@@ -140,6 +140,35 @@
 @php $dirIconVariant = 'detail'; $dirCartCount = 2; @endphp
 @include('pages.partials.directory-header')
 
+{{-- Owner/admin preview banner. Reachable only when the product is published
+     but its business is not (FrontendController::productShow) — the same
+     pattern as businesses/show's preview banner. Without it, a vendor who
+     clicks their own "View public page" link right after publishing a
+     product, before publishing their business, would see their product page
+     with no indication that the public cannot actually reach it yet. --}}
+@if(! empty($isPreview))
+    @php
+        $previewStatusLabels = [
+            'draft'     => ['fr' => 'brouillon',   'en' => 'draft'],
+            'pending'   => ['fr' => 'en attente',  'en' => 'pending review'],
+            'suspended' => ['fr' => 'suspendu',    'en' => 'suspended'],
+            'archived'  => ['fr' => 'archivé',     'en' => 'archived'],
+        ];
+        $previewBizStatus = $previewStatusLabels[$product->business->status][$lang] ?? $product->business->status;
+    @endphp
+    <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-4">
+        <div class="ui-alert ui-alert-warn flex items-start gap-2.5">
+            <i data-lucide="eye-off" class="w-4 h-4 mt-0.5 shrink-0"></i>
+            <span>
+                <strong>{{ $isFr ? 'Aperçu.' : 'Preview.' }}</strong>
+                {{ $isFr
+                    ? 'Ce produit est publié, mais votre profil artisan est ' . $previewBizStatus . ' : cette page n\'est pas encore visible du public. Publiez votre profil pour la rendre accessible.'
+                    : 'This product is published, but your artisan profile is ' . $previewBizStatus . ': this page is not yet visible to the public. Publish your profile to make it accessible.' }}
+            </span>
+        </div>
+    </div>
+@endif
+
 <main class="pb-16 sm:pb-0">
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-4 pb-12">
 

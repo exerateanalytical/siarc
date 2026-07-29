@@ -647,6 +647,24 @@
 
     .ui-empty { padding: 44px 16px; text-align: center; font-size: 12.5px; color: var(--ui-muted); }
 
+    /* ── Bulk-select checkboxes ─────────────────────────────────
+       The <input> stays a native 16px box (platform convention); the
+       label wrapping it is the actual tap target and must be >= 44x44
+       below `md`, per docs/RESPONSIVE-CONTRACT.md section 4 exemption #2
+       ("the audit measures the label and fails if it is not"). */
+    .ui-bulk-check-cell {
+        display: flex; align-items: center; justify-content: center;
+        width: 44px; height: 44px; margin: -13px -8px; cursor: pointer;
+    }
+    @media (min-width: 768px) { .ui-bulk-check-cell { width: 28px; height: 28px; margin: -6px -4px; } }
+    .ui-bulk-check-cell input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--ui-primary, #157A43); cursor: pointer; }
+    .ui-bulk-toolbar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+        border: 2px solid #157A43; background: var(--ui-surface, #fff);
+    }
+    html.dark .ui-bulk-toolbar { border-color: #2E9250; }
+
     /* ── Empty states ───────────────────────────────────────────
        A bare "Aucun ticket." is why an empty console reads as a broken one:
        it says nothing about what the section is for, why there is nothing in

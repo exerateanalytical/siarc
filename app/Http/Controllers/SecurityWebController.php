@@ -354,74 +354,19 @@ class SecurityWebController extends Controller
         }
 
         DB::transaction(function () use ($user) {
-            $businessesDrafted = 0;
-            $siarcUnclaimed = 0;
+            // The one account-deletion code path — same service the admin
+            // bulk-delete action calls, so self-delete and admin-delete can
+            // never drift apart in what "deleted" means.
+            $result = (new \App\Modules\Auth\Services\AccountDeletionService())->anonymiseAndSoftDelete($user);
 
-            $owned = DB::table('businesses')
-                ->where('user_id', $user->id)
-                ->whereNull('deleted_at')
-                ->get(['id', 'status', 'siarc_code', 'claimed_at']);
-
-            foreach ($owned as $b) {
-                if ($b->siarc_code !== null && $b->claimed_at !== null) {
-                    // Imported SIARC profile: hand it back to the unclaimed
-                    // pool. user_id stays pointing at the anonymised tombstone
-                    // (the column is NOT NULL); SiarcClaim::assign re-points it
-                    // on the next claim and never deletes a soft-deleted row.
-                    DB::table('businesses')->where('id', $b->id)->update([
-                        'claimed_at' => null,
-                        'status'     => 'draft',
-                        'updated_at' => now(),
-                    ]);
-                    $siarcUnclaimed++;
-                } else {
-                    DB::table('businesses')->where('id', $b->id)->update([
-                        'status'     => 'draft',
-                        'updated_at' => now(),
-                    ]);
-                    $businessesDrafted++;
-                }
-            }
-
-            // The audit row is written BEFORE the identifiers are removed: it is
-            // the one durable record of who deleted what, kept for disputes.
+            // The audit row is written from the in-memory $user, which still
+            // holds the pre-anonymisation name/email even though the service
+            // above already overwrote them in the database: it is the one
+            // durable record of who deleted what, kept for disputes.
             \App\Modules\Admin\Models\AuditLog::record($user->id, 'user.self_deleted', 'user', null, [
                 'name'  => $user->name,
                 'email' => $user->email,
-            ], [
-                'businesses_set_draft' => $businessesDrafted,
-                'siarc_unclaimed'      => $siarcUnclaimed,
-            ]);
-
-            // Credentials and second factors die with the account.
-            DB::table('user_passkeys')->where('user_id', $user->id)->delete();
-            DB::table('personal_access_tokens')
-                ->where('tokenable_type', \App\Modules\Auth\Models\User::class)
-                ->where('tokenable_id', $user->id)
-                ->delete();
-            DB::table('model_has_roles')->where('model_id', $user->id)->delete();
-
-            // Soft delete + anonymise. email/phone become NULL so the person can
-            // sign up again with the same address; name becomes '' so reviews
-            // render the « Compte supprimé » label instead of a name.
-            DB::table('users')->where('id', $user->id)->update([
-                'name'                      => '',
-                'email'                     => null,
-                'phone'                     => null,
-                'avatar'                    => null,
-                'password'                  => Hash::make(Str::random(48)),
-                'remember_token'            => null,
-                'two_factor_secret'         => null,
-                'two_factor_confirmed_at'   => null,
-                'two_factor_recovery_codes' => null,
-                'two_factor_channel'        => null,
-                'last_login_ip'             => null,
-                'is_email_verified'         => 0,
-                'is_phone_verified'         => 0,
-                'status'                    => 'deleted',
-                'deleted_at'                => now(),
-                'updated_at'                => now(),
-            ]);
+            ], $result);
         });
 
         $request->session()->invalidate();

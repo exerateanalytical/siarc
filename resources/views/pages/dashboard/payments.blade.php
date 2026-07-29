@@ -28,6 +28,7 @@
  */
 
 use App\Support\ManualPayment;
+use App\Support\PlatformFees;
 
 $isFr      = $lang === 'fr';
 $pageTitle = $isFr ? 'Mes paiements' : 'My payments';
@@ -41,6 +42,16 @@ $business = \App\Modules\Businesses\Models\Business::where('user_id', $siacUser[
 $outstanding = collect();
 $history     = collect();
 
+// Ma formule / My plan. isActive() is the exact gate BusinessService::publish
+// uses, so a vendor already paid up is never shown a fresh registration
+// picker here — only their current standing. Below it, every plan comes
+// straight off subscription_plans via PlatformFees::plans(); nothing here
+// invents a price or a feature.
+$hasActiveSubscription = false;
+$currentSubscription   = null;
+$currentPlan           = null;
+$availablePlans        = collect();
+
 if ($business) {
     // Both reads come from ManualPayment so that what counts as "outstanding"
     // is defined in exactly one place. Notably it includes `reported`: a claim
@@ -48,6 +59,14 @@ if ($business) {
     // reports would tell them the fee was dealt with when nobody had looked.
     $outstanding = ManualPayment::outstandingFor($business);
     $history     = ManualPayment::historyFor($business);
+
+    $hasActiveSubscription = PlatformFees::isActive($business);
+    if ($hasActiveSubscription) {
+        $currentSubscription = PlatformFees::subscriptionFor($business);
+        $currentPlan         = PlatformFees::planFor($business);
+    } else {
+        $availablePlans = collect(PlatformFees::plans($lang));
+    }
 }
 
 $windowDays = (int) config('payments.confirmation_window_days');
@@ -105,6 +124,81 @@ $pillClass = [
             </a>
         </div>
     @else
+
+    {{-- ───────────── 0. Ma formule / My plan ───────────── --}}
+    <div class="ui-card" data-plan-panel="{{ $hasActiveSubscription ? 'active' : 'picker' }}">
+        <div class="ui-card-head">
+            <p class="ui-card-title">{{ $isFr ? 'Ma formule' : 'My plan' }}</p>
+        </div>
+
+        @if($errors->has('plan'))
+        <div class="ui-alert ui-alert-danger mx-4 mt-3">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            {{ $errors->first('plan') }}
+        </div>
+        @endif
+
+        @if($hasActiveSubscription)
+            {{-- A live subscription already exists: no fresh registration intent
+                 is offered here, only the honest current standing, so nobody
+                 accidentally opens a second intent beside a paid one. --}}
+            <div class="px-4 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <p class="text-[15px] font-bold ui-ink">{{ $currentPlan ? ($isFr ? $currentPlan->name_fr : ($currentPlan->name_en ?: $currentPlan->name_fr)) : '—' }}</p>
+                        <p class="ui-hint mt-0.5">
+                            {{ number_format((float) $currentSubscription->amount, 0, ',', ' ') }} {{ $currentPlan->currency ?? 'XAF' }}
+                            {{ $isFr ? '/ an' : '/ year' }}
+                        </p>
+                    </div>
+                    <span class="ui-pill ui-pill-ok" data-plan-status="active">{{ $isFr ? 'Active' : 'Active' }}</span>
+                </div>
+                @if($currentSubscription->next_payment_at)
+                <p class="ui-hint mt-2">
+                    {{ $isFr ? 'Renouvellement le' : 'Renews on' }}
+                    {{ \Illuminate\Support\Carbon::parse($currentSubscription->next_payment_at)->format('d/m/Y') }}
+                </p>
+                @endif
+            </div>
+        @elseif($availablePlans->isEmpty())
+            <div class="px-4 py-10 text-center">
+                <p class="ui-body">
+                    {{ $isFr
+                       ? "Aucune formule n'est configurée pour le moment. Écrivez-nous pour connaître le tarif en vigueur."
+                       : 'No plan is configured at the moment. Write to us to learn the current rate.' }}
+                </p>
+            </div>
+        @else
+            <div class="px-4 py-4">
+                <p class="ui-hint">
+                    {{ $isFr
+                       ? 'Choisissez la formule qui correspond à votre activité. Le montant à régler s\'affichera sur la page de paiement, par mobile money.'
+                       : 'Choose the plan that matches your activity. The amount to pay will appear on the payment page, by mobile money.' }}
+                </p>
+                <form method="POST" action="{{ route('dashboard.plan.select') }}" class="mt-3">
+                    @csrf
+                    <input type="hidden" name="lang" value="{{ $lang }}">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" role="radiogroup" aria-label="{{ $isFr ? 'Formule' : 'Plan' }}">
+                        @foreach($availablePlans as $i => $p)
+                        <label class="flex items-start gap-2.5 rounded-xl border border-[#EFEBE2] dark:border-[#262B21] px-3.5 py-3 cursor-pointer has-[:checked]:border-[#157A43] has-[:checked]:bg-[#EFF5F0] dark:has-[:checked]:bg-[#0C3D1D] min-h-[44px]" data-plan-option="{{ $p['slug'] }}">
+                            <input type="radio" name="plan" value="{{ $p['slug'] }}" class="ui-check mt-1" @checked($i === 0) required>
+                            <span class="min-w-0">
+                                <span class="block text-[13.5px] font-semibold ui-ink">{{ $p['name'] }}</span>
+                                <span class="block text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
+                                    {{ number_format($p['price_yearly'], 0, ',', ' ') }} {{ $p['currency'] }}{{ $isFr ? ' / an' : ' / year' }}
+                                </span>
+                            </span>
+                        </label>
+                        @endforeach
+                    </div>
+                    <button type="submit" class="ui-btn ui-btn-primary mt-4">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        {{ $isFr ? 'Choisir cette formule' : 'Choose this plan' }}
+                    </button>
+                </form>
+            </div>
+        @endif
+    </div>
 
     {{-- ───────────── 1. Outstanding ───────────── --}}
     <div class="ui-card">

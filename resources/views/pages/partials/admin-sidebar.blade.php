@@ -95,15 +95,15 @@
     <div class="px-4 pt-4 pb-3 flex items-center gap-3">
         <img src="{{ brand_asset('mark') }}" alt="" class="w-[50px] h-[50px] object-contain shrink-0">
         <div class="leading-tight min-w-0">
-            <p class="text-[11px] font-bold tracking-[0.02em] text-white uppercase leading-snug">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</p>
-            <p class="mt-1 text-[9.5px] italic text-[#E9C25A] leading-snug">{{ $isFr ? 'Notre Héritage, Notre Fierté, Notre Avenir' : 'Our Heritage, Our Pride, Our Future' }}</p>
+            <p class="text-[13px] md:text-[11px] font-bold tracking-[0.02em] text-white uppercase leading-snug">{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</p>
+            <p class="mt-1 text-[12px] md:text-[9.5px] italic text-[#E9C25A] leading-snug">{{ $isFr ? 'Notre Héritage, Notre Fierté, Notre Avenir' : 'Our Heritage, Our Pride, Our Future' }}</p>
         </div>
     </div>
 
     <nav class="flex-1 overflow-y-auto px-4 pb-4 pt-1">
         @foreach($adGroups as [$adTitle, $adItems])
             @if($adTitle)
-            <p class="mt-5 mb-2 px-1 text-[11.5px] font-bold tracking-[0.02em] text-[#E6B201] uppercase">{{ $adTitle }}</p>
+            <p class="mt-5 mb-2 px-1 text-[13px] md:text-[11.5px] font-bold tracking-[0.02em] text-[#E6B201] uppercase">{{ $adTitle }}</p>
             @endif
             @foreach($adItems as [$adKey, $adIcon, $adLabel, $adUrl, $adBadge])
                 @if($adKey === $adminActive)
@@ -111,16 +111,16 @@
                      deepened rail #0D5A30 is only 1.52:1, so dark mode uses the
                      contract's `brand` #2E9250 (3.22:1 on the rail) with `brand-ink`
                      #04150A on it (4.78:1) — white on that fill is 3.93:1 and fails. --}}
-                <a href="{{ $adUrl }}" aria-current="page" class="mt-0.5 flex items-center gap-3 bg-[#0D5A30] dark:bg-[#2E9250] rounded-xl px-3 py-[9px] text-[13px] font-bold text-white dark:text-[#04150A] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:shadow-none">
+                <a href="{{ $adUrl }}" aria-current="page" class="mt-0.5 flex items-center gap-3 bg-[#0D5A30] dark:bg-[#2E9250] rounded-xl px-3 py-[9px] min-h-[44px] text-[14px] md:text-[13px] font-bold text-white dark:text-[#04150A] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:shadow-none">
                     <i data-lucide="{{ $adIcon }}" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.9"></i>
                     <span class="flex-1 truncate">{{ $adLabel }}</span>
-                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
+                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[12px] md:text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
                 </a>
                 @else
-                <a href="{{ $adUrl }}" class="flex items-center gap-3 rounded-xl px-3 py-[7px] text-[12.5px] {{ $adKey === 'dashboard' ? 'font-bold tracking-[0.03em] text-white' : 'text-[#EDF2EC]' }} hover:bg-white/5 transition-colors">
+                <a href="{{ $adUrl }}" class="flex items-center gap-3 rounded-xl px-3 py-[7px] min-h-[44px] text-[14px] md:text-[12.5px] {{ $adKey === 'dashboard' ? 'font-bold tracking-[0.03em] text-white' : 'text-[#EDF2EC]' }} hover:bg-white/5 transition-colors">
                     <i data-lucide="{{ $adIcon }}" class="w-[17px] h-[17px] shrink-0 text-[#E9C25A]" style="stroke-width:1.8"></i>
                     <span class="flex-1 truncate">{{ $adLabel }}</span>
-                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
+                    @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[12px] md:text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
                 </a>
                 @endif
             @endforeach
@@ -129,6 +129,6 @@
 
     <div class="shrink-0 relative">
         <img src="{{ asset('images/landing/ad-side-vases.png') }}" alt="" class="w-full h-auto block">
-        <p class="absolute left-[9%] top-[15%] w-[62%] font-serif text-[13.5px] leading-[1.6] text-[#F0EBDD]">{{ $adSideQuote }}</p>
+        <p class="absolute left-[9%] top-[15%] w-[62%] font-serif text-[13.5px] leading-[1.6] md:text-[13.5px] text-[#F0EBDD]">{{ $adSideQuote }}</p>
     </div>
 </aside>

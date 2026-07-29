@@ -32,6 +32,15 @@
 
     $moisFr = [1 => 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
     $monthsEn = [1 => 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Bulk-select role choices (mirrors the per-row "Change role" menu)
+    $bulkRoleLabels = [
+        'buyer'              => $isFr ? 'Acheteur' : 'Buyer',
+        'business_owner'     => $isFr ? 'Entrepreneur' : 'Business Owner',
+        'technical_reviewer' => $isFr ? 'Département technique' : 'Technical Dept.',
+        'moderator'          => $isFr ? 'Modérateur' : 'Moderator',
+        'admin'              => $isFr ? 'Administrateur' : 'Admin',
+    ];
 @endphp
 
 @section('content')
@@ -39,7 +48,7 @@
 <div class="flex flex-wrap items-start justify-between gap-3">
     <div>
         <h1 class="text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Gestion des Utilisateurs' : 'User Management' }}</h1>
-        <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778]">
+        <p class="mt-0.5 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">
             <a href="{{ route('dashboard.admin') }}" class="hover:text-[#157A43] dark:hover:text-[#339B56] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
             <span class="mx-1 text-[#B8B2A4] dark:text-[#868778]">/</span>
             <span class="text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Utilisateurs' : 'Users' }}</span>
@@ -59,7 +68,7 @@
 <div class="mt-4 flex flex-wrap items-stretch gap-1 bg-[#F1EDE3] dark:bg-[#1A1E16] border border-[#EAE5D8] dark:border-[#262B21] rounded-xl p-1 overflow-x-auto">
     @foreach($tabs as $key => $label)
     <a href="{{ route('admin.users', array_merge(request()->except('page', 'role'), $key === 'tous' ? [] : ['role' => $key])) }}"
-       class="whitespace-nowrap rounded-lg px-4 py-2 text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] shadow-sm font-bold text-[#1B1B18] dark:text-[#F3EFE7] ' : 'font-semibold text-[#C97A16] dark:text-[#EDB33A] hover:bg-white/60 dark:hover:bg-[#242A1E]/60' }}">
+       class="whitespace-nowrap rounded-lg px-4 py-2 min-h-[44px] md:min-h-0 flex items-center text-[14px] md:text-[12.5px] transition-colors {{ $currentTab === $key ? 'bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] shadow-sm font-bold text-[#1B1B18] dark:text-[#F3EFE7] ' : 'font-semibold text-[#C97A16] dark:text-[#EDB33A] hover:bg-white/60 dark:hover:bg-[#242A1E]/60' }}">
         {{ $label }} ({{ number_format($roleCounts[$key] ?? 0) }})
     </a>
     @endforeach
@@ -95,12 +104,45 @@
     </button>
 </form>
 
+{{-- Bulk-action toolbar (hidden until >= 1 row selected) --}}
+<div id="bulk-toolbar-users" class="ui-bulk-toolbar hidden ui-card mt-4 rounded-xl px-4 py-3" data-bulk-toolbar="users">
+    <span class="text-[13px] font-bold text-[#0F4824] dark:text-[#339B56]"><span data-bulk-count="users">0</span> {{ $isFr ? 'sélectionné(s)' : 'selected' }}</span>
+    <span class="h-5 w-px bg-[#EAE5D8] dark:bg-[#262B21]"></span>
+    <select id="bulk-role-select-users" class="ui-field ui-select">
+        @foreach($bulkRoleLabels as $val => $label)
+        <option value="{{ $val }}">{{ $label }}</option>
+        @endforeach
+    </select>
+    <button type="button" class="ui-btn ui-btn-secondary"
+        onclick="AdminBulk.get('users').submit('role', document.getElementById('bulk-role-select-users').value, '{{ $isFr ? 'Changer le rôle de %n utilisateur(s) sélectionné(s) ?' : 'Change the role of %n selected user(s)?' }}')">
+        {{ $isFr ? 'Changer le rôle' : 'Change role' }}
+    </button>
+    <button type="button" class="ui-btn ui-btn-secondary"
+        onclick="AdminBulk.get('users').submit('status', 'suspended', '{{ $isFr ? 'Suspendre %n utilisateur(s) sélectionné(s) ?' : 'Suspend %n selected user(s)?' }}')">
+        <i data-lucide="ban" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Suspendre' : 'Suspend' }}
+    </button>
+    <button type="button" class="ui-btn ui-btn-secondary"
+        onclick="AdminBulk.get('users').submit('status', 'active', '{{ $isFr ? 'Réactiver %n utilisateur(s) sélectionné(s) ?' : 'Reactivate %n selected user(s)?' }}')">
+        <i data-lucide="check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Réactiver' : 'Reactivate' }}
+    </button>
+    <button type="button" class="ui-btn ui-btn-danger ml-auto"
+        onclick="AdminBulk.get('users').submit('delete', '', '{{ $isFr ? 'Supprimer %n utilisateur(s) sélectionné(s) ? Leurs identifiants seront anonymisés, leurs entreprises passeront en brouillon, et cette action est le même mécanisme que la suppression de compte (récupération non triviale).' : 'Delete %n selected user(s)? Their identifiers will be anonymised, any owned businesses set to draft, and this uses the same mechanism as account self-deletion (not trivially reversible).' }}')">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Supprimer' : 'Delete' }}
+    </button>
+</div>
+<form id="bulk-form-users" data-bulk-form="users" method="POST" action="{{ route('admin.users.bulk') }}" class="hidden">
+    @csrf
+    <input type="hidden" name="bulk_action" value="">
+    <input type="hidden" name="value" value="">
+</form>
+
 {{-- Users table --}}
 <section class="ui-card ui-card--flush mt-4">
     <div class="ui-table-wrap">
-        <table class="ui-table min-w-[860px]">
+        <table class="ui-table min-w-[860px]" data-bulk-root="users">
             <thead>
                 <tr>
+                    <th class="w-11"><label class="ui-bulk-check-cell" title="{{ $isFr ? 'Tout sélectionner sur cette page' : 'Select all on this page' }}"><input type="checkbox" data-bulk-select-all aria-label="{{ $isFr ? 'Tout sélectionner' : 'Select all' }}"></label></th>
                     <th>{{ $isFr ? 'Utilisateur' : 'User' }}</th>
                     <th>{{ $isFr ? 'Rôle' : 'Role' }}</th>
                     <th>{{ $isFr ? 'Statut' : 'Status' }}</th>
@@ -139,8 +181,14 @@
                         ? sprintf('%02d %s %d', $created->day, $moisFr[$created->month], $created->year)
                         : sprintf('%02d %s %d', $created->day, $monthsEn[$created->month], $created->year);
                     $isSelf = $selfId !== null && $u->id === $selfId;
+                    $isProtected = $isSelf || \App\Modules\Admin\Services\SuperAdminGuard::isLastSuperAdmin($u->id);
                 @endphp
                 <tr>
+                    <td>
+                        <label class="ui-bulk-check-cell" title="{{ $isProtected ? ($isFr ? 'Protégé — non sélectionnable' : 'Protected — not selectable') : '' }}">
+                            <input type="checkbox" data-bulk-row value="{{ $u->id }}" {{ $isProtected ? 'disabled' : '' }} aria-label="{{ $isFr ? 'Sélectionner' : 'Select' }} {{ $u->name }}">
+                        </label>
+                    </td>
                     <td>
                         <div class="flex items-center gap-3">
                             @if(!empty($u->avatar))
@@ -149,8 +197,8 @@
                             <div class="w-9 h-9 rounded-full bg-[#E2F3E8] dark:bg-[#0C3D1D] text-[#157A43] dark:text-[#339B56] flex items-center justify-center shrink-0 text-[13px] font-bold">{{ strtoupper(substr($u->name ?? '?', 0, 1)) }}</div>
                             @endif
                             <div class="min-w-0">
-                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="block text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate hover:text-[#157A43] dark:hover:text-[#339B56] hover:underline">{{ $u->name }}</a>
-                                <p class="text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $u->email }}</p>
+                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="block text-[15px] md:text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate hover:text-[#157A43] dark:hover:text-[#339B56] hover:underline">{{ $u->name }}</a>
+                                <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $u->email }}</p>
                             </div>
                         </div>
                     </td>
@@ -166,7 +214,7 @@
                     </td>
                     <td>
                         @if($isVisitor)
-                        <span class="text-[12px] text-[#8A857A] dark:text-[#868778]">-</span>
+                        <span class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">-</span>
                         @elseif($kycVerified)
                         <span class="ui-pill ui-pill-ok">{{ $isFr ? 'Vérifié' : 'Verified' }}</span>
                         @else
@@ -183,17 +231,17 @@
                                 <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
                             </summary>
                             <div class="absolute right-0 top-9 z-20 w-64 bg-white dark:bg-[#12150F] border border-[#EAE5D8] dark:border-[#262B21] rounded-xl shadow-lg p-3 text-left">
-                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="flex items-center gap-2 text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#157A43] dark:hover:text-[#339B56] py-1.5">
+                                <a href="{{ route('admin.users.detail', ['id' => $u->id]) }}" class="flex items-center gap-2 min-h-[44px] md:min-h-0 text-[14px] md:text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#157A43] dark:hover:text-[#339B56] py-1.5">
                                     <i data-lucide="user" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Voir le profil' : 'View profile' }}
                                 </a>
                                 @if($isSelf)
-                                <p class="text-[11px] text-[#B8B2A4] dark:text-[#868778] py-1.5">{{ $isFr ? '(vous) — actions désactivées' : '(you) — actions disabled' }}</p>
+                                <p class="text-[13px] md:text-[11px] text-[#B8B2A4] dark:text-[#868778] py-1.5">{{ $isFr ? '(vous) — actions désactivées' : '(you) — actions disabled' }}</p>
                                 @else
                                 @if($u->status !== 'suspended')
                                 <form method="POST" action="{{ route('admin.users.update-status', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-1">
                                     @csrf
                                     <input type="hidden" name="status" value="suspended">
-                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#C0392B] dark:text-[#F0555C] hover:text-red-700 dark:hover:text-[#F0555C] py-1.5">
+                                    <button type="submit" class="flex items-center gap-2 w-full min-h-[44px] md:min-h-0 text-[14px] md:text-[12px] font-semibold text-[#C0392B] dark:text-[#F0555C] hover:text-red-700 dark:hover:text-[#F0555C] py-1.5">
                                         <i data-lucide="ban" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Suspendre' : 'Suspend' }}
                                     </button>
                                 </form>
@@ -201,7 +249,7 @@
                                 <form method="POST" action="{{ route('admin.users.update-status', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-1">
                                     @csrf
                                     <input type="hidden" name="status" value="active">
-                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] py-1.5">
+                                    <button type="submit" class="flex items-center gap-2 w-full min-h-[44px] md:min-h-0 text-[14px] md:text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] py-1.5">
                                         <i data-lucide="check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Réactiver' : 'Reactivate' }}
                                     </button>
                                 </form>
@@ -209,7 +257,7 @@
                                 @if(! ($u->is_email_verified ?? false))
                                 <form method="POST" action="{{ route('admin.users.verify-email', ['id' => $u->id]) }}" class="border-t border-[#F5F1E8] dark:border-[#262B21] mt-1 pt-1">
                                     @csrf
-                                    <button type="submit" class="flex items-center gap-2 w-full text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] py-1.5">
+                                    <button type="submit" class="flex items-center gap-2 w-full min-h-[44px] md:min-h-0 text-[14px] md:text-[12px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] dark:hover:text-[#339B56] py-1.5">
                                         <i data-lucide="mail-check" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Marquer l\'email vérifié' : 'Mark email verified' }}
                                     </button>
                                 </form>
@@ -230,7 +278,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <button type="submit" class="w-full bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] text-white dark:text-[#04150A] text-[12px] font-semibold rounded-lg py-1.5 transition-colors">{{ $isFr ? 'Appliquer' : 'Apply' }}</button>
+                                    <button type="submit" class="w-full min-h-[44px] md:min-h-0 bg-[#0F4824] dark:bg-[#2E9250] hover:bg-[#14652F] dark:hover:bg-[#2E9250] text-white dark:text-[#04150A] text-[14px] md:text-[12px] font-semibold rounded-lg py-1.5 transition-colors">{{ $isFr ? 'Appliquer' : 'Apply' }}</button>
                                 </form>
                                 @endif
                             </div>
@@ -238,7 +286,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="ui-empty">{{ $isFr ? 'Aucun utilisateur trouvé.' : 'No users found.' }}</td></tr>
+                <tr><td colspan="7" class="ui-empty">{{ $isFr ? 'Aucun utilisateur trouvé.' : 'No users found.' }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -246,7 +294,7 @@
 
     {{-- Pagination --}}
     <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#F5F1E8] dark:border-[#262B21] px-5 py-3.5">
-        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">
+        <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">
             {{ $isFr
                 ? 'Affichage de ' . ($users->firstItem() ?? 0) . ' à ' . ($users->lastItem() ?? 0) . ' sur ' . number_format($users->total()) . ' utilisateurs'
                 : 'Showing ' . ($users->firstItem() ?? 0) . ' to ' . ($users->lastItem() ?? 0) . ' of ' . number_format($users->total()) . ' users' }}
@@ -263,19 +311,19 @@
                 <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             </a>
             @if($start > 1)
-            <a href="{{ $users->url(1) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">1</a>
-            @if($start > 2)<span class="text-[12px] text-[#8A857A] dark:text-[#868778] px-0.5">...</span>@endif
+            <a href="{{ $users->url(1) }}" class="inline-flex items-center justify-center w-11 h-11 md:w-8 md:h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[14px] md:text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">1</a>
+            @if($start > 2)<span class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778] px-0.5">...</span>@endif
             @endif
             @for($p = $start; $p <= $end; $p++)
             @if($p === $cur)
-            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#0F4824] dark:bg-[#2E9250] text-[12px] font-bold text-white dark:text-[#04150A]">{{ $p }}</span>
+            <span class="inline-flex items-center justify-center w-11 h-11 md:w-8 md:h-8 rounded-lg bg-[#0F4824] dark:bg-[#2E9250] text-[14px] md:text-[12px] font-bold text-white dark:text-[#04150A]">{{ $p }}</span>
             @else
-            <a href="{{ $users->url($p) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ $p }}</a>
+            <a href="{{ $users->url($p) }}" class="inline-flex items-center justify-center w-11 h-11 md:w-8 md:h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[14px] md:text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ $p }}</a>
             @endif
             @endfor
             @if($end < $last)
-            @if($end < $last - 1)<span class="text-[12px] text-[#8A857A] dark:text-[#868778] px-0.5">...</span>@endif
-            <a href="{{ $users->url($last) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ number_format($last) }}</a>
+            @if($end < $last - 1)<span class="text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778] px-0.5">...</span>@endif
+            <a href="{{ $users->url($last) }}" class="inline-flex items-center justify-center w-11 h-11 md:w-8 md:h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[14px] md:text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]">{{ number_format($last) }}</a>
             @endif
             <a href="{{ $cur < $last ? $users->url($cur + 1) : '#' }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778] {{ $cur < $last ? 'hover:border-[#157A43] dark:hover:border-[#2E9250] hover:text-[#157A43] dark:hover:text-[#339B56]' : 'opacity-40 pointer-events-none' }}">
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
@@ -285,6 +333,8 @@
     </div>
 </section>
 
-<p class="mt-8 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ date('Y') }} Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
+<p class="mt-8 text-center text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ date('Y') }} Artisan Hub 237. {{ $isFr ? 'Tous droits réservés.' : 'All rights reserved.' }}</p>
+
+<script>document.addEventListener('DOMContentLoaded', function () { AdminBulk.init('users', { cap: 200 }); });</script>
 
 @endsection

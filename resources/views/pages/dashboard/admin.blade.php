@@ -92,16 +92,16 @@
                 <div>
                     {{-- No operator name invented: greet without one when the session has none. --}}
                     <h1 class="text-[22px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Bienvenue' : 'Welcome' }}@if(! empty($siacUser['name'])), {{ $siacUser['name'] }}@endif 👋</h1>
-                    <p class="mt-0.5 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Centre de Commandement du Patrimoine & de l\'Artisanat Camerounais' : 'Command Centre of Cameroonian Heritage & Craftsmanship' }}</p>
+                    <p class="mt-0.5 text-[14px] md:text-[12.5px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Centre de Commandement du Patrimoine & de l\'Artisanat Camerounais' : 'Command Centre of Cameroonian Heritage & Craftsmanship' }}</p>
                 </div>
                 <div class="shrink-0 flex flex-wrap items-center gap-3">
-                    <span class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E9E4D8] dark:border-[#39402F] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
+                    <span class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E9E4D8] dark:border-[#39402F] rounded-lg px-4 h-[40px] text-[14px] md:text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
                         <i data-lucide="calendar-days" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6]" style="stroke-width:1.7"></i>
                         {{-- The KPIs below are all-time platform totals, not a filtered range, so
                              the badge states when they were read instead of a made-up period. --}}
                         {{ $isFr ? 'Au' : 'As of' }} {{ now()->locale($lang)->translatedFormat('d F Y') }}
                     </span>
-                    <a href="{{ route('admin.reports') }}" class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#DCE7DF] dark:border-[#39402F] hover:border-[#14652F] dark:hover:border-[#2E9250] rounded-lg px-4 h-[40px] text-[12.5px] font-semibold text-[#14652F] dark:text-[#339B56] transition-colors">
+                    <a href="{{ route('admin.reports') }}" class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#DCE7DF] dark:border-[#39402F] hover:border-[#14652F] dark:hover:border-[#2E9250] rounded-lg px-4 h-[40px] text-[14px] md:text-[12.5px] font-semibold text-[#14652F] dark:text-[#339B56] transition-colors">
                         <i data-lucide="download" class="w-4 h-4" style="stroke-width:1.8"></i>
                         {{ $isFr ? 'Exporter le rapport' : 'Export the report' }}
                     </a>
@@ -117,12 +117,12 @@
                             <i data-lucide="{{ $kIcon }}" class="w-[19px] h-[19px]" style="stroke-width:1.7;color:{{ $kColor }}"></i>
                         </span>
                         <div class="min-w-0">
-                            <p class="text-[10px] font-bold tracking-[0.05em] text-[#6F6B60] dark:text-[#868778] uppercase leading-tight">{{ $kLabel }}</p>
+                            <p class="text-[12px] md:text-[10px] font-bold tracking-[0.05em] text-[#6F6B60] dark:text-[#868778] uppercase leading-tight">{{ $kLabel }}</p>
                             <p class="mt-0.5 text-[16.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-tight">{{ $kValue }}</p>
                         </div>
                     </div>
                     <a href="{{ $kUrl }}" class="mt-auto pt-3 block">
-                        <span class="flex items-center justify-center gap-2 rounded-lg h-[32px] text-[11.5px] font-semibold text-white transition-opacity hover:opacity-90" style="background:{{ $kBtnBg }}">
+                        <span class="flex items-center justify-center gap-2 rounded-lg min-h-[44px] md:h-[32px] text-[13px] md:text-[11.5px] font-semibold text-white transition-opacity hover:opacity-90" style="background:{{ $kBtnBg }}">
                             {{ $kBtn }}
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </span>

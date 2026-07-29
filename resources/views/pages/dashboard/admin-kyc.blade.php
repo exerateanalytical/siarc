@@ -80,8 +80,8 @@
                         </span>
                     </div>
                     <p class="mt-3 text-[26px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ number_format($kcValue) }}</p>
-                    <p class="mt-1 text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $kcLabel }}</p>
-                    <p class="mt-0.5 text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $kcSub }}</p>
+                    <p class="mt-1 text-[14px] md:text-[12.5px] font-semibold text-[#3B382F] dark:text-[#B4B5A6]">{{ $kcLabel }}</p>
+                    <p class="mt-0.5 text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $kcSub }}</p>
                     <svg viewBox="0 0 120 28" class="mt-2 w-full h-[26px]" preserveAspectRatio="none" aria-hidden="true">
                         <polyline points="0,20 15,16 30,18 45,10 60,14 75,7 90,11 105,5 120,8" fill="none" stroke="{{ $kcSpark }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
                     </svg>
@@ -149,16 +149,16 @@
                                             <span class="w-9 h-9 rounded-full bg-[#14652F] dark:bg-[#2E9250] text-white dark:text-[#04150A] text-[13px] font-bold flex items-center justify-center shrink-0">{{ $initial }}</span>
                                             @endif
                                             <span class="min-w-0">
-                                                <span class="block text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $app->owner_name ?? $app->business_name }}</span>
-                                                <span class="block text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $app->owner_email ?? '—' }}</span>
+                                                <span class="block text-[15px] md:text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate">{{ $app->owner_name ?? $app->business_name }}</span>
+                                                <span class="block text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] truncate">{{ $app->owner_email ?? '—' }}</span>
                                             </span>
                                         </div>
                                     </td>
-                                    <td><span class="inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
+                                    <td><span class="inline-block rounded-md px-2.5 py-1 text-[13px] md:text-[11px] font-semibold {{ $roCls }}">{{ $roLabel }}</span></td>
                                     <td>{{ $app->vendor_type === 'artisan' ? ($isFr ? 'Individuel' : 'Individual') : ($isFr ? 'Entreprise' : 'Business') }}</td>
-                                    <td><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>{{ $stLabel }}</span></td>
-                                    <td class="whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
-                                    <td class="whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
+                                    <td><span class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] md:text-[11px] font-semibold {{ $stCls }}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>{{ $stLabel }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
+                                    <td class="whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
                                     <td>
                                         {{-- The queue screen this table replaced could approve and reject in
                                              place; both survive here. Rejection asks for a reason, so it opens
@@ -187,7 +187,7 @@
 
                     @if($applications->hasPages())
                     <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $applications->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $applications->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($applications->total()) }} {{ $isFr ? 'demandes' : 'requests' }}</p>
+                        <p class="text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Affichage de' : 'Showing' }} {{ $applications->firstItem() }} {{ $isFr ? 'à' : 'to' }} {{ $applications->lastItem() }} {{ $isFr ? 'sur' : 'of' }} {{ number_format($applications->total()) }} {{ $isFr ? 'demandes' : 'requests' }}</p>
                         <div class="flex items-center gap-1.5">
                             @if($applications->onFirstPage())
                             <span class="w-8 h-8 flex items-center justify-center text-[#B9B4A9] dark:text-[#868778]"><i data-lucide="chevron-left" class="w-4 h-4"></i></span>
@@ -196,9 +196,9 @@
                             @endif
                             @foreach($applications->getUrlRange(1, $applications->lastPage()) as $pn => $url)
                             @if($pn === $applications->currentPage())
-                            <span class="w-8 h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
+                            <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] dark:bg-[#0C3B1E] text-white text-[14px] md:text-[12.5px] font-semibold rounded-md">{{ $pn }}</span>
                             @else
-                            <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pn }}</a>
+                            <a href="{{ $url }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#B4B5A6] hover:bg-[#F2F5F2] dark:hover:bg-[#242A1E] rounded-md">{{ $pn }}</a>
                             @endif
                             @endforeach
                             @if($applications->hasMorePages())
@@ -219,7 +219,7 @@
                             @foreach($kycRoleDist as $rd)
                             @php $pct = round($rd['count'] / $kycRoleTotal * 100, 1); @endphp
                             <div>
-                                <div class="flex items-center justify-between text-[12px]">
+                                <div class="flex items-center justify-between text-[14px] md:text-[12px]">
                                     <span class="flex items-center gap-2 text-[#3B382F] dark:text-[#B4B5A6]"><span class="w-2 h-2 rounded-full" style="background-color: {{ $rd['color'] }}"></span>{{ $isFr ? $rd['fr'] : $rd['en'] }}</span>
                                     <span class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $pct }}% ({{ $rd['count'] }})</span>
                                 </div>
@@ -235,9 +235,9 @@
                         <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Vérification rapide' : 'Quick verification' }}</h2>
                         <div class="mt-2 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                             @foreach($kycQuickLinks as [$qlIcon, $qlLabel, $qlUrl])
-                            <a href="{{ $qlUrl }}" class="flex items-center gap-3 py-2.5 group">
+                            <a href="{{ $qlUrl }}" class="flex items-center gap-3 py-2.5 min-h-[44px] md:min-h-0 group">
                                 <i data-lucide="{{ $qlIcon }}" class="w-[17px] h-[17px] text-[#55524A] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]"></i>
-                                <span class="text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qlLabel }}</span>
+                                <span class="text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6] group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $qlLabel }}</span>
                             </a>
                             @endforeach
                         </div>
@@ -245,7 +245,7 @@
 
                     <section class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#0E3D22] dark:from-[#0C3B1E] to-[#12522C] dark:to-[#2E9250] px-5 py-6 text-center">
                         <p class="font-serif text-[15px] leading-relaxed text-white italic">{{ $isFr ? 'Vérifier aujourd\'hui, protéger notre héritage pour demain.' : 'Verify today, protect our heritage for tomorrow.' }}</p>
-                        <p class="mt-3 text-[#E9C25A] text-[12px]">◇ ◈ ◇</p>
+                        <p class="mt-3 text-[#E9C25A] text-[14px] md:text-[12px]">◇ ◈ ◇</p>
                     </section>
                 </aside>
             </div>
@@ -258,8 +258,8 @@
                         @foreach($kycProcess as $i => [$pIcon, $pTitle, $pDesc])
                         <div class="flex flex-col">
                             <span class="w-[42px] h-[42px] rounded-full bg-[#F3F0E6] dark:bg-[#1A1E16] flex items-center justify-center"><i data-lucide="{{ $pIcon }}" class="w-5 h-5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i></span>
-                            <p class="mt-2.5 text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $i + 1 }}. {{ $pTitle }}</p>
-                            <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $pDesc }}</p>
+                            <p class="mt-2.5 text-[14px] md:text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $i + 1 }}. {{ $pTitle }}</p>
+                            <p class="mt-1 text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $pDesc }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -269,11 +269,11 @@
                     <h2 class="ui-card-title flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4 text-[#C9942E] dark:text-[#EDB33A]"></i>{{ $isFr ? 'Documents requis' : 'Required documents' }}</h2>
                     <ul class="mt-4 space-y-3">
                         @foreach($kycDocs as $doc)
-                        <li class="flex items-center gap-2.5 text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] dark:text-[#339B56] shrink-0"></i>{{ $doc }}</li>
+                        <li class="flex items-center gap-2.5 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#B4B5A6]"><i data-lucide="check-circle-2" class="w-4 h-4 text-[#157A43] dark:text-[#339B56] shrink-0"></i>{{ $doc }}</li>
                         @endforeach
                     </ul>
                 </section>
             </div>
 
-            <p class="mt-6 text-center text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+            <p class="mt-6 text-center text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">© {{ now()->year }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
 @endsection

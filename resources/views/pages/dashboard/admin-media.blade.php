@@ -75,18 +75,18 @@
                         <i data-lucide="{{ $cicon }}" class="w-[21px] h-[21px]" style="color:{{ $ctext }}"></i>
                     </span>
                     <span class="min-w-0">
-                        <span class="block text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase truncate">{{ $clabel }}</span>
+                        <span class="block text-[12px] md:text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase truncate">{{ $clabel }}</span>
                         <span class="flex items-baseline gap-1.5">
                             <span class="text-[19px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($mediaStats[$ck]['count']) }}</span>
                             @if($trend !== null)
-                            <span class="inline-flex items-center gap-0.5 text-[11px] font-semibold {{ $trend >= 0 ? 'text-[#157A43] dark:text-[#339B56] ' : 'text-[#DC2626] dark:text-[#F0555C] ' }}">
+                            <span class="inline-flex items-center gap-0.5 text-[13px] md:text-[11px] font-semibold {{ $trend >= 0 ? 'text-[#157A43] dark:text-[#339B56] ' : 'text-[#DC2626] dark:text-[#F0555C] ' }}">
                                 <i data-lucide="{{ $trend >= 0 ? 'arrow-up' : 'arrow-down' }}" class="w-3 h-3"></i>{{ number_format(abs($trend), 1) }}%
                             </span>
                             @else
-                            <span class="text-[11px] font-semibold text-[#157A43] dark:text-[#339B56]">+{{ number_format($mediaStats[$ck]['this_month']) }}</span>
+                            <span class="text-[13px] md:text-[11px] font-semibold text-[#157A43] dark:text-[#339B56]">+{{ number_format($mediaStats[$ck]['this_month']) }}</span>
                             @endif
                         </span>
-                        <span class="block text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'vs mois dernier' : 'vs last month' }}</span>
+                        <span class="block text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'vs mois dernier' : 'vs last month' }}</span>
                     </span>
                 </a>
                 @endforeach
@@ -96,9 +96,9 @@
                         <i data-lucide="chart-pie" class="w-[21px] h-[21px] text-[#14652F] dark:text-[#339B56]"></i>
                     </span>
                     <span class="min-w-0">
-                        <span class="block text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase truncate">{{ $isFr ? 'Espace utilisé' : 'Space used' }}</span>
+                        <span class="block text-[12px] md:text-[10px] font-bold tracking-[0.06em] text-[#8A857A] dark:text-[#868778] uppercase truncate">{{ $isFr ? 'Espace utilisé' : 'Space used' }}</span>
                         <span class="block text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] whitespace-nowrap">{{ $storage['page_label'] }} / {{ $storage['quota_label'] }}</span>
-                        <span class="block text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ number_format($storage['pct'], 1) }}% {{ $isFr ? 'utilisé (page actuelle)' : 'used (current page)' }}</span>
+                        <span class="block text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ number_format($storage['pct'], 1) }}% {{ $isFr ? 'utilisé (page actuelle)' : 'used (current page)' }}</span>
                     </span>
                 </div>
             </section>
@@ -142,7 +142,7 @@
                     </form>
 
                     {{-- Files grid --}}
-                    <p class="mt-4 mb-2 text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Fichiers récents' : 'Recent files' }}</p>
+                    <p class="mt-4 mb-2 text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Fichiers récents' : 'Recent files' }}</p>
                     @if($mediaItems->count())
                     <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
                         @foreach($mediaItems as $m)
@@ -163,14 +163,14 @@
                                     <span class="w-12 h-12 rounded-xl bg-[#14652F] dark:bg-[#2E9250] flex items-center justify-center"><i data-lucide="file-text" class="w-6 h-6 text-white"></i></span>
                                 </div>
                                 @endif
-                                <span class="absolute bottom-1.5 left-1.5 rounded-md bg-black/60 px-2 py-0.5 text-[9.5px] font-semibold text-white">{{ $m->badge }}</span>
+                                <span class="absolute bottom-1.5 left-1.5 rounded-md bg-black/60 px-2 py-0.5 text-[12px] md:text-[9.5px] font-semibold text-white">{{ $m->badge }}</span>
                             </div>
                             <div class="p-2.5">
-                                <p class="text-[11.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate" title="{{ $m->name }}">{{ $m->name }}</p>
-                                <p class="mt-0.5 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $m->size_label }} · {{ $m->ext }}</p>
-                                <p class="mt-0.5 text-[10px] text-[#B0AA9B] dark:text-[#868778] truncate" title="{{ $m->owner }}">{{ $m->owner }}</p>
+                                <p class="text-[15px] md:text-[11.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] truncate" title="{{ $m->name }}">{{ $m->name }}</p>
+                                <p class="mt-0.5 text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $m->size_label }} · {{ $m->ext }}</p>
+                                <p class="mt-0.5 text-[12px] md:text-[10px] text-[#B0AA9B] dark:text-[#868778] truncate" title="{{ $m->owner }}">{{ $m->owner }}</p>
                                 <div class="mt-1 flex items-center justify-between">
-                                    <span class="text-[10px] text-[#8A857A] dark:text-[#868778]">{{ $m->created_at ? ucfirst($m->created_at->locale($lang)->isoFormat('DD MMM YYYY')) : '—' }}</span>
+                                    <span class="text-[12px] md:text-[10px] text-[#8A857A] dark:text-[#868778]">{{ $m->created_at ? ucfirst($m->created_at->locale($lang)->isoFormat('DD MMM YYYY')) : '—' }}</span>
                                     <i data-lucide="ellipsis-vertical" class="w-[14px] h-[14px] text-[#B0AA9B] dark:text-[#868778]"></i>
                                 </div>
                             </div>
@@ -183,7 +183,7 @@
 
                     {{-- Pagination --}}
                     <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-                        <p class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
+                        <p class="text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
                             {{ $isFr
                                 ? 'Affichage de ' . number_format($mediaItems->count() ? $mediaItems->firstItem() : 0) . ' à ' . number_format($mediaItems->count() ? $mediaItems->lastItem() : 0) . ' sur ' . number_format($mediaItems->total()) . ' fichiers'
                                 : 'Showing ' . number_format($mediaItems->count() ? $mediaItems->firstItem() : 0) . ' to ' . number_format($mediaItems->count() ? $mediaItems->lastItem() : 0) . ' of ' . number_format($mediaItems->total()) . ' files' }}
@@ -192,10 +192,10 @@
                             <a href="{{ $mediaItems->onFirstPage() ? '#' : $mediaItems->previousPageUrl() }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] flex items-center justify-center {{ $mediaItems->onFirstPage() ? 'text-[#CFC9BA] dark:text-[#868778] pointer-events-none' : 'text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250] ' }}"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></a>
                             @for($p = 1; $p <= $mediaItems->lastPage(); $p++)
                                 @if($mediaItems->lastPage() > 9 && $p > 5 && $p < $mediaItems->lastPage())
-                                    @if($p === 6)<span class="px-1 text-[11.5px] text-[#8A857A] dark:text-[#868778]">…</span>@endif
+                                    @if($p === 6)<span class="px-1 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">…</span>@endif
                                     @continue
                                 @endif
-                                <a href="{{ $mediaItems->url($p) }}" class="min-w-[30px] h-[30px] px-1.5 rounded-lg flex items-center justify-center text-[11.5px] font-semibold {{ $p === $mediaItems->currentPage() ? 'bg-[#0F4824] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'border border-[#EAE5D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250] ' }}">{{ number_format($p) }}</a>
+                                <a href="{{ $mediaItems->url($p) }}" class="min-w-[30px] min-h-[44px] md:min-h-0 h-[30px] px-1.5 rounded-lg flex items-center justify-center text-[13px] md:text-[11.5px] font-semibold {{ $p === $mediaItems->currentPage() ? 'bg-[#0F4824] dark:bg-[#2E9250] text-white dark:text-[#04150A]' : 'border border-[#EAE5D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250] ' }}">{{ number_format($p) }}</a>
                             @endfor
                             <a href="{{ $mediaItems->hasMorePages() ? $mediaItems->nextPageUrl() : '#' }}" class="w-[30px] h-[30px] rounded-lg border border-[#EAE5D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] flex items-center justify-center {{ $mediaItems->hasMorePages() ? 'text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14652F] dark:hover:border-[#2E9250]' : 'text-[#CFC9BA] dark:text-[#868778] pointer-events-none' }}"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
                         </div>
@@ -216,30 +216,30 @@
                     <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                         {{-- Activités récentes — latest REAL uploads --}}
                         <section class="ui-card">
-                            <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
+                            <h2 class="text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Activités récentes' : 'Recent activity' }}</h2>
                             <div class="mt-3 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                                 @forelse($mediaRecent as $r)
                                 <div class="py-2.5 flex items-center gap-3">
                                     <span class="shrink-0 w-[30px] h-[30px] rounded-lg bg-[#E8F3EC] dark:bg-[#1A1E16] flex items-center justify-center">
                                         <i data-lucide="{{ $mediaKinds[$r->kind]['icon'] ?? 'file' }}" class="w-[14px] h-[14px] text-[#14652F] dark:text-[#339B56]"></i>
                                     </span>
-                                    <p class="flex-1 min-w-0 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] truncate">
+                                    <p class="flex-1 min-w-0 text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] truncate">
                                         <span class="font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $r->name }}</span>
                                         {{ $isFr ? 'a été téléversé pour' : 'was uploaded for' }} {{ $r->owner }}
                                     </p>
-                                    <span class="shrink-0 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $r->created_at ? $r->created_at->locale($lang)->diffForHumans(null, true, true) : '—' }}</span>
+                                    <span class="shrink-0 text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $r->created_at ? $r->created_at->locale($lang)->diffForHumans(null, true, true) : '—' }}</span>
                                 </div>
                                 @empty
-                                <p class="py-3 text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucune activité.' : 'No activity.' }}</p>
+                                <p class="py-3 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucune activité.' : 'No activity.' }}</p>
                                 @endforelse
                             </div>
                         </section>
 
                         {{-- Téléversements par mois — real 6-month counts --}}
                         <section class="ui-card">
-                            <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Téléversements par mois' : 'Uploads per month' }}</h2>
+                            <h2 class="text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Téléversements par mois' : 'Uploads per month' }}</h2>
                             <div class="mt-3 flex gap-2">
-                                <div class="flex flex-col justify-between items-end text-[9.5px] text-[#8A857A] dark:text-[#868778] h-[130px] pb-[18px]">
+                                <div class="flex flex-col justify-between items-end text-[12px] md:text-[9.5px] text-[#8A857A] dark:text-[#868778] h-[130px] pb-[18px]">
                                     @foreach([1, 0.75, 0.5, 0.25, 0] as $tick)
                                     <span>{{ number_format((int) round($chartTop * $tick)) }}</span>
                                     @endforeach
@@ -248,7 +248,7 @@
                                     @foreach($mediaMonths as $mm)
                                     <div class="flex flex-col items-center justify-end h-full gap-1">
                                         <div class="w-full max-w-[26px] rounded-t bg-gradient-to-b from-[#1C7A3C] dark:from-[#2E9250] to-[#0F4824] dark:to-[#2E9250]" style="height:{{ max(2, (int) round($mm->count / $chartTop * 100)) }}%" title="{{ number_format($mm->count) }}"></div>
-                                        <span class="text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ ucfirst($mm->label) }}</span>
+                                        <span class="text-[12px] md:text-[9.5px] text-[#8A857A] dark:text-[#868778]">{{ ucfirst($mm->label) }}</span>
                                     </div>
                                     @endforeach
                                 </div>
@@ -258,8 +258,8 @@
                         {{-- Types de fichiers les plus téléversés --}}
                         <section class="ui-card md:col-span-2 xl:col-span-1">
                             <div class="flex items-center justify-between gap-2">
-                                <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Types de fichiers les plus téléversés' : 'Most uploaded file types' }}</h2>
-                                <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
+                                <h2 class="text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Types de fichiers les plus téléversés' : 'Most uploaded file types' }}</h2>
+                                <a href="{{ route('admin.reports') }}" class="shrink-0 min-h-[44px] md:min-h-0 flex items-center text-[13px] md:text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                             </div>
                             <div class="mt-3 space-y-3">
                                 @foreach($mediaKinds as $k => $meta)
@@ -267,16 +267,16 @@
                                     <span class="shrink-0 w-[28px] h-[28px] rounded-lg flex items-center justify-center" style="background:{{ $meta['bg'] }}">
                                         <i data-lucide="{{ $meta['icon'] }}" class="w-[13px] h-[13px]" style="color:{{ $meta['text'] }}"></i>
                                     </span>
-                                    <span class="w-[80px] text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $meta['label'] }}</span>
+                                    <span class="w-[80px] text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $meta['label'] }}</span>
                                     <span class="flex-1 h-[3px] rounded-full bg-[#EFEBE2] dark:bg-[#1A1E16] overflow-hidden"><span class="block h-full rounded-full bg-[#14652F] dark:bg-[#2E9250]" style="width:{{ $pctOf($mediaStats[$k]['count']) }}%"></span></span>
-                                    <span class="shrink-0 w-[52px] text-right text-[11.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($mediaStats[$k]['count']) }}</span>
+                                    <span class="shrink-0 w-[52px] text-right text-[13px] md:text-[11.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($mediaStats[$k]['count']) }}</span>
                                 </div>
                                 @endforeach
                                 <div class="flex items-center gap-3">
                                     <span class="shrink-0 w-[28px] h-[28px] rounded-lg bg-[#F1EFE8] dark:bg-[#1A1E16] flex items-center justify-center"><i data-lucide="file" class="w-[13px] h-[13px] text-[#8A857A] dark:text-[#868778]"></i></span>
-                                    <span class="w-[80px] text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Autres' : 'Others' }}</span>
+                                    <span class="w-[80px] text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6]">{{ $isFr ? 'Autres' : 'Others' }}</span>
                                     <span class="flex-1 h-[3px] rounded-full bg-[#EFEBE2] dark:bg-[#1A1E16] overflow-hidden"><span class="block h-full rounded-full bg-[#8A857A]" style="width:{{ $pctOf($othersCount) }}%"></span></span>
-                                    <span class="shrink-0 w-[52px] text-right text-[11.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($othersCount) }}</span>
+                                    <span class="shrink-0 w-[52px] text-right text-[13px] md:text-[11.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($othersCount) }}</span>
                                 </div>
                             </div>
                         </section>
@@ -288,25 +288,25 @@
                     {{-- Répartition par type — real donut --}}
                     <section class="ui-card">
                         <div class="flex items-center justify-between gap-2">
-                            <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Répartition par type' : 'Breakdown by type' }}</h2>
-                            <a href="{{ route('admin.reports') }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
+                            <h2 class="text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Répartition par type' : 'Breakdown by type' }}</h2>
+                            <a href="{{ route('admin.reports') }}" class="shrink-0 min-h-[44px] md:min-h-0 flex items-center text-[13px] md:text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
                         <div class="mt-4 flex items-center gap-4">
                             <div class="relative shrink-0 w-[120px] h-[120px] rounded-full" style="background:{{ $donutCss }}">
                                 <div class="absolute inset-[16px] rounded-full bg-white dark:bg-[#12150F] flex flex-col items-center justify-center leading-tight">
                                     <span class="text-[17px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($mediaTotal) }}</span>
-                                    <span class="text-[9px] text-[#14652F] dark:text-[#339B56] font-semibold">{{ $isFr ? 'Total fichiers' : 'Total files' }}</span>
+                                    <span class="text-[12px] md:text-[9px] text-[#14652F] dark:text-[#339B56] font-semibold">{{ $isFr ? 'Total fichiers' : 'Total files' }}</span>
                                 </div>
                             </div>
                             <div class="flex-1 min-w-0 space-y-2">
                                 @foreach($mediaKinds as $k => $meta)
-                                <div class="flex items-center gap-2 text-[11px]">
+                                <div class="flex items-center gap-2 text-[13px] md:text-[11px]">
                                     <span class="shrink-0 w-[9px] h-[9px] rounded-[3px]" style="background:{{ $meta['dot'] }}"></span>
                                     <span class="flex-1 text-[#3B382F] dark:text-[#B4B5A6] truncate">{{ $meta['label'] }}</span>
                                     <span class="shrink-0 text-[#6F6B60] dark:text-[#868778]">{{ number_format($pctOf($mediaStats[$k]['count']), 1) }}% ({{ number_format($mediaStats[$k]['count']) }})</span>
                                 </div>
                                 @endforeach
-                                <div class="flex items-center gap-2 text-[11px]">
+                                <div class="flex items-center gap-2 text-[13px] md:text-[11px]">
                                     <span class="shrink-0 w-[9px] h-[9px] rounded-[3px] bg-[#D7D3C8] dark:bg-[#1A1E16]"></span>
                                     <span class="flex-1 text-[#3B382F] dark:text-[#B4B5A6] truncate">{{ $isFr ? 'Autres' : 'Others' }}</span>
                                     <span class="shrink-0 text-[#6F6B60] dark:text-[#868778]">{{ number_format($pctOf($othersCount), 1) }}% ({{ number_format($othersCount) }})</span>
@@ -318,34 +318,34 @@
                     {{-- Espace de stockage — real sizes for the current page --}}
                     <section class="ui-card">
                         <div class="flex items-center justify-between gap-2">
-                            <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Espace de stockage' : 'Storage space' }}</h2>
-                            <a href="{{ route('admin.audit-log') }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir détails' : 'View details' }} →</a>
+                            <h2 class="text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Espace de stockage' : 'Storage space' }}</h2>
+                            <a href="{{ route('admin.audit-log') }}" class="shrink-0 min-h-[44px] md:min-h-0 flex items-center text-[13px] md:text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir détails' : 'View details' }} →</a>
                         </div>
                         <div class="mt-3 flex items-center justify-between gap-2">
-                            <p class="text-[12px] text-[#1B1B18] dark:text-[#F3EFE7]"><span class="font-bold">{{ $storage['page_label'] }}</span> {{ $isFr ? 'utilisés sur' : 'used of' }} {{ $storage['quota_label'] }} <span class="text-[#8A857A] dark:text-[#868778]">({{ $isFr ? 'page actuelle' : 'current page' }})</span></p>
-                            <p class="text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($storage['pct'], 1) }}%</p>
+                            <p class="text-[14px] md:text-[12px] text-[#1B1B18] dark:text-[#F3EFE7]"><span class="font-bold">{{ $storage['page_label'] }}</span> {{ $isFr ? 'utilisés sur' : 'used of' }} {{ $storage['quota_label'] }} <span class="text-[#8A857A] dark:text-[#868778]">({{ $isFr ? 'page actuelle' : 'current page' }})</span></p>
+                            <p class="text-[14px] md:text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ number_format($storage['pct'], 1) }}%</p>
                         </div>
                         <div class="mt-2 h-[8px] rounded-full bg-[#EFEBE2] dark:bg-[#1A1E16] overflow-hidden">
                             <div class="h-full rounded-full bg-gradient-to-r from-[#1C7A3C] dark:from-[#2E9250] to-[#0F4824] dark:to-[#2E9250]" style="width:{{ max($storage['pct'], $storage['page_bytes'] > 0 ? 1 : 0) }}%"></div>
                         </div>
-                        <p class="mt-2 text-[11.5px]"><span class="font-bold text-[#8A6D1F] dark:text-[#EDB33A]">{{ $storage['available_label'] }}</span> <span class="text-[#8A6D1F] dark:text-[#EDB33A]">{{ $isFr ? 'disponibles' : 'available' }}</span></p>
+                        <p class="mt-2 text-[13px] md:text-[11.5px]"><span class="font-bold text-[#8A6D1F] dark:text-[#EDB33A]">{{ $storage['available_label'] }}</span> <span class="text-[#8A6D1F] dark:text-[#EDB33A]">{{ $isFr ? 'disponibles' : 'available' }}</span></p>
                     </section>
 
                     {{-- Dossiers principaux — real storage folders --}}
                     <section class="ui-card">
                         <div class="flex items-center justify-between gap-2">
-                            <h2 class="text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Dossiers principaux' : 'Main folders' }}</h2>
-                            <a href="{{ route('admin.media', ['lang' => $lang]) }}" class="shrink-0 text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
+                            <h2 class="text-[13px] md:text-[11px] font-bold tracking-[0.08em] text-[#3B382F] dark:text-[#B4B5A6] uppercase">{{ $isFr ? 'Dossiers principaux' : 'Main folders' }}</h2>
+                            <a href="{{ route('admin.media', ['lang' => $lang]) }}" class="shrink-0 min-h-[44px] md:min-h-0 flex items-center text-[13px] md:text-[11px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:text-[#14652F] dark:hover:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'View all' }} →</a>
                         </div>
                         <div class="mt-2 divide-y divide-[#F5F1E8] dark:divide-[#262B21]">
                             @forelse($mediaFolders as $f)
                             <a href="{{ route('admin.media', ['lang' => $lang, 'folder' => $f->folder]) }}" class="py-2.5 flex items-center gap-3 group">
                                 <span class="shrink-0 w-[32px] h-[32px] rounded-lg bg-[#FBF3DC] dark:bg-[#3A2B06] flex items-center justify-center"><i data-lucide="folder" class="w-[15px] h-[15px] text-[#C9902E] dark:text-[#EDB33A]"></i></span>
-                                <span class="flex-1 min-w-0 text-[12px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $folderNames[$f->folder] ?? ucfirst($f->folder) }}</span>
-                                <span class="shrink-0 text-[11px] text-[#8A857A] dark:text-[#868778]">{{ number_format($f->count) }} {{ $isFr ? 'fichiers' : 'files' }}</span>
+                                <span class="flex-1 min-w-0 text-[15px] md:text-[12px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7] truncate group-hover:text-[#14652F] dark:group-hover:text-[#339B56]">{{ $folderNames[$f->folder] ?? ucfirst($f->folder) }}</span>
+                                <span class="shrink-0 text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ number_format($f->count) }} {{ $isFr ? 'fichiers' : 'files' }}</span>
                             </a>
                             @empty
-                            <p class="py-3 text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucun dossier.' : 'No folders.' }}</p>
+                            <p class="py-3 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Aucun dossier.' : 'No folders.' }}</p>
                             @endforelse
                         </div>
                     </section>
@@ -355,7 +355,7 @@
                         <h2 class="ui-eyebrow">{{ $isFr ? 'Conseils' : 'Tips' }}</h2>
                         <div class="mt-2 flex items-start gap-3">
                             <div class="flex-1 min-w-0">
-                                <p class="text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? 'Organisez vos fichiers par dossiers pour un meilleur accès et une meilleure gestion.' : 'Organise your files into folders for better access and easier management.' }}</p>
+                                <p class="text-[13px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? 'Organisez vos fichiers par dossiers pour un meilleur accès et une meilleure gestion.' : 'Organise your files into folders for better access and easier management.' }}</p>
                                 <button type="button" class="ui-btn ui-btn-primary ui-btn-sm mt-3">{{ $isFr ? 'En savoir plus' : 'Learn more' }}</button>
                             </div>
                             <span class="shrink-0 w-[52px] h-[52px] rounded-xl bg-[#F3E7C6] dark:bg-[#3A2B06] flex items-center justify-center"><i data-lucide="folder-open" class="w-6 h-6 text-[#C9902E] dark:text-[#EDB33A]"></i></span>
@@ -367,10 +367,10 @@
             {{-- Footer strip --}}
             <div class="mt-8 pt-4 border-t border-[#EAE5D8] dark:border-[#262B21] flex flex-wrap items-center justify-between gap-3">
                 <span class="hidden md:block w-[120px]"></span>
-                <p class="text-[11.5px] text-[#6F6B60] dark:text-[#868778] text-center flex-1">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
+                <p class="text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] text-center flex-1">© 2025 {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</p>
                 <span class="flex items-center gap-4 shrink-0">
-                    <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>
-                    <a href="{{ route('messages.inbox') }}" class="inline-flex items-center gap-1.5 text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
+                    <a href="{{ route('admin.support') }}" class="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]"><i data-lucide="circle-help" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Centre d\'assistance' : 'Help centre' }}</a>
+                    <a href="{{ route('messages.inbox') }}" class="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#B4B5A6] hover:text-[#14652F] dark:hover:text-[#339B56]"><i data-lucide="mail" class="w-[14px] h-[14px]"></i>{{ $isFr ? 'Nous contacter' : 'Contact us' }}</a>
                 </span>
             </div>
 @endsection

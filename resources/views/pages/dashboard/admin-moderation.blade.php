@@ -40,7 +40,7 @@ $reasonLabels = [
                     @if($report->details)
                     <p class="text-xs text-[#8A857A] dark:text-[#868778] mt-1">{{ $report->details }}</p>
                     @endif
-                    <p class="text-[11px] text-[#B8B2A4] dark:text-[#868778] mt-1">
+                    <p class="text-[13px] md:text-[11px] text-[#B8B2A4] dark:text-[#868778] mt-1">
                         {{ $report->reporter?->name ?? ($lang === 'fr' ? 'Anonyme' : 'Anonymous') }}
                         · {{ $report->created_at->diffForHumans() }}
                     </p>
