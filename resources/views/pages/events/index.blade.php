@@ -299,7 +299,7 @@
                     <p class="mt-1.5 text-[13.5px] font-semibold text-[#C9862B]">{{ $isFr ? 'Participez aux événements qui valorisent l\'artisanat camerounais' : 'Take part in the events that celebrate Cameroonian craftsmanship' }}</p>
                 </div>
                 <a href="{{ ($siacUser['is_admin'] ?? false) ? route('admin.events') : route('contact', ['lang' => $lang]) }}"
-                    class="inline-flex items-center gap-2 bg-[#02301B] hover:bg-leaf text-white text-[12.5px] font-semibold px-4 h-[42px] rounded-lg transition-colors">
+                    class="inline-flex items-center gap-2 bg-[#02301B] hover:bg-leaf text-white text-[12.5px] font-semibold px-4 h-11 md:h-[42px] rounded-lg transition-colors">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     {{ $isFr ? 'Soumettre un événement' : 'Submit an event' }}
                 </a>
@@ -310,7 +310,8 @@
                 @foreach($eventTypes as [$etKey, $etLabel])
                 @php $pillActive = $etKey === $activeType; @endphp
                 <a href="{{ route('events.index', array_filter(['lang' => $lang, 'type' => $etKey])) }}"
-                    class="shrink-0 px-3.5 h-[34px] rounded-lg border text-[12px] font-medium flex items-center transition-colors {{ $pillActive ? 'bg-[#02301B] border-[#02301B] text-white' : 'bg-white dark:bg-[#12150F] border-[#E3E3E1] dark:border-[#262B21] text-[#3A3A35] dark:text-[#F3EFE7] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56]' }}">
+                    {{-- h-11 on phones for the 44px tap minimum; the drawn 34px chip returns at md. --}}
+                    class="shrink-0 px-3.5 h-11 md:h-[34px] rounded-lg border text-[12px] font-medium flex items-center transition-colors {{ $pillActive ? 'bg-[#02301B] border-[#02301B] text-white' : 'bg-white dark:bg-[#12150F] border-[#E3E3E1] dark:border-[#262B21] text-[#3A3A35] dark:text-[#F3EFE7] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56]' }}">
                     {{ $etLabel }}
                 </a>
                 @endforeach
@@ -394,7 +395,7 @@
 
             <div class="mt-7 flex justify-center">
                 <a href="{{ route('events.index', ['lang' => $lang]) }}"
-                    class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg px-5 h-[40px] text-[12.5px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7] transition-colors">
+                    class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg px-5 h-11 md:h-[40px] text-[12.5px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7] transition-colors">
                     {{ $isFr ? 'Charger plus d\'événements' : 'Load more events' }}
                     <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                 </a>
