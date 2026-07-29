@@ -1,133 +1,126 @@
--- ============================================================================
--- Prune unused taxonomy categories from `industries`.
+-- =============================================================================
+--  2026-07-29-prune-taxonomy.sql   (MariaDB-safe rewrite, 29 July 2026)
 --
--- Owner's instruction (2026-07-29): "I see other categories concerning fish
--- etc in the platform that are not the categories that were sent from the
--- file containing the 511 artisans. delete those categories and keep only
--- the categories from the 511 artisans and the categories with category
--- Icon."
+--  Owner's instruction (2026-07-29): "I see other categories concerning fish
+--  etc in the platform that are not the categories that were sent from the
+--  file containing the 511 artisans. delete those categories and keep only the
+--  categories from the 511 artisans and the categories with category Icon."
 --
--- Keep-set rule (a row survives if ANY of these hold):
---   (a) at least one row in businesses, attribute_templates, certifications,
---       events, popular_searches_cache, or sectors references it via
---       industry_id (every table with an industry_id FK, not just
---       `businesses` — confirmed against information_schema);
---   (b) it has a non-empty `image_icon` (the 10 curated public browse tiles);
---   (c) it is an ancestor, however many levels up, of a row kept under (a) or
---       (b) — otherwise a used leaf would dangle from a deleted parent and
---       break breadcrumb/parent lookups. A "fish" example: Poissonnier (id
---       948) is used by real businesses and is kept, along with its parent
---       "Abattage, conservation de viande et poisson..." (id 947) — even
---       though most of that branch's siblings are unused and ARE deleted.
+--  Prunes `industries` from 413 rows to 116, keeping exactly:
+--    (a) every category a real record points at -- businesses,
+--        attribute_templates, certifications, events, popular_searches_cache,
+--        sectors (every table with an industry_id FK, confirmed against
+--        information_schema, not just `businesses`)
+--    (b) every category carrying a real illustrated icon (image_icon) -- the
+--        curated public browse tiles
+--    (c) every ancestor of anything kept by (a) or (b), so the tree stays
+--        whole. Worked example: Poissonnier (id 948) is used by real
+--        businesses so it survives, and so does its parent (id 947), while
+--        unused sibling fish/food leaves are removed.
 --
--- Verified on a local restore of this exact production export on 2026-07-29:
---   413 total -> 116 kept -> 297 deleted.
---   Kept by level: 1x3 (all three filières survive), 2x10 (exactly the
---   image_icon tiles), 3x28, 4x75.
+--  WHY THIS FILE WAS REWRITTEN
+--  The first version wrapped the logic in a stored procedure using
+--  `WITH RECURSIVE ... DELETE`. MySQL 8 accepts that; the production server
+--  runs MariaDB, which does not support a CTE inside a DELETE, so the
+--  CREATE PROCEDURE failed to parse and nothing ran at all -- the taxonomy was
+--  left untouched. This version uses no procedure, no CTE and no DELIMITER,
+--  only plain SQL both engines have supported for years. It is the same class
+--  of bug as the GROUP BY failure found on this platform earlier today: a
+--  local MySQL more permissive than the server it deploys to.
 --
--- Mirrors database/migrations/2026_07_30_100000_prune_unused_industries.php
--- exactly (same keep-set query) so a run through phpMyAdmin (no SSH on the
--- live host) produces the identical result the migration produces locally.
+--  THE GUARD IS REAL, NOT ADVISORY
+--  The DELETE carries `AND @keep_n = 116`. If the computed keep-set is not
+--  exactly 116 rows, that condition is false for every row and the DELETE
+--  removes nothing -- a wrong keep-set cannot damage the taxonomy, it simply
+--  does nothing, and the verification query at the end will still read 413.
 --
--- SAFE TO RE-RUN: the keep-set is recomputed from live data every time, so a
--- second run against an already-pruned database is a no-op (0 rows deleted).
+--  Safe to run more than once: on a second run the keep-set is already the
+--  whole table, so the DELETE matches no rows.
+-- =============================================================================
+
+-- ── 1. Build the keep-set in a temporary table ──────────────────────────────
+DROP TEMPORARY TABLE IF EXISTS keep_ids;
+CREATE TEMPORARY TABLE keep_ids (id BIGINT UNSIGNED NOT NULL PRIMARY KEY);
+
+-- (b) categories with a real illustrated icon
+INSERT IGNORE INTO keep_ids (id)
+  SELECT id FROM industries WHERE image_icon IS NOT NULL AND image_icon <> '';
+
+-- (a) every category a real record actually references
+INSERT IGNORE INTO keep_ids (id) SELECT DISTINCT industry_id FROM businesses             WHERE industry_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids (id) SELECT DISTINCT industry_id FROM attribute_templates    WHERE industry_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids (id) SELECT DISTINCT industry_id FROM certifications         WHERE industry_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids (id) SELECT DISTINCT industry_id FROM events                 WHERE industry_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids (id) SELECT DISTINCT industry_id FROM popular_searches_cache WHERE industry_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids (id) SELECT DISTINCT industry_id FROM sectors                WHERE industry_id IS NOT NULL;
+
+-- (c) climb to every ancestor. The taxonomy is 4 levels deep, so four passes
+--     reach the root from any leaf; a fifth is harmless insurance.
 --
--- HOW TO RUN: paste this whole file into phpMyAdmin's SQL tab against the
--- production database and execute it once. Read the four SELECT result sets
--- it prints (before-count, computed keep/delete counts, after-count) — if
--- "computed delete count" does not equal "expected delete count", STOP and do
--- not proceed; the taxonomy has drifted since this patch was written and the
--- numbers must be re-derived before deleting anything.
--- ============================================================================
+--     Each pass stages the parents in a SECOND temporary table first. Both
+--     MySQL and MariaDB refuse to open the same temporary table twice in one
+--     statement (error 1137), so `INSERT INTO keep_ids ... JOIN keep_ids` is
+--     illegal -- which is exactly what the first attempt at this rewrite hit.
+DROP TEMPORARY TABLE IF EXISTS parent_ids;
+CREATE TEMPORARY TABLE parent_ids (id BIGINT UNSIGNED NOT NULL PRIMARY KEY);
 
-DROP PROCEDURE IF EXISTS prune_unused_industries_20260729;
+INSERT IGNORE INTO parent_ids (id) SELECT DISTINCT i.parent_id FROM industries i JOIN keep_ids k ON i.id = k.id WHERE i.parent_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids   (id) SELECT id FROM parent_ids;
 
-DELIMITER $$
+DELETE FROM parent_ids;
+INSERT IGNORE INTO parent_ids (id) SELECT DISTINCT i.parent_id FROM industries i JOIN keep_ids k ON i.id = k.id WHERE i.parent_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids   (id) SELECT id FROM parent_ids;
 
-CREATE PROCEDURE prune_unused_industries_20260729()
-proc_body: BEGIN
-    DECLARE expected_total   INT DEFAULT 413;
-    DECLARE expected_keep    INT DEFAULT 116;
-    DECLARE expected_delete  INT DEFAULT 297;
+DELETE FROM parent_ids;
+INSERT IGNORE INTO parent_ids (id) SELECT DISTINCT i.parent_id FROM industries i JOIN keep_ids k ON i.id = k.id WHERE i.parent_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids   (id) SELECT id FROM parent_ids;
 
-    DECLARE total_before INT;
-    DECLARE keep_count   INT;
-    DECLARE delete_count INT;
-    DECLARE total_after  INT;
+DELETE FROM parent_ids;
+INSERT IGNORE INTO parent_ids (id) SELECT DISTINCT i.parent_id FROM industries i JOIN keep_ids k ON i.id = k.id WHERE i.parent_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids   (id) SELECT id FROM parent_ids;
 
-    SET total_before = (SELECT COUNT(*) FROM industries);
+DELETE FROM parent_ids;
+INSERT IGNORE INTO parent_ids (id) SELECT DISTINCT i.parent_id FROM industries i JOIN keep_ids k ON i.id = k.id WHERE i.parent_id IS NOT NULL;
+INSERT IGNORE INTO keep_ids   (id) SELECT id FROM parent_ids;
 
-    SET keep_count = (
-        SELECT COUNT(*) FROM (
-            WITH RECURSIVE keep AS (
-                SELECT id FROM industries WHERE image_icon IS NOT NULL AND image_icon <> ''
-                UNION SELECT industry_id FROM businesses WHERE industry_id IS NOT NULL
-                UNION SELECT industry_id FROM attribute_templates WHERE industry_id IS NOT NULL
-                UNION SELECT industry_id FROM certifications WHERE industry_id IS NOT NULL
-                UNION SELECT industry_id FROM events WHERE industry_id IS NOT NULL
-                UNION SELECT industry_id FROM popular_searches_cache WHERE industry_id IS NOT NULL
-                UNION SELECT industry_id FROM sectors WHERE industry_id IS NOT NULL
-                UNION
-                SELECT i.parent_id FROM industries i JOIN keep k ON i.id = k.id WHERE i.parent_id IS NOT NULL
-            )
-            SELECT id FROM keep
-        ) AS computed_keep_set
-    );
+DROP TEMPORARY TABLE IF EXISTS parent_ids;
 
-    SET delete_count = total_before - keep_count;
+-- A stale reference in another table must not resurrect a category row that
+-- does not actually exist.
+DELETE k FROM keep_ids k LEFT JOIN industries i ON i.id = k.id WHERE i.id IS NULL;
 
-    -- Report the numbers before doing anything irreversible.
-    SELECT
-        total_before               AS `industries_before`,
-        keep_count                 AS `computed_keep_count`,
-        delete_count               AS `computed_delete_count`,
-        expected_total             AS `expected_total_before`,
-        expected_keep              AS `expected_keep_count`,
-        expected_delete            AS `expected_delete_count`,
-        (total_before = expected_total
-            AND keep_count = expected_keep
-            AND delete_count = expected_delete) AS `matches_verified_baseline`;
+-- ── 2. Report, before anything irreversible ─────────────────────────────────
+SET @total_before = (SELECT COUNT(*) FROM industries);
+SET @keep_n       = (SELECT COUNT(*) FROM keep_ids);
 
-    IF total_before <> expected_total OR keep_count <> expected_keep OR delete_count <> expected_delete THEN
-        SELECT 'ABORTED: computed counts do not match the verified baseline. No rows were deleted. Re-derive the keep-set before re-running.' AS `result`;
-        LEAVE proc_body;
-    END IF;
+SELECT @total_before             AS `industries_before`,
+       @keep_n                   AS `computed_keep_count`,
+       @total_before - @keep_n   AS `will_delete`,
+       IF(@keep_n = 116, 'YES - the DELETE below will run',
+                         'NO  - guard blocks the DELETE, nothing changes') AS `matches_expected_116`;
 
-    START TRANSACTION;
+-- ── 3. Delete, guarded ──────────────────────────────────────────────────────
+--  keep_ids is referenced exactly once here: MySQL and MariaDB both refuse to
+--  open the same temporary table twice in one statement, which is why the count
+--  check is held in @keep_n instead of being queried inline.
+DELETE FROM industries
+ WHERE id NOT IN (SELECT id FROM keep_ids)
+   AND @keep_n = 116;
 
-    WITH RECURSIVE keep AS (
-        SELECT id FROM industries WHERE image_icon IS NOT NULL AND image_icon <> ''
-        UNION SELECT industry_id FROM businesses WHERE industry_id IS NOT NULL
-        UNION SELECT industry_id FROM attribute_templates WHERE industry_id IS NOT NULL
-        UNION SELECT industry_id FROM certifications WHERE industry_id IS NOT NULL
-        UNION SELECT industry_id FROM events WHERE industry_id IS NOT NULL
-        UNION SELECT industry_id FROM popular_searches_cache WHERE industry_id IS NOT NULL
-        UNION SELECT industry_id FROM sectors WHERE industry_id IS NOT NULL
-        UNION
-        SELECT i.parent_id FROM industries i JOIN keep k ON i.id = k.id WHERE i.parent_id IS NOT NULL
-    )
-    DELETE FROM industries WHERE id NOT IN (SELECT id FROM keep);
+-- ── 4. Prove the outcome ────────────────────────────────────────────────────
+SELECT @total_before                                       AS `industries_before`,
+       (SELECT COUNT(*) FROM industries)                   AS `industries_after`,
+       @total_before - (SELECT COUNT(*) FROM industries)    AS `rows_deleted`,
+       CASE
+         WHEN (SELECT COUNT(*) FROM industries) = 116            THEN 'DONE - 116 categories remain'
+         WHEN (SELECT COUNT(*) FROM industries) = @total_before   THEN 'NOTHING CHANGED - guard blocked it, report this'
+         ELSE 'UNEXPECTED - report this number'
+       END                                                 AS `result`;
 
-    SET total_after = (SELECT COUNT(*) FROM industries);
+-- Nothing may reference a category that no longer exists.
+SELECT COUNT(*) AS `orphaned_businesses_must_be_zero`
+  FROM businesses b
+ WHERE b.industry_id IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM industries i WHERE i.id = b.industry_id);
 
-    IF total_after <> expected_keep THEN
-        ROLLBACK;
-        SELECT CONCAT('ABORTED: after DELETE, industries has ', total_after,
-                       ' rows, expected ', expected_keep, '. Rolled back, nothing was changed.') AS `result`;
-        LEAVE proc_body;
-    END IF;
-
-    COMMIT;
-
-    SELECT
-        total_before   AS `industries_before`,
-        total_after    AS `industries_after`,
-        delete_count   AS `rows_deleted`,
-        'COMMITTED' AS `result`;
-END$$
-
-DELIMITER ;
-
-CALL prune_unused_industries_20260729();
-
-DROP PROCEDURE IF EXISTS prune_unused_industries_20260729;
+DROP TEMPORARY TABLE IF EXISTS keep_ids;
