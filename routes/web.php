@@ -1020,11 +1020,18 @@ Route::get('/collections-heritage', function (Request $request) {
 
     $hcArt = ['bronzes-royaux-bamoun'=>'hc-bronzes.png','tissus-traditionnels-bamileke'=>'hc-tissus.png','poteries-de-ladamaoua'=>'hc-poteries.png','masques-traditionnels-bassa'=>'hc-masques.png','vannerie-du-nord'=>'hc-vannerie.png','bijoux-traditionnels-grassfields'=>'hc-bijoux.png','sculptures-sur-pierre-de-lest'=>'hc-pierre.png','cuirs-et-peaux-du-sud'=>'hc-cuirs.png'];
 
+    /* Correlated subquery, not join+groupBy — same portability fix as the admin
+       collections page: selecting c.* while grouping by c.id is legal on MySQL 8
+       but rejected by the production host's engine under only_full_group_by. */
     $collections = DB::table('heritage_collections as c')
-        ->leftJoin('heritage_collection_product as hcp', 'hcp.collection_id', '=', 'c.id')
         ->where('c.status', 'published')->where('c.visibility', 'public')
-        ->groupBy('c.id')
-        ->select('c.*', DB::raw('count(hcp.product_id) as products_count'))
+        ->select('c.*')
+        ->selectSub(
+            DB::table('heritage_collection_product')
+                ->whereColumn('heritage_collection_product.collection_id', 'c.id')
+                ->selectRaw('count(*)'),
+            'products_count'
+        )
         ->orderBy('c.sort_order')->get();
 
     $totalProducts = (int) DB::table('heritage_collection_product')->count();
@@ -1363,6 +1370,7 @@ Route::get('/tableau-de-bord/admin/utilisateurs', function (Request $request) {
     return view('pages.dashboard.admin-users', compact('lang', 'siacUser', 'users', 'roleCounts', 'regions'));
 })->name('admin.users');
 Route::get('/tableau-de-bord/admin/utilisateurs/{id}', [AdminWebController::class, 'userDetail'])->name('admin.users.detail');
+Route::post('/tableau-de-bord/admin/utilisateurs/{id}/coordonnees', [AdminWebController::class, 'updateUserDetails'])->name('admin.users.update-details');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/statut', [AdminWebController::class, 'updateUserStatus'])->name('admin.users.update-status');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/role', [AdminWebController::class, 'updateUserRole'])->name('admin.users.update-role');
 Route::post('/tableau-de-bord/admin/utilisateurs/{id}/verifier-email', [AdminWebController::class, 'verifyUserEmail'])->name('admin.users.verify-email');
@@ -1802,6 +1810,24 @@ Route::post('/creer-mon-compte', function (Request $request) {
     $email = strtolower(trim($data['email']));
     $name  = trim($data['first_name'] . ' ' . $data['last_name']);
 
+    // Someone is already signed in. This used to be handled in the browser by
+    // silently skipping the POST and painting the "Votre compte a été créé."
+    // screen anyway — which is how the owner's new account never existed: an
+    // admin following « Ajouter un utilisateur » filled the whole wizard, was
+    // congratulated, and no row was ever written. The server now decides:
+    //   - resubmitting your own signup is idempotent (back button, reload);
+    //   - an admin really creates the account and keeps their own session;
+    //   - anyone else is told to log out first, never shown a fake success.
+    $current = session('siac_user');
+    if ($current && strtolower(trim($current['email'] ?? '')) === $email) {
+        return redirect('/creer-mon-compte?submitted=1');
+    }
+    if ($current && empty($current['is_admin'])) {
+        return back()->withErrors(['email' => $isFr
+            ? 'Vous êtes déjà connecté(e). Déconnectez-vous d\'abord pour créer un autre compte.'
+            : 'You are already signed in. Log out first to create another account.'])->withInput();
+    }
+
     $emailTakenError = $isFr
         ? 'Un compte avec cet email existe déjà. Essayez de vous connecter.'
         : 'An account with this email already exists. Try logging in instead.';
@@ -1853,6 +1879,30 @@ Route::post('/creer-mon-compte', function (Request $request) {
         ]);
     }
 
+    // An admin creating an account on someone's behalf keeps their own session;
+    // the new member appears in the users list immediately, which is the whole
+    // point of the « Ajouter un utilisateur » button.
+    if ($current && ! empty($current['is_admin'])) {
+        \App\Modules\Admin\Models\AuditLog::record($current['id'], 'user.created_by_admin', 'user', null, null, [
+            'target_user'    => $email,
+            'target_user_id' => $userId,
+        ]);
+
+        $sent = false;
+        try {
+            $sent = app(\App\Modules\Auth\Services\OtpService::class)->send($email, 'email_verification', 'email', $userId, $isFr ? 'fr' : 'en');
+        } catch (\Throwable $e) {
+            // Non-fatal: the member can request a fresh code themselves.
+        }
+
+        return redirect()->route('admin.users')->with('success', ($isFr
+            ? 'Compte créé pour ' . $email . '.'
+            : 'Account created for ' . $email . '.')
+            . ($sent ? '' : ($isFr
+                ? ' L\'email de vérification n\'a pas pu être envoyé — le membre pourra le redemander, ou vous pouvez vérifier l\'adresse manuellement.'
+                : ' The verification email could not be sent — the member can request it again, or you can verify the address manually.')));
+    }
+
     session(['siac_user' => [
         'id'       => $userId,
         'name'     => $name,
@@ -1861,14 +1911,20 @@ Route::post('/creer-mon-compte', function (Request $request) {
         'is_admin' => false,
     ]]);
 
-    // Send the email-verification code now, so the verify page isn't an empty inbox.
+    // Send the email-verification code now, so the verify page isn't an empty
+    // inbox. OtpService::send() returns false when the transport throws (the
+    // live relay's "OTP dispatch failed" log line is that exact catch) — the
+    // account exists either way; only what the success screen SAYS may differ.
+    // A relay that failed once will fail again, so the screen must not claim a
+    // code was sent when none was: it points to the resend path instead.
+    $sent = false;
     try {
-        app(\App\Modules\Auth\Services\OtpService::class)->send($email, 'email_verification', 'email', $userId, $isFr ? 'fr' : 'en');
+        $sent = app(\App\Modules\Auth\Services\OtpService::class)->send($email, 'email_verification', 'email', $userId, $isFr ? 'fr' : 'en');
     } catch (\Throwable $e) {
         // Non-fatal: the user can request a fresh code from the verification page.
     }
 
-    return redirect('/creer-mon-compte?submitted=1');
+    return redirect('/creer-mon-compte?submitted=1' . ($sent ? '' : '&mail=failed'));
 })->name('onboarding.store')->middleware('throttle:10,1');
 
 // ─────────────────────────────────────────────
@@ -2575,10 +2631,19 @@ Route::get('/tableau-de-bord/admin/collections', function (Request $request) {
 
     $all = DB::table('heritage_collections')->get();
 
+    /* A correlated subquery, not join+groupBy. The old shape selected
+       `heritage_collections.*` while grouping by `id`; MySQL 8 permits that
+       (the primary key makes every column functionally dependent) but the
+       production host's engine does not, and the page 500'd only in
+       production — the exact class of bug a dev box cannot show you. */
     $query = DB::table('heritage_collections')
-        ->leftJoin('heritage_collection_product as hcp', 'hcp.collection_id', '=', 'heritage_collections.id')
-        ->groupBy('heritage_collections.id')
-        ->select('heritage_collections.*', DB::raw('count(hcp.product_id) as products_count'))
+        ->select('heritage_collections.*')
+        ->selectSub(
+            DB::table('heritage_collection_product')
+                ->whereColumn('heritage_collection_product.collection_id', 'heritage_collections.id')
+                ->selectRaw('count(*)'),
+            'products_count'
+        )
         ->orderBy('heritage_collections.sort_order');
 
     if ($filters['q'] !== '') {
@@ -3537,6 +3602,7 @@ Route::post('/tableau-de-bord/securite/recuperation/regenerer', [SecurityWebCont
 Route::post('/tableau-de-bord/securite/canal/activer', [SecurityWebController::class, 'startChannel'])->name('security.channel.start');
 Route::post('/tableau-de-bord/securite/canal/confirmer', [SecurityWebController::class, 'confirmChannel'])->name('security.channel.confirm');
 Route::post('/tableau-de-bord/securite/canal/desactiver', [SecurityWebController::class, 'disableChannel'])->name('security.channel.disable');
+Route::post('/tableau-de-bord/securite/supprimer-compte', [SecurityWebController::class, 'deleteAccount'])->name('security.account.delete')->middleware('throttle:5,1');
 Route::post('/tableau-de-bord/securite/passkeys/options', [SecurityWebController::class, 'passkeyRegisterOptions'])->name('security.passkeys.options');
 Route::post('/tableau-de-bord/securite/passkeys', [SecurityWebController::class, 'passkeyRegister'])->name('security.passkeys.register');
 Route::post('/tableau-de-bord/securite/passkeys/{id}/supprimer', [SecurityWebController::class, 'passkeyDelete'])->name('security.passkeys.delete');
@@ -3817,6 +3883,15 @@ Route::get('/contact', function (Request $request) {
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
     return response(view('pages.contact', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
 })->name('contact');
+// Offline fallback: the page the service worker (public/sw.js) precaches at
+// install and serves when a navigation fails with no network. Same ?lang= +
+// cookie handling as the other static pages, but the view carries BOTH
+// languages, because the worker serves one cached copy to everyone.
+Route::get('/hors-ligne', function (Request $request) {
+    $lang = $request->query('lang', $request->cookie('lang', 'fr'));
+    $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
+    return response(view('pages.offline', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
+})->name('offline');
 Route::get('/verification-certificat', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';

@@ -283,24 +283,27 @@
     .ui-textarea.ui-field--sm,
     .ui-textarea.ui-field--lg { height: auto; }
 
-    /* A readable floor for body text on phones.
+    /* The phone type ramp.  docs/RESPONSIVE-CONTRACT.md §2.
 
-       The design was drawn for desktop and uses 10px–11.5px for breadcrumbs,
-       card metadata, badges and captions — around 110 places across the public
-       pages. That is roughly half a comfortable mobile reading size, and on a
-       phone in daylight it is genuinely hard to read.
+       The design was drawn for desktop and uses 10px–12.5px for nearly all of
+       its running text — around 110 places across the public pages. On a phone
+       that reads as a shrunken desktop site ("the font size on mobile is
+       cheap"), against the 15–17px body every app the buyer holds all day uses.
+       This block is the ramp, not just a floor: each legacy size band is
+       remapped to the tier the contract names.
+
+         ≤ 10.6px  → 12px   captions, badges, chips — the absolute floor
+         11–11.5px → 13px   secondary: bylines, counts, timestamps
+         12–12.5px → 14px   body: the size most of the site's copy was drawn at
 
        Raising it here rather than editing every occurrence keeps the desktop
-       density exactly as designed, and means a new 10px label inherits the fix
-       instead of reintroducing the problem. Headings, prices and anything
-       already at 12px or above are untouched, so nothing reflows.
+       density exactly as designed, and means a page not yet swept to the
+       mobile-first `text-[15px] md:text-[12px]` pattern still reads at ramp
+       sizes. `md:`-prefixed classes compile to different selectors inside a
+       min-width query, so nothing here can reach a desktop size.
 
        Scoped to width alone, not (pointer: coarse): a desktop with a touch
        screen should keep its designed density.
-
-       The 8.5–9.5px band below is the badge/caption tier ("Nouveau", tier pills,
-       stat captions). docs/RESPONSIVE-CONTRACT.md §2 puts the floor at 12px with
-       no band exempt, so that is where it lands.
 
        Deliberately class-based. The printed certificates set their type with
        inline `font-size:` down to 7.5px, and that is fixed artwork geometry — a
@@ -316,20 +319,45 @@
        comment exactly once, at the end. */
     @media (max-width: 767.98px) {
         .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\],
-        .text-\[10px\], .text-\[10\.5px\], .text-\[10\.6px\],
-        .text-\[11px\], .text-\[11\.5px\] { font-size: 12px !important; }
+        .text-\[10px\], .text-\[10\.5px\], .text-\[10\.6px\] { font-size: 12px !important; }
 
-        /* The kit's own sub-12px tiers. These are set here in CSS, not by a
-           `text-[…px]` utility, so the class-based floor above cannot reach
-           them — and .ui-hint under a form field is exactly the text a buyer
-           needs to read. .ui-pill and .ui-table th are handled at their own
-           definitions, where they also need a wrap or spacing change.
+        .text-\[11px\], .text-\[11\.5px\] { font-size: 13px !important; }
 
-           `!important` because this block sits above those definitions in the
-           file and a media query adds no specificity — without it `.ui-dt` two
-           hundred lines down simply wins and the floor is decorative. */
-        .ui-eyebrow, .ui-hint, .ui-error, .ui-dt,
+        .text-\[12px\], .text-\[12\.5px\] { font-size: 14px !important; }
+
+        /* The kit's own tiers. These are set in CSS, not by a `text-[…px]`
+           utility, so the class remap above cannot reach them — and .ui-hint
+           under a form field is exactly the text a buyer needs to read.
+           .ui-pill and .ui-table th are handled at their own definitions,
+           where they also need a wrap or spacing change.
+
+           `!important` because this block sits above most of those definitions
+           and a media query adds no specificity — without it `.ui-dt` two
+           hundred lines down simply wins and the ramp is decorative. Order
+           matters inside each tier: `.ui-btn-sm` must come after `.ui-btn`.
+
+           Caption tier — 12px floor: uppercase micro-labels stay labels. */
+        .ui-eyebrow, .ui-dt,
         .ui-empty-state--unwired .ui-empty-note { font-size: 12px !important; }
+
+        /* Secondary tier — 13px: helper text, card subtitles, file inputs. */
+        .ui-hint, .ui-error, .ui-card-sub, .ui-file,
+        .ui-label { font-size: 13px !important; }
+        /* Kept out of the list above: an unrecognised pseudo-element selector
+           invalidates its whole selector list. */
+        .ui-file::file-selector-button { font-size: 13px !important; }
+
+        /* Body tier — 14px: what the buyer actually reads and presses.
+           Line-heights where the desktop value was tuned to a smaller size. */
+        .ui-card-title, .ui-dd, .ui-check-row, .ui-alert,
+        .ui-table tbody td, .ui-empty,
+        .ui-empty-state .ui-empty-body { font-size: 14px !important; }
+        .ui-check-row, .ui-alert,
+        .ui-empty-state .ui-empty-body { line-height: 1.55; }
+        .ui-btn    { font-size: 14px !important; }
+        .ui-btn-sm { font-size: 13px !important; }
+        .ui-btn-lg { font-size: 15px !important; }
+        .ui-empty-state .ui-empty-title { font-size: 15px !important; }
     }
 
     /* iOS Safari zooms the page whenever a focused control's text is under 16px.
@@ -670,3 +698,10 @@
      what makes the merge land. See resources/views/pages/partials/theme.blade.php
      and docs/DARK-MODE-CONTRACT.md. --}}
 @include('pages.partials.theme')
+
+{{-- PWA wiring (manifest link, theme-color metas, apple-touch-icon, service
+     worker registration) — same delivery route as the theme partial, for the
+     same reason: every page includes the kit, so every page is installable.
+     Everything lives in resources/views/pages/partials/pwa.blade.php; keep
+     this include as the only PWA line in this shared file. --}}
+@include('pages.partials.pwa')

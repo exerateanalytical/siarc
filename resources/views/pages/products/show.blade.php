@@ -164,7 +164,7 @@
             <div class="relative rounded-xl overflow-hidden bg-[#F4F1EC] dark:bg-[#0A0C09]">
                 <img id="gallery-main" src="{{ $mainImage ? asset('storage/' . $mainImage->file_path) : $productDefaultImg }}" alt="{{ $name }}" class="w-full h-[402px] {{ $mainImage ? 'object-cover' : 'object-contain p-8' }}">
                 @if(($product->created_at ?? null) && $product->created_at->gt(now()->subDays(60)))
-                <span class="absolute top-4 left-4 bg-[#0E3D26] text-white text-[10px] font-bold tracking-[0.06em] uppercase rounded-md px-2.5 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
+                <span class="absolute top-4 left-4 bg-[#0E3D26] text-white text-[12px] md:text-[10px] font-bold tracking-[0.06em] uppercase rounded-md px-2.5 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
                 @endif
                 @if($siacUser)
                 <form method="POST" action="{{ route('products.toggle-save', $product->slug) }}" class="absolute top-3.5 right-3.5">
@@ -209,7 +209,7 @@
 
         <!-- Product info -->
         <div class="min-w-0">
-            <span class="inline-flex items-center gap-1.5 border border-[#E0B453] text-[#B07C14] dark:text-[#EDB33A] text-[11.5px] font-semibold rounded-md px-2.5 py-1">
+            <span class="inline-flex items-center gap-1.5 border border-[#E0B453] text-[#B07C14] dark:text-[#EDB33A] text-[13px] md:text-[11.5px] font-semibold rounded-md px-2.5 py-1">
                 {{ $isFr ? 'Fait main' : 'Handmade' }}
             </span>
             <h1 class="mt-3 font-serif text-[28px] sm:text-[32px] leading-tight text-[#1D1B16] dark:text-[#F3EFE7] font-semibold">{{ $name }}</h1>
@@ -238,7 +238,7 @@
             </p>
 
             @if($description)
-            <p class="mt-4 text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $description }}</p>
+            <p class="mt-4 text-[15px] md:text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $description }}</p>
             @endif
 
             <!-- Specs -->
@@ -267,12 +267,12 @@
             <!-- CTA buttons -->
             <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a href="{{ $siacUser ? route('quotes.create', ['business' => $business->slug, 'lang' => $lang]) : route('login', ['lang' => $lang, 'next' => route('quotes.create', ['business' => $business->slug]) ]) }}"
-                    class="h-[46px] bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center gap-2.5 text-[11.5px] font-bold tracking-[0.08em] uppercase transition-colors">
+                    class="h-[46px] bg-[#02301B] hover:bg-leaf text-white rounded-lg flex items-center justify-center gap-2.5 text-[13px] md:text-[11.5px] font-bold tracking-[0.08em] uppercase transition-colors">
                     <i data-lucide="file-text" class="w-4 h-4"></i>
                     {{ $isFr ? 'Demander un devis' : 'Request a quote' }}
                 </a>
                 <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : route('login', ['lang' => $lang]) }}"
-                    class="h-[46px] bg-white dark:bg-[#12150F] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2.5 text-[11.5px] font-bold tracking-[0.08em] uppercase text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                    class="h-[46px] bg-white dark:bg-[#12150F] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2.5 text-[13px] md:text-[11.5px] font-bold tracking-[0.08em] uppercase text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="message-square" class="w-4 h-4"></i>
                     {{ $isFr ? 'Envoyer un message' : 'Send a message' }}
                 </a>
@@ -285,7 +285,7 @@
                     <span class="w-11 h-11 rounded-full bg-[#22C05C] flex items-center justify-center text-white group-hover:opacity-85 transition-opacity">
                         <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.1c-.2.7-1.2 1.3-2 1.4-.5.1-1.2.2-3.5-.7-2.9-1.2-4.8-4.1-4.9-4.3-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.4.9-.9 1-.7 1.4.9 1.5 2 2.4 3.3 3 .3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1s1.8.8 2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1z"/></svg>
                     </span>
-                    <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">WhatsApp</span>
+                    <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">WhatsApp</span>
                 </a>
                 @endif
                 @if($contactEmail)
@@ -293,7 +293,7 @@
                     <span class="w-11 h-11 rounded-full bg-[#E8542F] flex items-center justify-center text-white group-hover:opacity-85 transition-opacity">
                         <i data-lucide="mail" class="w-5 h-5"></i>
                     </span>
-                    <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">Email</span>
+                    <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">Email</span>
                 </a>
                 @endif
                 @if($contactPhone)
@@ -301,7 +301,7 @@
                     <span class="w-11 h-11 rounded-full bg-white dark:bg-[#12150F] border border-[#DFDCD5] dark:border-[#262B21] flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] group-hover:border-leaf transition-colors">
                         <i data-lucide="phone" class="w-[18px] h-[18px]"></i>
                     </span>
-                    <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Appel' : 'Call' }}</span>
+                    <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Appel' : 'Call' }}</span>
                 </a>
                 @endif
                 {{-- The certificate is the reason a buyer can trust the listing,
@@ -312,14 +312,14 @@
                     <span class="w-11 h-11 rounded-full bg-white dark:bg-[#12150F] border border-[#DFDCD5] dark:border-[#262B21] flex items-center justify-center text-[#157A43] dark:text-[#339B56] group-hover:border-leaf transition-colors">
                         <i data-lucide="badge-check" class="w-[18px] h-[18px]"></i>
                     </span>
-                    <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Certificat' : 'Certificate' }}</span>
+                    <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Certificat' : 'Certificate' }}</span>
                 </a>
                 @endif
                 <button type="button" id="share-btn" class="flex flex-col items-center gap-1.5 group">
                     <span class="w-11 h-11 rounded-full bg-white dark:bg-[#12150F] border border-[#DFDCD5] dark:border-[#262B21] flex items-center justify-center text-[#3A3A35] dark:text-[#F3EFE7] group-hover:border-leaf transition-colors">
                         <i data-lucide="share-2" class="w-[18px] h-[18px]"></i>
                     </span>
-                    <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Partager' : 'Share' }}</span>
+                    <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Partager' : 'Share' }}</span>
                 </button>
                 @if($siacUser)
                 <form method="POST" action="{{ route('products.toggle-save', $product->slug) }}" class="flex flex-col items-center gap-1.5 group">
@@ -329,7 +329,7 @@
                         <span class="w-11 h-11 rounded-full bg-white dark:bg-[#12150F] border border-[#F3C9C9] dark:border-[#7A2A2E] flex items-center justify-center text-[#D93838] dark:text-[#F0555C] group-hover:border-[#D93838] transition-colors">
                             <i data-lucide="heart" class="w-[18px] h-[18px]"></i>
                         </span>
-                        <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Ajouter aux favoris' : 'Add to favorites' }}</span>
+                        <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Ajouter aux favoris' : 'Add to favorites' }}</span>
                     </button>
                 </form>
                 @else
@@ -337,7 +337,7 @@
                     <span class="w-11 h-11 rounded-full bg-white dark:bg-[#12150F] border border-[#F3C9C9] dark:border-[#7A2A2E] flex items-center justify-center text-[#D93838] dark:text-[#F0555C] group-hover:border-[#D93838] transition-colors">
                         <i data-lucide="heart" class="w-[18px] h-[18px]"></i>
                     </span>
-                    <span class="text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Ajouter aux favoris' : 'Add to favorites' }}</span>
+                    <span class="text-[13px] md:text-[11px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $isFr ? 'Ajouter aux favoris' : 'Add to favorites' }}</span>
                 </a>
                 @endif
             </div>
@@ -379,9 +379,9 @@
                                 @endfor
                                 <svg viewBox="0 0 20 20" class="w-3 h-3 fill-[#E3DED2]"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
                             </span>
-                            <span class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $ratingAvg }} ({{ $ratingCountVendor }} {{ $isFr ? 'avis' : 'reviews' }})</span>
+                            <span class="text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $ratingAvg }} ({{ $ratingCountVendor }} {{ $isFr ? 'avis' : 'reviews' }})</span>
                             @else
-                            <span class="text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Pas encore d\'avis' : 'No reviews yet' }}</span>
+                            <span class="text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Pas encore d\'avis' : 'No reviews yet' }}</span>
                             @endif
                         </p>
                     </div>
@@ -405,7 +405,7 @@
                     <div class="px-1">
                         <i data-lucide="{{ $vsIcon }}" class="w-[18px] h-[18px] text-[#B07C14] dark:text-[#EDB33A] mx-auto"></i>
                         <p class="mt-1.5 text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ $vsValue }}</p>
-                        <p class="mt-1 text-[10.5px] text-[#6F6B60] dark:text-[#868778]">{{ $vsLabel }}</p>
+                        <p class="mt-1 text-[12px] md:text-[10.5px] text-[#6F6B60] dark:text-[#868778]">{{ $vsLabel }}</p>
                     </div>
                     @endforeach
                 </div>
@@ -434,7 +434,7 @@
                         <span class="text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Emballage :' : 'Packaging:' }} <span class="text-[#1D1B16] dark:text-[#F3EFE7] font-medium">{{ $isFr ? 'Sécurisé et écoresponsable' : 'Secure and eco-friendly' }}</span></span>
                     </li>
                 </ul>
-                <p class="mt-4 text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Les délais peuvent varier en fonction de votre localisation.' : 'Delivery times may vary depending on your location.' }}</p>
+                <p class="mt-4 text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Les délais peuvent varier en fonction de votre localisation.' : 'Delivery times may vary depending on your location.' }}</p>
             </div>
 
             <!-- Help card -->
@@ -490,7 +490,7 @@
                                  la civilisation Bamoun" — while $description sat
                                  unused a few lines above. --}}
                             @if($description)
-                            <p class="text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed whitespace-pre-line">{{ $description }}</p>
+                            <p class="text-[15px] md:text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed whitespace-pre-line">{{ $description }}</p>
                             @else
                             <p class="text-[13px] text-[#6F6B60] dark:text-[#868778]">
                                 {{ $isFr
@@ -509,7 +509,7 @@
                                 <i data-lucide="wand-2" class="w-4 h-4 text-[#B07C14] dark:text-[#EDB33A]"></i>
                                 {{ $isFr ? 'Personnalisation disponible' : 'Customisation available' }}
                             </p>
-                            <p class="mt-2 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+                            <p class="mt-2 text-[13px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                                 {{ $isFr ? 'Vous souhaitez un motif ou une taille différente ? Cet artisan peut réaliser des pièces sur mesure selon vos préférences.' : 'Would you like a different pattern or size? This artisan can craft custom pieces to your preferences.' }}
                             </p>
                             <a href="{{ $siacUser ? route('messages.compose', ['business' => $business->slug, 'product' => $product->slug, 'lang' => $lang]) : route('login', ['lang' => $lang]) }}"
@@ -531,7 +531,7 @@
                     </div>
                 </div>
                 <div class="tab-panel hidden" data-panel="details">
-                    <p class="text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $isFr ? $business->description_fr : ($business->description_en ?? $business->description_fr) }}</p>
+                    <p class="text-[15px] md:text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $isFr ? $business->description_fr : ($business->description_en ?? $business->description_fr) }}</p>
                 </div>
                 <div class="tab-panel hidden" data-panel="care">
                     <p class="text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $isFr ? 'Nettoyez délicatement avec un chiffon doux et sec. Évitez l\'exposition prolongée à l\'humidité et au soleil direct pour préserver les motifs.' : 'Clean gently with a soft, dry cloth. Avoid prolonged exposure to humidity and direct sunlight to preserve the patterns.' }}</p>
@@ -587,9 +587,9 @@
                         @endif
                     </a>
                     @if($relBadge === 'new')
-                    <span class="absolute top-2.5 left-2.5 bg-[#0E3D26] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
+                    <span class="absolute top-2.5 left-2.5 bg-[#0E3D26] text-white text-[12px] md:text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
                     @elseif($relBadge === 'best')
-                    <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
+                    <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[12px] md:text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
                     @endif
                     @if($siacUser)
                     <form method="POST" action="{{ route('products.toggle-save', $rel->slug) }}" class="absolute top-2 right-2">

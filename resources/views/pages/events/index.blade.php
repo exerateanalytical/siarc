@@ -185,7 +185,7 @@
             <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl overflow-hidden">
                 <div class="flex items-center gap-2.5 bg-[#04291A] px-4 h-[40px]">
                     <i data-lucide="filter" class="w-4 h-4 text-white"></i>
-                    <span class="text-[11.5px] font-bold tracking-[0.1em] text-white uppercase">{{ $isFr ? 'Filtrer les événements' : 'Filter events' }}</span>
+                    <span class="text-[13px] md:text-[11.5px] font-bold tracking-[0.1em] text-white uppercase">{{ $isFr ? 'Filtrer les événements' : 'Filter events' }}</span>
                 </div>
                 <form method="GET" action="{{ route('events.index') }}" class="p-4">
                     <input type="hidden" name="lang" value="{{ $lang }}">
@@ -254,7 +254,7 @@
 
             <!-- Browse by category -->
             <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-4">
-                <h2 class="text-[11.5px] font-bold tracking-[0.1em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Parcourir par catégorie' : 'Browse by category' }}</h2>
+                <h2 class="text-[13px] md:text-[11.5px] font-bold tracking-[0.1em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Parcourir par catégorie' : 'Browse by category' }}</h2>
                 <ul class="mt-3 space-y-1">
                     @foreach($browseCats as [$bcIcon, $bcLabel, $bcCount, $bcKey])
                     <li>
@@ -263,7 +263,7 @@
                                 <i data-lucide="{{ $bcIcon }}" class="w-3 h-3 text-[#3A3A35] dark:text-[#F3EFE7]"></i>
                             </span>
                             <span class="flex-1 text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $bcLabel }}</span>
-                            <span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $bcCount }}</span>
+                            <span class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $bcCount }}</span>
                         </a>
                     </li>
                     @endforeach
@@ -272,13 +272,13 @@
 
             <!-- Browse by region -->
             <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-4">
-                <h2 class="text-[11.5px] font-bold tracking-[0.1em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Explorer par région' : 'Explore by region' }}</h2>
+                <h2 class="text-[13px] md:text-[11.5px] font-bold tracking-[0.1em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Explorer par région' : 'Explore by region' }}</h2>
                 <ul class="mt-3 space-y-1">
                     @foreach($browseRegions as [$brLabel, $brCount, $brKey])
                     <li>
                         <a href="{{ route('events.index', ['lang' => $lang, 'region' => $brKey]) }}" class="flex items-center justify-between px-1.5 py-[6px] rounded-md hover:bg-[#FAFAF8] hover:dark:bg-[#12150F]">
                             <span class="text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">{{ $brLabel }}</span>
-                            <span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $brCount }}</span>
+                            <span class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">{{ $brCount }}</span>
                         </a>
                     </li>
                     @endforeach
@@ -342,7 +342,7 @@
                         <p class="mt-0 md:mt-1 text-[13px] font-bold tracking-[0.08em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['month'] }}</p>
                         <p class="text-[12.5px] font-bold {{ $onGold ? 'text-[#5A3E06] dark:text-[#EDB33A]' : 'text-[#E5A82E]' }}">{{ $event['year'] }}</p>
                         <p class="mt-0 md:mt-3 text-[12.5px] font-semibold {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['from'] }}</p>
-                        <p class="text-[11px] {{ $onGold ? 'text-[#5A4A18] dark:text-[#EDB33A]' : 'text-white/80' }}">à {{ $event['to'] }}</p>
+                        <p class="text-[13px] md:text-[11px] {{ $onGold ? 'text-[#5A4A18] dark:text-[#EDB33A]' : 'text-white/80' }}">à {{ $event['to'] }}</p>
                         <span class="hidden md:block mt-3 w-[64px] h-[18px] barcode" aria-hidden="true"></span>
                         <span class="hidden md:block absolute -right-[9px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] bg-[#FEFEFE] dark:bg-[#12150F] rounded-full border border-[#EFEDEA] dark:border-[#262B21]" aria-hidden="true"></span>
                     </div>
@@ -350,7 +350,7 @@
                     <div class="flex-1 bg-white dark:bg-[#12150F] px-5 py-4 flex flex-col sm:flex-row gap-5 items-start">
                         <img src="{{ asset('images/landing/' . $event['icon']) }}" alt="" class="hidden sm:block w-[104px] h-auto object-contain shrink-0 self-center" aria-hidden="true">
                         <div class="min-w-0">
-                            <span class="inline-block text-[9.5px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-2.5 py-1" style="background-color: {{ $badgeColors[$event['badgeColor']] }}">{{ $event['badge'] }}</span>
+                            <span class="inline-block text-[12px] md:text-[9.5px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-2.5 py-1" style="background-color: {{ $badgeColors[$event['badgeColor']] }}">{{ $event['badge'] }}</span>
                             <h3 class="mt-2 flex items-start gap-2 text-[17px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug">
                                 <a href="{{ route('events.show', ['slug' => $event['slug']]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $event['title'] }}</a>
                                 <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0 mt-1"><circle cx="8" cy="8" r="8" fill="#17A34A"/><path d="M4.7 8.2 7 10.4l4.3-4.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -366,7 +366,7 @@
                             <p class="mt-2 text-[12px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $event['desc'] }}</p>
                             <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5">
                                 @foreach($event['tags'] as [$tagIcon, $tagLabel])
-                                <span class="flex items-center gap-1.5 text-[11px] text-[#55524A] dark:text-[#B4B5A6]">
+                                <span class="flex items-center gap-1.5 text-[13px] md:text-[11px] text-[#55524A] dark:text-[#B4B5A6]">
                                     <i data-lucide="{{ $tagIcon }}" class="w-[12px] h-[12px]"></i>
                                     {{ $tagLabel }}
                                 </span>
@@ -382,7 +382,7 @@
                         <p class="text-[12px] font-bold uppercase tracking-[0.04em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['price'] }}</p>
                         @endif
                         <a href="{{ route('events.show', ['slug' => $event['slug']]) }}"
-                            class="inline-flex items-center justify-center px-4 h-[32px] rounded-md text-[11.5px] font-bold transition-colors {{ $onGold ? 'bg-white dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#F6F1E7] hover:dark:bg-[#0A0C09]' : 'bg-[#E9A825] text-[#3A2E08] dark:text-[#EDB33A] hover:bg-goldbt hover:dark:bg-[#3A2B06]' }}">
+                            class="inline-flex items-center justify-center px-4 h-[32px] rounded-md text-[13px] md:text-[11.5px] font-bold transition-colors {{ $onGold ? 'bg-white dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#F6F1E7] hover:dark:bg-[#0A0C09]' : 'bg-[#E9A825] text-[#3A2E08] dark:text-[#EDB33A] hover:bg-goldbt hover:dark:bg-[#3A2B06]' }}">
                             {{ $isFr ? 'Voir détails' : 'View details' }}
                         </a>
                         <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Sauvegarder' : 'Bookmark' }}" class="{{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }} hover:opacity-80">

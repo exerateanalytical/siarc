@@ -157,7 +157,7 @@
         <h1 class="mt-3 text-[24px] sm:text-[28px] font-bold text-white leading-snug">
             {{ $isFr ? 'Comment nous protégeons votre travail' : 'How we protect your work' }}
         </h1>
-        <p class="mt-3 text-[13.5px] text-[#B9C4BC] leading-relaxed">
+        <p class="mt-3 text-[15px] md:text-[13.5px] text-[#B9C4BC] leading-relaxed">
             {{ $isFr
                ? 'Cette page dit exactement ce que la plateforme fait aujourd\'hui, ce qui n\'existe pas encore, et ce qu\'aucune plateforme au monde ne peut vous promettre. Nous préférons vous décevoir ici que sur une fausse promesse.'
                : 'This page says exactly what the platform does today, what does not exist yet, and what no platform anywhere can promise you. We would rather disappoint you here than on a false promise.' }}
@@ -185,7 +185,7 @@
                 </span>
                 <div class="min-w-0">
                     <h3 class="ui-card-title">{{ $title }}</h3>
-                    <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $body }}</p>
+                    <p class="mt-1.5 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $body }}</p>
                 </div>
             </div>
         </section>
@@ -227,14 +227,14 @@
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Ce qu\'aucune plateforme ne peut garantir' : 'What no platform can guarantee' }}</h2>
     </div>
     <section class="mt-4 ui-card">
-        <p class="text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+        <p class="text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
             {{ $isFr
                ? 'Soyons clairs, parce que d\'autres ne le sont pas : une fois qu\'une image est en ligne, elle peut être vue, et ce qui peut être vu peut être copié. Aucune technologie ne change cela. Voici ce que nous ne pouvons pas faire :'
                : 'Let us be clear, because others are not: once an image is online it can be seen, and what can be seen can be copied. No technology changes that. Here is what we cannot do:' }}
         </p>
         <ul class="mt-4 space-y-2.5">
             @foreach($cannot as $item)
-            <li class="flex items-start gap-2.5 text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+            <li class="flex items-start gap-2.5 text-[15px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
                 <i data-lucide="x" class="w-4 h-4 mt-0.5 shrink-0 text-[#B42025] dark:text-[#F0555C]"></i>
                 <span>{{ $item }}</span>
             </li>
@@ -248,12 +248,12 @@
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Enregistrer ici n\'est pas déposer un droit' : 'Registering here is not filing a right' }}</h2>
     </div>
     <section class="mt-4 ui-card">
-        <p class="text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+        <p class="text-[15px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'L\'enregistrement de votre travail sur Artisan Hub 237 ne remplace pas le droit d\'auteur, une marque déposée, un dessin ou modèle industriel, ni aucune autre protection légale. Il ne vous confère aucun droit de propriété intellectuelle.'
                : 'Registering your work on Artisan Hub 237 does not replace copyright, a registered trademark, an industrial design, or any other legal protection. It grants you no intellectual property right.' }}
         </p>
-        <p class="mt-3 text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+        <p class="mt-3 text-[15px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'Ce qu\'il crée est autre chose : un enregistrement indépendant et horodaté de votre qualité d\'auteur, de la date de création, des métadonnées de la pièce et de l\'historique de son enregistrement. Cet enregistrement peut servir d\'élément à l\'appui d\'une revendication future — il ne la remplace pas.'
                : 'What it does create is something else: an independent, time-stamped record of your authorship, the creation date, the piece\'s metadata and its registration history. That record may support a future claim — it does not replace one.' }}
@@ -280,7 +280,7 @@
                 </span>
                 <div class="min-w-0">
                     <h3 class="ui-card-title">{{ $title }}</h3>
-                    <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $body }}</p>
+                    <p class="mt-1.5 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $body }}</p>
                 </div>
             </div>
         </section>
@@ -289,7 +289,7 @@
 
     <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-5 sm:px-6 py-5">
         <h3 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Demander vos données, ou signaler une copie' : 'Request your data, or report a copy' }}</h3>
-        <p class="mt-2 text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+        <p class="mt-2 text-[15px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'Écrivez-nous en précisant ce que vous demandez : une copie de vos données, une correction, la fermeture de votre compte, ou l\'URL d\'une fiche qui copie votre travail. Nous répondons dans un délai raisonnable.'
                : 'Write to us saying what you want: a copy of your data, a correction, the closure of your account, or the URL of a listing that copies your work. We reply within a reasonable time.' }}

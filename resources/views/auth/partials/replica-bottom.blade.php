@@ -69,7 +69,7 @@
     @foreach($bottomTabs as $tab)
     <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

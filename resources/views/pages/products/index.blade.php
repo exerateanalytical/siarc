@@ -121,7 +121,7 @@
                             @if($scActive)<span class="absolute left-0 top-0 bottom-0 w-[4px] bg-[#E7A320]"></span>@endif
                             <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-[16px] h-[16px] object-contain shrink-0">
                             <span class="flex-1 truncate text-[12.5px] {{ $scActive ? 'font-semibold text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-[#3A3A35] dark:text-[#F3EFE7]' }}">{{ $scLabel }}</span>
-                            <span class="shrink-0 text-[10.5px] {{ $scActive ? 'bg-[#F8F1DE] dark:bg-[#3A2B06] border border-[#EAD9AC] dark:border-[#6A5210] text-[#7A5A12] dark:text-[#EDB33A] font-semibold' : 'bg-white dark:bg-[#12150F] border border-[#E7E7E5] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778]' }} rounded-full px-2 py-[1px]">{{ $scCount }}</span>
+                            <span class="shrink-0 text-[12px] md:text-[10.5px] {{ $scActive ? 'bg-[#F8F1DE] dark:bg-[#3A2B06] border border-[#EAD9AC] dark:border-[#6A5210] text-[#7A5A12] dark:text-[#EDB33A] font-semibold' : 'bg-white dark:bg-[#12150F] border border-[#E7E7E5] dark:border-[#262B21] text-[#6F6B60] dark:text-[#868778]' }} rounded-full px-2 py-[1px]">{{ $scCount }}</span>
                         </a>
                     </li>
                     @endforeach
@@ -239,9 +239,9 @@
                             <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="prod-img w-full h-[168px] object-cover">
                         </a>
                         @if($product['badge'] === 'new')
-                        <span class="absolute top-2.5 left-2.5 bg-[#0E3D26] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
+                        <span class="absolute top-2.5 left-2.5 bg-[#0E3D26] text-white text-[12px] md:text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
                         @elseif($product['badge'] === 'best')
-                        <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
+                        <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[12px] md:text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
                         @endif
                         <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                             class="absolute top-2 right-2 w-11 h-11 md:w-8 md:h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
@@ -252,9 +252,9 @@
                         <h3 class="text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">
                             <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}" class="ui-tap-inset hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $product['name'] }}</a>
                         </h3>
-                        <p class="mt-1 text-[11.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $product['cat'] }}</p>
+                        <p class="mt-1 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $product['cat'] }}</p>
                         <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}"
-                            class="mt-3 w-full h-[44px] md:h-[34px] border border-[#E2E6E3] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[10.5px] font-bold tracking-[0.08em] text-[#26312B] dark:text-[#F3EFE7] uppercase transition-colors">
+                            class="mt-3 w-full h-[44px] md:h-[34px] border border-[#E2E6E3] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[12px] md:text-[10.5px] font-bold tracking-[0.08em] text-[#26312B] dark:text-[#F3EFE7] uppercase transition-colors">
                             <i data-lucide="message-square" class="w-[13px] h-[13px]"></i>
                             {{ $isFr ? 'Enquérir' : 'Inquire' }}
                         </a>
@@ -306,7 +306,7 @@
                 </span>
                 <div class="leading-tight">
                     <p class="text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
-                    <p class="mt-0.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line">{{ $trustSub }}</p>
+                    <p class="mt-0.5 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line">{{ $trustSub }}</p>
                 </div>
             </div>
             @endforeach

@@ -120,7 +120,7 @@ $fileCls = 'ui-file';
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Téléphone' : 'Phone' }}</label>
-                    <input name="phone" value="{{ $v('phone') }}" placeholder="+237 6XX XX XX XX" class="ui-field">
+                    <input name="phone" value="{{ $v('phone', $owner->phone ?? '') }}" placeholder="+237 6XX XX XX XX" class="ui-field">
                 </div>
                 <div>
                     <label class="ui-label">WhatsApp</label>
@@ -128,7 +128,7 @@ $fileCls = 'ui-file';
                 </div>
                 <div>
                     <label class="ui-label">Email</label>
-                    <input type="email" name="email" value="{{ $v('email') }}" class="ui-field">
+                    <input type="email" name="email" value="{{ $v('email', $owner->email ?? '') }}" class="ui-field">
                 </div>
                 <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Site web' : 'Website' }}</label>

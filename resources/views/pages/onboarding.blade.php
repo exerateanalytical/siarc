@@ -169,7 +169,7 @@
             <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] sm:w-[50px] sm:h-[50px] object-contain shrink-0">
             <span class="leading-tight min-w-0">
                 <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">Artisan Hub 237</span>
-                <span class="block text-[11px] text-[#2E7D4F] dark:text-[#339B56] sm:whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                <span class="block text-[13px] md:text-[11px] text-[#2E7D4F] dark:text-[#339B56] sm:whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
         <div class="flex items-center gap-4 shrink-0">
@@ -177,7 +177,7 @@
                 <i data-lucide="headphones" class="w-5 h-5 text-[#14532D] dark:text-[#339B56]" style="stroke-width:1.7"></i>
                 <span class="leading-tight text-left">
                     <span class="block text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</span>
-                    <span class="block text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Contactez-nous' : 'Contact us' }}</span>
+                    <span class="block text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Contactez-nous' : 'Contact us' }}</span>
                 </span>
             </a>
             <div class="relative group">
@@ -211,7 +211,7 @@
                 <h2 class="text-[15px] font-bold tracking-[0.02em] text-white uppercase leading-snug">
                     {{ $isFr ? 'Créer mon compte' : 'Create my account' }}<br>{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}
                 </h2>
-                <p id="side-sub" class="mt-2 text-[11.5px] text-[#B9CBBE] leading-relaxed">
+                <p id="side-sub" class="mt-2 text-[13px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
                     {{ $isFr ? 'Rejoignez la plus grande vitrine de l\'artisanat camerounais' : 'Join the largest showcase of Cameroonian craftsmanship' }}
                 </p>
 
@@ -223,7 +223,7 @@
                             <span class="step-circle relative z-10 w-[34px] h-[34px] shrink-0 rounded-full border border-white/40 bg-obside flex items-center justify-center text-[13px] font-semibold text-white">{{ $wsIdx + 1 }}</span>
                             <span class="pt-0.5 min-w-0">
                                 <span class="step-title block text-[13px] font-semibold text-white leading-snug">{{ $wsTitle }}</span>
-                                <span class="step-sub block mt-0.5 text-[11px] text-[#B9CBBE] leading-snug">{{ $wsSub }}</span>
+                                <span class="step-sub block mt-0.5 text-[13px] md:text-[11px] text-[#B9CBBE] leading-snug">{{ $wsSub }}</span>
                             </span>
                         </button>
                     </li>
@@ -235,7 +235,7 @@
                         <img src="{{ asset('images/landing/ob-shield.png') }}" alt="" class="w-[22px] h-[24px]" aria-hidden="true">
                         <span id="side-secure-title">{{ $isFr ? 'Sécurisé & Vérifié' : 'Secure & Verified' }}</span>
                     </p>
-                    <p id="side-secure-text" class="mt-2.5 text-[11.5px] text-[#B9CBBE] leading-relaxed">
+                    <p id="side-secure-text" class="mt-2.5 text-[13px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
                         {{ $isFr
                             ? 'Vos données sont protégées et utilisées uniquement pour la vérification et la gestion de votre compte.'
                             : 'Your data is protected and used only for the verification and management of your account.'
@@ -245,7 +245,7 @@
 
                 <div class="mt-4 rounded-xl border border-white/15 p-4">
                     <p class="text-[12.5px] font-bold text-[#E5A82E]">{{ $isFr ? 'Et le reste de mon profil ?' : 'What about the rest of my profile?' }}</p>
-                    <p class="mt-2 text-[11.5px] text-[#B9CBBE] leading-relaxed">
+                    <p class="mt-2 text-[13px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
                         {{ $isFr
                             ? "Entreprise, catégories, atelier, produits et documents se renseignent depuis votre tableau de bord, juste après la création du compte."
                             : 'Business, categories, workshop, products and documents are filled in from your dashboard, right after the account is created.'
@@ -269,7 +269,7 @@
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7]">33% {{ $isFr ? 'terminé' : 'complete' }}</p>
+                        <p class="text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7]">33% {{ $isFr ? 'terminé' : 'complete' }}</p>
                         <div class="mt-1.5 w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-[33%] rounded-full bg-[#10592E]"></div></div>
                     </div>
                 </div>
@@ -363,7 +363,7 @@
                         <p class="text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 2 sur 3' : 'Step 2 of 3' }}</p>
                         <div class="mt-1.5 flex items-center gap-2.5">
                             <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-[66%] rounded-full bg-[#10592E]"></div></div>
-                            <span class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">66% {{ $isFr ? 'terminé' : 'complete' }}</span>
+                            <span class="text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">66% {{ $isFr ? 'terminé' : 'complete' }}</span>
                         </div>
                     </div>
                 </div>
@@ -447,7 +447,7 @@
                     <div>
                         <h1 class="text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] flex flex-wrap items-center gap-3">
                             {{ $isFr ? 'Vérification & création' : 'Review & creation' }}
-                            <span class="inline-flex items-center bg-[#EBF4ED] dark:bg-[#0C3D1D] rounded-full px-3.5 py-1.5 text-[11.5px] font-semibold text-[#14532D] dark:text-[#339B56]">{{ $isFr ? 'Dernière étape' : 'Last step' }}</span>
+                            <span class="inline-flex items-center bg-[#EBF4ED] dark:bg-[#0C3D1D] rounded-full px-3.5 py-1.5 text-[13px] md:text-[11.5px] font-semibold text-[#14532D] dark:text-[#339B56]">{{ $isFr ? 'Dernière étape' : 'Last step' }}</span>
                         </h1>
                         <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">{{ $isFr ? 'Relisez les informations que vous venez de saisir. Elles pourront être modifiées à tout moment depuis votre tableau de bord.' : 'Check the information you have just entered. You will be able to edit it at any time from your dashboard.' }}</p>
                     </div>
@@ -455,7 +455,7 @@
                         <p class="text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 3 sur 3' : 'Step 3 of 3' }}</p>
                         <div class="mt-1.5 flex items-center gap-2.5">
                             <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-full rounded-full bg-[#10592E]"></div></div>
-                            <span class="text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">100% {{ $isFr ? 'terminé' : 'complete' }}</span>
+                            <span class="text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">100% {{ $isFr ? 'terminé' : 'complete' }}</span>
                         </div>
                     </div>
                 </div>
@@ -631,7 +631,7 @@
                         <span class="w-[54px] h-[54px] rounded-2xl bg-[#E8F2EC] dark:bg-[#0C3D1D] flex items-center justify-center">
                             <i data-lucide="{{ $nsIcon }}" class="w-[24px] h-[24px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         </span>
-                        <p class="mt-4 text-[11.5px] font-semibold text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
+                        <p class="mt-4 text-[13px] md:text-[11.5px] font-semibold text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
                         <h3 class="mt-0.5 text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $nsTitle }}</h3>
                         <p class="mt-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed flex-1">{{ $nsDesc }}</p>
                         <a href="{{ $nsHref }}" class="mt-5 ui-btn ui-btn-secondary">
@@ -653,7 +653,29 @@
                 </div>
             </section>
 
-            <!-- Email verification notice -->
+            <!-- Email verification notice. Two honest versions: the code was sent,
+                 or the relay failed and the account still exists — never the first
+                 message when the second is what happened. -->
+            @if(request('mail') === 'failed')
+            <section class="mt-4 ui-card border-[#EFD08A] dark:border-[#4A3A12] flex flex-col sm:flex-row items-start gap-5">
+                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#FBF1DD] dark:bg-[#3A2B06] flex items-center justify-center">
+                    <i data-lucide="mail-warning" class="w-5 h-5 text-[#C9942E] dark:text-[#EDB33A]" style="stroke-width:1.8"></i>
+                </span>
+                <div class="min-w-0">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Votre compte est créé — l\'email de vérification n\'est pas parti' : 'Your account is created — the verification email did not go out' }}</h2>
+                    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+                        {{ $isFr
+                            ? 'Nous n\'avons pas pu envoyer le code à'
+                            : 'We could not send the code to' }}
+                        <span class="font-semibold break-all">{{ $siacUser['email'] ?? '—' }}</span>{{ $isFr ? ' pour le moment. Votre compte existe bien : vous pourrez demander un nouveau code à tout moment depuis la page de vérification.' : ' right now. Your account does exist: you can request a fresh code at any time from the verification page.' }}
+                    </p>
+                    <a href="{{ route('email.verify', ['lang' => $lang]) }}" class="mt-3 ui-btn ui-btn-secondary">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        {{ $isFr ? 'Renvoyer le code de vérification' : 'Resend the verification code' }}
+                    </a>
+                </div>
+            </section>
+            @else
             <section class="mt-4 ui-card flex flex-col sm:flex-row items-start gap-5">
                 <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] dark:bg-[#0C3D1D] flex items-center justify-center">
                     <i data-lucide="mail" class="w-5 h-5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
@@ -667,6 +689,7 @@
                     </p>
                 </div>
             </section>
+            @endif
 
             <!-- Help bar -->
             <section class="mt-4 bg-[#EFF5F1] dark:bg-[#0A0C09] rounded-xl px-6 py-4 flex items-start gap-5">
@@ -701,7 +724,7 @@
                 <div class="text-center">
                     <img src="{{ asset('images/landing/' . $advIcon) }}" alt="" class="w-[54px] h-[54px] mx-auto" aria-hidden="true">
                     <h3 class="mt-3.5 text-[12.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $advTitle }}</h3>
-                    <p class="mt-2 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $advDesc }}</p>
+                    <p class="mt-2 text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $advDesc }}</p>
                 </div>
                 @endforeach
             </div>
@@ -715,7 +738,7 @@
                 <div class="text-center px-4">
                     <img src="{{ asset('images/landing/' . $secIcon) }}" alt="" class="w-[52px] h-[52px] mx-auto" aria-hidden="true">
                     <h3 class="mt-3 text-[12.5px] font-bold text-[#F3C246]">{{ $secTitle }}</h3>
-                    <p class="mt-2 text-[11px] text-[#C6D4C9] leading-relaxed whitespace-pre-line">{{ $secDesc }}</p>
+                    <p class="mt-2 text-[13px] md:text-[11px] text-[#C6D4C9] leading-relaxed whitespace-pre-line">{{ $secDesc }}</p>
                 </div>
                 @endforeach
             </div>
@@ -796,9 +819,13 @@
     let currentStep = 1;
 
     // ── Real signup: "Créer mon compte" creates the account ──
-    const obAlready = @json((bool) $siacUser);
+    // The form is ALWAYS posted — even when a session already exists. This used
+    // to short-circuit to the success screen for any logged-in visitor, which
+    // showed "Votre compte a été créé." without creating anything: an admin
+    // adding a member from the users page lost the account entirely. The server
+    // decides what a logged-in submission means (idempotent resubmit, admin
+    // creation, or "log out first"); the browser no longer pretends.
     document.getElementById('ob-submit').addEventListener('click', () => {
-        if (obAlready) { goToStep(SUCCESS_STEP); return; }
         const fields = ['ob-first-name', 'ob-last-name', 'ob-email', 'ob-password', 'ob-password-confirm'];
         let firstMissing = null;
         fields.forEach(id => {

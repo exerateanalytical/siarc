@@ -33,6 +33,46 @@
         </div>
     </div>
 
+    {{-- Identity edit: name, email, phone. Never the password — an admin sends a
+         reset, never types a password. Every change is written to audit_logs. --}}
+    <div class="ui-card mb-4">
+        <h2 class="ui-card-title mb-1">{{ $lang === 'fr' ? 'Modifier les coordonnées' : 'Edit details' }}</h2>
+        <p class="ui-card-sub mb-4">
+            {{ $lang === 'fr'
+                ? 'Chaque modification est consignée dans le journal d\'audit. Changer l\'email annule sa vérification.'
+                : 'Every change is written to the audit log. Changing the email resets its verification.' }}
+        </p>
+        <form method="POST" action="{{ route('admin.users.update-details', ['id' => $user->id]) }}" class="space-y-3">
+            @csrf
+            <div>
+                <label class="ui-label" for="edit-name">{{ $lang === 'fr' ? 'Nom complet' : 'Full name' }}</label>
+                <input id="edit-name" name="name" type="text" required maxlength="100" value="{{ old('name', $user->name) }}" class="ui-field">
+                @error('name')<p class="ui-hint text-[#B42025] dark:text-[#F0555C]">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label class="ui-label" for="edit-email">
+                    Email
+                    @if($user->is_email_verified)
+                        <span class="ui-pill ui-pill-ok ml-1">{{ $lang === 'fr' ? 'vérifié' : 'verified' }}</span>
+                    @else
+                        <span class="ui-pill ui-pill-neutral ml-1">{{ $lang === 'fr' ? 'non vérifié' : 'unverified' }}</span>
+                    @endif
+                </label>
+                <input id="edit-email" name="email" type="email" required maxlength="255" value="{{ old('email', $user->email) }}" class="ui-field">
+                @error('email')<p class="ui-hint text-[#B42025] dark:text-[#F0555C]">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label class="ui-label" for="edit-phone">{{ $lang === 'fr' ? 'Téléphone' : 'Phone' }}</label>
+                <input id="edit-phone" name="phone" type="tel" maxlength="20" value="{{ old('phone', $user->phone) }}" class="ui-field" placeholder="+2376XXXXXXXX">
+                @error('phone')<p class="ui-hint text-[#B42025] dark:text-[#F0555C]">{{ $message }}</p>@enderror
+            </div>
+            <button type="submit" class="ui-btn ui-btn-primary">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                {{ $lang === 'fr' ? 'Enregistrer' : 'Save' }}
+            </button>
+        </form>
+    </div>
+
     @if($user->business)
     <div class="ui-card mb-4 flex items-center gap-3">
         <i data-lucide="building-2" class="w-5 h-5 text-blue-500 dark:text-[#8FB6F5] shrink-0"></i>

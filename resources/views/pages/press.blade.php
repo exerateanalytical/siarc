@@ -37,7 +37,7 @@
 <main class="max-w-[900px] mx-auto px-5 py-10 pb-20">
     <section class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-6">
         <h2 class="text-[15px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'À propos de la plateforme' : 'About the platform' }}</h2>
-        <p class="mt-2.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+        <p class="mt-2.5 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
             {{ $isFr
                 ? "Artisan Hub 237 est une plateforme privée qui met en valeur le savoir-faire artisanal camerounais en ligne. Elle connecte artisans, coopératives et entreprises à des acheteurs locaux et internationaux : vitrines vérifiées, demandes de devis, événements et certification des membres."
                 : 'Artisan Hub 237 is a private platform showcasing Cameroonian craftsmanship online. It connects artisans, cooperatives and businesses with local and international buyers: verified showcases, quote requests, events and member certification.'
@@ -60,7 +60,7 @@
                 <i data-lucide="mail" class="w-[18px] h-[18px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.7"></i>
                 {{ $isFr ? 'Contact média' : 'Media contact' }}
             </h2>
-            <p class="mt-2.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+            <p class="mt-2.5 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                 {{ $isFr ? 'Pour toute demande d\'interview, de reportage ou d\'information :' : 'For any interview, report or information request:' }}
             </p>
             <p class="mt-2 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ config('legal.company.email') }}</p>

@@ -280,6 +280,159 @@ class SecurityWebController extends Controller
     }
 
     // ─────────────────────────────────────────
+    // Account deletion (self-service)
+    // ─────────────────────────────────────────
+    /**
+     * Delete the member's own account.
+     *
+     * What actually happens — and the page says the same thing, because a
+     * promise of total erasure would be false on a platform whose certificate
+     * register is append-only:
+     *
+     *  - The users row is soft-deleted and its personal identifiers are
+     *    removed: name, email, phone, avatar, IP. The email and phone become
+     *    free for a future account. Login refuses the account with the same
+     *    neutral message as a non-existent one.
+     *  - Passkeys, 2FA secrets, recovery codes and API tokens are destroyed.
+     *  - A business the member created goes back to `draft`: it leaves the
+     *    public directory but the row survives, because certificates and
+     *    provenance records reference it and the register's history must
+     *    remain verifiable.
+     *  - A SIARC-imported profile the member had claimed is un-claimed
+     *    (claimed_at cleared) so the artisan — this person or their successor —
+     *    can claim it again later. Its data was imported from competition
+     *    records, not authored by this account.
+     *  - Published reviews stay, rendered under « Compte supprimé ».
+     *  - One audit row records the deletion, keeping the old email: the only
+     *    place it survives, retained so a later dispute ("someone deleted my
+     *    account") can still be investigated.
+     */
+    public function deleteAccount(Request $request): RedirectResponse
+    {
+        $user = $this->currentUser($request);
+        if (! $user) return redirect('/login');
+
+        $lang = $this->lang($request);
+        $isFr = $lang === 'fr';
+
+        $data = $request->validate([
+            'delete_password' => ['required', 'string'],
+            'delete_confirm'  => ['required', 'string'],
+        ]);
+
+        if (! Hash::check($data['delete_password'], $user->password)) {
+            return back()->withErrors(['delete_password' => $isFr ? 'Mot de passe incorrect.' : 'Incorrect password.']);
+        }
+
+        $phrase = strtoupper(trim($data['delete_confirm']));
+        if (! in_array($phrase, ['SUPPRIMER', 'DELETE'], true)) {
+            return back()->withErrors(['delete_confirm' => $isFr
+                ? 'Tapez SUPPRIMER pour confirmer la suppression de votre compte.'
+                : 'Type DELETE to confirm the deletion of your account.']);
+        }
+
+        // The last remaining super_admin cannot delete itself: the platform
+        // would have no administrator left and no way to appoint one.
+        $isSuperAdmin = DB::table('model_has_roles')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('model_has_roles.model_id', $user->id)
+            ->where('roles.name', 'super_admin')
+            ->exists();
+        if ($isSuperAdmin) {
+            $otherSuperAdmins = DB::table('model_has_roles')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->join('users', 'users.id', '=', 'model_has_roles.model_id')
+                ->where('roles.name', 'super_admin')
+                ->where('users.id', '!=', $user->id)
+                ->whereNull('users.deleted_at')
+                ->count();
+            if ($otherSuperAdmins === 0) {
+                return back()->withErrors(['delete_password' => $isFr
+                    ? 'Impossible : vous êtes le dernier super-administrateur de la plateforme.'
+                    : 'Not possible: you are the last remaining super administrator of the platform.']);
+            }
+        }
+
+        DB::transaction(function () use ($user) {
+            $businessesDrafted = 0;
+            $siarcUnclaimed = 0;
+
+            $owned = DB::table('businesses')
+                ->where('user_id', $user->id)
+                ->whereNull('deleted_at')
+                ->get(['id', 'status', 'siarc_code', 'claimed_at']);
+
+            foreach ($owned as $b) {
+                if ($b->siarc_code !== null && $b->claimed_at !== null) {
+                    // Imported SIARC profile: hand it back to the unclaimed
+                    // pool. user_id stays pointing at the anonymised tombstone
+                    // (the column is NOT NULL); SiarcClaim::assign re-points it
+                    // on the next claim and never deletes a soft-deleted row.
+                    DB::table('businesses')->where('id', $b->id)->update([
+                        'claimed_at' => null,
+                        'status'     => 'draft',
+                        'updated_at' => now(),
+                    ]);
+                    $siarcUnclaimed++;
+                } else {
+                    DB::table('businesses')->where('id', $b->id)->update([
+                        'status'     => 'draft',
+                        'updated_at' => now(),
+                    ]);
+                    $businessesDrafted++;
+                }
+            }
+
+            // The audit row is written BEFORE the identifiers are removed: it is
+            // the one durable record of who deleted what, kept for disputes.
+            \App\Modules\Admin\Models\AuditLog::record($user->id, 'user.self_deleted', 'user', null, [
+                'name'  => $user->name,
+                'email' => $user->email,
+            ], [
+                'businesses_set_draft' => $businessesDrafted,
+                'siarc_unclaimed'      => $siarcUnclaimed,
+            ]);
+
+            // Credentials and second factors die with the account.
+            DB::table('user_passkeys')->where('user_id', $user->id)->delete();
+            DB::table('personal_access_tokens')
+                ->where('tokenable_type', \App\Modules\Auth\Models\User::class)
+                ->where('tokenable_id', $user->id)
+                ->delete();
+            DB::table('model_has_roles')->where('model_id', $user->id)->delete();
+
+            // Soft delete + anonymise. email/phone become NULL so the person can
+            // sign up again with the same address; name becomes '' so reviews
+            // render the « Compte supprimé » label instead of a name.
+            DB::table('users')->where('id', $user->id)->update([
+                'name'                      => '',
+                'email'                     => null,
+                'phone'                     => null,
+                'avatar'                    => null,
+                'password'                  => Hash::make(Str::random(48)),
+                'remember_token'            => null,
+                'two_factor_secret'         => null,
+                'two_factor_confirmed_at'   => null,
+                'two_factor_recovery_codes' => null,
+                'two_factor_channel'        => null,
+                'last_login_ip'             => null,
+                'is_email_verified'         => 0,
+                'is_phone_verified'         => 0,
+                'status'                    => 'deleted',
+                'deleted_at'                => now(),
+                'updated_at'                => now(),
+            ]);
+        });
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login?lang=' . $lang)->with('success', $isFr
+            ? 'Votre compte a été supprimé. Vos identifiants personnels ont été effacés ; le registre des certificats conserve son historique.'
+            : 'Your account has been deleted. Your personal identifiers have been erased; the certificate register keeps its history.');
+    }
+
+    // ─────────────────────────────────────────
     // Passkeys (WebAuthn)
     // ─────────────────────────────────────────
     public function passkeyRegisterOptions(Request $request)

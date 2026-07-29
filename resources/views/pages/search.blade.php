@@ -66,9 +66,9 @@ $totalResults = $businesses->count() + $products->count();
                     <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}" class="ui-tap-inset text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                         {{ $lang === 'fr' ? $product->name_fr : ($product->name_en ?? $product->name_fr) }}
                     </a>
-                    <p class="mt-0.5 text-[11px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $lang === 'fr' ? $product->business->name_fr : ($product->business->name_en ?? $product->business->name_fr) }}</p>
+                    <p class="mt-0.5 text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $lang === 'fr' ? $product->business->name_fr : ($product->business->name_en ?? $product->business->name_fr) }}</p>
                     <a href="{{ route('products.show', ['lang' => $lang, 'slug' => $product->slug]) }}"
-                        class="mt-auto pt-2.5 block"><span class="h-[44px] md:h-[30px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">{{ $lang === 'fr' ? 'Voir le produit' : 'View product' }}</span></a>
+                        class="mt-auto pt-2.5 block"><span class="h-[44px] md:h-[30px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[13px] md:text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">{{ $lang === 'fr' ? 'Voir le produit' : 'View product' }}</span></a>
                 </div>
             </article>
             @endforeach

@@ -57,28 +57,55 @@ It exits non-zero on any violation, so it is usable as a gate. Routes come from
 
 ---
 
-## 2. Type scale
+## 2. Type scale — mobile-first, not merely floored
 
-**The floor is 12px, and 14px for anything read at length.** Below 12px on a
-phone the text is decoration, not information.
+**99.99% of the users hold a phone.** The previous version of this table set
+only *minimums*: a 12px floor stops text being illegible, but a page whose whole
+body sits on the floor still reads as a shrunken desktop site — which is what
+the owner named when he called the mobile type "cheap". The apps our buyers
+hold all day set body text at 15–17px (iOS HIG body 17pt, Material 3
+body-large 16sp / body-medium 14sp, WhatsApp/Instagram ≈ 15–16px). This table
+is now a **target ramp**, written phone-first: the mobile column is the size
+the class states outright, and the desktop keeps its artwork-measured size
+behind an `md:` prefix.
 
-The floor is enforced **below `md` (< 768px)** — the widths at which the reader
+The ramp is enforced **below `md` (< 768px)** — the widths at which the reader
 is holding the device in one hand. At 1024 and 1280 the desktop artwork governs
 and its 9–10px uppercase micro-lettering (the logo strapline, the utility-row
 icon labels) stays as drawn. This is not a loophole: it is the only reading that
 is consistent with the pixel-replica mandate *and* with a legible phone.
 
-| Role | Mobile (< 768) | Desktop | Notes |
+| Role | Phone (< 768) — the stated size | Desktop — the measured size | Notes |
 |---|---|---|---|
-| `h1` page title | 26–30px | 34–44px | one per page |
-| `h2` section head | 20–22px | 26–30px | |
-| `h3` card title | 16–17px | 18–20px | |
-| `h4` label / eyebrow | 14px | 15–16px | |
-| **body** | **15px** | 15–16px | the default |
-| **body-long** | **≥ 14px** | 14–15px | anything a buyer reads in paragraphs |
-| small / meta | 13px | 12px | |
-| caption / legal | **12px — absolute floor** | 10.5–11.5px | |
-| form field text | **≥ 16px** | 14–15px | below 16px iOS zooms the page on focus |
+| `h1` page title | **22–26px** | 34–44px | one per page |
+| `h2` section head | **18–20px** | 26–30px | |
+| `h3` card title | **15–16px** | 18–20px | |
+| `h4` label / eyebrow | **13–14px** | 15–16px | |
+| **body** | **15–16px** | 12–16px as drawn | the default; anything a buyer reads |
+| **secondary / meta** | **13–14px** | 11–12px | bylines, counts, timestamps |
+| caption / label / legal | **12px — absolute floor** | 10.5–11.5px | badges, chips, table headers |
+| form field text | **16px** | 12.5–15px | below 16px iOS zooms the page on focus |
+
+**Line-height 1.5–1.6 for body copy on phones.** A 15px line set solid reads
+worse than a 13px line with air.
+
+How to write it — mobile value first, artwork value behind the breakpoint:
+
+```html
+<p class="text-[15px] leading-relaxed md:text-[12px] md:leading-normal">…</p>
+<span class="text-[13px] md:text-[11px] text-neutral-500">…</span>
+```
+
+Two layers make the ramp real:
+
+1. **The kit** (`pages/partials/ui-kit.blade.php`) states the phone sizes for
+   every semantic class (`.ui-field` 16px, `.ui-btn` 14px, `.ui-card-sub` 13px,
+   table cells 14px…) in its `@media (max-width: 767.98px)` blocks, and remaps
+   the legacy sub-13px `text-[…px]` utilities upward (≤10.5 → 12, 11–11.5 → 13,
+   12–12.5 → 14) so a page that has not yet been swept still reads at ramp
+   sizes. The remap deliberately does not touch `md:`-prefixed classes.
+2. **Swept pages** state the phone size directly in the markup, as above. The
+   remap is a net, not the design: new code writes the mobile-first pair.
 
 ### Consistency with `docs/ARTISAN-PROFILE-V2-SPEC.md`
 

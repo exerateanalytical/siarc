@@ -194,6 +194,94 @@ class AdminWebController extends Controller
         return view('pages.dashboard.admin-user-detail', compact('lang', 'user', 'auditAsActor', 'conversationCount', 'reviewCount'));
     }
 
+    /**
+     * True when demoting/suspending/losing this user would leave the platform
+     * without a single active super_admin — the unrecoverable lockout.
+     */
+    private function isLastSuperAdmin(string $userId): bool
+    {
+        $isSuper = \Illuminate\Support\Facades\DB::table('model_has_roles')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('model_has_roles.model_id', $userId)
+            ->where('roles.name', 'super_admin')
+            ->exists();
+        if (! $isSuper) {
+            return false;
+        }
+
+        return \Illuminate\Support\Facades\DB::table('model_has_roles')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->join('users', 'users.id', '=', 'model_has_roles.model_id')
+            ->where('roles.name', 'super_admin')
+            ->where('users.id', '!=', $userId)
+            ->whereNull('users.deleted_at')
+            ->where('users.status', 'active')
+            ->count() === 0;
+    }
+
+    /**
+     * Admin edit of a member's identity: name, email, phone — and nothing else.
+     * Not the password: an admin triggers a reset, never sets a password. Every
+     * change writes old → new to audit_logs; identity edits with no trail are
+     * how disputes become unwinnable.
+     */
+    public function updateUserDetails(Request $request, string $id): RedirectResponse
+    {
+        $lang = $this->lang($request);
+        $isFr = $lang === 'fr';
+        $admin = $this->requireAdmin($request);
+        if ($admin instanceof RedirectResponse) return $admin;
+
+        $user = User::findOrFail($id);
+
+        $data = $request->validate([
+            'name'  => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $email = strtolower(trim($data['email']));
+        $phone = trim((string) ($data['phone'] ?? '')) ?: null;
+        $name  = trim($data['name']);
+
+        // Uniqueness is checked against EVERY row, trashed included — the DB
+        // indexes are absolute and a validation pass that a constraint then
+        // vetoes would surface as a 500.
+        if (\Illuminate\Support\Facades\DB::table('users')->where('email', $email)->where('id', '!=', $user->id)->exists()) {
+            return back()->withErrors(['email' => $isFr ? 'Cet email est déjà utilisé par un autre compte.' : 'This email is already used by another account.'])->withInput();
+        }
+        if ($phone && \Illuminate\Support\Facades\DB::table('users')->where('phone', $phone)->where('id', '!=', $user->id)->exists()) {
+            return back()->withErrors(['phone' => $isFr ? 'Ce numéro de téléphone est déjà associé à un autre compte.' : 'This phone number is already linked to another account.'])->withInput();
+        }
+
+        $old = [];
+        $new = [];
+        if ($name !== $user->name)   { $old['name'] = $user->name;   $new['name'] = $name; }
+        if ($email !== $user->email) { $old['email'] = $user->email; $new['email'] = $email; }
+        if ($phone !== $user->phone) { $old['phone'] = $user->phone; $new['phone'] = $phone; }
+
+        if (! $new) {
+            return back()->with('success', $isFr ? 'Aucune modification.' : 'No changes.');
+        }
+
+        $update = ['name' => $name, 'email' => $email, 'phone' => $phone];
+        if (isset($new['email'])) {
+            // An admin typing a new address does not make it verified.
+            $update['is_email_verified'] = 0;
+            $new['is_email_verified'] = 0;
+        }
+        if (isset($new['phone'])) {
+            $update['is_phone_verified'] = 0;
+        }
+        $user->update($update);
+
+        \App\Modules\Admin\Models\AuditLog::record($admin['id'], 'user.details_changed', 'user', null, $old, array_merge($new, [
+            'target_user_id' => $user->id,
+        ]));
+
+        return back()->with('success', $isFr ? 'Coordonnées mises à jour.' : 'Details updated.');
+    }
+
     public function updateUserRole(Request $request, string $id): RedirectResponse
     {
         $lang = $this->lang($request);
@@ -208,6 +296,12 @@ class AdminWebController extends Controller
 
         if ($id === $admin['id']) {
             return back()->withErrors(['role' => $lang === 'fr' ? 'Vous ne pouvez pas modifier votre propre rôle.' : 'You cannot change your own role.']);
+        }
+
+        // Demoting the last active super_admin would leave nobody able to
+        // appoint another one — the platform locks itself out.
+        if ($this->isLastSuperAdmin($id)) {
+            return back()->withErrors(['role' => $lang === 'fr' ? 'Impossible : c\'est le dernier super-administrateur actif.' : 'Not possible: this is the last active super administrator.']);
         }
 
         $user = User::findOrFail($id);
@@ -240,6 +334,12 @@ class AdminWebController extends Controller
 
         if ($id === $admin['id']) {
             return back()->withErrors(['status' => $lang === 'fr' ? 'Vous ne pouvez pas modifier votre propre statut.' : 'You cannot change your own status.']);
+        }
+
+        // Suspending the last active super_admin is the same lockout as
+        // demoting them: nobody left who can reverse it.
+        if ($data['status'] === 'suspended' && $this->isLastSuperAdmin($id)) {
+            return back()->withErrors(['status' => $lang === 'fr' ? 'Impossible : c\'est le dernier super-administrateur actif.' : 'Not possible: this is the last active super administrator.']);
         }
 
         $user = User::findOrFail($id);

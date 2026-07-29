@@ -46,7 +46,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         @foreach($articles as $a)
         <article class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-5 flex flex-col">
-            <p class="flex items-center gap-2 text-[11.5px] font-semibold text-[#14652F] dark:text-[#339B56]">
+            <p class="flex items-center gap-2 text-[13px] md:text-[11.5px] font-semibold text-[#14652F] dark:text-[#339B56]">
                 <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
                 {{ $newsDate($a->published_at) }}
             </p>

@@ -433,7 +433,7 @@
             {{-- Name block --}}
             <div class="min-w-0 flex-1 pt-1">
                 @if($isVerified)
-                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
+                <span class="inline-flex items-center gap-1.5 bg-[#D3B030] text-[#1B1403] text-[13px] md:text-[11px] font-bold tracking-[.08em] uppercase rounded-full px-3 py-1">
                     <i data-lucide="badge-check" class="w-3 h-3"></i>
                     {{ $isFr ? 'Artisan vérifié' : 'Verified artisan' }}
                 </span>
@@ -465,7 +465,7 @@
                 @if($craftTags->isNotEmpty())
                 <div class="mt-4 flex flex-wrap gap-2">
                     @foreach($craftTags as $tag)
-                    <span class="inline-flex items-center rounded px-2.5 py-1.5 text-[11.5px] font-medium text-[#EBC989] border border-[#6B5426] bg-[#231B0E]">{{ $tag }}</span>
+                    <span class="inline-flex items-center rounded px-2.5 py-1.5 text-[13px] md:text-[11.5px] font-medium text-[#EBC989] border border-[#6B5426] bg-[#231B0E]">{{ $tag }}</span>
                     @endforeach
                 </div>
                 @endif
@@ -480,7 +480,7 @@
                  than kept private. Unknown says so plainly.
             --}}
             <div class="absolute right-5 top-5 -bottom-6 w-[236px] rounded-[13px] border border-[#C9942E]/80 bg-[#070805] shadow-[0_18px_40px_-18px_rgba(0,0,0,.65)] p-4 flex flex-col">
-                <p class="text-center text-[11px] font-bold tracking-[.08em] uppercase text-[#C9942E]">
+                <p class="text-center text-[13px] md:text-[11px] font-bold tracking-[.08em] uppercase text-[#C9942E]">
                     {{-- The register's own name for this figure. It measures how
                          much of the account has been checked, not anyone's honesty
                          or craft, and calling it a trust score would promote it
@@ -497,12 +497,12 @@
                 </p>
                 @if(! empty($apTrust['breakdown']))
                 <details class="mt-2">
-                    <summary class="cursor-pointer list-none text-center text-[10.5px] font-semibold text-[#C9942E] hover:underline">
+                    <summary class="cursor-pointer list-none text-center text-[12px] md:text-[10.5px] font-semibold text-[#C9942E] hover:underline">
                         {{ $isFr ? 'Comment il est calculé' : 'How this is calculated' }}
                     </summary>
                     <ul class="mt-2 space-y-1.5 text-left">
                         @foreach($apTrust['breakdown'] as $input)
-                        <li class="text-[10.5px] leading-snug text-[#C6BCA6]">
+                        <li class="text-[12px] md:text-[10.5px] leading-snug text-[#C6BCA6]">
                             <span class="font-semibold text-[#E4DCC9]">{{ $input['points'] ?? 0 }}/{{ $input['max'] ?? 0 }}</span>
                             — {{ $input['basis'] ?? '' }}
                         </li>
@@ -517,7 +517,7 @@
                     {{ $isFr ? 'Pas encore évalué' : 'Not yet assessed' }}
                 </p>
                 @if(trim((string) ($apTrust['basis'] ?? '')) !== '')
-                <p class="mt-1 text-center text-[10.5px] leading-snug text-[#9C937F]">{{ $apTrust['basis'] }}</p>
+                <p class="mt-1 text-center text-[12px] md:text-[10.5px] leading-snug text-[#9C937F]">{{ $apTrust['basis'] }}</p>
                 @endif
                 @endif
 
@@ -525,7 +525,7 @@
                      here. business_reviews is empty, so there is no average to
                      draw and no stars to fill. --}}
                 @if(($apReviews['count'] ?? 0) > 0 && $statKnown($apReviews['mean'] ?? []))
-                <p class="mt-2 text-center text-[11px] text-[#C6BCA6]">
+                <p class="mt-2 text-center text-[13px] md:text-[11px] text-[#C6BCA6]">
                     {{ $statText($apReviews['mean']) }}/5 · {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}
                 </p>
                 @endif
@@ -628,9 +628,9 @@
                 @foreach($identityRows as [$idLabel, $idValue, $idIcon, $idMono])
                 <div class="flex items-start gap-2.5 py-[3.5px] min-h-[25px] first:pt-0">
                     <i data-lucide="{{ $idIcon }}" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B] dark:text-[#B4B5A6]">{{ $idLabel }}</dt>
-                    <span class="shrink-0 text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
-                    <dd class="min-w-0 flex-1 text-[12.5px] font-medium leading-[18px] text-[#1D1F24] dark:text-[#F3EFE7] break-words {{ $idMono ? 'font-mono text-[11.5px]' : '' }}">{{ $idValue }}</dd>
+                    <dt class="w-[132px] shrink-0 text-[13px] md:text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B] dark:text-[#B4B5A6]">{{ $idLabel }}</dt>
+                    <span class="shrink-0 text-[13px] md:text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
+                    <dd class="min-w-0 flex-1 text-[12.5px] font-medium leading-[18px] text-[#1D1F24] dark:text-[#F3EFE7] break-words {{ $idMono ? 'font-mono text-[13px] md:text-[11.5px]' : '' }}">{{ $idValue }}</dd>
                 </div>
                 @endforeach
 
@@ -640,8 +640,8 @@
                      row says which of the two it is. --}}
                 <div class="flex items-start gap-2.5 py-[3.5px] min-h-[25px]">
                     <i data-lucide="shield-check" class="w-[14px] h-[14px] text-[#C9942E] mt-[3px] shrink-0"></i>
-                    <dt class="w-[132px] shrink-0 text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B] dark:text-[#B4B5A6]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
-                    <span class="shrink-0 text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
+                    <dt class="w-[132px] shrink-0 text-[13px] md:text-[11px] font-medium leading-[18px] uppercase tracking-[.04em] text-[#45494B] dark:text-[#B4B5A6]">{{ $isFr ? 'Statut du profil' : 'Profile status' }}</dt>
+                    <span class="shrink-0 text-[13px] md:text-[11.5px] leading-[18px] text-[#C8C1B2]" aria-hidden="true">:</span>
                     <dd class="min-w-0 flex-1">
                         @if($isVerified)
                         <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Documents vérifiés' : 'Documents checked' }}</span>
@@ -658,7 +658,7 @@
             <h2 class="ap-sec-title mb-4"><i data-lucide="user" class="w-4 h-4"></i>{{ $isFr ? 'À propos de' : 'About' }} {{ $businessName }}</h2>
 
             @if(trim((string) $descriptionText) !== '')
-            <div class="space-y-3 text-[12.5px] leading-[1.75] text-[#3B382F] dark:text-[#F3EFE7]">
+            <div class="space-y-3 text-[15px] md:text-[12.5px] leading-[1.6] md:leading-[1.75] text-[#3B382F] dark:text-[#F3EFE7]">
                 @foreach(preg_split('/\R{2,}/', trim((string) $descriptionText)) as $para)
                 <p>{{ $para }}</p>
                 @endforeach
@@ -699,9 +699,9 @@
                     @if($statKnown($tile))
                     <p class="text-[18px] font-bold leading-none text-[#1D1B16] dark:text-[#F3EFE7]">{{ $statText($tile) }}</p>
                     @else
-                    <p class="text-[11.5px] leading-tight ap-absent" @if(trim((string) ($tile['basis'] ?? '')) !== '') title="{{ $tile['basis'] }}" @endif>{{ $notTracked }}</p>
+                    <p class="text-[13px] md:text-[11.5px] leading-tight ap-absent" @if(trim((string) ($tile['basis'] ?? '')) !== '') title="{{ $tile['basis'] }}" @endif>{{ $notTracked }}</p>
                     @endif
-                    <p class="mt-1.5 text-[9px] font-normal leading-tight text-[#8A857A] dark:text-[#868778]">{{ $tileLabel }}</p>
+                    <p class="mt-1.5 text-[12px] md:text-[9px] font-normal leading-tight text-[#8A857A] dark:text-[#868778]">{{ $tileLabel }}</p>
                 </div>
                 @endforeach
             </div>
@@ -733,22 +733,22 @@
                 </span>
                 @if($coarseLocation)
                 <a href="https://www.google.com/maps/search/{{ urlencode($coarseLocation) }}" target="_blank" rel="noopener"
-                   class="absolute right-2 bottom-2 inline-flex items-center gap-1.5 rounded-md bg-[#0A5C2E] px-2.5 py-1.5 text-[9.5px] font-bold uppercase tracking-[.06em] text-white hover:bg-[#0D6E38]">
+                   class="absolute right-2 bottom-2 inline-flex items-center gap-1.5 rounded-md bg-[#0A5C2E] px-2.5 py-1.5 text-[12px] md:text-[9.5px] font-bold uppercase tracking-[.06em] text-white hover:bg-[#0D6E38]">
                     {{ $isFr ? 'Voir sur la carte' : 'View on map' }}
                 </a>
                 @endif
             </div>
 
-            <p class="mt-2.5 text-[11.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-2.5 text-[13px] md:text-[11.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Seuls la ville et la région sont publiés. L'adresse exacte de l'atelier est communiquée par l'artisan lors d'une prise de contact."
                    : 'Only the town and region are published. The exact workshop address is given by the artisan when you get in touch.' }}
             </p>
 
             @if($apWorkshop && ($apWorkshop['reference'] ?? null))
-            <p class="mt-3 text-[11px] text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-3 text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr ? 'Atelier enregistré' : 'Registered workshop' }}
-                <span class="block mt-0.5 font-mono text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] break-all">{{ $apWorkshop['reference'] }}</span>
+                <span class="block mt-0.5 font-mono text-[13px] md:text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] break-all">{{ $apWorkshop['reference'] }}</span>
             </p>
             @endif
 
@@ -826,21 +826,21 @@
                         <img src="{{ brand_asset('mark') }}" alt="" class="relative w-6 h-6 object-contain">
                     </span>
                     <div class="min-w-0">
-                        <p class="text-[11.5px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
-                        <p class="mt-0.5 text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
+                        <p class="text-[13px] md:text-[11.5px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">{{ $block['name'] ?? strtoupper($block['type']) }}</p>
+                        <p class="mt-0.5 text-[12px] md:text-[9.5px] uppercase tracking-[.08em] text-[#B8B2A4]">{{ strtoupper($block['type']) }}</p>
                     </div>
                 </div>
 
                 @if($issued && $first)
-                <p class="mt-2.5 font-mono text-[10px] font-semibold text-[#6F6B60] dark:text-[#868778] break-all">{{ $first['number'] }}</p>
+                <p class="mt-2.5 font-mono text-[12px] md:text-[10px] font-semibold text-[#6F6B60] dark:text-[#868778] break-all">{{ $first['number'] }}</p>
                 <div class="mt-2.5 flex items-center gap-2">
                     <span class="ui-pill ui-pill-ok"><i data-lucide="check" class="w-3 h-3"></i>{{ $isFr ? 'Au registre' : 'On register' }}</span>
                     @if(! empty($first['issued_at']))
-                    <span class="text-[10px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($first['issued_at'])->format('d/m/Y') }}</span>
+                    <span class="text-[12px] md:text-[10px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($first['issued_at'])->format('d/m/Y') }}</span>
                     @endif
                 </div>
                 @if(($block['count'] ?? 0) > 1)
-                <p class="mt-1.5 text-[10px] text-[#8A857A] dark:text-[#868778]">+{{ $block['count'] - 1 }} {{ $isFr ? 'autre(s)' : 'more' }}</p>
+                <p class="mt-1.5 text-[12px] md:text-[10px] text-[#8A857A] dark:text-[#868778]">+{{ $block['count'] - 1 }} {{ $isFr ? 'autre(s)' : 'more' }}</p>
                 @endif
 
                 {{-- The artwork puts a download glyph on every card. It renders
@@ -857,14 +857,14 @@
                 @endif
                 @else
                 {{-- The register's own explanation of the absence, not ours. --}}
-                <p class="mt-2.5 text-[10.5px] leading-relaxed ap-absent">{{ $block['basis'] ?? ($isFr ? 'Non émis.' : 'Not issued.') }}</p>
+                <p class="mt-2.5 text-[12px] md:text-[10.5px] leading-relaxed ap-absent">{{ $block['basis'] ?? ($isFr ? 'Non émis.' : 'Not issued.') }}</p>
                 @endif
             </article>
             @endforeach
         </div>
 
         @if($certIssuedCount === 0)
-        <p class="mt-3 text-[11.5px] text-[#8A857A] dark:text-[#868778]">
+        <p class="mt-3 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
             {{ $isFr
                ? "Aucun certificat n'a encore été émis pour cet artisan. Un certificat ne s'obtient pas automatiquement : il suppose une démarche et un contrôle."
                : 'No certificate has been issued for this artisan yet. A certificate is not automatic — it follows an application and a check.' }}
@@ -933,24 +933,24 @@
                     </a>
                 </div>
                 <div class="p-3">
-                    <h3 class="text-[11px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">
+                    <h3 class="text-[13px] md:text-[11px] font-semibold leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">
                         <a href="{{ route('products.show', ['slug' => $p['slug'], 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $p['name'] }}</a>
                     </h3>
 
                     @if($productCategories->get((int) ($p['id'] ?? 0)))
-                    <p class="mt-1 text-[9px] font-normal text-[#8A857A] dark:text-[#868778]">{{ $productCategories->get((int) $p['id']) }}</p>
+                    <p class="mt-1 text-[12px] md:text-[9px] font-normal text-[#8A857A] dark:text-[#868778]">{{ $productCategories->get((int) $p['id']) }}</p>
                     @endif
 
                     @if(($p['price']['amount'] ?? null) !== null)
                     <p class="mt-2 font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
-                        <span class="text-[11.5px]">{{ $p['price']['currency'] === 'XAF' ? 'FCFA' : $p['price']['currency'] }}</span>
+                        <span class="text-[13px] md:text-[11.5px]">{{ $p['price']['currency'] === 'XAF' ? 'FCFA' : $p['price']['currency'] }}</span>
                         <span class="text-[14px]">{{ $isFr ? number_format($p['price']['amount'], 0, ',', ' ') : number_format($p['price']['amount'], 0, '.', ',') }}</span>
                     </p>
                     @else
                     {{-- No published price is a real state, and a different one
                          from a piece nobody has priced. The register keeps them
                          apart and prints its own reason. --}}
-                    <p class="mt-2 text-[11px] leading-snug ap-absent">{{ $p['price']['basis'] ?? '' }}</p>
+                    <p class="mt-2 text-[13px] md:text-[11px] leading-snug ap-absent">{{ $p['price']['basis'] ?? '' }}</p>
                     @endif
 
                     {{-- The design puts "4.9 (26)" and a gold star under every
@@ -964,7 +964,7 @@
                          beside a price reads as a verdict on the piece, and
                          what the register actually holds is a certificate of
                          authenticity against it. --}}
-                    <span class="mt-2.5 inline-flex items-center gap-1 rounded px-2 py-1 bg-[#003712] text-white text-[9px] font-bold uppercase tracking-[.06em]">
+                    <span class="mt-2.5 inline-flex items-center gap-1 rounded px-2 py-1 bg-[#003712] text-white text-[12px] md:text-[9px] font-bold uppercase tracking-[.06em]">
                         <i data-lucide="badge-check" class="w-[11px] h-[11px]"></i>{{ $isFr ? 'Certifiée' : 'Certified' }}
                     </span>
                     @endif
@@ -973,7 +973,7 @@
             @endforeach
         </div>
         @if(trim((string) ($apProducts['ratings_basis'] ?? '')) !== '')
-        <p class="mt-3 text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">{{ $apProducts['ratings_basis'] }}</p>
+        <p class="mt-3 text-[13px] md:text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">{{ $apProducts['ratings_basis'] }}</p>
         @endif
         @else
         <p class="mt-3 text-[12.5px] ap-absent">{{ $isFr ? "Cet artisan n'a encore publié aucune pièce." : 'This artisan has not published any pieces yet.' }}</p>
@@ -1004,7 +1004,7 @@
                         <svg viewBox="0 0 20 20" class="w-[12.5px] h-[12.5px] {{ $i <= round($apReviews['mean']['value']) ? 'fill-[#E29A08]' : 'fill-[#E6E1D6]' }}"><path d="M10 1.6 12.5 7l5.9.5-4.5 3.9 1.4 5.8L10 14.1l-5.3 3.1 1.4-5.8L1.6 7.5 7.5 7z"/></svg>
                         @endfor
                     </p>
-                    <p class="mt-2 text-[10.6px] font-normal text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Sur' : 'Based on' }} {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}</p>
+                    <p class="mt-2 text-[12px] md:text-[10.6px] font-normal text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Sur' : 'Based on' }} {{ $apReviews['count'] }} {{ $isFr ? 'avis' : 'reviews' }}</p>
                 </div>
                 <div class="min-w-0 flex-1">
                     @foreach([5, 4, 3, 2, 1] as $star)
@@ -1013,11 +1013,11 @@
                         $pct = $apReviews['count'] > 0 ? round($n / $apReviews['count'] * 100) : 0;
                     @endphp
                     <div class="flex items-center gap-2.5 h-[24px]">
-                        <span class="w-[58px] shrink-0 text-[11px] font-normal text-[#616469] dark:text-[#B4B5A6]">{{ $star }} {{ $isFr ? 'Étoiles' : 'Stars' }}</span>
+                        <span class="w-[58px] shrink-0 text-[13px] md:text-[11px] font-normal text-[#616469] dark:text-[#B4B5A6]">{{ $star }} {{ $isFr ? 'Étoiles' : 'Stars' }}</span>
                         <span class="flex-1 h-[7px] rounded-full bg-[#F2EEE4] dark:bg-[#0A0C09] overflow-hidden">
                             <span class="block h-full rounded-full bg-[#E29A08]" style="width: {{ $pct }}%"></span>
                         </span>
-                        <span class="w-[26px] shrink-0 text-right text-[11px] text-[#3C4145] dark:text-[#F3EFE7]">{{ $n }}</span>
+                        <span class="w-[26px] shrink-0 text-right text-[13px] md:text-[11px] text-[#3C4145] dark:text-[#F3EFE7]">{{ $n }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -1047,11 +1047,11 @@
                             <div class="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1">
                                 <span class="text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $r->reviewer_name ?: ($isFr ? 'Compte supprimé' : 'Deleted account') }}</span>
                                 @if(! empty($r->is_verified_contact) && $reviewBadgeLabel !== '')
-                                <span class="ui-pill ui-pill-ok text-[9.5px]"><i data-lucide="message-square" class="w-3 h-3"></i>{{ $reviewBadgeLabel }}</span>
+                                <span class="ui-pill ui-pill-ok text-[12px] md:text-[9.5px]"><i data-lucide="message-square" class="w-3 h-3"></i>{{ $reviewBadgeLabel }}</span>
                                 @endif
                             </div>
                             @if(! empty($r->published_at))
-                            <span class="shrink-0 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($r->published_at)->locale($lang)->translatedFormat('d/m/Y') }}</span>
+                            <span class="shrink-0 text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ \Illuminate\Support\Carbon::parse($r->published_at)->locale($lang)->translatedFormat('d/m/Y') }}</span>
                             @endif
                         </div>
 
@@ -1065,7 +1065,7 @@
                         <p class="mt-1.5 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $r->title }}</p>
                         @endif
                         @if(trim((string) $r->body) !== '')
-                        <p class="mt-1 text-[11.5px] leading-relaxed text-[#3B382F] dark:text-[#F3EFE7]">{{ $r->body }}</p>
+                        <p class="mt-1 text-[15px] md:text-[11.5px] leading-relaxed text-[#3B382F] dark:text-[#F3EFE7]">{{ $r->body }}</p>
                         @endif
                     </div>
                 </li>
@@ -1073,13 +1073,13 @@
             </ul>
 
             @if(($apReviews['count'] ?? 0) > $reviewRows->count())
-            <p class="mt-3 text-[11px] text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-3 text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr ? 'et' : 'and' }} {{ $apReviews['count'] - $reviewRows->count() }}
                 {{ $isFr ? 'autre(s) avis publié(s).' : 'other published review(s).' }}
             </p>
             @endif
 
-            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-3 text-[12px] md:text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Chaque avis est lu par un modérateur avant publication. Le badge atteste d'un échange par la messagerie de la plateforme — il n'atteste d'aucun achat : la plateforme n'est pas partie aux ventes."
                    : 'Every review is read by a moderator before publication. The badge attests to an exchange through the platform’s own messaging — it attests to no purchase: the platform is not party to sales.' }}
@@ -1092,7 +1092,7 @@
                    : 'Nobody has reviewed this artisan yet. No rating is shown while there is nothing to count.' }}
             </p>
             @if(trim((string) ($apReviews['mean']['basis'] ?? '')) !== '')
-            <p class="mt-2 text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">{{ $apReviews['mean']['basis'] }}</p>
+            <p class="mt-2 text-[13px] md:text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">{{ $apReviews['mean']['basis'] }}</p>
             @endif
             @endif
         </section>
@@ -1137,7 +1137,7 @@
                     {{-- Never "0", and never omitted: a counter reading zero is a
                          claim about this artisan, a counter the platform does
                          not keep is a claim about the platform. --}}
-                    <span class="shrink-0 text-[11px] ap-absent" @if(trim((string) ($s['basis'] ?? '')) !== '') title="{{ $s['basis'] }}" @endif>{{ $notTracked }}</span>
+                    <span class="shrink-0 text-[13px] md:text-[11px] ap-absent" @if(trim((string) ($s['basis'] ?? '')) !== '') title="{{ $s['basis'] }}" @endif>{{ $notTracked }}</span>
                     @endif
                 </li>
                 @endif
@@ -1176,14 +1176,14 @@
                             {{ $award['title'] }}@if(! empty($award['year']))<span class="text-[#8A857A] dark:text-[#868778]"> — {{ $award['year'] }}</span>@endif
                         </p>
                         @if(! empty($award['issuer']))
-                        <p class="mt-0.5 text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $award['issuer'] }}</p>
+                        <p class="mt-0.5 text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]">{{ $award['issuer'] }}</p>
                         @endif
                         {{-- The one thing that makes an outside body's honour
                              checkable by somebody other than us. Rendered when
                              the reviewer who recorded it left a pointer. --}}
                         @if(! empty($award['evidence_url']))
                         <a href="{{ $award['evidence_url'] }}" target="_blank" rel="noopener nofollow"
-                           class="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:underline">
+                           class="mt-1 inline-flex items-center gap-1 text-[12px] md:text-[10px] font-semibold text-[#8A6D1F] dark:text-[#EDB33A] hover:underline">
                             <i data-lucide="external-link" class="w-3 h-3"></i>{{ $isFr ? 'Justificatif' : 'Evidence' }}
                         </a>
                         @endif
@@ -1194,14 +1194,14 @@
 
             @if($awards->count() > 4)
             <button type="button" id="ap-awards-all"
-                    class="ui-btn ui-btn-block mt-4 bg-transparent text-[#8A6D1F] dark:text-[#EDB33A] border-[#E2CD9B] dark:border-[#6A5210] hover:bg-[#FBF7EC] hover:dark:bg-[#0A0C09] text-[10.5px] font-bold uppercase tracking-[.06em]">
+                    class="ui-btn ui-btn-block mt-4 bg-transparent text-[#8A6D1F] dark:text-[#EDB33A] border-[#E2CD9B] dark:border-[#6A5210] hover:bg-[#FBF7EC] hover:dark:bg-[#0A0C09] text-[12px] md:text-[10.5px] font-bold uppercase tracking-[.06em]">
                 {{ $isFr ? 'Voir toutes les distinctions' : 'View all achievements' }} ({{ $awards->count() }})
             </button>
             @endif
 
             {{-- Whose statement this is. The row says an outside body honoured
                  this artisan; the platform is repeating it, not confirming it. --}}
-            <p class="mt-3 text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-3 text-[12px] md:text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Distinctions saisies au dossier depuis des justificatifs, et rapportées telles quelles. La plateforme ne vérifie pas l'organisme décernant."
                    : 'Distinctions recorded on file from evidence and reported verbatim. The platform does not verify the awarding body.' }}
@@ -1212,7 +1212,7 @@
                    ? "Aucune distinction n'est enregistrée pour cet artisan."
                    : 'No award is recorded for this artisan.' }}
             </p>
-            <p class="mt-2 text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
+            <p class="mt-2 text-[13px] md:text-[11px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
                 {{ $isFr
                    ? "Les distinctions sont conférées par des organismes extérieurs, dont la plateforme ne tient pas registre. Seul ce qui a été fourni et vérifié figure ici."
                    : 'Awards are conferred by outside bodies, of which the platform keeps no register. Only what has been supplied and checked appears here.' }}
@@ -1305,8 +1305,8 @@
                     <i data-lucide="{{ $tb['icon'] }}" class="w-[18px] h-[18px]"></i>
                 </span>
                 <div class="min-w-0">
-                    <p class="text-[11.5px] font-bold uppercase tracking-[.05em] leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">{{ $tb['title'] }}</p>
-                    <p class="mt-1 text-[10.5px] leading-relaxed text-[#6F6B60] dark:text-[#868778]">{{ $tb['body'] }}</p>
+                    <p class="text-[13px] md:text-[11.5px] font-bold uppercase tracking-[.05em] leading-snug text-[#1D1B16] dark:text-[#F3EFE7]">{{ $tb['title'] }}</p>
+                    <p class="mt-1 text-[12px] md:text-[10.5px] leading-relaxed text-[#6F6B60] dark:text-[#868778]">{{ $tb['body'] }}</p>
                 </div>
             </div>
             @endforeach
@@ -1316,7 +1316,7 @@
              A "verified" badge is a document check, not a warranty of the goods
              or of the order — config/legal.php is explicit on that, and a buyer
              who misreads it is the person who bears the cost. --}}
-        <p class="mt-5 pt-4 border-t border-[#EADFC6] dark:border-[#6A5210] text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
+        <p class="mt-5 pt-4 border-t border-[#EADFC6] dark:border-[#6A5210] text-[12px] md:text-[10.5px] leading-relaxed text-[#8A857A] dark:text-[#868778]">
             {{ $isFr
                ? "Artisan Hub 237 est une société privée, sans affiliation ministérielle ou publique. La vérification atteste d'un contrôle documentaire : ce n'est ni une garantie de qualité des produits, ni une garantie de bonne exécution d'une commande, ni une caution financière."
                : 'Artisan Hub 237 is a private company with no ministerial or public affiliation. Verification attests to a document check: it is not a guarantee of product quality, of an order being properly fulfilled, or a financial guarantee.' }}

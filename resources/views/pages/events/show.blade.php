@@ -204,7 +204,7 @@
                     <p class="text-[14px] font-bold text-[#E5A82E]">{{ $year }}</p>
                     <p class="md:mt-4 text-[14px] font-semibold text-white">{{ $timeFrom }}</p>
                     @if($timeTo)<p class="text-[12px] text-white/80">à {{ $timeTo }}</p>@endif
-                    <p class="hidden md:flex items-start gap-1.5 mt-4 text-[11px] text-white/90 leading-snug">
+                    <p class="hidden md:flex items-start gap-1.5 mt-4 text-[13px] md:text-[11px] text-white/90 leading-snug">
                         <i data-lucide="map-pin" class="w-3 h-3 mt-0.5 shrink-0"></i>
                         <span>{{ $meta['city'] }}<br>{{ $meta['venue'] }}</span>
                     </p>
@@ -215,7 +215,7 @@
                 <div class="relative flex-1 bg-[#FAF5EC] dark:bg-[#0A0C09] overflow-hidden">
                     <img src="{{ asset('images/landing/edetail-art.png') }}" alt="" class="absolute right-0 inset-y-0 h-full w-auto object-cover hidden sm:block pointer-events-none select-none" aria-hidden="true">
                     <div class="relative p-6 max-w-[480px]">
-                        <span class="inline-block text-[10px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-3 py-1.5" style="background-color: {{ $meta['badgeColor'] }}">{{ $meta['badge'] }}</span>
+                        <span class="inline-block text-[12px] md:text-[10px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-3 py-1.5" style="background-color: {{ $meta['badgeColor'] }}">{{ $meta['badge'] }}</span>
                         <h1 class="mt-3.5 font-serif text-[27px] sm:text-[31px] leading-tight text-[#12432A] dark:text-[#339B56] font-semibold">{{ $name }}</h1>
                         @if($descriptionText)
                         <p class="mt-3.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $descriptionText }}</p>
@@ -285,7 +285,7 @@
                                 <span class="w-9 h-9 rounded-lg bg-[#F6F1E4] dark:bg-[#0A0C09] flex items-center justify-center shrink-0"><i data-lucide="store" class="w-4 h-4 text-[#C9942E]"></i></span>
                                 <span>
                                     <span class="block text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? $exBiz->name_fr : ($exBiz->name_en ?? $exBiz->name_fr) }}</span>
-                                    @if($exBiz->industry)<span class="block text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? $exBiz->industry->name_fr : ($exBiz->industry->name_en ?? $exBiz->industry->name_fr) }}</span>@endif
+                                    @if($exBiz->industry)<span class="block text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? $exBiz->industry->name_fr : ($exBiz->industry->name_en ?? $exBiz->industry->name_fr) }}</span>@endif
                                 </span>
                             </a>
                             @endforeach
@@ -312,7 +312,7 @@
                 <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-4 text-center">
                     <img src="{{ asset('images/landing/' . $hlImg) }}" alt="" class="h-[42px] w-auto mx-auto object-contain">
                     <p class="mt-3 text-[12px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $hlTitle }}</p>
-                    <p class="mt-1.5 text-[10.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $hlSub }}</p>
+                    <p class="mt-1.5 text-[12px] md:text-[10.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $hlSub }}</p>
                 </div>
                 @endforeach
             </div>
@@ -329,7 +329,7 @@
                 @foreach($participatingRegions as [$prImg, $prLabel])
                 <a href="{{ route('businesses.index', ['lang' => $lang]) }}" class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] hover:border-leaf rounded-xl p-3 text-center transition-colors">
                     <img src="{{ asset('images/landing/' . $prImg) }}" alt="" class="h-[46px] w-auto mx-auto object-contain opacity-70">
-                    <p class="mt-2 text-[11px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7]">{{ $prLabel }}</p>
+                    <p class="mt-2 text-[13px] md:text-[11px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7]">{{ $prLabel }}</p>
                 </a>
                 @endforeach
             </div>
@@ -341,8 +341,8 @@
                 <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-3.5 flex items-center gap-3">
                     <img src="{{ asset('images/landing/' . $paImg) }}" alt="" class="w-[34px] h-[34px] object-contain shrink-0">
                     <div class="min-w-0 leading-tight">
-                        <p class="text-[11.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $paName }}</p>
-                        @if($paSub)<p class="mt-0.5 text-[9.5px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $paSub }}</p>@endif
+                        <p class="text-[13px] md:text-[11.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $paName }}</p>
+                        @if($paSub)<p class="mt-0.5 text-[12px] md:text-[9.5px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $paSub }}</p>@endif
                     </div>
                 </div>
                 @endforeach
@@ -366,7 +366,7 @@
                 @if($meta['price'])
                 <p class="mt-3 text-[22px] font-bold text-white">{{ $meta['price'] }}</p>
                 @endif
-                <p class="mt-1 text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Inscription obligatoire en ligne' : 'Online registration required' }}</p>
+                <p class="mt-1 text-[13px] md:text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Inscription obligatoire en ligne' : 'Online registration required' }}</p>
                 <a href="{{ $siacUser ? route('events.ticket', ['slug' => $event->slug, 'lang' => $lang]) : '/inscription?lang=' . $lang }}"
                     class="mt-4 w-full h-[42px] bg-[#E9A825] hover:bg-goldbt text-[#3A2E08] rounded-lg flex items-center justify-center gap-2 text-[13px] font-bold transition-colors">
                     {{ $isFr ? 'S\'inscrire maintenant' : 'Sign up now' }}
@@ -378,7 +378,7 @@
                     <i data-lucide="calendar-plus" class="w-4 h-4"></i>
                     {{ $isFr ? 'Ajouter à mon agenda' : 'Add to my calendar' }}
                 </a>
-                <p class="mt-5 text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Partager l\'événement' : 'Share the event' }}</p>
+                <p class="mt-5 text-[13px] md:text-[11.5px] text-[#B9C4BC]">{{ $isFr ? 'Partager l\'événement' : 'Share the event' }}</p>
                 <div class="mt-2.5 flex items-center gap-2.5">
                     <a href="https://wa.me/?text={{ $shareTitle }}%20{{ $shareUrl }}" target="_blank" rel="noopener" aria-label="WhatsApp" class="w-9 h-9 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                         <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.1c-.2.7-1.2 1.3-2 1.4-.5.1-1.2.2-3.5-.7-2.9-1.2-4.8-4.1-4.9-4.3-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.4.9-.9 1-.7 1.4.9 1.5 2 2.4 3.3 3 .3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1s1.8.8 2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1z"/></svg>
@@ -448,7 +448,7 @@
                     <img src="{{ brand_asset('mark') }}" alt="" class="w-[38px] h-auto object-contain shrink-0">
                     <div>
                         <p class="text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">Artisan Hub 237</p>
-                        <p class="mt-1 text-[11px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $isFr ? 'Plateforme privée dédiée à l\'artisanat camerounais' : 'Private platform dedicated to Cameroonian craftsmanship' }}</p>
+                        <p class="mt-1 text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $isFr ? 'Plateforme privée dédiée à l\'artisanat camerounais' : 'Private platform dedicated to Cameroonian craftsmanship' }}</p>
                     </div>
                 </div>
                 <a href="{{ route('about', ['lang' => $lang]) }}"
@@ -456,11 +456,11 @@
                     {{ $isFr ? 'En savoir plus sur nous' : 'Learn more about us' }}
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </a>
-                <p class="mt-4 text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
+                <p class="mt-4 text-[13px] md:text-[11.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Nous contacter' : 'Contact us' }}</p>
                 @if(config('legal.company.phone'))
-                <p class="mt-2 flex items-center gap-2 text-[11.5px] text-[#6F6B60] dark:text-[#868778]"><i data-lucide="phone" class="w-3 h-3"></i>{{ config('legal.company.phone') }}</p>
+                <p class="mt-2 flex items-center gap-2 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]"><i data-lucide="phone" class="w-3 h-3"></i>{{ config('legal.company.phone') }}</p>
                 @endif
-                <p class="mt-1.5 flex items-center gap-2 text-[11.5px] text-[#6F6B60] dark:text-[#868778]"><i data-lucide="mail" class="w-3 h-3"></i>{{ config('legal.company.email') }}</p>
+                <p class="mt-1.5 flex items-center gap-2 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]"><i data-lucide="mail" class="w-3 h-3"></i>{{ config('legal.company.email') }}</p>
             </div>
 
             <!-- Downloads -->
@@ -482,7 +482,7 @@
             <!-- Stay informed -->
             <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-5">
                 <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Restez informé' : 'Stay informed' }}</h2>
-                <p class="mt-2 text-[11.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? 'Recevez les dernières actualités sur cet événement.' : 'Receive the latest news about this event.' }}</p>
+                <p class="mt-2 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $isFr ? 'Recevez les dernières actualités sur cet événement.' : 'Receive the latest news about this event.' }}</p>
                 <form action="{{ route('newsletter.subscribe') }}" method="POST" class="mt-3.5 flex gap-2">
                     @csrf
                     <input type="hidden" name="lang" value="{{ $lang }}">

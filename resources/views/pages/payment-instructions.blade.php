@@ -126,7 +126,7 @@
         <h1 class="mt-3 font-serif text-[26px] sm:text-[34px] font-bold text-[#02301B] dark:text-[#339B56] leading-tight">
             {{ $pageTitle }}
         </h1>
-        <p class="mt-3 text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
+        <p class="mt-3 text-[15px] md:text-[13.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? "Cette page concerne uniquement les frais que la plateforme facture pour ses propres services : inscription, adhésion, renouvellement, vérification. Elle ne concerne jamais l'achat d'une pièce à un artisan : la plateforme n'est pas partie à ces ventes et n'encaisse aucun prix de produit."
                : 'This page is only about fees the platform charges for its own services: registration, membership, renewal, verification. It is never about buying a piece from an artisan: the platform is not a party to those sales and receives no product price.' }}
@@ -387,7 +387,7 @@
     {{-- ───────────── 4. How this works, stated once ───────────── --}}
     <section class="ui-card p-5 sm:p-6">
         <h2 class="ui-card-title">{{ $isFr ? 'Comment fonctionne le règlement' : 'How settlement works' }}</h2>
-        <ol class="mt-3 space-y-2 text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed list-decimal pl-5">
+        <ol class="mt-3 space-y-2 text-[15px] md:text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed list-decimal pl-5">
             <li>{{ $isFr ? "Vous envoyez le montant exact au compte indiqué, en mettant la référence dans le motif."
                           : 'You send the exact amount to the account shown, putting the reference in the reason field.' }}</li>
             <li>{{ $isFr ? "Vous nous le déclarez depuis cette page. C'est une déclaration : elle n'accorde rien."

@@ -154,14 +154,14 @@
 
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8 py-9 lg:py-11">
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-[11.5px] text-white/65" aria-label="Breadcrumb">
+        <nav class="flex items-center gap-2 text-[13px] md:text-[11.5px] text-white/65" aria-label="Breadcrumb">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
             <i data-lucide="chevron-right" class="w-3 h-3 text-white/40"></i>
             <span class="text-white/90">{{ $isFr ? 'À propos' : 'About' }}</span>
         </nav>
 
         <div class="mt-9 max-w-xl">
-            <p class="text-[11.5px] font-semibold tracking-[0.2em] text-goldlt uppercase">{{ $isFr ? 'À propos de nous' : 'About us' }}</p>
+            <p class="text-[13px] md:text-[11.5px] font-semibold tracking-[0.2em] text-goldlt uppercase">{{ $isFr ? 'À propos de nous' : 'About us' }}</p>
 
             <h1 class="mt-4 font-serif text-[30px] sm:text-[36px] lg:text-[40px] leading-[1.2] text-white font-medium">
                 {{ $isFr ? 'À propos d\'' : 'About' }}<br>
@@ -170,7 +170,7 @@
 
             <div class="mt-6 h-[2px] w-10 bg-goldlt"></div>
 
-            <p class="mt-6 text-[13.5px] text-white/85 leading-relaxed max-w-md">
+            <p class="mt-6 text-[15px] md:text-[13.5px] text-white/85 leading-relaxed max-w-md">
                 {{ $isFr
                     ? "Une entreprise privée camerounaise dédiée à la promotion, à la préservation et à la valorisation de l'artisanat camerounais, héritage vivant de notre diversité culturelle et de notre créativité."
                     : "A Cameroonian private company dedicated to promoting, preserving and showcasing Cameroonian craftsmanship, the living heritage of our cultural diversity and creativity."
@@ -194,11 +194,11 @@
     <div class="max-w-[1280px] mx-auto px-5 lg:px-8 py-12 lg:py-14">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_170px_1fr] gap-10 items-start">
             <div>
-                <p class="text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre vision' : 'Our vision' }}</p>
+                <p class="text-[13px] md:text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre vision' : 'Our vision' }}</p>
                 <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] dark:text-[#F3EFE7] font-medium">
                     {{ $isFr ? 'Un artisanat camerounais reconnu, valorisé et durable' : 'Cameroonian craftsmanship that is recognised, valued and sustainable' }}
                 </h2>
-                <p class="mt-5 text-[13px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">
+                <p class="mt-5 text-[15px] md:text-[13px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">
                     {{ $isFr
                         ? "Nous aspirons à un Cameroun où chaque artisan, chaque création et chaque tradition est reconnue, protégée et transmise, contribuant au rayonnement culturel, économique et touristique du pays."
                         : "We aspire to a Cameroon where every artisan, every creation and every tradition is recognised, protected and passed on, contributing to the country's cultural, economic and tourism influence."
@@ -211,11 +211,11 @@
             </div>
 
             <div>
-                <p class="text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre mission' : 'Our mission' }}</p>
+                <p class="text-[13px] md:text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre mission' : 'Our mission' }}</p>
                 <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] dark:text-[#F3EFE7] font-medium">
                     {{ $isFr ? 'Valoriser, connecter, préserver et promouvoir' : 'Showcase, connect, preserve and promote' }}
                 </h2>
-                <p class="mt-5 text-[13px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">
+                <p class="mt-5 text-[15px] md:text-[13px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">
                     {{ $isFr
                         ? "Nous valorisons le savoir-faire artisanal, connectons les acteurs aux opportunités locales et internationales, préservons notre patrimoine et encourageons l'innovation pour un développement durable et inclusif."
                         : "We showcase artisan know-how, connect stakeholders to local and international opportunities, preserve our heritage and encourage innovation for sustainable, inclusive development."
@@ -236,8 +236,8 @@
                 <i data-lucide="{{ $asIcon }}" class="w-7 h-7 text-gold dark:text-[#EDB33A] shrink-0 mt-1" stroke-width="1.4"></i>
                 <div class="leading-tight">
                     <p class="font-serif text-[27px] text-goldlt whitespace-nowrap">{{ $asNum }}</p>
-                    <p class="mt-1 text-[11.5px] font-semibold tracking-[0.08em] text-white uppercase whitespace-nowrap">{{ $asLabel }}</p>
-                    <p class="mt-1.5 text-[10.5px] text-white/60 whitespace-nowrap">{{ $asCap }}</p>
+                    <p class="mt-1 text-[13px] md:text-[11.5px] font-semibold tracking-[0.08em] text-white uppercase whitespace-nowrap">{{ $asLabel }}</p>
+                    <p class="mt-1.5 text-[12px] md:text-[10.5px] text-white/60 whitespace-nowrap">{{ $asCap }}</p>
                 </div>
             </div>
             @endforeach
@@ -256,7 +256,7 @@
             <i data-lucide="{{ $vIcon }}" class="w-10 h-10 mx-auto" stroke-width="1.4" style="color:{{ $vColor }}"></i>
             <h3 class="mt-6 text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $vTitle }}</h3>
             <div class="mt-2.5 mx-auto h-[2px] w-5 bg-gold/70"></div>
-            <p class="mt-3.5 text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">{{ $vDesc }}</p>
+            <p class="mt-3.5 text-[13px] md:text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">{{ $vDesc }}</p>
         </div>
         @endforeach
     </div>
@@ -298,7 +298,7 @@
         <div class="text-center">
             <i data-lucide="{{ $auIcon }}" class="w-9 h-9 mx-auto" stroke-width="1.4" style="color:{{ $auColor }}"></i>
             <h3 class="mt-4 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug whitespace-pre-line">{{ $auTitle }}</h3>
-            <p class="mt-2.5 text-[11px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $auDesc }}</p>
+            <p class="mt-2.5 text-[13px] md:text-[11px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $auDesc }}</p>
         </div>
         @endforeach
     </div>
@@ -340,7 +340,7 @@
     @foreach($bottomTabs as $tab)
     <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

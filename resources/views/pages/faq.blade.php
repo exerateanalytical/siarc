@@ -64,7 +64,7 @@
                     {{ $isFr ? $faq->question_fr : ($faq->question_en ?? $faq->question_fr) }}
                     <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
-                <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
+                <p class="mt-3 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
             </details>
             @endforeach
         </div>
@@ -77,7 +77,7 @@
                     {{ $isFr ? $faq->question_fr : ($faq->question_en ?? $faq->question_fr) }}
                     <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
-                <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
+                <p class="mt-3 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $isFr ? $faq->answer_fr : ($faq->answer_en ?? $faq->answer_fr) }}</p>
             </details>
             @endforeach
         </div>
@@ -90,7 +90,7 @@
                     {{ $fq }}
                     <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
-                <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $fa }}</p>
+                <p class="mt-3 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $fa }}</p>
             </details>
             @endforeach
         </div>

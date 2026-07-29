@@ -94,7 +94,7 @@
                             Artisan Hub 237<span class="lg:hidden"> — {{ $isFr ? 'L\'artisanat camerounais' : 'Cameroonian craftsmanship' }}</span>
                             <span class="hidden lg:inline"><br>{{ $isFr ? 'L\'artisanat' : 'Cameroonian' }}<br>{{ $isFr ? 'camerounais' : 'craftsmanship' }}</span>
                         </span>
-                        <span class="mt-1 lg:mt-3.5 block text-[11.5px] lg:text-[14.5px] text-sage leading-[1.4] lg:leading-[1.5]">
+                        <span class="mt-1 lg:mt-3.5 block text-[13px] md:text-[11.5px] lg:text-[14.5px] text-sage leading-[1.4] lg:leading-[1.5]">
                             {{ $isFr ? "Notre héritage, notre fierté," : 'Our heritage, our pride,' }}<span class="lg:hidden"> </span><br class="hidden lg:inline">{{ $isFr ? 'notre avenir' : 'our future' }}
                         </span>
                     </span>
@@ -226,12 +226,12 @@
                     <button type="submit" class="w-full rounded-[12px] border border-[#E4E0D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] hover:bg-[#FBF9F6] hover:dark:bg-[#0A0C09] px-3 py-3 text-center transition-colors">
                         <i data-lucide="{{ $icon }}" class="w-5 h-5 mx-auto mb-1" style="color:{{ $col }}"></i>
                         <span class="block text-[13.5px] font-bold text-[#26251F] dark:text-[#F3EFE7]">{{ $label }}</span>
-                        <span class="block text-[10.5px] text-muted dark:text-[#868778] leading-tight mt-0.5">{{ $who }}</span>
+                        <span class="block text-[12px] md:text-[10.5px] text-muted dark:text-[#868778] leading-tight mt-0.5">{{ $who }}</span>
                     </button>
                 </form>
                 @endforeach
             </div>
-            <p class="mt-2 text-center text-[11px] text-muted dark:text-[#868778]">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
+            <p class="mt-2 text-center text-[13px] md:text-[11px] text-muted dark:text-[#868778]">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
             @endif
 
             {{-- Google and Facebook sign-in removed for launch: neither provider

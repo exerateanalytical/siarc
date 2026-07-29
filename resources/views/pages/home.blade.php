@@ -179,15 +179,15 @@
                     <span id="hero-gold" class="text-gold dark:text-[#EDB33A] italic">{{ $heroSlides[0]['gold'] }}</span>
                 </h1>
                 <div class="mt-6 h-px w-full max-w-[600px]" style="background:linear-gradient(90deg,#B0821A 0%,#B0821A 16%,rgba(18,85,39,0.55) 30%,rgba(9,11,9,0) 45%,rgba(9,11,9,0) 55%,rgba(193,9,19,0.45) 72%,#B0821A 84%,#B0821A 100%)"></div>
-                <p id="hero-sub" class="mt-6 text-[14px] text-white/85 leading-relaxed whitespace-pre-line">{{ $heroSlides[0]['sub'] }}</p>
+                <p id="hero-sub" class="mt-6 text-[15px] md:text-[14px] text-white/85 leading-relaxed whitespace-pre-line">{{ $heroSlides[0]['sub'] }}</p>
                 <div class="mt-8 flex flex-wrap items-center gap-3.5">
                     <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
-                        class="inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[13px] font-medium px-6 py-3 rounded transition-colors">
+                        class="inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[14px] md:text-[13px] font-medium px-6 py-3 rounded transition-colors">
                         {{ $isFr ? 'Explorer la galerie' : 'Explore the gallery' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                     <a href="{{ route('businesses.index', ['lang' => $lang]) }}"
-                        class="inline-flex items-center gap-2.5 border border-golddk text-gold dark:text-[#EDB33A] hover:bg-gold/10 text-[13px] font-medium px-5 py-3 rounded transition-colors">
+                        class="inline-flex items-center gap-2.5 border border-golddk text-gold dark:text-[#EDB33A] hover:bg-gold/10 text-[14px] md:text-[13px] font-medium px-5 py-3 rounded transition-colors">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         {{ $isFr ? 'Découvrir les artisans' : 'Discover the artisans' }}
                     </a>
@@ -227,7 +227,7 @@
             <div class="leading-tight">
                 <p class="text-[19px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['n'] }}</p>
                 <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['label'] }}</p>
-                <p class="text-[11px] text-muted dark:text-[#868778] mt-1 leading-snug max-w-[130px]">{{ $stat['cap'] }}</p>
+                <p class="text-[13px] md:text-[11px] text-muted dark:text-[#868778] mt-1 leading-snug max-w-[130px]">{{ $stat['cap'] }}</p>
             </div>
         </div>
         @endforeach
@@ -307,10 +307,10 @@
                     <h3 class="text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-1">
                         {{ $isFr ? $business->name_fr : ($business->name_en ?? $business->name_fr) }}
                     </h3>
-                    <p class="mt-0.5 text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">
+                    <p class="mt-0.5 text-[13px] md:text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">
                         {{ $isFr ? ($business->industry->name_fr ?? '') : ($business->industry->name_en ?? $business->industry->name_fr ?? '') }}
                     </p>
-                    <p class="mt-2 flex items-center gap-1 text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6]">
+                    <p class="mt-2 flex items-center gap-1 text-[13px] md:text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6]">
                         <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
                         <span class="line-clamp-1">{{ $business->region->name_fr ?? ($business->city->name_fr ?? 'Cameroun') }} {{ $business->region ? 'Region' : '' }}</span>
                     </p>
@@ -345,10 +345,10 @@
             <div class="flex items-start justify-between gap-4">
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-3">
-                        <span class="text-[11px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">
+                        <span class="text-[13px] md:text-[11px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">
                             {{ $isFr ? 'Focus' : 'Focus' }}{{ $evIndustry ? ' — ' . mb_strtoupper(\Illuminate\Support\Str::before($evIndustry, ' &')) : '' }}
                         </span>
-                        <span class="border border-white/25 rounded px-2.5 py-1 text-[9.5px] font-medium tracking-[0.12em] text-white/85 uppercase">
+                        <span class="border border-white/25 rounded px-2.5 py-1 text-[12px] md:text-[9.5px] font-medium tracking-[0.12em] text-white/85 uppercase">
                             {{ $evOngoing ? ($isFr ? 'Événement actuel' : 'Current event') : ($isFr ? 'Événement à venir' : 'Upcoming event') }}
                         </span>
                     </div>
@@ -406,8 +406,8 @@
                         <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 group-hover:text-leaf group-hover:dark:text-[#339B56] transition-colors">
                             {{ $isFr ? $ev->name_fr : ($ev->name_en ?? $ev->name_fr) }}
                         </p>
-                        <p class="mt-1 text-[11.5px] text-muted dark:text-[#868778]">{{ $dateRange($ev->starts_at, $ev->ends_at) }}</p>
-                        <p class="text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">{{ $isFr ? $ev->location_fr : ($ev->location_en ?? $ev->location_fr) }}</p>
+                        <p class="mt-1 text-[13px] md:text-[11.5px] text-muted dark:text-[#868778]">{{ $dateRange($ev->starts_at, $ev->ends_at) }}</p>
+                        <p class="text-[13px] md:text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">{{ $isFr ? $ev->location_fr : ($ev->location_en ?? $ev->location_fr) }}</p>
                     </div>
                 </a>
                 @empty
@@ -437,11 +437,11 @@
                     @if($partner->logo ?? false)
                     <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name_fr }}" class="h-8 w-full object-contain px-1">
                     @else
-                    <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf dark:text-[#339B56] text-[10px] font-bold flex items-center justify-center">
+                    <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf dark:text-[#339B56] text-[12px] md:text-[10px] font-bold flex items-center justify-center">
                         {{ mb_strtoupper(mb_substr($partner->name_fr, 0, 2)) }}
                     </span>
                     @endif
-                    <span class="text-[8.5px] text-muted dark:text-[#868778] text-center leading-tight w-full px-0.5 truncate">
+                    <span class="text-[12px] md:text-[8.5px] text-muted dark:text-[#868778] text-center leading-tight w-full px-0.5 truncate">
                         {{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}
                     </span>
                 </div>
@@ -475,7 +475,7 @@
                     <i data-lucide="{{ $mIcon }}" class="w-8 h-8 text-goldic shrink-0" stroke-width="1.4"></i>
                     <div class="leading-tight">
                         <p class="text-[13px] font-semibold text-white">{{ $mTitle }}</p>
-                        <p class="text-[11.5px] text-white/65 mt-0.5">{{ $mSub }}</p>
+                        <p class="text-[13px] md:text-[11.5px] text-white/65 mt-0.5">{{ $mSub }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -502,7 +502,7 @@
     @foreach($bottomTabs as $tab)
     <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

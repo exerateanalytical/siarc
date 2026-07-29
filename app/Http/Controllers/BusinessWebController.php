@@ -82,6 +82,9 @@ class BusinessWebController extends Controller
         return view('pages.dashboard.business-form', [
             'lang' => $lang, 'siacUser' => $siacUser, 'business' => null,
             'industries' => $industries, 'regions' => $regions, 'cities' => collect(),
+            // Signup already collected the member's phone and email; the create
+            // form starts from them (editable) instead of asking again.
+            'owner' => User::find($siacUser['id']),
         ]);
     }
 

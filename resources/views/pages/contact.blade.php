@@ -192,12 +192,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="contact-name" class="ui-label">{{ $isFr ? 'Votre nom' : 'Your name' }}<span class="ui-req">*</span></label>
-                            <input id="contact-name" name="name" type="text" required value="{{ old('name') }}" class="ui-field ui-field--lg @error('name') ui-field--invalid @enderror">
+                            <input id="contact-name" name="name" type="text" required value="{{ old('name', $siacUser['name'] ?? '') }}" class="ui-field ui-field--lg @error('name') ui-field--invalid @enderror">
                             @error('name')<p class="ui-error">{{ $message }}</p>@enderror
                         </div>
                         <div>
                             <label for="contact-email" class="ui-label">{{ $isFr ? 'Votre email' : 'Your email' }}<span class="ui-req">*</span></label>
-                            <input id="contact-email" name="email" type="email" required value="{{ old('email') }}" class="ui-field ui-field--lg @error('email') ui-field--invalid @enderror">
+                            <input id="contact-email" name="email" type="email" required value="{{ old('email', $siacUser['email'] ?? '') }}" class="ui-field ui-field--lg @error('email') ui-field--invalid @enderror">
                             @error('email')<p class="ui-error">{{ $message }}</p>@enderror
                         </div>
                     </div>
@@ -299,7 +299,7 @@
     @foreach($bottomTabs as $tab)
     <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

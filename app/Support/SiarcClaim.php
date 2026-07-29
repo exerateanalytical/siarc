@@ -99,12 +99,16 @@ class SiarcClaim
             ]);
 
             // Only ever remove the import's own placeholder: no email, no
-            // password anyone holds, and no other shop attached to it.
+            // password anyone holds, and no other shop attached to it. A
+            // soft-deleted row is NOT a placeholder — it is the anonymised
+            // tombstone of a member who deleted their account (which also has
+            // email NULL), still referenced by audit rows, reviews and the
+            // certificate register, and must never be hard-deleted.
             if ($placeholderId && $placeholderId !== $userId) {
                 $placeholder = DB::table('users')->where('id', $placeholderId)->first();
                 $stillOwns = Business::where('user_id', $placeholderId)->exists();
 
-                if ($placeholder && $placeholder->email === null && ! $stillOwns) {
+                if ($placeholder && $placeholder->email === null && $placeholder->deleted_at === null && ! $stillOwns) {
                     DB::table('model_has_roles')->where('model_id', $placeholderId)->delete();
                     DB::table('users')->where('id', $placeholderId)->delete();
                 }

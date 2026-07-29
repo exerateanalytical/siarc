@@ -213,7 +213,7 @@ $channelMeta = [
                     </div>
                     <div id="phone-field" class="hidden">
                         <label class="ui-label">{{ $lang === 'fr' ? 'Numéro de téléphone (format international)' : 'Phone number (international format)' }}</label>
-                        <input name="phone" type="tel" value="{{ $user->phone }}" placeholder="+2376XXXXXXXX" class="ui-field">
+                        <input name="phone" type="tel" value="{{ old('phone', $user->phone) }}" placeholder="+2376XXXXXXXX" class="ui-field">
                     </div>
                     <button type="submit" class="ui-btn ui-btn-primary">
                         <i data-lucide="send" class="w-4 h-4"></i>
@@ -250,6 +250,56 @@ $channelMeta = [
         </div>
     </div>
     @endif
+
+    {{-- Account deletion — the copy below is the honest version of what happens.
+         The register is append-only: certificates and provenance survive by design,
+         so this card never promises that "everything" is erased. --}}
+    <div class="ui-card ui-card--flush border-[#F3D5D6] dark:border-[#4A1E20]">
+        <div class="flex items-center gap-2.5 px-5 py-4 border-b border-[#F3D5D6] dark:border-[#4A1E20]">
+            <div class="w-8 h-8 rounded-lg bg-[#FBEAEA] dark:bg-[#3A1214] flex items-center justify-center">
+                <i data-lucide="user-x" class="w-4 h-4 text-[#B42025] dark:text-[#F0555C]"></i>
+            </div>
+            <div>
+                <h2 class="ui-card-title">{{ $lang === 'fr' ? 'Supprimer mon compte' : 'Delete my account' }}</h2>
+                <p class="ui-card-sub">{{ $lang === 'fr' ? 'Action définitive — lisez ce qui est effacé et ce qui est conservé' : 'Permanent action — read what is erased and what is kept' }}</p>
+            </div>
+        </div>
+        <div class="p-5">
+            <div class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed space-y-2 mb-4">
+                <p class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $lang === 'fr' ? 'Effacé immédiatement :' : 'Erased immediately:' }}</p>
+                <p>{{ $lang === 'fr'
+                    ? 'Votre nom, votre adresse email, votre numéro de téléphone, votre photo, vos passkeys, vos codes de récupération et vos réglages de double authentification. Vous ne pourrez plus vous connecter, et cet email pourra servir à créer un nouveau compte.'
+                    : 'Your name, email address, phone number, photo, passkeys, recovery codes and two-factor settings. You will no longer be able to sign in, and this email can be used to create a new account.' }}</p>
+                <p class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $lang === 'fr' ? 'Anonymisé :' : 'Anonymised:' }}</p>
+                <p>{{ $lang === 'fr'
+                    ? 'Vos avis publiés restent visibles, affichés sous « Compte supprimé » sans votre nom.'
+                    : 'Your published reviews stay visible, shown as “Deleted account” without your name.' }}</p>
+                <p class="font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $lang === 'fr' ? 'Conservé — et pourquoi :' : 'Kept — and why:' }}</p>
+                <p>{{ $lang === 'fr'
+                    ? 'Le registre des certificats est un registre d\'historique : les certificats et attestations déjà émis y restent vérifiables. Votre entreprise quitte l\'annuaire public (elle repasse en brouillon) mais sa fiche est conservée car des certificats y font référence. Un profil SIARC que vous aviez revendiqué redevient réclamable par son artisan.'
+                    : 'The certificate register is a historical record: certificates already issued remain verifiable in it. Your business leaves the public directory (it returns to draft) but its record is kept because certificates reference it. A SIARC profile you had claimed becomes claimable again by its artisan.' }}</p>
+            </div>
+            <form method="POST" action="{{ route('security.account.delete') }}" class="space-y-3"
+                onsubmit="return confirm('{{ $lang === 'fr' ? 'Supprimer définitivement votre compte ?' : 'Permanently delete your account?' }}')">
+                @csrf
+                <div>
+                    <label class="ui-label" for="delete-password">{{ $lang === 'fr' ? 'Votre mot de passe' : 'Your password' }}</label>
+                    <input id="delete-password" name="delete_password" type="password" required autocomplete="current-password" class="ui-field">
+                </div>
+                <div>
+                    <label class="ui-label" for="delete-confirm">
+                        {{ $lang === 'fr' ? 'Tapez SUPPRIMER pour confirmer' : 'Type DELETE to confirm' }}
+                    </label>
+                    <input id="delete-confirm" name="delete_confirm" type="text" required autocomplete="off"
+                        placeholder="{{ $lang === 'fr' ? 'SUPPRIMER' : 'DELETE' }}" class="ui-field">
+                </div>
+                <button type="submit" class="ui-btn ui-btn-danger">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    {{ $lang === 'fr' ? 'Supprimer définitivement mon compte' : 'Permanently delete my account' }}
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script src="{{ asset('vendor/qrcode.min.js') }}"></script>

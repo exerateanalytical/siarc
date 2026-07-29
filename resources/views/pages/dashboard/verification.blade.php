@@ -91,9 +91,9 @@ $fileCls = 'ui-file';
         <div>
             <label class="ui-label">{{ $lang === 'fr' ? 'Niveau demandé' : 'Requested tier' }}</label>
             <select name="tier_requested" required class="ui-field ui-select">
-                <option value="basic">{{ $tierLabels['basic'] }}</option>
-                <option value="verified">{{ $tierLabels['verified'] }}</option>
-                <option value="certified">{{ $tierLabels['certified'] }}</option>
+                <option value="basic" @selected(old('tier_requested', 'basic') === 'basic')>{{ $tierLabels['basic'] }}</option>
+                <option value="verified" @selected(old('tier_requested') === 'verified')>{{ $tierLabels['verified'] }}</option>
+                <option value="certified" @selected(old('tier_requested') === 'certified')>{{ $tierLabels['certified'] }}</option>
             </select>
         </div>
 
