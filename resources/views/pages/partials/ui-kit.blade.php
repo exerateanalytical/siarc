@@ -296,10 +296,40 @@
        already at 12px or above are untouched, so nothing reflows.
 
        Scoped to width alone, not (pointer: coarse): a desktop with a touch
-       screen should keep its designed density. */
+       screen should keep its designed density.
+
+       The 8.5–9.5px band below is the badge/caption tier ("Nouveau", tier pills,
+       stat captions). docs/RESPONSIVE-CONTRACT.md §2 puts the floor at 12px with
+       no band exempt, so that is where it lands.
+
+       Deliberately class-based. The printed certificates set their type with
+       inline `font-size:` down to 7.5px, and that is fixed artwork geometry — a
+       floor applied there would wreck the layout, so it must not be reachable
+       from here.
+
+       ── Do not write a comment terminator inside this comment. ──
+       One used to sit six lines above. It closed the block early, which left
+       the prose that followed as raw CSS tokens at the top level; the parser
+       then swallowed the media rule below as that garbage rule's block and
+       threw the whole thing away. The floor was dead on every page and nothing
+       said so — a 360px audit measured the strapline at a real 9px. Close this
+       comment exactly once, at the end. */
     @media (max-width: 767.98px) {
-        .text-\[10px\], .text-\[10\.5px\] { font-size: 12px !important; }
-        .text-\[11px\], .text-\[11\.5px\] { font-size: 12.5px !important; }
+        .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\],
+        .text-\[10px\], .text-\[10\.5px\], .text-\[10\.6px\],
+        .text-\[11px\], .text-\[11\.5px\] { font-size: 12px !important; }
+
+        /* The kit's own sub-12px tiers. These are set here in CSS, not by a
+           `text-[…px]` utility, so the class-based floor above cannot reach
+           them — and .ui-hint under a form field is exactly the text a buyer
+           needs to read. .ui-pill and .ui-table th are handled at their own
+           definitions, where they also need a wrap or spacing change.
+
+           `!important` because this block sits above those definitions in the
+           file and a media query adds no specificity — without it `.ui-dt` two
+           hundred lines down simply wins and the floor is decorative. */
+        .ui-eyebrow, .ui-hint, .ui-error, .ui-dt,
+        .ui-empty-state--unwired .ui-empty-note { font-size: 12px !important; }
     }
 
     /* iOS Safari zooms the page whenever a focused control's text is under 16px.
@@ -315,8 +345,11 @@
         .ui-field--lg .ui-field-bare { font-size: 16px; }
         .ui-field:not(.ui-textarea) { height: 44px; }
         .ui-field-group { height: 44px; }
+        /* 40px was under the contract's 44px tap floor, and `--sm` is the
+           modifier the footer newsletter and the language select use — the two
+           controls a buyer meets on a phone. docs/RESPONSIVE-CONTRACT.md §4. */
         .ui-field--sm:not(.ui-textarea),
-        .ui-field-group.ui-field--sm { height: 40px; }
+        .ui-field-group.ui-field--sm { height: 44px; }
     }
 
     /* File input. Can't be a .ui-field — the control is the browser's own
@@ -456,6 +489,14 @@
         font-size: 10.5px; font-weight: 700; letter-spacing: .01em;
         white-space: nowrap;
     }
+    /* The class-based floor above cannot reach this — the size is set here, not
+       by a `text-[10.5px]` utility — so the pill needs its own mobile bump.
+       `white-space: nowrap` above also means a long pill ("Vérification
+       indépendante") is a fixed-width object: it is allowed to wrap on a phone
+       rather than push its row past the viewport. */
+    @media (max-width: 767.98px) {
+        .ui-pill { font-size: 12px; white-space: normal; }
+    }
     .ui-pill-ok      { background: var(--ui-green-tint); color: var(--ui-green); }
     .ui-pill-warn    { background: var(--ui-gold-tint);  color: #8A6D1F; }
     .ui-pill-danger  { background: var(--ui-danger-tint);color: var(--ui-danger); }
@@ -488,6 +529,47 @@
     .ui-table thead th:last-child,  .ui-table tbody td:last-child  { padding-right: 20px; }
 
     .ui-empty { padding: 44px 16px; text-align: center; font-size: 12.5px; color: var(--ui-muted); }
+
+    /* ── Empty states ───────────────────────────────────────────
+       A bare "Aucun ticket." is why an empty console reads as a broken one:
+       it says nothing about what the section is for, why there is nothing in
+       it, or what would put something there. These classes carry that.
+
+       Two meanings, kept visually distinct on purpose:
+         .ui-empty-state            nothing has happened yet — the feature works
+         .ui-empty-state--unwired   no data source behind this section at all
+       They are different claims about the platform and must not look alike.
+       Use pages/partials/empty-state.blade.php rather than these directly.
+
+       (This block used to close with a Blade comment terminator instead of a
+       CSS one — the same class of typo that killed the mobile type floor a few
+       hundred lines up. Inside a <style> element Blade never sees it, so the
+       comment simply never closed. */
+    .ui-empty-state { padding: 40px 24px; text-align: center; max-width: 460px; margin: 0 auto; }
+    .ui-empty-state .ui-empty-icon {
+        width: 40px; height: 40px; margin: 0 auto 14px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 999px; background: var(--ui-surface-alt); color: var(--ui-faint);
+    }
+    .ui-empty-state .ui-empty-title {
+        font-size: 13.5px; font-weight: 700; color: var(--ui-ink); margin-bottom: 6px;
+    }
+    .ui-empty-state .ui-empty-body {
+        font-size: 12.5px; line-height: 1.55; color: var(--ui-muted);
+    }
+    .ui-empty-state .ui-empty-actions {
+        margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    }
+    /* The unwired variant is marked, not decorated: an operator must be able to
+       tell "nobody has filed a ticket" from "ticketing is not connected". */
+    .ui-empty-state--unwired .ui-empty-icon { background: var(--ui-gold-tint); color: var(--ui-gold); }
+    .ui-empty-state--unwired .ui-empty-note {
+        margin-top: 12px; display: inline-block;
+        padding: 5px 10px; border-radius: 6px;
+        background: var(--ui-gold-tint); color: #8A6D1F;
+        font-size: 11.5px; font-weight: 600;
+    }
+    html.dark .ui-empty-state--unwired .ui-empty-note { color: var(--ui-gold); }
 </style>
 @endonce
 

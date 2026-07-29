@@ -127,19 +127,11 @@ class AdminWebController extends Controller
         return back()->with('success', $this->lang($request) === 'fr' ? 'Statut mis à jour.' : 'Status updated.');
     }
 
-    public function verifications(Request $request)
-    {
-        $lang = $this->lang($request);
-        $admin = $this->requireAdmin($request);
-        if ($admin instanceof RedirectResponse) return $admin;
-
-        $applications = VerificationApplication::with(['business', 'documents'])
-            ->whereIn('status', ['submitted', 'under_review'])
-            ->oldest('submitted_at')
-            ->paginate(20);
-
-        return view('pages.dashboard.admin-verifications', compact('lang', 'applications'));
-    }
+    // The verifications list is gone: it queued the same verification_applications
+    // rows the KYC Centre already lists, with the same two decisions. admin.kyc is
+    // the one screen now, and /verifications redirects to it. The approve and
+    // reject actions below are unchanged and still serve both the KYC table rows
+    // and the verification detail page.
 
     public function approveVerification(Request $request, int $id): RedirectResponse
     {
@@ -600,7 +592,14 @@ class AdminWebController extends Controller
         $admin = $this->requireAdmin($request);
         if ($admin instanceof RedirectResponse) return $admin;
 
-        $tab = $request->query('tab') === 'reviews' ? 'reviews' : 'reports';
+        // This screen used to carry a second tab listing every business review with
+        // a single delete button. admin.reviews already queues the same rows with
+        // the decisions that matter, so the tab is gone and its query with it —
+        // the reviews page is one click away on the strip at the top. ?tab=reviews
+        // is still accepted and sends the visitor there, because links to it exist.
+        if ($request->query('tab') === 'reviews') {
+            return redirect()->route('admin.reviews', ['lang' => $lang]);
+        }
 
         $reports = \App\Modules\Products\Models\ProductReport::with(['product.business', 'reporter'])
             ->where('status', 'open')
@@ -608,12 +607,7 @@ class AdminWebController extends Controller
             ->paginate(20, ['*'], 'reports_page')
             ->withQueryString();
 
-        $reviews = \App\Modules\Businesses\Models\BusinessReview::with(['business', 'reviewer'])
-            ->latest()
-            ->paginate(20, ['*'], 'reviews_page')
-            ->withQueryString();
-
-        return view('pages.dashboard.admin-moderation', compact('lang', 'tab', 'reports', 'reviews'));
+        return view('pages.dashboard.admin-moderation', compact('lang', 'reports'));
     }
 
     public function resolveReport(Request $request, int $id): RedirectResponse

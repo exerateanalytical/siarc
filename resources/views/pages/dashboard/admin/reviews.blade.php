@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.admin')
 
 @php
 /*
@@ -43,6 +43,8 @@ $stateLabels = [
 @section('content')
 <div class="max-w-5xl space-y-5">
 
+    @include('pages.partials.admin-moderation-tabs', ['isFr' => $isFr, 'modTab' => 'reviews'])
+
     <div>
         <h1 class="ui-h text-[19px]">{{ $pageTitle }}</h1>
         <p class="ui-hint mt-1">
@@ -78,9 +80,29 @@ $stateLabels = [
     </div>
 
     @if($rows->isEmpty())
-    <div class="ui-card text-center py-14 px-4">
-        <i data-lucide="inbox" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="ui-body">{{ $isFr ? 'Aucun avis dans cette file.' : 'No review in this queue.' }}</p>
+    @php
+        /* This desk opens on "pending", which is empty whenever the moderators
+           are caught up — while the 128 already-published reviews sit one tab
+           away. An empty table with no explanation reads as a dead page, so
+           name the queue, say what fills it, and point at the tabs that do
+           hold rows. $counts is the real per-state tally. */
+        $elsewhere = collect($counts)->filter(fn ($n, $s) => $s !== $filter && $n > 0);
+    @endphp
+    <div class="ui-card ui-card--flush">
+        @include('pages.partials.empty-state', [
+            'icon'  => 'message-square',
+            'state' => 'empty',
+            'title' => $isFr
+                ? 'Aucun avis dans la file « ' . ($stateLabels[$filter] ?? $filter) . ' »'
+                : 'No review in the "' . ($stateLabels[$filter] ?? $filter) . '" queue',
+            'body'  => ($isFr
+                ? 'Les avis laissés par les acheteurs sur les profils d\'artisans arrivent d\'abord ici pour relecture, puis sont publiés, refusés ou retirés.'
+                : 'Reviews left by buyers on artisan profiles land here first to be read, then get published, refused or withdrawn.')
+                . ' ' . ($elsewhere->isNotEmpty()
+                    ? ($isFr ? 'Les autres files ne sont pas vides : ' : 'The other queues are not empty: ')
+                      . $elsewhere->map(fn ($n, $s) => ($stateLabels[$s] ?? $s) . ' (' . $n . ')')->implode(', ') . '.'
+                    : ($isFr ? 'Aucune autre file ne contient d\'avis non plus.' : 'No other queue holds a review either.')),
+        ])
     </div>
     @endif
 
@@ -204,6 +226,22 @@ $stateLabels = [
                    ? "Refusé. Il n'y a pas de retour en arrière depuis ici : si l'auteur récrit son avis, il repasse en file d'attente."
                    : 'Refused. There is no way back from here: if the author rewrites their review, it returns to the queue.' }}
             </p>
+            @endif
+
+            {{-- Permanent removal. It came from the old /moderation reviews tab,
+                 which offered nothing else and offered it on every row — including
+                 rows nobody had read yet. It survives, but only where a moderator
+                 has already made and recorded a decision: erasing a review that is
+                 still in the queue erases the decision as well as the text. --}}
+            @if(in_array($r->status, [\App\Support\ArtisanReviews::REJECTED, \App\Support\ArtisanReviews::HIDDEN], true))
+            <form method="POST" action="{{ route('admin.reviews.destroy', ['id' => $r->id]) }}" class="pt-3"
+                  onsubmit="return confirm('{{ $isFr ? 'Supprimer définitivement cet avis ? Le registre ne le retrouvera pas.' : 'Permanently delete this review? The register will not get it back.' }}')">
+                @csrf
+                <button type="submit" class="ui-btn ui-btn-danger ui-btn-sm">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    {{ $isFr ? 'Supprimer définitivement' : 'Delete permanently' }}
+                </button>
+            </form>
             @endif
 
         </div>

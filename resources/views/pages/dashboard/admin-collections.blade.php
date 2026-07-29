@@ -330,10 +330,10 @@
 
                     <section class="ui-card">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="ui-card-title">{{ $isFr ? 'Collections par région' : 'Collections by region' }}</h2>
+                            <h2 class="ui-card-title">{{ $isFr ? 'Fiches artisans par région' : 'Artisan records by region' }}</h2>
                             <a href="{{ route('admin.regions') }}" class="shrink-0 text-[11px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir le rapport' : 'View report' }} →</a>
                         </div>
-                        <img src="{{ asset('images/landing/hc-map.png') }}" alt="{{ $isFr ? 'Carte des collections par région' : 'Map of collections by region' }}" class="mt-3 w-full object-contain">
+                        @include('pages.dashboard.partials.cameroon-choropleth')
                     </section>
 
                     <section class="ui-card">

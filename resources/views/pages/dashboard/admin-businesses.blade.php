@@ -259,7 +259,13 @@
                                                     <button type="submit" class="w-full text-left px-3.5 py-2 text-[12px] text-[#6F6B60] dark:text-[#868778] hover:bg-[#F6F5F1] dark:hover:bg-[#242A1E] flex items-center gap-2"><i data-lucide="x" class="w-3.5 h-3.5"></i>{{ $isFr ? 'Rejeter' : 'Reject' }}</button>
                                                 </form>
                                                 @endif
-                                                <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $b->slug]) }}" target="_blank" class="block px-3.5 py-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6] hover:bg-[#F6F5F1] dark:hover:bg-[#242A1E]"><i data-lucide="external-link" class="inline w-3.5 h-3.5 mr-2 -mt-0.5"></i>{{ $isFr ? 'Voir la vitrine' : 'View storefront' }}</a>
+                                                {{-- Most rows here are unpublished SIARC imports, so this link
+                                                     usually opens an admin preview rather than the live page.
+                                                     Say which before the click: an operator who sends "view
+                                                     storefront" to an artisan should know the public cannot
+                                                     open it. The preview itself is gated and bannered in
+                                                     FrontendController::businessShow. --}}
+                                                <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $b->slug]) }}" target="_blank" class="block px-3.5 py-2 text-[12px] text-[#3B382F] dark:text-[#B4B5A6] hover:bg-[#F6F5F1] dark:hover:bg-[#242A1E]"><i data-lucide="{{ $b->status === 'published' ? 'external-link' : 'eye-off' }}" class="inline w-3.5 h-3.5 mr-2 -mt-0.5"></i>{{ $b->status === 'published' ? ($isFr ? 'Voir la vitrine' : 'View storefront') : ($isFr ? 'Aperçu (non publiée)' : 'Preview (not published)') }}</a>
                                             </span>
                                         </span>
                                     </td>
@@ -395,7 +401,7 @@
                             <a href="{{ route('admin.reports') }}#exports" class="inline-flex items-center justify-center gap-1.5 h-[40px] rounded-lg bg-[#3B82F6] hover:bg-[#2F6FDB] text-white text-[11.5px] font-semibold px-2 transition-colors">
                                 <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate">{{ $isFr ? 'Exportation liste' : 'Export list' }}</span>
                             </a>
-                            <a href="{{ route('admin.verifications') }}" class="inline-flex items-center justify-center gap-1.5 h-[40px] rounded-lg bg-[#8B5CF6] hover:bg-[#7C4DEB] text-white text-[11.5px] font-semibold px-2 transition-colors">
+                            <a href="{{ route('admin.kyc') }}" class="inline-flex items-center justify-center gap-1.5 h-[40px] rounded-lg bg-[#8B5CF6] hover:bg-[#7C4DEB] text-white text-[11.5px] font-semibold px-2 transition-colors">
                                 <i data-lucide="clipboard-check" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate">{{ $isFr ? 'Vérifications KYC' : 'KYC verifications' }}</span>
                             </a>
                             <a href="{{ route('admin.reports') }}" class="inline-flex items-center justify-center gap-1.5 h-[40px] rounded-lg bg-[#E9B23C] dark:bg-[#3A2B06] hover:bg-[#D9A22C] dark:hover:bg-[#3A2B06] text-white text-[11.5px] font-semibold px-2 transition-colors">

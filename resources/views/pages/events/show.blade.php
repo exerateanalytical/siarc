@@ -225,13 +225,16 @@
 
             <!-- Stats strip -->
             <div class="mt-4 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
+                {{-- 2-up on phones. The divider only appears once the columns are
+                     wide enough to have something to divide, and the label floor is
+                     12px — "Participants inscrits" at 10px was unreadable. --}}
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:divide-x sm:divide-[#EFEDEA] sm:dark:divide-[#262B21]">
                     @foreach($eventStats as $esIdx => [$esIcon, $esValue, $esLabel])
-                    <div class="flex items-center gap-3 {{ $esIdx > 0 ? 'sm:pl-4' : '' }}">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 {{ $esIdx > 0 ? 'sm:pl-4' : '' }}">
                         <i data-lucide="{{ $esIcon }}" class="w-[22px] h-[22px] text-[#3A3A35] dark:text-[#F3EFE7] shrink-0" stroke-width="1.6"></i>
-                        <div class="leading-tight">
+                        <div class="leading-tight min-w-0">
                             <p class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $esValue }}</p>
-                            <p class="mt-0.5 text-[10px] text-[#6F6B60] dark:text-[#868778]">{{ $esLabel }}</p>
+                            <p class="mt-0.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $esLabel }}</p>
                         </div>
                     </div>
                     @endforeach

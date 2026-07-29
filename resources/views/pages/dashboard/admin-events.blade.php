@@ -149,7 +149,18 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="7" class="ui-empty">{{ $isFr ? 'Aucun événement trouvé.' : 'No events found.' }}</td></tr>
+                        {{-- platform_events is empty; the create form on this screen
+                             (AdminWebController::storeEvent) is what fills it. --}}
+                        <tr><td colspan="7" class="p-0">
+                            @include('pages.partials.empty-state', [
+                                'icon'  => 'calendar',
+                                'state' => 'empty',
+                                'title' => $isFr ? 'Aucun événement enregistré' : 'No events recorded',
+                                'body'  => $isFr
+                                    ? 'Les événements créés ici (salons, ateliers, expositions) sont annoncés sur les pages publiques. Aucun n\'a encore été créé.'
+                                    : 'Events created here (fairs, workshops, exhibitions) are announced on the public pages. None has been created yet.',
+                            ])
+                        </td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -17,8 +17,13 @@ $statusLabels = [
         <a href="{{ route('admin.businesses') }}" class="ui-btn ui-btn-ghost ui-btn-sm -ml-2">
             <i data-lucide="arrow-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i>
         </a>
+        {{-- "Public profile" is a promise this link cannot keep for an unpublished
+             business, and 509 of 512 are unpublished. Name it for what it opens.
+             See FrontendController::businessShow for the preview gate. --}}
         <a href="{{ route('businesses.show', ['lang' => $lang, 'slug' => $business->slug]) }}" target="_blank" class="text-xs text-[#157A43] dark:text-[#339B56] hover:underline flex items-center gap-1 ml-auto">
-            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>{{ $lang === 'fr' ? 'Voir le profil public' : 'View public profile' }}
+            <i data-lucide="{{ $business->status === 'published' ? 'external-link' : 'eye-off' }}" class="w-3.5 h-3.5"></i>{{ $business->status === 'published'
+                ? ($lang === 'fr' ? 'Voir le profil public' : 'View public profile')
+                : ($lang === 'fr' ? 'Aperçu du profil (non publié)' : 'Preview profile (not published)') }}
         </a>
     </div>
 

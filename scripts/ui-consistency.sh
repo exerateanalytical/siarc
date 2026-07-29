@@ -35,6 +35,35 @@ if [ -z "$PHP" ] || ! "$PHP" -v >/dev/null 2>&1; then
   exit 2
 fi
 
+# Take the throwaway accounts, and the shop one of them opens, back out of the
+# database when the run ends — however it ends. Without this every run left a
+# live "UI Check Atelier <stamp>" business behind, and 26 of them had piled up
+# in the admin directory by the time anyone looked: real-looking rows an admin
+# could open, linking to a public profile that 404s because the shop is a draft.
+# A check that inspects the product has no business enlarging it.
+#
+# Two sweeps, both confined to this script's own `uicheck-` accounts. The first
+# is this run, matched on $STAMP. The second clears uicheck- strays left by an
+# earlier run that crashed before its trap could fire. Neither touches the
+# smoke test's seller/buyer accounts, which share the @e2e.test domain but own
+# a real quote-to-invoice chain that the admin console reads.
+# `\$` (not `\\\$`): inside a double-quoted bash string that collapses to a
+# literal `$` for PHP, which is what grant_role below already relies on.
+cleanup() {
+  "$PHP" artisan tinker --execute="
+    \$ids = \DB::table('users')
+        ->where('email','like','uicheck-%@e2e.test')
+        ->where(function (\$q) {
+            \$q->where('email','like','%-${STAMP}@e2e.test')
+               ->orWhere('created_at','<', now()->subHours(6));
+        })->pluck('id');
+    \DB::table('businesses')->whereIn('user_id', \$ids)->delete();
+    \DB::table('users')->whereIn('id', \$ids)->delete();
+    echo 'CLEANED ' . \$ids->count();
+  " 2>/dev/null | grep -q CLEANED || printf '\033[33mCleanup of this run'"'"'s throwaway accounts failed — check for uicheck-*@e2e.test rows.\033[0m\n' >&2
+}
+trap cleanup EXIT
+
 # Sign up a throwaway account rather than relying on demo logins. The platform
 # ships with no demo accounts at all now, so a script that needed them would
 # only ever work on a developer's machine.
@@ -167,7 +196,7 @@ grant_role "$ADMIN" super_admin
 relogin "$T/ck_a" "$ADMIN"
 for p in /tableau-de-bord/admin /tableau-de-bord/admin/utilisateurs /tableau-de-bord/admin/entreprises \
          /tableau-de-bord/admin/produits /tableau-de-bord/admin/parametres /tableau-de-bord/admin/rapports \
-         /tableau-de-bord/admin/verifications /tableau-de-bord/admin/partenaires; do
+         /tableau-de-bord/admin/kyc /tableau-de-bord/admin/partenaires; do
   check "$T/ck_a" admin "$p"
 done
 

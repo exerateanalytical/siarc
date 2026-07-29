@@ -43,25 +43,39 @@
     // [routeName, icon, labelFr, labelEn]
     if (in_array($sbRole, ['super_admin', 'admin', 'moderator'])) {
         $sbGroups = [
+            // An admin only reaches this rail on the shared account pages (profile,
+            // security); every admin screen proper renders the grouped rail in
+            // pages/partials/admin-sidebar.blade.php. The two are kept in step so
+            // the same job is not filed under two different names in one product.
+            // 'admin.verifications' is gone from here for the same reason it left
+            // the other rail: it is now a redirect onto the KYC Centre.
             [['fr' => 'Vue d\'ensemble', 'en' => 'Overview'], [
                 ['dashboard.admin', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
+                ['admin.analytics', 'bar-chart-2', 'Analytique', 'Analytics'],
                 ['admin.reports', 'bar-chart-2', 'Rapports & Statistiques', 'Reports & Statistics'],
                 ['admin.audit-log', 'history', 'Journal d\'audit', 'Audit Log'],
             ]],
-            [['fr' => 'Modération', 'en' => 'Moderation'], [
-                ['admin.businesses', 'building-2', 'Entreprises', 'Businesses'],
+            [['fr' => 'Artisans & vérification', 'en' => 'Artisans & verification'], [
+                ['admin.businesses', 'building-2', 'Artisans & Boutiques', 'Artisans & Shops'],
+                ['admin.kyc', 'badge-check', 'KYC & Vérification', 'KYC & Verification'],
+                ['admin.certificates', 'award', 'Certificats', 'Certificates'],
+            ]],
+            [['fr' => 'Catalogue & commerce', 'en' => 'Catalogue & commerce'], [
                 ['admin.products', 'package', 'Produits & Services', 'Products & Services'],
-                ['admin.quotes', 'file-text', 'Devis & Commandes', 'Quotes & Orders'],
                 ['admin.industries', 'tags', 'Catégories & Régions', 'Categories & Regions'],
-                ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
-                ['admin.moderation', 'flag', 'Modération', 'Moderation'],
+                ['admin.quotes', 'file-text', 'Demandes de devis', 'Quote requests'],
+                ['admin.orders', 'receipt', 'Commandes & Factures', 'Orders & Invoices'],
+                ['admin.payments', 'wallet', 'Paiements à contrôler', 'Payments to check'],
+            ]],
+            [['fr' => 'Utilisateurs & modération', 'en' => 'Users & moderation'], [
                 ['admin.users', 'users', 'Utilisateurs', 'Users'],
+                ['admin.moderation', 'flag', 'Signalements & Avis', 'Reports & Reviews'],
+                ['admin.support', 'life-buoy', 'Support', 'Support'],
             ]],
             [['fr' => 'Contenu', 'en' => 'Content'], [
                 ['admin.partners', 'handshake', 'Partenaires', 'Partners'],
                 ['admin.events', 'calendar-days', 'Événements', 'Events'],
-                ['admin.cms', 'file-text', 'Pages CMS', 'CMS Pages'],
-                ['admin.support', 'life-buoy', 'Support', 'Support'],
+                ['admin.cms', 'file-text', 'Pages & FAQ', 'Pages & FAQ'],
             ]],
             [['fr' => 'Compte', 'en' => 'Account'], [
                 ['admin.settings', 'settings-2', 'Paramètres', 'Settings'],

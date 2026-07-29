@@ -6,56 +6,79 @@
 @php
     $adminActive = $adminActive ?? 'dashboard';
 
-    // Real live counts for sidebar badges (cached briefly — sidebar renders on every admin page)
+    // Real live counts for sidebar badges (cached briefly — sidebar renders on every admin page).
+    // A badge only exists where the number means "this many things are waiting for
+    // you". The businesses badge used to count every business on the platform,
+    // which is a statistic, not a queue, and it sat in orange next to two genuine
+    // queues; it now counts the ones actually awaiting a decision.
     $sideBadges = \Illuminate\Support\Facades\Cache::remember('admin_sidebar_badges', 60, function () {
         return [
-            'businesses'    => \Illuminate\Support\Facades\DB::table('businesses')->whereNull('deleted_at')->count(),
-            'kyc'           => \Illuminate\Support\Facades\DB::table('verification_applications')->where('status', 'pending')->count(),
+            'businesses'    => \Illuminate\Support\Facades\DB::table('businesses')->whereNull('deleted_at')->where('status', 'pending')->count(),
+            'kyc'           => \Illuminate\Support\Facades\DB::table('verification_applications')->whereIn('status', ['submitted', 'under_review'])->count(),
+            'moderation'    => \Illuminate\Support\Facades\DB::table('product_reports')->where('status', 'open')->count(),
             'notifications' => \Illuminate\Support\Facades\DB::table('user_notifications')->whereNull('read_at')->count(),
         ];
     });
+    $sideBadge = fn ($k) => ($sideBadges[$k] ?? 0) > 0 ? (string) $sideBadges[$k] : null;
 
-    // [key, lucide icon, label, url, badge] — every item maps onto a real route.
-    // The rail used cropped gold PNG glyphs (side-ic-*.png). Two of them —
-    // Régions and Notifications — had already been switched to lucide *names*
-    // while still being rendered through asset('images/landing/'.$icon.'.png'),
-    // so they were requesting map-pin.png / bell.png, which do not exist: those
-    // two rows shipped a broken image. Everything is a real lucide glyph now,
-    // which also means the rail inherits its text colour instead of baking gold.
+    // [key, lucide icon, label, url, badge] — every item maps onto a real route
+    // that renders. Three things changed here when the panel was consolidated:
+    //
+    // 1. Three rows were the same destination wearing a second name — Commissions
+    //    pointed at admin.reports alongside Rapports, Documents at admin.media with
+    //    a query string, Demandes d'Inscription at admin.artisans with a query
+    //    string. A filter is not a section. Both filters live on the page they
+    //    filter, so the rows are gone and nothing is lost.
+    // 2. Vérifications is gone because the screen is: it queued the same rows the
+    //    KYC Centre lists, and /verifications now redirects there.
+    // 3. Thirteen working screens had no way in at all — payments, quotes,
+    //    moderation, reviews, support, analytics, partners, certificates among them.
+    //    A screen that the navigation does not admit to is a screen nobody uses.
+    //    Every one of them is now one click from here, and the reviews queue two
+    //    (via the tab strip on Modération).
+    //
+    // Deliberately absent: Abonnements, Sauvegardes and API Consommateurs. Those
+    // three routes abort(404) today by decision, and a navigation entry that leads
+    // to a 404 is worse than no entry. They belong here the day they render.
     $adGroups = [
         [null, [
             ['dashboard', 'layout-dashboard', $isFr ? 'TABLEAU DE BORD' : 'DASHBOARD', route('dashboard.admin'), null],
         ]],
-        [$isFr ? 'Gestion du contenu' : 'Content management', [
+        [$isFr ? 'Artisans & vérification' : 'Artisans & verification', [
             ['artisans',    'user',          'Artisans',                                              route('admin.artisans'), null],
+            ['businesses',  'store',         $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), $sideBadge('businesses')],
+            ['kyc',         'badge-check',   $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), $sideBadge('kyc')],
+            ['certificates','award',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
+        ]],
+        [$isFr ? 'Catalogue & contenu' : 'Catalogue & content', [
             ['products',    'package',       $isFr ? 'Produits & Services' : 'Products & Services',   route('admin.products'), null],
             ['industries',  'shapes',        $isFr ? 'Catégories d\'Artisanat' : 'Craft Categories',  route('admin.industries'), null],
             ['regions',     'map-pin',       $isFr ? 'Régions & Centres' : 'Regions & Centres',       route('admin.regions'), null],
             ['collections', 'layers',        'Collections',                                           route('admin.collections'), null],
             ['news',        'newspaper',     $isFr ? 'Actualités & Annonces' : 'News & Announcements', route('admin.news'), null],
-            ['media',       'image',         $isFr ? 'Médias & Ressources' : 'Media & Resources',     route('admin.media'), null],
             ['events',      'calendar-days', $isFr ? 'Événements' : 'Events',                         route('admin.events'), null],
-            ['documents',   'file-text',     'Documents',                                             route('admin.media', ['type' => 'document']), null],
+            ['media',       'image',         $isFr ? 'Médias & Ressources' : 'Media & Resources',     route('admin.media'), null],
+            ['partners',    'handshake',     $isFr ? 'Partenaires' : 'Partners',                      route('admin.partners'), null],
+            ['pages',       'file-text',     $isFr ? 'Pages & FAQ' : 'Pages & FAQ',                   route('admin.cms'), null],
         ]],
-        [$isFr ? 'Gestion des utilisateurs' : 'User management', [
+        [$isFr ? 'Commerce' : 'Commerce', [
+            ['quotes',      'file-signature', $isFr ? 'Demandes de devis' : 'Quote requests',         route('admin.quotes'), null],
+            ['orders',      'receipt',        $isFr ? 'Commandes & Factures' : 'Orders & Invoices',   route('admin.orders'), null],
+            ['payments',    'wallet',         $isFr ? 'Paiements à contrôler' : 'Payments to check',  route('admin.payments'), null],
+        ]],
+        [$isFr ? 'Utilisateurs & modération' : 'Users & moderation', [
             ['users',       'users',         $isFr ? 'Utilisateurs' : 'Users',                        route('admin.users'), null],
             ['roles',       'shield-check',  $isFr ? 'Rôles & Permissions' : 'Roles & Permissions',   route('admin.roles'), null],
-            ['pending-art', 'user-plus',     $isFr ? 'Demandes d\'Inscription' : 'Registration Requests', route('admin.artisans') . '?statut=en-attente', null],
-            ['businesses',  'store',         $isFr ? 'Artisans & Boutiques' : 'Artisans & Shops',     route('admin.businesses'), (string) $sideBadges['businesses']],
-            ['kyc',         'badge-check',   $isFr ? 'KYC & Vérification' : 'KYC & Verification',     route('admin.kyc'), (string) $sideBadges['kyc']],
-            ['certificates','award',         $isFr ? 'Certificats' : 'Certificates',                  route('admin.certificates'), null],
+            ['moderation',  'flag',          $isFr ? 'Signalements & Avis' : 'Reports & Reviews',     route('admin.moderation'), $sideBadge('moderation')],
+            ['adminsupport','life-buoy',     'Support',                                               route('admin.support'), null],
         ]],
-        [$isFr ? 'Commercial & Finance' : 'Commercial & Finance', [
-            ['commissions',   'percent',        'Commissions',                                       route('admin.reports'), null],
-            ['orders',        'receipt',        'Factures',                                          route('admin.orders'), null],
-            ['reports',       'chart-column',   $isFr ? 'Rapports' : 'Reports',                      route('admin.reports'), null],
-        ]],
-        [$isFr ? 'Système' : 'System', [
-            ['settings',      'settings',       $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
+        [$isFr ? 'Analyse & système' : 'Insight & system', [
+            ['analytics',     'chart-line',     $isFr ? 'Analytique' : 'Analytics',                  route('admin.analytics'), null],
+            ['reports',       'chart-column',   $isFr ? 'Rapports & Statistiques' : 'Reports & Statistics', route('admin.reports'), null],
             ['logs',          'scroll-text',    $isFr ? 'Journal d\'Activité' : 'Activity Log',      route('admin.audit-log'), null],
-            ['notifications', 'bell',           'Notifications',                                     route('admin.notifications'), (string) $sideBadges['notifications']],
-            ['exports',       'download',       'Data Export Centre',                                route('admin.exports'), null],
-            ['pages',         'wrench',         $isFr ? 'Outils & Maintenance' : 'Tools & Maintenance', route('admin.cms'), null],
+            ['exports',       'download',       $isFr ? 'Centre d\'export' : 'Data Export Centre',   route('admin.exports'), null],
+            ['notifications', 'bell',           'Notifications',                                     route('admin.notifications'), $sideBadge('notifications')],
+            ['settings',      'settings',       $isFr ? 'Paramètres Généraux' : 'General Settings',  route('admin.settings'), null],
         ]],
     ];
     $adSideQuote = $adSideQuote ?? ($isFr ? 'Valorisons l\'artisanat, développons nos communautés, préservons notre héritage.' : 'Let\'s value craftsmanship, grow our communities, preserve our heritage.');
@@ -88,14 +111,14 @@
                      deepened rail #0D5A30 is only 1.52:1, so dark mode uses the
                      contract's `brand` #2E9250 (3.22:1 on the rail) with `brand-ink`
                      #04150A on it (4.78:1) — white on that fill is 3.93:1 and fails. --}}
-                <a href="{{ $adUrl }}" class="mt-0.5 flex items-center gap-3 bg-[#0D5A30] dark:bg-[#2E9250] rounded-xl px-3 py-[9px] text-[13px] font-bold text-white dark:text-[#04150A] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:shadow-none">
-                    <img src="{{ asset('images/landing/' . $adIcon . '.png') }}" alt="" class="w-[17px] h-[16px] object-contain shrink-0">
+                <a href="{{ $adUrl }}" aria-current="page" class="mt-0.5 flex items-center gap-3 bg-[#0D5A30] dark:bg-[#2E9250] rounded-xl px-3 py-[9px] text-[13px] font-bold text-white dark:text-[#04150A] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:shadow-none">
+                    <i data-lucide="{{ $adIcon }}" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.9"></i>
                     <span class="flex-1 truncate">{{ $adLabel }}</span>
                     @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
                 </a>
                 @else
                 <a href="{{ $adUrl }}" class="flex items-center gap-3 rounded-xl px-3 py-[7px] text-[12.5px] {{ $adKey === 'dashboard' ? 'font-bold tracking-[0.03em] text-white' : 'text-[#EDF2EC]' }} hover:bg-white/5 transition-colors">
-                    <img src="{{ asset('images/landing/' . $adIcon . '.png') }}" alt="" class="w-[17px] h-[16px] object-contain shrink-0">
+                    <i data-lucide="{{ $adIcon }}" class="w-[17px] h-[17px] shrink-0 text-[#E9C25A]" style="stroke-width:1.8"></i>
                     <span class="flex-1 truncate">{{ $adLabel }}</span>
                     @if($adBadge)<span class="shrink-0 bg-[#DE8E14] text-white dark:text-[#2A1902] text-[10.5px] font-bold rounded-md px-2 py-0.5">{{ $adBadge }}</span>@endif
                 </a>

@@ -56,12 +56,15 @@
         ? ['Pièce d\'identité valide', 'Justificatif de domicile', 'Photo ou selfie', 'Autres documents (si nécessaire)']
         : ['Valid ID document', 'Proof of address', 'Photo or selfie', 'Other documents (if needed)'];
 
+    // These five used to be five links to the verifications queue wearing five
+    // different labels. The queue is now this table, so each one is a filter over
+    // it — a destination that exists — rather than a name for the same page.
     $kycQuickLinks = [
-        ['user-check',   $isFr ? 'Vérifier un utilisateur' : 'Verify a user',        route('admin.verifications', ['lang' => $lang])],
-        ['scan-line',    $isFr ? 'Scanner un document' : 'Scan a document',           route('admin.verifications', ['lang' => $lang])],
-        ['search',       $isFr ? 'Rechercher une demande' : 'Search a request',       route('admin.verifications', ['lang' => $lang])],
-        ['file-text',    $isFr ? 'Liste des documents' : 'Document list',             route('admin.verifications', ['lang' => $lang])],
-        ['settings',     $isFr ? 'Paramètres KYC' : 'KYC settings',                   route('admin.settings', ['lang' => $lang])],
+        ['hourglass',    $isFr ? 'Demandes en attente' : 'Pending requests',        route('admin.kyc', ['lang' => $lang, 'statut' => 'submitted'])],
+        ['search',       $isFr ? 'En vérification' : 'In review',                   route('admin.kyc', ['lang' => $lang, 'statut' => 'under_review'])],
+        ['shield-x',     $isFr ? 'Demandes rejetées' : 'Rejected requests',         route('admin.kyc', ['lang' => $lang, 'statut' => 'rejected'])],
+        ['badge-check',  $isFr ? 'Boutiques vérifiées' : 'Verified shops',          route('admin.businesses', ['lang' => $lang])],
+        ['settings',     $isFr ? 'Paramètres KYC' : 'KYC settings',                 route('admin.settings', ['lang' => $lang])],
     ];
 @endphp
 
@@ -112,7 +115,7 @@
                         <button type="submit" class="ui-btn ui-btn-primary">
                             <i data-lucide="filter" class="w-4 h-4"></i>{{ $isFr ? 'Filtrer' : 'Filter' }}
                         </button>
-                        <a href="{{ route('admin.reports', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary">
+                        <a href="{{ route('admin.exports', ['lang' => $lang]) }}" class="ui-btn ui-btn-secondary">
                             <i data-lucide="download" class="w-4 h-4"></i>{{ $isFr ? 'Exporter' : 'Export' }}
                         </a>
                     </form>
@@ -157,13 +160,20 @@
                                     <td class="whitespace-nowrap">{{ $kycDate($app->submitted_at ?? $app->created_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->submitted_at ?? $app->created_at)->format('H:i') }}</span></td>
                                     <td class="whitespace-nowrap">{{ $kycDate($app->updated_at) }}<br><span class="text-[11px] text-[#8A857A] dark:text-[#868778]">{{ \Carbon\Carbon::parse($app->updated_at)->format('H:i') }}</span></td>
                                     <td>
+                                        {{-- The queue screen this table replaced could approve and reject in
+                                             place; both survive here. Rejection asks for a reason, so it opens
+                                             the detail page where the reason field lives — the route refuses a
+                                             rejection without one. --}}
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr ? 'Voir' : 'View' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr ? 'Modifier' : 'Edit' }}"><i data-lucide="pencil" class="w-4 h-4"></i></a>
+                                            <a href="{{ route('admin.verifications.detail', ['id' => $app->id, 'lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="{{ $isFr ? 'Voir le dossier' : 'Open the file' }}"><i data-lucide="eye" class="w-4 h-4"></i></a>
                                             @if($app->status === 'approved')
                                             <span class="w-8 h-8 rounded-lg bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center text-[#157A43] dark:text-[#339B56]" title="{{ $isFr ? 'Vérifié' : 'Verified' }}"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
                                             @else
-                                            <a href="{{ route('admin.verifications', ['lang' => $lang]) }}" class="w-8 h-8 rounded-lg border border-[#EAE5D8] dark:border-[#262B21] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]" title="Actions"><i data-lucide="more-vertical" class="w-4 h-4"></i></a>
+                                            <form method="POST" action="{{ route('admin.verifications.approve', ['id' => $app->id]) }}" class="inline">
+                                                @csrf
+                                                <button type="submit" class="w-8 h-8 rounded-lg border border-[#CFE7D8] dark:border-[#1B5030] bg-[#E2F3E8] dark:bg-[#0C3D1D] hover:border-[#14652F] dark:hover:border-[#2E9250] flex items-center justify-center text-[#157A43] dark:text-[#339B56]" title="{{ $isFr ? 'Approuver' : 'Approve' }}"><i data-lucide="check" class="w-4 h-4"></i></button>
+                                            </form>
+                                            <a href="{{ route('admin.verifications.detail', ['id' => $app->id, 'lang' => $lang]) }}#decision" class="w-8 h-8 rounded-lg border border-[#F3D6D6] dark:border-[#5C2126] hover:border-[#DC2626] dark:hover:border-[#F0555C] flex items-center justify-center text-[#DC2626] dark:text-[#F0555C]" title="{{ $isFr ? 'Rejeter (motif requis)' : 'Reject (reason required)' }}"><i data-lucide="x" class="w-4 h-4"></i></a>
                                             @endif
                                         </div>
                                     </td>

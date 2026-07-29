@@ -26,12 +26,16 @@
         ];
     })->all();
 
+    // Each figure counts published businesses — the same population the listing
+    // below shows. See FrontendController::businessIndex for what each query is.
+    // The old "413+" and "100% Authentiques" were a fabricated suffix and a
+    // fabricated ratio; both now come from the database or would not be here.
     $fmtStat = fn ($n) => $isFr ? number_format($n, 0, ',', ' ') : number_format($n);
     $statItems = [
         ['users',        $fmtStat($dirStats['businesses']), $isFr ? 'Artisans & Entreprises' : 'Artisans & Businesses'],
-        ['layout-grid',  $dirStats['categories'] . '+',     $isFr ? 'Catégories' : 'Categories'],
+        ['layout-grid',  $fmtStat($dirStats['categories']), $isFr ? 'Catégories' : 'Categories'],
         ['map-pin',      $fmtStat($dirStats['regions']),    $isFr ? 'Régions représentées' : 'Regions represented'],
-        ['shield-check', '100%',                            $isFr ? 'Authentiques' : 'Authentic'],
+        ['shield-check', $fmtStat($dirStats['verified']),   $isFr ? 'Profils vérifiés' : 'Verified profiles'],
     ];
 
     $trustItems = [
@@ -39,8 +43,13 @@
          $isFr ? "Tous nos artisans et entreprises\nsont vérifiés" : "All our artisans and businesses\nare verified"],
         ['user-round', $isFr ? 'Soutien à l\'économie locale' : 'Support for the local economy',
          $isFr ? "Ensemble, valorisons le savoir-faire\ncamerounais" : "Together, let's promote Cameroonian\nknow-how"],
-        ['lock', $isFr ? 'Paiement sécurisé' : 'Secure payment',
-         $isFr ? "Transactions protégées\net sécurisées" : "Protected and secure\ntransactions"],
+        /* Was "Paiement sécurisé". The platform takes no payment for a sale and
+           is not a party to it (config/legal.php) -- and the footer of this very
+           page says so, so the two contradicted each other one screen apart.
+           What replaces it is both true and the better promise: the money
+           reaches the maker whole. */
+        ['hand-coins', $isFr ? "L'artisan est payé directement" : 'The artisan is paid directly',
+         $isFr ? "Vous réglez l'artisan,\nsans intermédiaire" : "You pay the artisan,\nwith no middleman"],
         ['message-circle', $isFr ? 'Mise en relation directe' : 'Direct connection',
          $isFr ? "Contactez directement artisans\net entreprises" : "Contact artisans and businesses\ndirectly"],
         ['megaphone', $isFr ? 'Visibilité & Promotion' : 'Visibility & Promotion',
@@ -221,13 +230,18 @@
                     </p>
                 </div>
                 <img src="{{ asset('images/landing/vendor-hero-map.png') }}" alt="" class="hidden xl:block w-[96px] shrink-0 mt-2" aria-hidden="true">
-                <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4 shrink-0">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 sm:divide-x sm:divide-[#EFEDEA] sm:dark:divide-[#262B21]">
+                {{-- Stats strip. `shrink-0` plus `whitespace-nowrap` labels used to
+                     force this card wider than a 360px viewport and drag the whole
+                     page into horizontal scroll: "Artisans & Entreprises" cannot fit
+                     on one line in a half-column. The card is now full-width and the
+                     labels wrap; it only becomes an auto-width sidecar at `lg`. --}}
+                <div class="w-full lg:w-auto lg:shrink-0 min-w-0 bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-4 sm:px-5 py-4">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-4 lg:divide-x lg:divide-[#EFEDEA] lg:dark:divide-[#262B21]">
                         @foreach($statItems as $statIdx => [$statIcon, $statValue, $statLabel])
-                        <div class="{{ $statIdx > 0 ? 'sm:pl-6' : '' }}">
+                        <div class="min-w-0 {{ $statIdx > 0 ? 'lg:pl-6' : '' }}">
                             <i data-lucide="{{ $statIcon }}" class="w-[22px] h-[22px] text-[#E08A21]" stroke-width="1.8"></i>
-                            <p class="mt-2.5 text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ $statValue }}</p>
-                            <p class="mt-1.5 text-[10.5px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $statLabel }}</p>
+                            <p class="mt-2.5 text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ $statValue }}</p>
+                            <p class="mt-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $statLabel }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -235,7 +249,13 @@
             </div>
 
             <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
-                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? '2,548 artisans & entreprises trouvés' : '2,548 artisans & businesses found' }}</p>
+                {{-- Was a hardcoded "2,548", which contradicted both the stats strip
+                     above and the page of results below. This is the real total of
+                     the filtered query the visitor is actually looking at. --}}
+                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
+                    {{ $fmtStat($businesses->total()) }}
+                    {{ $isFr ? ($businesses->total() === 1 ? 'artisan ou entreprise trouvé' : 'artisans & entreprises trouvés') : ($businesses->total() === 1 ? 'artisan or business found' : 'artisans & businesses found') }}
+                </p>
                 <div class="flex items-center gap-3">
                     <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">

@@ -103,6 +103,12 @@
     }
     .theme-toggle__label { display: none; }
     @media (min-width: 640px) { .theme-toggle__label { display: inline; } }
+    /* docs/RESPONSIVE-CONTRACT.md: 44×44 is the tap floor below `md`. The pill
+       keeps its 34px look on a pointer device, where it was measured off the
+       artwork, and grows to a thumb-sized target on a phone. */
+    @media (max-width: 767px) {
+        .theme-toggle { height: 44px; min-width: 44px; padding: 0 8px 0 12px; }
+    }
 
     .theme-toggle__track {
         position: relative; flex: none;

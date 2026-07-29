@@ -55,7 +55,17 @@
             </form>
         </div>
         @empty
-        <div class="ui-empty">{{ $lang === 'fr' ? 'Aucune page.' : 'No pages.' }}</div>
+        {{-- cms_pages is empty and the form that fills it is on this same
+             screen (CmsWebController::storePage), so point at it rather than
+             leaving a one-word dead end. --}}
+        @include('pages.partials.empty-state', [
+            'icon'  => 'file-text',
+            'state' => 'empty',
+            'title' => $lang === 'fr' ? 'Aucune page éditoriale' : 'No editorial pages',
+            'body'  => $lang === 'fr'
+                ? 'Les pages créées ici (mentions légales, conditions, à propos) sont servies publiquement sous leur adresse. Utilisez le formulaire ci-dessous pour en créer une.'
+                : 'Pages created here (legal notice, terms, about) are served publicly at their own address. Use the form below to create one.',
+        ])
         @endforelse
     </div>
 
@@ -94,7 +104,15 @@
             </form>
         </div>
         @empty
-        <div class="ui-empty">{{ $lang === 'fr' ? 'Aucune question.' : 'No FAQs.' }}</div>
+        {{-- cms_faqs is empty; CmsWebController::storeFaq is the form below. --}}
+        @include('pages.partials.empty-state', [
+            'icon'  => 'help-circle',
+            'state' => 'empty',
+            'title' => $lang === 'fr' ? 'Aucune question enregistrée' : 'No questions recorded',
+            'body'  => $lang === 'fr'
+                ? 'Les questions ajoutées ici alimentent la page FAQ publique. Ajoutez-en une avec le formulaire ci-dessous.'
+                : 'Questions added here feed the public FAQ page. Add one with the form below.',
+        ])
         @endforelse
     </div>
 

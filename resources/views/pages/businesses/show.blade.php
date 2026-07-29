@@ -332,6 +332,39 @@
 @endphp
 @include('pages.partials.directory-header')
 
+{{-- Admin preview banner. This page is reachable with a non-published status
+     only for an administrator (FrontendController::businessShow), and only so
+     that the admin console's links to the 509 unclaimed SIARC profiles lead
+     somewhere instead of 404ing. The banner is not decoration: without it a
+     preview is indistinguishable from a live profile, and an admin could
+     reasonably tell an artisan their page is up when the public cannot see it.
+     The view is also not counted — see the controller. --}}
+@if(! empty($isPreview))
+    @php
+        // Say the status in the operator's language rather than leaking the
+        // column value; fall back to the raw value for any status added later,
+        // which is still more useful than hiding it.
+        $previewStatusLabels = [
+            'draft'     => ['fr' => 'brouillon',   'en' => 'draft'],
+            'pending'   => ['fr' => 'en attente',  'en' => 'pending review'],
+            'suspended' => ['fr' => 'suspendu',    'en' => 'suspended'],
+            'archived'  => ['fr' => 'archivé',     'en' => 'archived'],
+        ];
+        $previewStatus = $previewStatusLabels[$business->status][$lang] ?? $business->status;
+    @endphp
+    <div class="max-w-[1280px] mx-auto px-[25px] pt-4">
+        <div class="ui-alert ui-alert-warn flex items-start gap-2.5">
+            <i data-lucide="eye-off" class="w-4 h-4 mt-0.5 shrink-0"></i>
+            <span>
+                <strong>{{ $isFr ? 'Aperçu administrateur.' : 'Administrator preview.' }}</strong>
+                {{ $isFr
+                    ? 'Ce profil est ' . $previewStatus . ' : il n\'est pas visible par le public, et cette visite n\'est pas comptée dans les statistiques de l\'artisan.'
+                    : 'This profile is ' . $previewStatus . ': it is not visible to the public, and this visit is not counted towards the artisan\'s statistics.' }}
+            </span>
+        </div>
+    </div>
+@endif
+
 <main>
 <div class="max-w-[1280px] mx-auto px-[25px] pt-4 pb-10">
 

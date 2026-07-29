@@ -393,7 +393,7 @@
     [data-mobile-profile] .mob-sec-h {
         display: flex; align-items: center; gap: 9px;
         padding: 13px 13px 9px;
-        font-size: 11px; font-weight: 700; letter-spacing: .06em;
+        font-size: 12px; font-weight: 700; letter-spacing: .04em;
         color: #113B22; text-transform: uppercase;
     }
     [data-mobile-profile] .mob-scroll {
@@ -442,7 +442,7 @@
     /* Row pitch measured off the artwork: the four meta lines sit on a ~23px
        pitch at this width, where the previous pass had them on 29px and pushed
        the trust panel a whole line down the card. */
-    [data-mobile-profile] .mob-hero-meta { display: flex; align-items: center; gap: 7px; font-size: 11px; line-height: 15px; color: #EFEADF; margin-top: 3px; }
+    [data-mobile-profile] .mob-hero-meta { display: flex; align-items: center; gap: 7px; font-size: 12px; line-height: 16px; color: #EFEADF; margin-top: 3px; }
     [data-mobile-profile] .mob-hero-meta i { width: 14px; height: 14px; color: var(--mob-gold2); flex: none; }
 
     [data-mobile-profile] .mob-trust {
@@ -450,14 +450,18 @@
         border-radius: 14px; background: rgba(7,8,5,.92); padding: 12px 14px 13px;
         backdrop-filter: blur(2px);
     }
-    [data-mobile-profile] .mob-trust-h { font-size: 10px; font-weight: 800; letter-spacing: .1em; color: var(--mob-gold); text-transform: uppercase; }
+    {{-- 10px was under the readable floor the ui-kit sets for phones. Raised to
+         the 12px floor in docs/RESPONSIVE-CONTRACT.md §2, and the tracking eased
+         so the uppercase label still fits its card on a 360px screen. The ui-kit
+         floor cannot reach this — the size is set here, not by a utility. --}}
+    [data-mobile-profile] .mob-trust-h { font-size: 12px; font-weight: 800; letter-spacing: .05em; color: var(--mob-gold); text-transform: uppercase; }
     [data-mobile-profile] .mob-star { width: 15px; height: 15px; color: var(--mob-star); fill: var(--mob-star); }
 
     /* ── Action row: white card, 4 equal columns split by hairlines ── */
     [data-mobile-profile] .mob-act { display: grid; }
     [data-mobile-profile] .mob-act > * {
         display: flex; flex-direction: column; align-items: center; gap: 7px;
-        padding: 12px 2px 11px; font-size: 11px; font-weight: 600;
+        padding: 12px 2px 11px; font-size: 12px; font-weight: 600;
         color: #1B1B18; text-align: center;
         border-left: 1px solid var(--mob-line); background: none;
     }
@@ -527,7 +531,7 @@
     [data-mobile-profile] .mob-tabs::-webkit-scrollbar { display: none; }
     [data-mobile-profile] .mob-tab {
         flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; gap: 5px;
-        padding: 10px 9px 9px; font-size: 9.5px; font-weight: 700; letter-spacing: .04em;
+        padding: 11px 10px 10px; font-size: 12px; font-weight: 700; letter-spacing: .01em;
         color: #6E6A5F; border-bottom: 2.5px solid transparent; white-space: nowrap;
     }
     [data-mobile-profile] .mob-tab i { width: 18px; height: 18px; }
@@ -556,7 +560,9 @@
         background: var(--mob-nav); color: #EAF3EC; padding: 10px 0 12px;
         box-shadow: 0 -2px 10px rgba(2,26,12,.25);
     }
-    [data-mobile-profile] .mob-nav a { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: #E4F0E7; }
+    /* 12px floor (docs/RESPONSIVE-CONTRACT.md §2) and a 44px target on both axes
+       (§4) — this is the bar a buyer's thumb lives on. */
+    [data-mobile-profile] .mob-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 44px; min-height: 44px; font-size: 12px; font-weight: 500; color: #E4F0E7; }
     [data-mobile-profile] .mob-nav a i { width: 22px; height: 22px; }
     [data-mobile-profile] .mob-nav .mob-nav-mid { position: relative; padding-top: 34px; }
     [data-mobile-profile] .mob-nav .mob-nav-mid span.mob-disc {

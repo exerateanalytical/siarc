@@ -49,7 +49,7 @@
     $trustItems = [
         ['shield-check', $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity', $isFr ? 'Produits 100% authentiques' : '100% authentic products'],
         ['users', $isFr ? 'Soutien aux artisans' : 'Support for artisans',     $isFr ? 'Vous contribuez à l\'économie locale' : 'You support the local economy'],
-        ['lock', $isFr ? 'Paiement sécurisé' : 'Secure payment',              $isFr ? 'Transactions protégées' : 'Protected transactions'],
+        ['hand-coins', $isFr ? 'Paiement direct' : 'Direct payment', $isFr ? "Vous réglez l'artisan" : 'You pay the artisan'],
         ['truck', $isFr ? 'Livraison fiable' : 'Reliable delivery',            $isFr ? "Partout au Cameroun et\nà l'international" : "Across Cameroon and\nworldwide"],
         ['headset', $isFr ? 'Service client dédié' : 'Dedicated customer service',$isFr ? 'Nous sommes à votre écoute' : 'We are here to listen'],
     ];

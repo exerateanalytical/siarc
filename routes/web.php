@@ -432,7 +432,18 @@ use App\Http\Controllers\AdminWebController;
 Route::get('/tableau-de-bord/admin/entreprises', [AdminWebController::class, 'businesses'])->name('admin.businesses');
 Route::get('/tableau-de-bord/admin/entreprises/{id}', [AdminWebController::class, 'businessDetail'])->name('admin.businesses.detail');
 Route::post('/tableau-de-bord/admin/entreprises/{id}/statut', [AdminWebController::class, 'updateBusinessStatus'])->name('admin.businesses.update-status');
-Route::get('/tableau-de-bord/admin/verifications', [AdminWebController::class, 'verifications'])->name('admin.verifications');
+// Verifications used to be its own list — a bare queue over the same
+// verification_applications rows the KYC Centre already lists, with the same
+// approve/reject pair. Two screens for one job. The queue is now the KYC
+// Centre's table (which filters, counts and paginates the same records), and
+// each row carries the approve/reject controls the queue had. This name is kept
+// as a redirect because bookmarks and several dashboards still point at it.
+Route::get('/tableau-de-bord/admin/verifications', function (Request $request) {
+    return redirect()->route('admin.kyc', array_filter([
+        'lang'   => $request->query('lang'),
+        'statut' => $request->query('statut'),
+    ]));
+})->name('admin.verifications');
 Route::post('/tableau-de-bord/admin/verifications/{id}/approuver', [AdminWebController::class, 'approveVerification'])->name('admin.verifications.approve');
 Route::post('/tableau-de-bord/admin/verifications/{id}/rejeter', [AdminWebController::class, 'rejectVerification'])->name('admin.verifications.reject');
 
@@ -3263,10 +3274,19 @@ foreach ([
         $notificationCount = DB::table('user_notifications')->where('user_id', $siacUser['id'])->whereNull('read_at')->count();
 
         // Real records (optional query params); pages fall back to the design demo content.
+        //
+        // $rfq is reached by walking a chain — order → proposal → request — and
+        // any link in it can be missing: purchase_orders holds at least one row
+        // whose proposal was deleted out from under it, and opening that order
+        // from the admin list used to be a 500. A record with a broken chain is
+        // exactly the one an administrator most needs to look at, so the walk is
+        // null-safe and an admin is allowed through on the record's own
+        // existence rather than on an owner it no longer has.
         $canSee = function ($rfq) use ($siacUser) {
+            if (! empty($siacUser['is_admin'])) return true;
+
             return $rfq && ($rfq->buyer_id === $siacUser['id']
-                || optional($rfq->business)->user_id === $siacUser['id']
-                || !empty($siacUser['is_admin']));
+                || optional($rfq->business)->user_id === $siacUser['id']);
         };
 
         $realProposal = null;
@@ -3275,16 +3295,43 @@ foreach ([
             $realProposal = ($p && $canSee($p->request)) ? $p : null;
         }
 
+        // A purchase order document is its proposal rendered — the line items,
+        // the totals and the conditions all live on the proposal, not on the
+        // order row. So an order whose proposal has been deleted has no document
+        // to show, and there is at least one such row in this database
+        // (PO-2026-00009 points at proposal 10, which no longer exists).
+        //
+        // Half-rendering it would print an order form with no lines and no
+        // vendor, which is a worse lie than refusing. Say the record is
+        // incomplete and send the reader back to the list they came from.
         $realPo = null;
         if ($request->query('po')) {
             $o = \App\Modules\Quotes\Models\PurchaseOrder::with(['proposal.items', 'proposal.request.business', 'invoice'])->find($request->query('po'));
-            $realPo = ($o && $canSee($o->proposal->request)) ? $o : null;
+
+            if ($o && ! $o->proposal) {
+                return redirect()
+                    ->route(! empty($siacUser['is_admin']) ? 'admin.orders' : 'orders.index', ['lang' => $lang])
+                    ->with('error', $lang === 'fr'
+                        ? 'La commande ' . $o->reference . ' est incomplète : le devis dont elle découle n\'existe plus, il n\'y a donc pas de bon de commande à afficher.'
+                        : 'Order ' . $o->reference . ' is incomplete: the quote it came from no longer exists, so there is no order form to show.');
+            }
+
+            $realPo = ($o && $canSee($o->proposal?->request)) ? $o : null;
         }
 
         $realInvoice = null;
         if ($request->query('invoice')) {
             $i = \App\Modules\Quotes\Models\Invoice::with(['purchaseOrder.proposal.items', 'purchaseOrder.proposal.request.business'])->find($request->query('invoice'));
-            $realInvoice = ($i && $canSee($i->purchaseOrder->proposal->request)) ? $i : null;
+
+            if ($i && ! $i->purchaseOrder?->proposal) {
+                return redirect()
+                    ->route(! empty($siacUser['is_admin']) ? 'admin.orders' : 'orders.index', ['lang' => $lang])
+                    ->with('error', $lang === 'fr'
+                        ? 'Cette facture est incomplète : la commande et le devis dont elle découle n\'existent plus.'
+                        : 'This invoice is incomplete: the order and quote it came from no longer exist.');
+            }
+
+            $realInvoice = ($i && $canSee($i->purchaseOrder?->proposal?->request)) ? $i : null;
         }
 
         $builderRfq = null;

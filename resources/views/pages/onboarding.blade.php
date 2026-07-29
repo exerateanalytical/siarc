@@ -160,14 +160,19 @@
 <!-- Header -->
 <header class="bg-white dark:bg-[#12150F]">
     <div class="max-w-[1024px] mx-auto px-4 flex items-center justify-between gap-4 py-2.5">
-        <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-3 shrink-0">
-            <img src="{{ brand_asset('mark') }}" alt="" class="w-[50px] h-[50px] object-contain">
-            <span class="leading-tight">
+        {{-- `shrink-0` on the lockup plus `whitespace-nowrap` on a 40-character
+             tagline made this row ~403px wide: at 360 the language button was
+             sliced off by the body's `overflow-x: clip`. The lockup may now
+             shrink and the tagline wraps until there is room to keep it on one
+             line. --}}
+        <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] sm:w-[50px] sm:h-[50px] object-contain shrink-0">
+            <span class="leading-tight min-w-0">
                 <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">Artisan Hub 237</span>
-                <span class="block text-[10px] text-[#2E7D4F] dark:text-[#339B56] whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                <span class="block text-[11px] text-[#2E7D4F] dark:text-[#339B56] sm:whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 shrink-0">
             <a href="{{ route('contact', ['lang' => $lang]) }}" class="hidden sm:flex items-center gap-2.5">
                 <i data-lucide="headphones" class="w-5 h-5 text-[#14532D] dark:text-[#339B56]" style="stroke-width:1.7"></i>
                 <span class="leading-tight text-left">

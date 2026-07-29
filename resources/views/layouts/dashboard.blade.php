@@ -53,104 +53,12 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
 
     $lang = in_array(request()->cookie('lang'), ['fr', 'en']) ? request()->cookie('lang') : 'fr';
 
-    // Sidebar nav, scoped per role. Each item: [route name, icon, label_fr, label_en]
-    $navGroups = [];
-    if (in_array($role, ['super_admin', 'admin', 'moderator'])) {
-        $navGroups = [
-            [
-                'title' => ['fr' => 'Vue d\'ensemble', 'en' => 'Overview'],
-                'items' => [
-                    ['dashboard.admin', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
-                    ['admin.reports', 'bar-chart-2', 'Rapports & Statistiques', 'Reports & Statistics'],
-                    ['admin.audit-log', 'history', 'Journal d\'audit', 'Audit Log'],
-                ],
-            ],
-            [
-                'title' => ['fr' => 'Modération', 'en' => 'Moderation'],
-                'items' => [
-                    ['admin.businesses', 'building-2', 'Entreprises', 'Businesses'],
-                    ['admin.products', 'package', 'Produits & Services', 'Products & Services'],
-                    ['admin.quotes', 'file-text', 'Devis & Commandes', 'Quotes & Orders'],
-                    ['admin.industries', 'tags', 'Catégories & Régions', 'Categories & Regions'],
-                    ['admin.verifications', 'badge-check', 'Vérifications', 'Verifications'],
-                    ['admin.payments', 'wallet', 'Paiements à contrôler', 'Payments to check'],
-                    ['admin.moderation', 'flag', 'Modération', 'Moderation'],
-                    ['admin.users', 'users', 'Utilisateurs', 'Users'],
-                ],
-            ],
-            [
-                'title' => ['fr' => 'Contenu', 'en' => 'Content'],
-                'items' => [
-                    ['admin.partners', 'handshake', 'Partenaires', 'Partners'],
-                    ['admin.events', 'calendar-days', 'Événements', 'Events'],
-                    ['admin.cms', 'file-text', 'Pages CMS', 'CMS Pages'],
-                    ['admin.support', 'life-buoy', 'Support', 'Support'],
-                ],
-            ],
-            [
-                'title' => ['fr' => 'Configuration', 'en' => 'Configuration'],
-                'items' => [
-                    ['admin.settings', 'settings-2', 'Paramètres & Intégrations', 'Settings & Integrations'],
-                ],
-            ],
-            [
-                'title' => ['fr' => 'Compte', 'en' => 'Account'],
-                'items' => [
-                    ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
-                    ['security.show', 'shield-check', 'Sécurité', 'Security'],
-                ],
-            ],
-        ];
-    } elseif ($role === 'business_owner') {
-        $navGroups = [
-            [
-                'title' => null,
-                'items' => [
-                    ['dashboard.entrepreneur', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
-                    ['dashboard.quotes', 'file-text', 'Demandes de devis', 'Quote requests'],
-                    ['business.edit', 'building-2', 'Mon entreprise', 'My Business'],
-                    ['messages.inbox', 'message-circle', 'Messages', 'Messages'],
-                    ['verification.show', 'badge-check', 'Vérification', 'Verification'],
-                    // A fee you owe but cannot find is a fee you do not pay, and
-                    // the payment pages are otherwise reachable only by a link
-                    // somebody sent you once.
-                    ['dashboard.payments', 'wallet', 'Mes paiements', 'My payments'],
-                    ['events.index', 'calendar-days', 'Événements', 'Events'],
-                    ['support.index', 'life-buoy', 'Support', 'Support'],
-                    ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
-                    ['security.show', 'shield-check', 'Sécurité', 'Security'],
-                ],
-            ],
-        ];
-    } elseif ($role === 'buyer') {
-        $navGroups = [
-            [
-                'title' => null,
-                'items' => [
-                    ['dashboard.buyer', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
-                    ['quotes.index', 'file-text', 'Mes Demandes & Devis', 'My Requests & Quotes'],
-                    ['saved.index', 'bookmark', 'Mes favoris', 'Saved'],
-                    ['messages.inbox', 'message-circle', 'Messages', 'Messages'],
-                    ['businesses.index', 'search', 'Explorer', 'Browse'],
-                    ['events.index', 'calendar-days', 'Événements', 'Events'],
-                    ['support.index', 'life-buoy', 'Support', 'Support'],
-                    ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
-                    ['security.show', 'shield-check', 'Sécurité', 'Security'],
-                ],
-            ],
-        ];
-    } elseif ($role === 'regional_rep') {
-        $navGroups = [['title' => null, 'items' => [
-            ['dashboard.regional-rep', 'layout-dashboard', 'Tableau de bord', 'Dashboard'],
-            ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
-        ]]];
-    } elseif ($role === 'technical_reviewer') {
-        $navGroups = [['title' => null, 'items' => [
-            ['dashboard.technical-reviewer', 'layout-dashboard', 'File d\'attente', 'Queue'],
-            ['technical.history', 'history', 'Historique', 'History'],
-            ['profile.show', 'user-cog', 'Mon profil', 'My Profile'],
-        ]]];
-    }
+    // The per-role navigation used to be defined here as well, in a $navGroups
+    // array of about a hundred lines covering all five roles. Nothing read it:
+    // the rail is rendered by pages.partials.dashboard-sidebar, which builds its
+    // own list. It was a second, silently diverging copy of the navigation — the
+    // admin branch here still listed screens the other branch had already renamed.
+    // Deleted; the partial is the one definition.
 
     $unreadNotifications = $siacUser
         ? \App\Modules\Notifications\Models\UserNotification::where('user_id', $siacUser['id'])->unread()->count()

@@ -48,7 +48,19 @@ $statusLabels = [
             ])>{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
         </a>
         @empty
-        <div class="ui-empty">{{ $lang === 'fr' ? 'Aucun ticket.' : 'No tickets.' }}</div>
+        {{-- Ticketing is fully connected: members open tickets from
+             /tableau-de-bord/support (SupportWebController::store), staff reply
+             and close from here. The table is empty because nobody has written
+             in yet — a measurement, not a missing feature, and the copy has to
+             make that difference visible. --}}
+        @include('pages.partials.empty-state', [
+            'icon'  => 'life-buoy',
+            'state' => 'empty',
+            'title' => $lang === 'fr' ? 'Aucun ticket ouvert' : 'No tickets have been opened',
+            'body'  => $lang === 'fr'
+                ? 'Les membres ouvrent un ticket depuis leur espace « Support ». Il apparaît ici dès l\'envoi, et vous pouvez y répondre ou le fermer. Personne n\'a encore écrit.'
+                : 'Members open a ticket from their own Support area. It appears here the moment it is sent, and you can reply to it or close it. Nobody has written in yet.',
+        ])
         @endforelse
     </div>
 

@@ -251,7 +251,19 @@
                                         </td>
                                     </tr>
                                     @empty
-                                    <tr><td colspan="8" class="py-10 text-center text-[13px] text-[#6E6B63] dark:text-[#868778]">{{ $isFr ? 'Aucun export ne correspond à ces critères.' : 'No export matches these criteria.' }}</td></tr>
+                                    {{-- data_exports is empty. The "new export" form on this
+                                         screen writes the row, so this is a queue nobody has
+                                         used yet rather than a disconnected screen. --}}
+                                    <tr><td colspan="8" class="p-0">
+                                        @include('pages.partials.empty-state', [
+                                            'icon'  => 'download',
+                                            'state' => 'empty',
+                                            'title' => $isFr ? 'Aucun export demandé' : 'No export requested',
+                                            'body'  => $isFr
+                                                ? 'Chaque export que vous demandez apparaît ici avec son état et son lien de téléchargement. Aucun n\'a encore été demandé.'
+                                                : 'Every export you request appears here with its state and download link. None has been requested yet.',
+                                        ])
+                                    </td></tr>
                                     @endforelse
                                 </tbody>
                             </table>

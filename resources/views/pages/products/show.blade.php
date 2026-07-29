@@ -425,7 +425,9 @@
                     </li>
                     <li class="flex items-start gap-2.5">
                         <i data-lucide="clock" class="w-[14px] h-[14px] text-[#55524A] dark:text-[#B4B5A6] mt-0.5 shrink-0"></i>
-                        <span class="text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Délai de livraison :' : 'Delivery time:' }} <span class="text-[#1D1B16] dark:text-[#F3EFE7] font-medium">{{ $isFr ? '3 – 7 jours ouvrables' : '3 – 7 working days' }}</span></span>
+                        {{-- No delivery window exists to quote: the platform ships nothing
+                             and the artisan sets their own terms. --}}
+                        <span class="text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Livraison :' : 'Delivery:' }} <span class="text-[#1D1B16] dark:text-[#F3EFE7] font-medium">{{ $isFr ? "convenue avec l'artisan" : 'agreed with the artisan' }}</span></span>
                     </li>
                     <li class="flex items-start gap-2.5">
                         <i data-lucide="package" class="w-[14px] h-[14px] text-[#55524A] dark:text-[#B4B5A6] mt-0.5 shrink-0"></i>
@@ -455,7 +457,7 @@
             <div class="relative bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl p-5">
                 <h2 class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Achetez en toute confiance' : 'Buy with confidence' }}</h2>
                 <ul class="mt-4 space-y-3 text-[12px] text-[#3A3A35] dark:text-[#F3EFE7]">
-                    <li class="flex items-center gap-2.5"><i data-lucide="lock" class="w-[14px] h-[14px] text-[#17A34A]"></i>{{ $isFr ? 'Paiement sécurisé' : 'Secure payment' }}</li>
+                    <li class="flex items-center gap-2.5"><i data-lucide="hand-coins" class="w-[14px] h-[14px] text-[#17A34A]"></i>{{ $isFr ? "Vous réglez l'artisan directement" : 'You pay the artisan directly' }}</li>
                     <li class="flex items-center gap-2.5"><i data-lucide="shield-check" class="w-[14px] h-[14px] text-[#17A34A]"></i>{{ $isFr ? 'Protection des acheteurs' : 'Buyer protection' }}</li>
                     <li class="flex items-center gap-2.5"><i data-lucide="badge-check" class="w-[14px] h-[14px] text-[#17A34A]"></i>{{ $isFr ? 'Remboursement garanti' : 'Guaranteed refund' }}</li>
                 </ul>
@@ -535,7 +537,12 @@
                     <p class="text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $isFr ? 'Nettoyez délicatement avec un chiffon doux et sec. Évitez l\'exposition prolongée à l\'humidité et au soleil direct pour préserver les motifs.' : 'Clean gently with a soft, dry cloth. Avoid prolonged exposure to humidity and direct sunlight to preserve the patterns.' }}</p>
                 </div>
                 <div class="tab-panel hidden" data-panel="shipping">
-                    <p class="text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $isFr ? 'Livraison nationale et internationale sous 3 – 7 jours ouvrables, emballage sécurisé et écoresponsable. Retours acceptés sous 14 jours — contactez l\'artisan pour toute question.' : 'National and international delivery within 3 – 7 working days, secure and eco-friendly packaging. Returns accepted within 14 days — contact the artisan with any questions.' }}</p>
+                    {{-- These were invented terms. The platform ships nothing, sets no
+                         delivery window and operates no returns policy; a buyer relying on
+                         "3-7 jours" or "retours sous 14 jours" would be relying on a promise
+                         nobody ever made. The artisan sets their own terms and is the only
+                         party who can state them. --}}
+                    <p class="text-[13px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">{{ $isFr ? "La livraison et les retours sont convenus directement avec l'artisan, qui fixe ses propres conditions et délais. La plateforme n'expédie rien et n'est pas partie à la vente — demandez-lui ses conditions avant de commander." : 'Delivery and returns are agreed directly with the artisan, who sets their own terms and timescales. The platform ships nothing and is not a party to the sale — ask them for their terms before ordering.' }}</p>
                 </div>
                 <div class="tab-panel hidden" data-panel="reviews">
                     @if($reviews->count())

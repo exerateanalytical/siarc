@@ -86,7 +86,7 @@
 
 <!-- Tricolor top bar -->
 @if($dirTopBar ?? false)
-<div class="relative flex h-[26px] overflow-hidden text-[10.5px]">
+<div class="relative flex h-[26px] overflow-hidden text-[12px] md:text-[10.5px]">
     <div class="w-[37.5%] bg-[#012C1B] flex items-center pl-4 sm:pl-6">
         <span class="text-white/90 truncate">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
     </div>
@@ -121,13 +121,20 @@
 <!-- Topbar — measured off the artwork: 64px band at 1024 = 80px at 1280,
      cream #FBF6EF, content 1230 wide inside a 25px page margin. -->
 <header class="bg-[#FBF6EF] dark:bg-[#12150F] border-b border-[#EFE4D5] dark:border-[#262B21]">
-    <div class="max-w-[1280px] mx-auto px-[25px]">
-        <div class="flex items-center justify-between gap-4 xl:gap-8 lg:h-[80px] py-3 lg:py-0">
-            <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-[15px] shrink-0">
-                <img src="{{ brand_asset('mark') }}" alt="" class="w-[56px] h-[56px] lg:w-[68px] lg:h-[68px] object-contain shrink-0">
-                <span class="leading-none">
-                    <span class="block text-[24px] lg:text-[29px] font-bold tracking-[-0.005em] text-[#0F3D24] dark:text-[#339B56] whitespace-nowrap">Artisan<span class="text-[#0F3D24] dark:text-[#339B56]">Hub</span><span class="text-[#B8891F]">237</span></span>
-                    <span class="block mt-[10px] text-[9px] font-semibold tracking-[0.16em] text-[#3C4A3E] dark:text-[#B4B5A6] uppercase whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+    {{-- Page gutter per docs/RESPONSIVE-CONTRACT.md: 16px on a phone, the
+         artwork's 25px from `sm` up. --}}
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-[25px]">
+        <div class="flex items-center justify-between gap-3 sm:gap-4 xl:gap-8 lg:h-[80px] py-2.5 lg:py-0">
+            <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 sm:gap-[15px] shrink-0 min-w-0 min-h-[44px]">
+                <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] sm:w-[56px] sm:h-[56px] lg:w-[68px] lg:h-[68px] object-contain shrink-0">
+                <span class="leading-none min-w-0">
+                    <span class="block text-[19px] sm:text-[24px] lg:text-[29px] font-bold tracking-[-0.005em] text-[#0F3D24] dark:text-[#339B56] whitespace-nowrap">Artisan<span class="text-[#0F3D24] dark:text-[#339B56]">Hub</span><span class="text-[#B8891F]">237</span></span>
+                    {{-- 9px uppercase micro-lettering is the desktop artwork's, and
+                         it is below the contract's 12px mobile floor as well as
+                         being the single widest thing in a 360px topbar. It is a
+                         desktop-only strapline; the same words already run in the
+                         tricolor bar above. --}}
+                    <span class="hidden xl:block mt-[10px] text-[9px] font-semibold tracking-[0.16em] text-[#3C4A3E] dark:text-[#B4B5A6] uppercase whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
                 </span>
             </a>
 
@@ -157,7 +164,12 @@
             </form>
 
             <!-- Utility icon links + account avatar -->
-            <div class="flex items-center gap-[22px] shrink-0">
+            {{-- The gap is the artwork's 22px only where there is room for it.
+                 Between `md` and `xl` the five utility links, the theme pill and
+                 the avatar all show at once and 22px of air pushed the row past
+                 768px — the topbar was the whole reason the tablet width scrolled
+                 sideways. --}}
+            <div class="flex items-center gap-3 xl:gap-[22px] shrink-0">
                 @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
                 <a href="{{ $duHref }}" class="hidden md:flex flex-col items-center gap-[7px] text-[#1D1B16] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                     <i data-lucide="{{ $duIcon }}" class="w-[17.5px] h-[17.5px]"></i>
@@ -203,57 +215,119 @@
                     @endif
                 </div>
 
-                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-md hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]" aria-label="Menu">
-                    <i data-lucide="menu" class="w-5 h-5 text-[#262521] dark:text-[#F3EFE7]"></i>
+                {{-- 44×44 is the contract's floor, not a suggestion. `-mr-2`
+                     keeps the optical alignment the artwork has while the target
+                     itself stays full size. --}}
+                <button id="mobile-menu-btn" type="button"
+                    class="lg:hidden -mr-2 w-11 h-11 shrink-0 inline-flex items-center justify-center rounded-lg hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]"
+                    aria-label="{{ $isFr ? 'Ouvrir le menu' : 'Open menu' }}" aria-expanded="false" aria-controls="mobile-menu" aria-haspopup="dialog">
+                    <i data-lucide="menu" class="w-6 h-6 text-[#262521] dark:text-[#F3EFE7]"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden lg:hidden pb-4 border-t border-[#E7E1D4] dark:border-[#262B21] pt-3">
-            <form action="{{ route('gallery.search') }}" method="GET" class="relative mb-3">
-                <input type="hidden" name="lang" value="{{ $lang }}">
-                <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}"
-                    class="ui-field pr-9">
-                <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#55524A] dark:text-[#B4B5A6]">
-                    <i data-lucide="search" class="w-4 h-4"></i>
-                </button>
-            </form>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 px-1 mb-2">
-                @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
-                <a href="{{ $duHref }}" class="flex items-center gap-2 text-[13.5px] font-medium text-[#1D1B16] dark:text-[#F3EFE7]">
-                    <i data-lucide="{{ $duIcon }}" class="w-4 h-4"></i>{{ $duLabel }}
-                </a>
-                @endforeach
-            </div>
-            {{-- Main page links — same $dirNavItems array as the green bar below --}}
-            <div class="mb-2">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $dirNavActive === 'home' ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#1D1B16] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]' }}">
-                    <i data-lucide="home" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6]"></i>{{ $isFr ? 'Accueil' : 'Home' }}
-                </a>
-                @foreach($dirNavItems as [$mmKey, $mmIcon, $mmLabel, $mmHref])
-                <a href="{{ $mmHref }}" class="flex items-center gap-2.5 px-1 py-2 text-[13.5px] {{ $mmKey === $dirNavActive ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#1D1B16] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]' }}">
-                    <i data-lucide="{{ $mmIcon }}" class="w-4 h-4 text-[#55524A] dark:text-[#B4B5A6]"></i>{{ $mmLabel }}
-                </a>
-                @endforeach
-            </div>
-            <div class="border-t border-[#E7E1D4] dark:border-[#262B21] pt-3 flex flex-wrap items-center justify-between gap-2 px-1">
-                @if($siacUser)
-                <a href="{{ route('dashboard.siac') }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
-                @else
-                <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center bg-[#02301B] text-white text-[13px] font-medium px-4 py-2 rounded-lg">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
-                @endif
-                <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center gap-1.5 bg-[#C9942E] text-[#231903] text-[12.5px] font-bold px-4 py-2 rounded-lg uppercase tracking-[0.04em]">
-                    {{ $isFr ? 'Vendre sur ArtisanHub237' : 'Sell on ArtisanHub237' }}
-                </a>
-                <span class="flex items-center gap-2 text-[13px] font-semibold">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="{{ $isFr ? 'text-leaf dark:text-[#339B56] underline' : 'text-[#8A857A] dark:text-[#868778]' }}">FR</a>
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="{{ !$isFr ? 'text-leaf dark:text-[#339B56] underline' : 'text-[#8A857A] dark:text-[#868778]' }}">EN</a>
-                </span>
-                {{-- Same control again for the phone menu, where the utility row
-                     above is hidden. Duplicate `.theme-toggle` nodes are wired by
-                     delegation, so this needs no script of its own. --}}
-                @include('pages.partials.theme-toggle')
+        {{-- ── Mobile menu ────────────────────────────────────────────────
+             A full-height sheet, not a dropped list. It leaves the topbar's
+             flow (`fixed inset-0`) so it can own the screen: dimmed backdrop,
+             its own scroll, 48px rows that clear the 44px tap floor, and a
+             sticky footer holding the two calls to action, the language pair
+             and the theme toggle — the three controls the desktop utility row
+             carries and a phone otherwise cannot reach.
+
+             `hidden` is still what shows and hides it, because twenty page
+             views bind their own legacy handler to that exact class and this
+             partial does not own those files. See the script at the foot. --}}
+        <div id="mobile-menu" class="hidden lg:hidden fixed inset-0 z-[80]" role="dialog" aria-modal="true"
+             aria-label="{{ $isFr ? 'Menu principal' : 'Main menu' }}">
+            <div data-mm-close class="absolute inset-0 bg-black/55 backdrop-blur-[2px]"></div>
+
+            <div class="absolute inset-y-0 right-0 flex w-[min(90vw,380px)] max-w-full flex-col bg-[#FBF6EF] dark:bg-[#12150F] shadow-[0_0_40px_rgba(0,0,0,.45)]">
+
+                <!-- Sheet head -->
+                <div class="flex items-center justify-between gap-3 px-4 h-[60px] shrink-0 border-b border-[#E7E1D4] dark:border-[#262B21]">
+                    <span class="flex items-center gap-2.5 min-w-0">
+                        <img src="{{ brand_asset('mark') }}" alt="" class="w-[34px] h-[34px] object-contain shrink-0">
+                        <span class="text-[16px] font-bold tracking-[-0.005em] text-[#0F3D24] dark:text-[#339B56] truncate">Artisan<span class="text-[#B8891F]">Hub237</span></span>
+                    </span>
+                    <button type="button" data-mm-close
+                        class="-mr-2 w-11 h-11 shrink-0 inline-flex items-center justify-center rounded-lg text-[#262521] dark:text-[#F3EFE7] hover:bg-[#E7E1D4]/60 dark:hover:bg-[#1A1E16]"
+                        aria-label="{{ $isFr ? 'Fermer le menu' : 'Close menu' }}">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- Sheet body -->
+                <div class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4">
+                    <form action="{{ route('gallery.search') }}" method="GET" class="relative">
+                        <input type="hidden" name="lang" value="{{ $lang }}">
+                        <input name="q" type="search" placeholder="{{ $dirSearchPlaceholder }}" class="ui-field h-11 pr-11">
+                        <button type="submit" aria-label="{{ $isFr ? 'Rechercher' : 'Search' }}"
+                            class="absolute right-0 top-0 w-11 h-11 inline-flex items-center justify-center text-[#55524A] dark:text-[#B4B5A6]">
+                            <i data-lucide="search" class="w-[18px] h-[18px]"></i>
+                        </button>
+                    </form>
+
+                    {{-- Main page links — same $dirNavItems array as the green bar below --}}
+                    <nav class="mt-4 -mx-1">
+                        @php
+                            $mmRow = 'flex items-center gap-3 min-h-[48px] px-3 rounded-lg text-[15px]';
+                            $mmOn  = 'font-semibold text-[#0F4227] dark:text-[#339B56] bg-[#0F4227]/[0.07] dark:bg-[#339B56]/[0.12]';
+                            $mmOff = 'font-medium text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]';
+                        @endphp
+                        <a href="{{ route('home', ['lang' => $lang]) }}" @class([$mmRow, $mmOn => $dirNavActive === 'home', $mmOff => $dirNavActive !== 'home'])
+                           @if($dirNavActive === 'home') aria-current="page" @endif>
+                            <i data-lucide="home" class="w-[18px] h-[18px] shrink-0 {{ $dirNavActive === 'home' ? 'text-[#0F4227] dark:text-[#339B56]' : 'text-[#55524A] dark:text-[#B4B5A6]' }}"></i>
+                            <span class="min-w-0 truncate">{{ $isFr ? 'Accueil' : 'Home' }}</span>
+                            @if($dirNavActive === 'home')<span class="ml-auto w-1.5 h-1.5 rounded-full bg-[#C9942E]" aria-hidden="true"></span>@endif
+                        </a>
+                        @foreach($dirNavItems as [$mmKey, $mmIcon, $mmLabel, $mmHref])
+                        @php $mmActive = $mmKey === $dirNavActive; @endphp
+                        <a href="{{ $mmHref }}" @class([$mmRow, $mmOn => $mmActive, $mmOff => ! $mmActive]) @if($mmActive) aria-current="page" @endif>
+                            <i data-lucide="{{ $mmIcon }}" class="w-[18px] h-[18px] shrink-0 {{ $mmActive ? 'text-[#0F4227] dark:text-[#339B56]' : 'text-[#55524A] dark:text-[#B4B5A6]' }}"></i>
+                            <span class="min-w-0 truncate">{{ $mmLabel }}</span>
+                            @if($mmActive)<span class="ml-auto w-1.5 h-1.5 rounded-full bg-[#C9942E]" aria-hidden="true"></span>@endif
+                        </a>
+                        @endforeach
+                    </nav>
+
+                    {{-- The desktop utility row, which is hidden on a phone. --}}
+                    <p class="mt-5 mb-1 px-2 text-[12px] font-bold uppercase tracking-[0.08em] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Raccourcis' : 'Shortcuts' }}</p>
+                    <div class="-mx-1 grid grid-cols-2 gap-1">
+                        @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
+                        <a href="{{ $duHref }}" class="flex items-center gap-2.5 min-h-[48px] px-3 rounded-lg text-[14px] font-medium text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]">
+                            <i data-lucide="{{ $duIcon }}" class="w-[17px] h-[17px] shrink-0 text-[#55524A] dark:text-[#B4B5A6]"></i>
+                            <span class="min-w-0 truncate">{{ $duLabel }}</span>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Sheet foot: the two ways in, the language pair, the theme -->
+                <div class="shrink-0 border-t border-[#E7E1D4] dark:border-[#262B21] bg-[#F5EFE5] dark:bg-[#0A0C09] px-4 py-3 space-y-2.5"
+                     style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom))">
+                    <div class="grid grid-cols-2 gap-2">
+                        @if($siacUser)
+                        <a href="{{ route('dashboard.siac') }}" class="inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg bg-[#02301B] text-white text-[14px] font-semibold text-center">{{ $isFr ? 'Tableau de bord' : 'Dashboard' }}</a>
+                        @else
+                        <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg bg-[#02301B] text-white text-[14px] font-semibold">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
+                        @endif
+                        <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg bg-[#C9942E] text-[#231903] text-[13px] font-bold uppercase tracking-[0.04em] text-center leading-tight">
+                            {{ $isFr ? 'Vendre ici' : 'Sell here' }}
+                        </a>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="inline-flex items-center rounded-lg border border-[#D9D2C4] dark:border-[#262B21] overflow-hidden" role="group" aria-label="{{ $isFr ? 'Langue' : 'Language' }}">
+                            <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" @if($isFr) aria-current="true" @endif
+                               class="inline-flex items-center justify-center min-w-[52px] h-11 text-[14px] font-semibold {{ $isFr ? 'bg-[#0F4227] text-white' : 'text-[#55524A] dark:text-[#B4B5A6]' }}">FR</a>
+                            <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" @if(! $isFr) aria-current="true" @endif
+                               class="inline-flex items-center justify-center min-w-[52px] h-11 text-[14px] font-semibold {{ ! $isFr ? 'bg-[#0F4227] text-white' : 'text-[#55524A] dark:text-[#B4B5A6]' }}">EN</a>
+                        </span>
+                        {{-- Same control again for the phone menu, where the utility row
+                             above is hidden. Duplicate `.theme-toggle` nodes are wired by
+                             delegation, so this needs no script of its own. --}}
+                        @include('pages.partials.theme-toggle')
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -329,17 +403,66 @@
     </div>
 </div>
 
-{{-- The hamburger toggle ships WITH the markup it controls. Consuming pages used
-     to each duplicate this handler, and five of them drifted without one — the
-     mobile menu button was simply dead on those pages. @once keeps it to a
-     single emission even when the header is included more than once. --}}
+{{-- ── The hamburger, and why it used to do nothing ──────────────────────────
+     The toggle ships WITH the markup it controls, because consuming pages used
+     to each duplicate the handler and five of them drifted without one. What
+     that change did not do was remove the copies: twenty views — about.blade,
+     home.blade, businesses/index, products/show, layouts/app and the rest —
+     still run `mBtn.addEventListener('click', () => mMenu.classList.toggle('hidden'))`
+     of their own. So one tap fired TWO toggles: the page's listener on the
+     button (target/bubble phase, first), then this delegated one on document
+     (last). The panel was un-hidden and re-hidden inside a single event and
+     never painted. Measured, not guessed: after a synthetic click the class
+     list read `lg:hidden … hidden` — removed, then appended again.
+
+     The fix is to stop toggling. Ordering is the one thing that is guaranteed
+     here — a listener on `document` always runs after a listener bound to the
+     button itself — so this handler reads the state IT owns (`data-open`),
+     flips that, and then *sets* the classes to match. Whatever the legacy
+     page handlers did a microsecond earlier is simply overwritten, however
+     many of them there are, and no file this partial does not own is touched.
+
+     @once keeps it to a single emission even when the header is included more
+     than once. --}}
 @once
 <script>
+(function () {
+    var menu = function () { return document.getElementById('mobile-menu'); };
+
+    function setOpen(open) {
+        var m = menu();
+        if (!m) return;
+        m.setAttribute('data-open', open ? 'true' : 'false');
+        m.classList.toggle('hidden', !open);       // authoritative, not a toggle
+        var btn = document.getElementById('mobile-menu-btn');
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        // The sheet owns the screen; the page behind it must not scroll with it.
+        document.documentElement.style.overflow = open ? 'hidden' : '';
+        if (open && window.lucide) { try { window.lucide.createIcons(); } catch (e) {} }
+    }
+
     document.addEventListener('click', function (e) {
-        const btn = e.target.closest('#mobile-menu-btn');
-        if (!btn) return;
-        const menu = document.getElementById('mobile-menu');
-        if (menu) menu.classList.toggle('hidden');
+        if (!e.target.closest) return;
+
+        if (e.target.closest('#mobile-menu-btn')) {
+            var m = menu();
+            setOpen(!(m && m.getAttribute('data-open') === 'true'));
+            return;
+        }
+        // Backdrop, the X, or any link inside the sheet: leaving means closing.
+        if (e.target.closest('[data-mm-close]') || e.target.closest('#mobile-menu a')) {
+            setOpen(false);
+        }
     });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setOpen(false);
+    });
+
+    // A width that shows the desktop nav must not leave the sheet latched open.
+    window.addEventListener('resize', function () {
+        if (window.innerWidth >= 1024) setOpen(false);
+    });
+})();
 </script>
 @endonce

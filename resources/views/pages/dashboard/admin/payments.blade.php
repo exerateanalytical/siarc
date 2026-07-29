@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.admin')
 
 @php
 /*
@@ -121,9 +121,29 @@ $tabs = ['reported', 'under_review', 'confirmed', 'rejected', 'expired', 'cancel
     </div>
 
     @if($rows->isEmpty())
-    <div class="ui-card text-center py-14 px-4">
-        <i data-lucide="inbox" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="ui-body">{{ $isFr ? 'Aucun paiement dans cette file.' : 'No payment in this queue.' }}</p>
+    @php
+        /* The default queue is "reported", which is empty whenever nobody is
+           waiting — the normal, healthy state. Landing on an empty table and no
+           explanation is what makes this console read as broken, so say what
+           the queue is for, and, when the other queues do hold payments, say
+           where they are. $counts is already the real per-status tally. */
+        $elsewhere = collect($counts)->filter(fn ($n, $s) => $s !== $filter && $n > 0);
+    @endphp
+    <div class="ui-card ui-card--flush">
+        @include('pages.partials.empty-state', [
+            'icon'  => 'inbox',
+            'state' => 'empty',
+            'title' => $isFr
+                ? 'Aucun paiement dans la file « ' . ($statusLabels[$filter] ?? $filter) . ' »'
+                : 'No payment in the "' . ($statusLabels[$filter] ?? $filter) . '" queue',
+            'body'  => ($isFr
+                ? 'Les artisans déclarent ici les frais qu\'ils ont réglés hors plateforme, avec leur preuve de paiement ; un relecteur les confirme ou les rejette. La plateforme n\'encaisse aucun paiement elle-même.'
+                : 'Artisans declare fees they have settled off-platform here, with their proof of payment; a reviewer then confirms or rejects each one. The platform itself collects no money.')
+                . ' ' . ($elsewhere->isNotEmpty()
+                    ? ($isFr ? 'Les autres files ne sont pas vides : ' : 'The other queues are not empty: ')
+                      . $elsewhere->map(fn ($n, $s) => ($statusLabels[$s] ?? $s) . ' (' . $n . ')')->implode(', ') . '.'
+                    : ($isFr ? 'Aucune autre file ne contient de paiement non plus.' : 'No other queue holds a payment either.')),
+        ])
     </div>
     @endif
 

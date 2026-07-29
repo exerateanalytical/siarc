@@ -223,11 +223,22 @@ class FrontendController extends Controller
         $industries = Industry::withCount('businesses')->where('is_active', true)->orderBy('sort_order')->get();
         $regions    = DB::table('regions')->orderBy('name_fr')->get();
 
-        // Real directory stats for the hero band
+        // Real directory stats for the hero band.
+        //
+        // Every figure here counts the *same population as the listing below it*
+        // — published businesses — so a visitor can never read a number the page
+        // then fails to show them. The businesses table holds 515 rows, but 512
+        // are unclaimed SIARC imports sitting in `draft`; counting those would
+        // advertise a directory that does not exist yet. `regions` is therefore
+        // "regions with at least one listed business", not "regions in Cameroon"
+        // (that is 10, and lives in the regions table). `verified` is the count
+        // of listed businesses that actually carry a verified/certified tier —
+        // it replaces a hardcoded "100% Authentiques", which measured nothing.
         $dirStats = [
             'businesses' => Business::where('status', 'published')->count(),
             'categories' => $industries->count(),
             'regions'    => Business::where('status', 'published')->whereNotNull('region_id')->distinct()->count('region_id'),
+            'verified'   => Business::where('status', 'published')->whereIn('verification_tier', ['verified', 'certified'])->count(),
         ];
 
         $vendorTypeCounts = $this->vendorTypeCounts();
@@ -241,24 +252,38 @@ class FrontendController extends Controller
     {
         $lang = $this->lang($request);
 
+        // 509 of the 512 artisan profiles are unpublished SIARC imports awaiting a
+        // claim, and the admin console links to every one of them. Sending an
+        // administrator who is reviewing a claim to a 404 tells them nothing and
+        // reads as a broken console. An admin — and only an admin — may therefore
+        // open an unpublished profile as a preview; the view carries a banner
+        // saying so, so a preview is never mistaken for a live page.
+        $isAdminPreview = ! empty(session('siac_user')['is_admin']);
+
         $business = Business::with(['industry', 'city', 'region', 'products.primaryImage', 'events' => fn ($q) => $q->orderByDesc('starts_at')])
             ->where('slug', $slug)
-            ->where('status', 'published')
+            ->when(! $isAdminPreview, fn ($q) => $q->where('status', 'published'))
             ->firstOrFail();
 
-        $business->increment('views_count');
+        // A preview is not a visit. Counting it would inflate the artisan's own
+        // view count with staff traffic and put staff IPs in the analytics table.
+        $isPreview = $isAdminPreview && $business->status !== 'published';
 
-        // Analytics row — must never break the page
-        try {
-            DB::table('business_views')->insert([
-                'business_id' => $business->id,
-                'viewer_ip'   => $request->ip(),
-                'device_type' => $this->deviceType($request),
-                'referrer'    => substr((string) $request->header('referer'), 0, 255) ?: null,
-                'viewed_at'   => now(),
-            ]);
-        } catch (\Throwable $e) {
-            // ignore
+        if (! $isPreview) {
+            $business->increment('views_count');
+
+            // Analytics row — must never break the page
+            try {
+                DB::table('business_views')->insert([
+                    'business_id' => $business->id,
+                    'viewer_ip'   => $request->ip(),
+                    'device_type' => $this->deviceType($request),
+                    'referrer'    => substr((string) $request->header('referer'), 0, 255) ?: null,
+                    'viewed_at'   => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // ignore
+            }
         }
 
         // "Produits phares" — the business's products, topped up to 6 with recent
@@ -297,7 +322,8 @@ class FrontendController extends Controller
         return response(
             view('pages.businesses.show', compact(
                 'lang', 'business', 'featuredProducts',
-                'publishedProductsCount', 'ordersCount', 'satisfiedPct', 'tenureYears'
+                'publishedProductsCount', 'ordersCount', 'satisfiedPct', 'tenureYears',
+                'isPreview'
             ))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }

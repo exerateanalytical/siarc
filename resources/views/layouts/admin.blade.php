@@ -68,8 +68,12 @@
         'admin.kyc.*'          => 'kyc',
         'admin.certificates'   => 'certificates',
         'admin.certificates.*' => 'certificates',
-        'admin.quotes'         => 'orders',
+        'admin.quotes'         => 'quotes',
         'admin.orders'         => 'orders',
+        'admin.analytics'      => 'analytics',
+        'admin.reviews'        => 'moderation',
+        'admin.reviews.*'      => 'moderation',
+        'admin.awards.*'       => 'moderation',
         'admin.orders.*'       => 'orders',
         'admin.payments'       => 'payments',
         'admin.payments.*'     => 'payments',
@@ -110,6 +114,23 @@
         ])
 
         <main class="px-5 lg:px-7 pt-5 pb-8">
+            {{-- Failure flash, rendered once for every admin screen.
+                 Nothing in this console rendered session('error') — an admin
+                 redirected away from a record that cannot be shown simply
+                 arrived back at a list with no explanation, which is precisely
+                 how a working guard reads as a broken link.
+
+                 Deliberately only `error`. session('success') is already
+                 rendered by 18 of these pages individually and $errors by 6, so
+                 repeating either here would print the same alert twice. Folding
+                 those into this block is a separate, mechanical pass. --}}
+            @if(session('error'))
+                <div class="ui-alert ui-alert-danger mb-4 flex items-start gap-2.5" role="alert">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
             @yield('content')
         </main>
     </div>

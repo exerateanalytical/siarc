@@ -220,7 +220,7 @@
                         <section class="bg-white dark:bg-[#12150F] border border-[#EFEBE2] dark:border-[#262B21] rounded-2xl p-5">
                             <div class="flex items-center justify-between gap-3">
                                 <h2 class="text-[12px] font-bold tracking-[0.04em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase leading-snug">{{ $isFr ? 'Statut des vérifications KYC' : 'KYC verification status' }}</h2>
-                                <a href="{{ route('admin.verifications') }}" class="shrink-0 text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
+                                <a href="{{ route('admin.kyc') }}" class="shrink-0 text-[11.5px] font-semibold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Voir tout' : 'See all' }}</a>
                             </div>
                             <div class="mt-4 flex items-center gap-4">
                                 <div class="relative w-[110px] h-[110px] shrink-0 rounded-full" style="background:{{ $adKycCss }}">

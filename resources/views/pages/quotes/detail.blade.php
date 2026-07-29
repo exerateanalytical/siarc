@@ -51,7 +51,10 @@
         $realValid ? ['calendar-days', ($isFr ? 'Valide jusqu\'au ' : 'Valid until ') . $realValid] : null,
         ['badge-percent', $isFr ? 'Les prix incluent la TVA (19.25%)' : 'Prices include VAT (19.25%)'],
         $rp->delivery_location ? ['truck', ($isFr ? 'Livraison à ' : 'Delivery to ') . $rp->delivery_location] : null,
-        ['shield-check',  $isFr ? 'Paiement sécurisé via notre plateforme' : 'Secure payment via our platform'],
+        /* "Paiement sécurisé via notre plateforme" was the plainest false
+           statement on the site: no payment for a sale passes through the
+           platform at all. */
+        ['hand-coins',    $isFr ? "Vous réglez l'artisan directement" : 'You pay the artisan directly'],
         ['badge-check',   $isFr ? 'Protection acheteur incluse' : 'Buyer protection included'],
     ]));
 @endphp

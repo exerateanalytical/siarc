@@ -175,7 +175,18 @@
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="7" class="ui-empty">{{ $isFr ? 'Aucun partenaire trouvé.' : 'No partners found.' }}</td></tr>
+                                {{-- partners is empty, and the "add a partner" form on this
+                                     screen (AdminWebController::storePartner) is what fills it. --}}
+                                <tr><td colspan="7" class="p-0">
+                                    @include('pages.partials.empty-state', [
+                                        'icon'  => 'handshake',
+                                        'state' => 'empty',
+                                        'title' => $isFr ? 'Aucun partenaire enregistré' : 'No partners recorded',
+                                        'body'  => $isFr
+                                            ? 'Les organisations partenaires enregistrées ici apparaissent sur les pages publiques du site. Aucune n\'a encore été ajoutée.'
+                                            : 'Partner organisations recorded here appear on the site\'s public pages. None has been added yet.',
+                                    ])
+                                </td></tr>
                                 @endforelse
                             </tbody>
                         </table>

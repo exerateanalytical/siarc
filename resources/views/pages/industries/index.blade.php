@@ -24,13 +24,13 @@
     $trustItems = $isFr ? [
         ['shield-check','Authenticité garantie', "Tous nos produits sont\nauthentiques et certifiés."],
         ['users','Soutien aux artisans',  "Chaque achat soutient directement\nnos artisans locaux."],
-        ['lock','Paiement sécurisé',     "Transactions 100% sécurisées\net protégées."],
+        ['hand-coins','Paiement direct',  "Vous réglez l'artisan,\nsans intermédiaire."],
         ['truck','Livraison fiable',      "Livraison rapide partout\ndans le monde."],
         ['headset','Service client dédié',  "Une équipe à votre écoute\n7j/7."],
     ] : [
         ['shield-check','Guaranteed authenticity', "All our products are\nauthentic and certified."],
         ['users','Support for artisans',    "Every purchase directly supports\nour local artisans."],
-        ['lock','Secure payment',          "100% secure and protected\ntransactions."],
+        ['hand-coins','Direct payment',   "You pay the artisan,\nwith no middleman."],
         ['truck','Reliable delivery',       "Fast delivery anywhere\nin the world."],
         ['headset','Dedicated support',       "A team at your service\n7 days a week."],
     ];
@@ -266,7 +266,13 @@
                         <span class="block mx-auto w-[84px] h-[84px] rounded-full overflow-hidden">
                             <img src="{{ asset('images/landing/' . $tile->image_icon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
                         </span>
-                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[34px] flex items-center justify-center">{{ $nm($tile) }}</h3>
+                        {{-- `line-clamp-2` sets `display:-webkit-box`; the `flex` on the
+                             same element overrode it, so instead of clamping to two
+                             lines the title became one centred, horizontally clipped
+                             line — at 360 "Sculpteur/décorateur sur tous matériaux"
+                             read as "culpteur/décorateu". Clamp only; the parent `a`
+                             is already `text-center`. --}}
+                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[34px] break-words">{{ $nm($tile) }}</h3>
                         <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
                     </a>
                     @endforeach
@@ -296,7 +302,8 @@
                     </span>
                     @endif
                     <span class="mt-3 inline-block text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
-                    <h2 class="mt-1 text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[38px] flex items-center justify-center">
+                    {{-- Same `line-clamp` / `flex` conflict as the featured tiles above. --}}
+                    <h2 class="mt-1 text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[38px] break-words">
                         {{ $nm($child) }}
                     </h2>
                     <div class="mx-auto mt-1.5 h-[2px] w-6 bg-[#E2B54D] rounded-full"></div>
