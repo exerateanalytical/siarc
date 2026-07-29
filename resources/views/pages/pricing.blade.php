@@ -80,7 +80,7 @@
             <div class="min-w-0">
                 <h2 class="text-[16px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $plan['name'] }}</h2>
                 @if(isset($roleHints[$plan['slug']]))
-                <p class="mt-1 text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-snug">{{ $roleHints[$plan['slug']] }}</p>
+                <p class="mt-1 text-[14px] md:text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-snug">{{ $roleHints[$plan['slug']] }}</p>
                 @endif
             </div>
 
@@ -88,7 +88,7 @@
                 <span class="text-[26px] font-bold text-[#02301B] dark:text-[#339B56]">
                     {{ number_format($plan['price_yearly'], 0, ',', ' ') }}
                 </span>
-                <span class="text-[13px] font-semibold text-[#55524A] dark:text-[#B4B5A6]">
+                <span class="text-[14px] md:text-[13px] font-semibold text-[#55524A] dark:text-[#B4B5A6]">
                     {{ $plan['currency'] }} {{ $isFr ? '/ an' : '/ year' }}
                 </span>
             </div>
@@ -108,7 +108,7 @@
         @endforeach
     </div>
 
-    <p class="mt-6 text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-relaxed max-w-[640px]">
+    <p class="mt-6 text-[14px] md:text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-relaxed max-w-[640px]">
         {{ $isFr
            ? 'La formule se choisit depuis votre tableau de bord, une fois votre compte créé. Le règlement se fait par mobile money et n\'est enregistré qu\'après vérification par un administrateur ; rien n\'est débité automatiquement.'
            : 'The plan is chosen from your dashboard, once your account exists. Payment is by mobile money and is only recorded once an administrator has checked it; nothing is charged automatically.' }}

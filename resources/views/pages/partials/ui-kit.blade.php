@@ -285,21 +285,25 @@
 
     /* The phone type ramp.  docs/RESPONSIVE-CONTRACT.md §2.
 
-       The design was drawn for desktop and uses 10px–12.5px for nearly all of
-       its running text — around 110 places across the public pages. On a phone
-       that reads as a shrunken desktop site ("the font size on mobile is
-       cheap"), against the 15–17px body every app the buyer holds all day uses.
-       This block is the ramp, not just a floor: each legacy size band is
-       remapped to the tier the contract names.
+       The design was drawn for desktop and uses 8.5px–13.5px for nearly all of
+       its running text — hundreds of places across the public and dashboard
+       pages. On a phone that reads as a shrunken desktop site ("the font size
+       on mobile is cheap"), against the 15–17px body every app the buyer holds
+       all day uses.
 
-         ≤ 10.6px  → 12px   captions, badges, chips — the absolute floor
-         11–11.5px → 13px   secondary: bylines, counts, timestamps
-         12–12.5px → 14px   body: the size most of the site's copy was drawn at
+       Raised 2026-07-29: "very very visible" on mobile, no exceptions. The
+       previous version of this block was a ramp with three bands (12/13/14),
+       and it was violated anyway — a 9.5px sidebar tagline and 10.5px group
+       titles turned up in a file the earlier sweep never reached, sub-floor
+       even under the OLD 12px rule. The floor is now flat: every legacy
+       `text-[…px]` under 14px is raised to exactly 14px, full stop. Hierarchy
+       above the floor is unaffected — this block only ever raises a value that
+       was already below 14, so a class already at 14+ is untouched.
 
        Raising it here rather than editing every occurrence keeps the desktop
        density exactly as designed, and means a page not yet swept to the
-       mobile-first `text-[15px] md:text-[12px]` pattern still reads at ramp
-       sizes. `md:`-prefixed classes compile to different selectors inside a
+       mobile-first `text-[16px] md:text-[12px]` pattern still reads at the
+       floor. `md:`-prefixed classes compile to different selectors inside a
        min-width query, so nothing here can reach a desktop size.
 
        Scoped to width alone, not (pointer: coarse): a desktop with a touch
@@ -318,44 +322,36 @@
        said so — a 360px audit measured the strapline at a real 9px. Close this
        comment exactly once, at the end. */
     @media (max-width: 767.98px) {
-        .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\],
-        .text-\[10px\], .text-\[10\.5px\], .text-\[10\.6px\] { font-size: 12px !important; }
+        .text-\[7\.5px\], .text-\[8px\], .text-\[8\.5px\], .text-\[9px\], .text-\[9\.5px\],
+        .text-\[10px\], .text-\[10\.5px\], .text-\[10\.6px\],
+        .text-\[11px\], .text-\[11\.5px\],
+        .text-\[12px\], .text-\[12\.5px\],
+        .text-\[13px\], .text-\[13\.5px\] { font-size: 14px !important; }
 
-        .text-\[11px\], .text-\[11\.5px\] { font-size: 13px !important; }
-
-        .text-\[12px\], .text-\[12\.5px\] { font-size: 14px !important; }
-
-        /* The kit's own tiers. These are set in CSS, not by a `text-[…px]`
-           utility, so the class remap above cannot reach them — and .ui-hint
-           under a form field is exactly the text a buyer needs to read.
-           .ui-pill and .ui-table th are handled at their own definitions,
-           where they also need a wrap or spacing change.
+        /* The kit's own sub-floor tiers. These are set in CSS, not by a
+           `text-[…px]` utility, so the class remap above cannot reach them —
+           and .ui-hint under a form field is exactly the text a buyer needs to
+           read. .ui-pill and .ui-table th are handled at their own
+           definitions, where they also need a wrap or spacing change.
 
            `!important` because this block sits above most of those definitions
            and a media query adds no specificity — without it `.ui-dt` two
-           hundred lines down simply wins and the ramp is decorative. Order
-           matters inside each tier: `.ui-btn-sm` must come after `.ui-btn`.
-
-           Caption tier — 12px floor: uppercase micro-labels stay labels. */
+           hundred lines down simply wins and the floor is decorative. */
         .ui-eyebrow, .ui-dt,
-        .ui-empty-state--unwired .ui-empty-note { font-size: 12px !important; }
-
-        /* Secondary tier — 13px: helper text, card subtitles, file inputs. */
+        .ui-empty-state--unwired .ui-empty-note,
         .ui-hint, .ui-error, .ui-card-sub, .ui-file,
-        .ui-label { font-size: 13px !important; }
+        .ui-label { font-size: 14px !important; }
         /* Kept out of the list above: an unrecognised pseudo-element selector
            invalidates its whole selector list. */
-        .ui-file::file-selector-button { font-size: 13px !important; }
+        .ui-file::file-selector-button { font-size: 14px !important; }
 
-        /* Body tier — 14px: what the buyer actually reads and presses.
-           Line-heights where the desktop value was tuned to a smaller size. */
         .ui-card-title, .ui-dd, .ui-check-row, .ui-alert,
         .ui-table tbody td, .ui-empty,
         .ui-empty-state .ui-empty-body { font-size: 14px !important; }
         .ui-check-row, .ui-alert,
         .ui-empty-state .ui-empty-body { line-height: 1.55; }
         .ui-btn    { font-size: 14px !important; }
-        .ui-btn-sm { font-size: 13px !important; }
+        .ui-btn-sm { font-size: 14px !important; }
         .ui-btn-lg { font-size: 15px !important; }
         .ui-empty-state .ui-empty-title { font-size: 15px !important; }
     }
@@ -612,7 +608,7 @@
        indépendante") is a fixed-width object: it is allowed to wrap on a phone
        rather than push its row past the viewport. */
     @media (max-width: 767.98px) {
-        .ui-pill { font-size: 12px; white-space: normal; }
+        .ui-pill { font-size: 14px; padding: 4px 10px; white-space: normal; }
     }
     .ui-pill-ok      { background: var(--ui-green-tint); color: var(--ui-green); }
     .ui-pill-warn    { background: var(--ui-gold-tint);  color: #8A6D1F; }

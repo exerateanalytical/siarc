@@ -122,7 +122,7 @@
     <div class="absolute inset-0 bg-cover bg-[center_right]" style="background-image:url('{{ asset('images/landing/contact-hero.png') }}')"></div>
     <div class="absolute inset-0 bg-black/40 sm:bg-transparent"></div>
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8 py-9 lg:py-11 min-h-[300px] lg:min-h-[364px]">
-        <nav class="flex items-center gap-2 text-[13px]" aria-label="Breadcrumb">
+        <nav class="flex items-center gap-2 text-[14px] md:text-[13px]" aria-label="Breadcrumb">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#D9A439] hover:text-gold hover:dark:text-[#EDB33A] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-white/60"></i>
             <span class="text-white/85">Contact</span>
@@ -147,7 +147,7 @@
             <div class="flex flex-col items-center text-center px-3">
                 <i data-lucide="{{ $card['icon'] }}" class="w-[38px] h-[38px] text-[#14472B] dark:text-[#EDB33A]" stroke-width="1.5" aria-hidden="true"></i>
                 <h3 class="mt-4 text-[16.5px] font-semibold text-[#20211D] dark:text-[#F3EFE7]">{{ $card['title'] }}</h3>
-                <div class="mt-3 space-y-1.5 text-[12.5px] text-[#4A4840] dark:text-[#B4B5A6] leading-relaxed">
+                <div class="mt-3 space-y-1.5 text-[14px] md:text-[12.5px] text-[#4A4840] dark:text-[#B4B5A6] leading-relaxed">
                     @foreach($card['lines'] as $line)
                     <p>{{ $line }}</p>
                     @endforeach
@@ -181,7 +181,7 @@
                 <div class="mt-3.5 h-[3px] w-[70px] bg-[#E0980F]"></div>
 
                 @if(session('success'))
-                <div class="mt-6 bg-[#EAF3EC] dark:bg-[#0C3D1D] border border-[#BFDCC7] dark:border-[#1B5E33] text-leaf dark:text-[#339B56] text-[13px] rounded-lg px-4 py-3">
+                <div class="mt-6 bg-[#EAF3EC] dark:bg-[#0C3D1D] border border-[#BFDCC7] dark:border-[#1B5E33] text-leaf dark:text-[#339B56] text-[14px] md:text-[13px] rounded-lg px-4 py-3">
                     {{ session('success') }}
                 </div>
                 @endif
@@ -228,11 +228,11 @@
                 role="img" aria-label="{{ $isFr ? 'Localisation — Artisan Hub 237, Douala, Cameroun' : 'Location — Artisan Hub 237, Douala, Cameroon' }}">
                 <i data-lucide="map-pin" class="w-10 h-10 text-[#123D27] dark:text-[#339B56]"></i>
                 <p class="mt-4 text-[15px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">Artisan Hub 237</p>
-                <p class="mt-1 text-[13px] text-[#6B665C] dark:text-[#B4B5A6]">{{ $isFr ? 'Douala, Littoral, Cameroun' : 'Douala, Littoral, Cameroon' }}</p>
+                <p class="mt-1 text-[14px] md:text-[13px] text-[#6B665C] dark:text-[#B4B5A6]">{{ $isFr ? 'Douala, Littoral, Cameroun' : 'Douala, Littoral, Cameroon' }}</p>
                 <a href="https://www.google.com/maps/search/?api=1&query=Douala%2C+Cameroun"
                     target="_blank" rel="noopener"
                     aria-label="{{ $isFr ? 'Itinéraire vers Artisan Hub 237, Douala' : 'Directions to Artisan Hub 237, Douala' }}"
-                    class="ui-tap mt-6 inline-flex items-center gap-2 border border-[#123D27] text-[#123D27] dark:text-[#339B56] hover:bg-[#123D27]/5 text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                    class="ui-tap mt-6 inline-flex items-center gap-2 border border-[#123D27] text-[#123D27] dark:text-[#339B56] hover:bg-[#123D27]/5 text-[14px] md:text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
                     <i data-lucide="map" class="w-4 h-4"></i>
                     {{ $isFr ? 'Voir sur la carte' : 'View on the map' }}
                 </a>
@@ -253,7 +253,7 @@
             <div class="flex flex-col items-center text-center px-4">
                 <i data-lucide="{{ $helpIcon }}" class="w-[46px] h-[46px] text-[#C08A16] dark:text-[#EDB33A]" stroke-width="1.4" aria-hidden="true"></i>
                 <h3 class="mt-5 text-[15.5px] font-semibold text-[#20211D] dark:text-[#F3EFE7]">{{ $helpTitle }}</h3>
-                <p class="mt-2.5 text-[12.5px] text-[#5D5A51] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $helpSub }}</p>
+                <p class="mt-2.5 text-[14px] md:text-[12.5px] text-[#5D5A51] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $helpSub }}</p>
             </div>
             @endforeach
         </div>
@@ -269,7 +269,7 @@
             {{ $isFr ? 'Restons connectés pour valoriser ensemble l\'artisanat camerounais.' : 'Let\'s stay connected to promote Cameroonian craftsmanship together.' }}
         </p>
         <a href="{{ route('industries.index', ['lang' => $lang]) }}"
-            class="mt-6 inline-flex items-center gap-2.5 bg-goldbt hover:bg-[#D99B22] text-[#3A2E08] dark:text-[#EDB33A] text-[13.5px] font-semibold px-6 h-[46px] rounded-lg transition-colors">
+            class="mt-6 inline-flex items-center gap-2.5 bg-goldbt hover:bg-[#D99B22] text-[#3A2E08] dark:text-[#EDB33A] text-[14px] md:text-[13.5px] font-semibold px-6 h-[46px] rounded-lg transition-colors">
             {{ $isFr ? 'Découvrir nos collections' : 'Discover our collections' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -297,9 +297,9 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[16px] md:text-[10px] font-medium self-stretch text-center leading-tight break-words">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

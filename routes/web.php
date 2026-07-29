@@ -4127,46 +4127,105 @@ Route::post('/newsletter', function (Request $request) {
 
 // SEO: dynamic sitemap + robots (served by routes so tests and production match)
 Route::get('/sitemap.xml', function () {
+    // Static section: only real, public, indexable pages — nothing behind
+    // auth, a one-time token, or a signed document route (certificates are
+    // deliberately excluded; see robots.txt below for why).
     $urls = collect([
-        ['loc' => url('/'),                     'priority' => '1.0'],
-        ['loc' => url('/galerie/entreprises'),  'priority' => '0.9'],
-        ['loc' => url('/galerie/produits'),     'priority' => '0.9'],
-        ['loc' => url('/galerie/secteurs'),     'priority' => '0.8'],
-        ['loc' => url('/evenements'),           'priority' => '0.8'],
-        ['loc' => url('/partenaires'),          'priority' => '0.6'],
-        ['loc' => url('/faq'),                  'priority' => '0.6'],
-        ['loc' => url('/actualites'),           'priority' => '0.6'],
-        ['loc' => url('/guide-artisan'),        'priority' => '0.6'],
-        ['loc' => url('/tarifs'),               'priority' => '0.6'],
-        ['loc' => url('/contact'),              'priority' => '0.5'],
-        ['loc' => url('/carrieres'),            'priority' => '0.4'],
-        ['loc' => url('/presse'),               'priority' => '0.4'],
+        ['loc' => url('/'),                        'priority' => '1.0'],
+        ['loc' => url('/galerie/entreprises'),     'priority' => '0.9'],
+        ['loc' => url('/galerie/produits'),        'priority' => '0.9'],
+        ['loc' => url('/galerie/secteurs'),        'priority' => '0.8'],
+        ['loc' => url('/evenements'),               'priority' => '0.8'],
+        ['loc' => url('/about'),                    'priority' => '0.6'],
+        ['loc' => url('/partenaires'),               'priority' => '0.6'],
+        ['loc' => url('/faq'),                       'priority' => '0.6'],
+        ['loc' => url('/actualites'),                'priority' => '0.6'],
+        ['loc' => url('/guide-artisan'),             'priority' => '0.6'],
+        ['loc' => url('/proteger-mon-travail'),      'priority' => '0.5'],
+        ['loc' => url('/tarifs'),                    'priority' => '0.6'],
+        ['loc' => url('/centres-artisanat'),         'priority' => '0.6'],
+        ['loc' => url('/collections-heritage'),      'priority' => '0.5'],
+        ['loc' => url('/verification-certificat'),   'priority' => '0.4'],
+        ['loc' => url('/verifier'),                  'priority' => '0.4'],
+        ['loc' => url('/contact'),                   'priority' => '0.5'],
+        ['loc' => url('/carrieres'),                  'priority' => '0.4'],
+        ['loc' => url('/presse'),                     'priority' => '0.4'],
     ]);
 
+    // Category pages: one per active row of the (pruned) official taxonomy —
+    // never a hardcoded count, so this always matches whatever the industries
+    // table actually holds after a prune.
+    DB::table('industries')->where('is_active', true)
+        ->orderBy('id')->get(['slug', 'updated_at'])
+        ->each(function ($industry) use ($urls) {
+            $urls->push([
+                'loc'      => url('/galerie/secteurs') . '?' . http_build_query(['cat' => $industry->slug]),
+                'priority' => '0.5',
+                'lastmod'  => $industry->updated_at,
+            ]);
+        });
+
     DB::table('businesses')->whereNull('deleted_at')->where('status', 'published')
-        ->orderBy('id')->limit(5000)->pluck('slug')
-        ->each(function ($slug) use ($urls) {
-            $urls->push(['loc' => url('/galerie/entreprises/' . $slug), 'priority' => '0.7']);
+        ->orderBy('id')->limit(5000)->get(['slug', 'updated_at'])
+        ->each(function ($business) use ($urls) {
+            $urls->push([
+                'loc'      => url('/galerie/entreprises/' . $business->slug),
+                'priority' => '0.7',
+                'lastmod'  => $business->updated_at,
+            ]);
         });
 
     DB::table('products')
         ->join('businesses', 'businesses.id', '=', 'products.business_id')
         ->whereNull('products.deleted_at')->whereNull('businesses.deleted_at')
         ->where('products.status', 'published')->where('businesses.status', 'published')
-        ->orderBy('products.id')->limit(20000)->pluck('products.slug')
-        ->each(function ($slug) use ($urls) {
-            $urls->push(['loc' => url('/galerie/produits/' . $slug), 'priority' => '0.7']);
+        ->orderBy('products.id')->limit(20000)
+        ->get(['products.slug', 'products.updated_at'])
+        ->each(function ($product) use ($urls) {
+            $urls->push([
+                'loc'      => url('/galerie/produits/' . $product->slug),
+                'priority' => '0.7',
+                'lastmod'  => $product->updated_at,
+            ]);
         });
 
-    DB::table('events')->orderBy('id')->limit(500)->pluck('slug')
-        ->each(function ($slug) use ($urls) {
-            $urls->push(['loc' => url('/evenements/' . $slug), 'priority' => '0.5']);
+    DB::table('events')->orderBy('id')->limit(500)->get(['slug', 'updated_at'])
+        ->each(function ($event) use ($urls) {
+            $urls->push([
+                'loc'      => url('/evenements/' . $event->slug),
+                'priority' => '0.5',
+                'lastmod'  => $event->updated_at,
+            ]);
+        });
+
+    DB::table('artisan_centres')->where('status', 'active')->orderBy('id')->limit(500)
+        ->get(['slug', 'updated_at'])
+        ->each(function ($centre) use ($urls) {
+            $urls->push([
+                'loc'      => url('/centres-artisanat/' . $centre->slug),
+                'priority' => '0.5',
+                'lastmod'  => $centre->updated_at,
+            ]);
+        });
+
+    DB::table('heritage_collections')->where('status', 'published')->where('visibility', 'public')
+        ->orderBy('id')->limit(500)->get(['slug', 'updated_at'])
+        ->each(function ($collection) use ($urls) {
+            $urls->push([
+                'loc'      => url('/galerie/collections/' . $collection->slug),
+                'priority' => '0.5',
+                'lastmod'  => $collection->updated_at,
+            ]);
         });
 
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
         . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     foreach ($urls as $u) {
-        $xml .= "  <url><loc>" . e($u['loc']) . "</loc><priority>{$u['priority']}</priority></url>\n";
+        $xml .= "  <url><loc>" . e($u['loc']) . "</loc>";
+        if (! empty($u['lastmod'])) {
+            $xml .= "<lastmod>" . \Illuminate\Support\Carbon::parse($u['lastmod'])->toAtomString() . "</lastmod>";
+        }
+        $xml .= "<priority>{$u['priority']}</priority></url>\n";
     }
     $xml .= '</urlset>';
 
@@ -4203,6 +4262,67 @@ Route::get('/robots.txt', function () {
 
     return response(implode("\n", $lines) . "\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');
+
+/*
+ * llms.txt — the emerging, robots.txt-shaped convention for answer engines
+ * and LLM crawlers: a plain factual summary of what the site is and links to
+ * its most authoritative pages, generated (not hardcoded) so the artisan and
+ * product counts age with the real data instead of quietly going stale.
+ *
+ * Written the same way config/legal.php is: a private company, not a public
+ * body, not a party to the sales it hosts. No page here requires auth or a
+ * one-time token, matching robots.txt above.
+ */
+Route::get('/llms.txt', function () {
+    $businesses = DB::table('businesses')->where('status', 'published')->count();
+    $products   = DB::table('products')->where('status', 'published')->count();
+    $categories = DB::table('industries')->where('is_active', true)->count();
+    $regions    = DB::table('businesses')->where('status', 'published')->whereNotNull('region_id')->distinct()->count('region_id');
+
+    $lines = [
+        '# Artisan Hub 237',
+        '',
+        '> Artisan Hub 237 is a private, independent platform based in Cameroon that connects buyers with '
+            . 'verified Cameroonian artisans, businesses and producers. It is not a government body, not a public '
+            . 'administration, and is not affiliated with, mandated by, or approved by any ministry or public '
+            . 'authority. It is not a party to the sales it hosts and processes no sale payment directly — buyer '
+            . 'and seller settle directly, by whatever means they agree.',
+        '',
+        // The counts sentence only renders when there is something to count —
+        // a fresh or pre-launch database must not describe itself as "0
+        // profiles" to an answer engine.
+        ...($businesses > 0 ? [
+            "As of today the directory lists {$businesses} published artisan/business profiles"
+                . ($products > 0 ? " and {$products} published products" : '')
+                . ", across {$regions} of Cameroon's regions, organised under {$categories} craft "
+                . 'categories of the official taxonomy.',
+            '',
+        ] : []),
+        '## What the platform does',
+        '- Hosts public profiles for artisans, cooperatives and businesses, and their product catalogues.',
+        '- Routes buyer/seller messaging and a quotation flow (request for quote, proposal, purchase order, invoice) — these are commercial documents between the two parties, not something the platform is a party to.',
+        '- Issues a "verified" badge after checking documents a seller supplies; this is not a guarantee of product quality or of an order\'s outcome.',
+        '- Issues digitally-signed membership and product certificates that can be checked at the verification pages linked below.',
+        '',
+        '## Key pages',
+        '- ' . url('/') . ' — home / directory entry point',
+        '- ' . url('/galerie/entreprises') . ' — artisan & business directory',
+        '- ' . url('/galerie/produits') . ' — product directory',
+        '- ' . url('/galerie/secteurs') . ' — official craft category taxonomy',
+        '- ' . url('/about') . ' — who operates the platform',
+        '- ' . url('/faq') . ' — frequently asked questions',
+        '- ' . url('/verification-certificat') . ' — verify a membership certificate',
+        '- ' . url('/verifier') . ' — verify a product certificate',
+        '- ' . url('/mentions-legales') . ' — legal notice (publisher identity, hosting)',
+        '- ' . url('/disclaimer') . ' — no public affiliation, no escrow, intermediary role',
+        '- ' . url('/sitemap.xml') . ' — full sitemap',
+        '',
+        '## Contact',
+        '- ' . (config('legal.company.email') ?: 'contact@artisanhub237.com'),
+    ];
+
+    return response(implode("\n", $lines) . "\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('llms.txt');
 
 // Public info pages created for the canonical footer menu (2026-07-03)
 Route::get('/guide-artisan', function (Request $request) {
@@ -4380,48 +4500,98 @@ Route::post('/demo-login/{key}', function (Request $request, string $key) {
     return redirect('/tableau-de-bord');
 })->name('demo.login')->middleware('throttle:30,1');
 
-// ─── Quick signup: email + password now, profile later ──────────────────────
+// ─── Quick signup: the mobile entry point ────────────────────────────────────
+// Name, contact, trade (category) and account type, then register — immediately
+// followed by email verification, before any business/product/KYC step. This is
+// what mobile visitors are offered (see the header's mobile drawer CTA); the
+// fuller /creer-mon-compte wizard stays reachable for anyone who wants its
+// richer per-account-type descriptions, but is no longer the phone default.
 Route::get('/inscription-rapide', function (Request $request) {
     if (session('siac_user')) return redirect('/tableau-de-bord');
     $lang = in_array($request->query('lang'), ['fr', 'en']) ? $request->query('lang') : 'fr';
-    return view('auth.quick-register', ['lang' => $lang]);
+
+    $rows = \App\Modules\Taxonomy\Models\Industry::where('is_active', true)
+        ->whereIn('level', [3, 4])->orderBy('sort_order')->get(['id', 'parent_id', 'level', 'name_fr', 'name_en']);
+    $corps = $rows->where('level', 3)->keyBy('id');
+    $tradesByCorps = $rows->where('level', 4)
+        ->groupBy(fn ($trade) => $corps[$trade->parent_id]->name_fr ?? '—')
+        ->sortKeys();
+
+    return view('auth.quick-register', ['lang' => $lang, 'tradesByCorps' => $tradesByCorps]);
 })->name('register.quick');
 
 Route::post('/inscription-rapide', function (Request $request) {
     $lang = in_array($request->input('lang'), ['fr', 'en']) ? $request->input('lang') : 'fr';
     $isFr = $lang === 'fr';
     $data = $request->validate([
+        'first_name'   => ['required', 'string', 'max:50'],
+        'last_name'    => ['required', 'string', 'max:50'],
+        'phone'        => ['nullable', 'string', 'max:30'],
         'email'        => ['required', 'email', 'max:255'],
+        'industry_id'  => ['required', 'exists:industries,id'],
         'password'     => ['required', 'min:8'],
         'account_type' => ['required', 'in:' . implode(',', \App\Support\AccountTypes::keys())],
     ]);
+
     $email = strtolower(trim($data['email']));
+    $name  = trim($data['first_name'] . ' ' . $data['last_name']);
+    $phone = trim((string) ($data['phone'] ?? '')) ?: null;
+
+    $emailTakenError = $isFr ? 'Un compte avec cet email existe déjà. Connectez-vous.' : 'An account with this email already exists. Sign in instead.';
     if (DB::table('users')->where('email', $email)->exists()) {
-        return back()->withErrors(['email' => $isFr ? 'Un compte avec cet email existe déjà. Connectez-vous.' : 'An account with this email already exists. Sign in instead.'])->withInput();
+        return back()->withErrors(['email' => $emailTakenError])->withInput();
     }
+    // users.phone is UNIQUE — same reasoning as the full wizard's own check.
+    if ($phone && DB::table('users')->where('phone', $phone)->exists()) {
+        return back()->withErrors(['phone' => $isFr
+            ? 'Ce numéro de téléphone est déjà associé à un compte.'
+            : 'This phone number is already linked to an account.'])->withInput();
+    }
+
     $userId = Str::uuid()->toString();
-    DB::table('users')->insert([
-        'id' => $userId,
-        'name' => ucfirst(strtok($email, '@')),
-        'email' => $email,
-        'password' => Hash::make($data['password']),
-        'status' => 'active', 'language_preference' => $lang,
-        'account_type' => $data['account_type'],
-        'is_email_verified' => 0, 'is_phone_verified' => 0,
-        'created_at' => now(), 'updated_at' => now(),
-    ]);
+    try {
+        DB::table('users')->insert([
+            'id' => $userId,
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'password' => Hash::make($data['password']),
+            'status' => 'active', 'language_preference' => $lang,
+            'account_type' => $data['account_type'],
+            'is_email_verified' => 0, 'is_phone_verified' => 0,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+    } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+        return back()->withErrors(['email' => $emailTakenError])->withInput();
+    }
+
     $roleName = \App\Support\AccountTypes::role($data['account_type']);
-    $role = DB::table('roles')->where('name', $roleName)->first();
+    $role = DB::table('roles')->where('name', $roleName)->where('guard_name', 'sanctum')->first();
     if ($role) {
         DB::table('model_has_roles')->insert([
             'role_id' => $role->id, 'model_type' => 'App\Modules\Auth\Models\User', 'model_id' => $userId,
         ]);
     }
+
     session(['siac_user' => [
-        'id' => $userId, 'name' => ucfirst(strtok($email, '@')), 'email' => $email,
+        'id' => $userId, 'name' => $name, 'email' => $email,
         'role' => $roleName, 'is_admin' => false,
     ]]);
-    return redirect('/tableau-de-bord')->with('quick_signup', true);
+    // The trade chosen here has nowhere to live yet — it belongs to the business
+    // record, created afterwards from the dashboard — so it rides in the session
+    // and prefills that form instead of being asked again or dropped on the floor.
+    session(['pending_industry_id' => $data['industry_id']]);
+
+    $sent = false;
+    try {
+        $sent = app(\App\Modules\Auth\Services\OtpService::class)->send($email, 'email_verification', 'email', $userId, $lang);
+    } catch (\Throwable $e) {
+        // Non-fatal: the member can request a fresh code from the verification page.
+    }
+
+    return redirect()->route('email.verify', ['lang' => $lang])->with($sent ? 'status' : 'info', $sent
+        ? ($isFr ? 'Compte créé. Un code de vérification vient d\'être envoyé.' : 'Account created. A verification code has just been sent.')
+        : ($isFr ? 'Compte créé — le code n\'a pas pu être envoyé. Vous pouvez en redemander un ci-dessous.' : 'Account created — the code could not be sent. You can request a new one below.'));
 })->name('register.quick.store')->middleware('throttle:10,1');
 
 // ─────────────────────────────────────────────────────────────────────────────

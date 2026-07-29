@@ -89,14 +89,24 @@
         'YouTube'   => '<path d="M18.2 6.3a2.1 2.1 0 0 0-1.5-1.5C15.4 4.4 10 4.4 10 4.4s-5.4 0-6.7.4A2.1 2.1 0 0 0 1.8 6.3 22 22 0 0 0 1.5 10a22 22 0 0 0 .3 3.7 2.1 2.1 0 0 0 1.5 1.5c1.3.4 6.7.4 6.7.4s5.4 0 6.7-.4a2.1 2.1 0 0 0 1.5-1.5A22 22 0 0 0 18.5 10a22 22 0 0 0-.3-3.7zM8.3 12.5v-5l4.4 2.5z"/>',
         'X'         => '<path d="M11.6 8.7 17.4 2h-1.4l-5 5.8L7 2H2.5l6.1 8.8L2.5 18h1.4l5.3-6.2 4.3 6.2H18zM4.6 3h2.1l8.7 12.4h-2.1z"/>',
     ];
+
+    $title = $isFr ? 'À propos — Artisan Hub 237' : 'About — Artisan Hub 237';
+    $description = $isFr
+        ? 'À propos d\'Artisan Hub 237 — notre vision, notre mission et nos valeurs.'
+        : 'About Artisan Hub 237 — our vision, our mission and our values.';
+    $seoBreadcrumb = \App\Support\Seo::breadcrumbSchema([
+        ['name' => $isFr ? 'Accueil' : 'Home', 'url' => route('home', ['lang' => $lang])],
+        ['name' => $isFr ? 'À propos' : 'About', 'url' => route('about')],
+    ]);
+    $seoJsonLd = [$seoBreadcrumb];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'À propos d\'Artisan Hub 237 — notre vision, notre mission et nos valeurs.' : 'About Artisan Hub 237 — our vision, our mission and our values.' }}">
-    <title>{{ $isFr ? 'À propos — Artisan Hub 237' : 'About — Artisan Hub 237' }}</title>
+    <meta name="description" content="{{ $description }}">
+    <title>{{ $title }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -138,6 +148,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-cream dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
@@ -154,14 +165,14 @@
 
     <div class="relative max-w-[1280px] mx-auto px-5 lg:px-8 py-9 lg:py-11">
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-[13px] md:text-[11.5px] text-white/65" aria-label="Breadcrumb">
+        <nav class="flex items-center gap-2 text-[14px] md:text-[11.5px] text-white/65" aria-label="Breadcrumb">
             <a href="{{ route('home', ['lang' => $lang]) }}" class="hover:text-white transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
             <i data-lucide="chevron-right" class="w-3 h-3 text-white/40"></i>
             <span class="text-white/90">{{ $isFr ? 'À propos' : 'About' }}</span>
         </nav>
 
         <div class="mt-9 max-w-xl">
-            <p class="text-[13px] md:text-[11.5px] font-semibold tracking-[0.2em] text-goldlt uppercase">{{ $isFr ? 'À propos de nous' : 'About us' }}</p>
+            <p class="text-[14px] md:text-[11.5px] font-semibold tracking-[0.2em] text-goldlt uppercase">{{ $isFr ? 'À propos de nous' : 'About us' }}</p>
 
             <h1 class="mt-4 font-serif text-[30px] sm:text-[36px] lg:text-[40px] leading-[1.2] text-white font-medium">
                 {{ $isFr ? 'À propos d\'' : 'About' }}<br>
@@ -182,7 +193,7 @@
             @foreach($heroItems as [$hiIcon, $hiText])
             <div>
                 <i data-lucide="{{ $hiIcon }}" class="w-8 h-8 text-gold dark:text-[#EDB33A]" stroke-width="1.4"></i>
-                <p class="mt-3.5 text-[12.5px] text-white/90 leading-relaxed whitespace-pre-line">{{ $hiText }}</p>
+                <p class="mt-3.5 text-[14px] md:text-[12.5px] text-white/90 leading-relaxed whitespace-pre-line">{{ $hiText }}</p>
             </div>
             @endforeach
         </div>
@@ -194,7 +205,7 @@
     <div class="max-w-[1280px] mx-auto px-5 lg:px-8 py-12 lg:py-14">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_170px_1fr] gap-10 items-start">
             <div>
-                <p class="text-[13px] md:text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre vision' : 'Our vision' }}</p>
+                <p class="text-[14px] md:text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre vision' : 'Our vision' }}</p>
                 <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] dark:text-[#F3EFE7] font-medium">
                     {{ $isFr ? 'Un artisanat camerounais reconnu, valorisé et durable' : 'Cameroonian craftsmanship that is recognised, valued and sustainable' }}
                 </h2>
@@ -211,7 +222,7 @@
             </div>
 
             <div>
-                <p class="text-[13px] md:text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre mission' : 'Our mission' }}</p>
+                <p class="text-[14px] md:text-[11.5px] font-semibold tracking-[0.2em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Notre mission' : 'Our mission' }}</p>
                 <h2 class="mt-4 font-serif text-[24px] lg:text-[27px] leading-snug text-[#1D1B16] dark:text-[#F3EFE7] font-medium">
                     {{ $isFr ? 'Valoriser, connecter, préserver et promouvoir' : 'Showcase, connect, preserve and promote' }}
                 </h2>
@@ -236,8 +247,8 @@
                 <i data-lucide="{{ $asIcon }}" class="w-7 h-7 text-gold dark:text-[#EDB33A] shrink-0 mt-1" stroke-width="1.4"></i>
                 <div class="leading-tight">
                     <p class="font-serif text-[27px] text-goldlt whitespace-nowrap">{{ $asNum }}</p>
-                    <p class="mt-1 text-[13px] md:text-[11.5px] font-semibold tracking-[0.08em] text-white uppercase whitespace-nowrap">{{ $asLabel }}</p>
-                    <p class="mt-1.5 text-[12px] md:text-[10.5px] text-white/60 whitespace-nowrap">{{ $asCap }}</p>
+                    <p class="mt-1 text-[14px] md:text-[11.5px] font-semibold tracking-[0.08em] text-white uppercase whitespace-nowrap">{{ $asLabel }}</p>
+                    <p class="mt-1.5 text-[14px] md:text-[10.5px] text-white/60 whitespace-nowrap">{{ $asCap }}</p>
                 </div>
             </div>
             @endforeach
@@ -254,9 +265,9 @@
         @foreach($values as [$vIcon, $vColor, $vTitle, $vDesc])
         <div class="bg-parch dark:bg-[#12150F] border border-sand dark:border-[#262B21] rounded-xl shadow-[0_1px_3px_rgba(30,25,15,0.05)] px-3.5 pt-8 pb-6 text-center">
             <i data-lucide="{{ $vIcon }}" class="w-10 h-10 mx-auto" stroke-width="1.4" style="color:{{ $vColor }}"></i>
-            <h3 class="mt-6 text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $vTitle }}</h3>
+            <h3 class="mt-6 text-[16px] md:text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $vTitle }}</h3>
             <div class="mt-2.5 mx-auto h-[2px] w-5 bg-gold/70"></div>
-            <p class="mt-3.5 text-[13px] md:text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">{{ $vDesc }}</p>
+            <p class="mt-3.5 text-[14px] md:text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed">{{ $vDesc }}</p>
         </div>
         @endforeach
     </div>
@@ -270,7 +281,7 @@
             class="w-full h-full min-h-[280px] object-cover">
 
         <div class="py-9 px-5 lg:pl-12 lg:pr-8 xl:pr-[120px] flex flex-col justify-center">
-            <h2 class="text-[13.5px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Ce que nous faisons' : 'What we do' }}</h2>
+            <h2 class="text-[14px] md:text-[13.5px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">{{ $isFr ? 'Ce que nous faisons' : 'What we do' }}</h2>
 
             <div class="mt-6 space-y-6">
                 @foreach($weDo as [$wdIcon, $wdTitle, $wdDesc])
@@ -279,8 +290,8 @@
                         <i data-lucide="{{ $wdIcon }}" class="w-[18px] h-[18px] text-gold dark:text-[#EDB33A]" stroke-width="1.5"></i>
                     </span>
                     <div>
-                        <h3 class="text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $wdTitle }}</h3>
-                        <p class="mt-1.5 text-[12px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $wdDesc }}</p>
+                        <h3 class="text-[16px] md:text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $wdTitle }}</h3>
+                        <p class="mt-1.5 text-[14px] md:text-[12px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $wdDesc }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -297,8 +308,8 @@
         @foreach($audiences as [$auIcon, $auColor, $auTitle, $auDesc])
         <div class="text-center">
             <i data-lucide="{{ $auIcon }}" class="w-9 h-9 mx-auto" stroke-width="1.4" style="color:{{ $auColor }}"></i>
-            <h3 class="mt-4 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug whitespace-pre-line">{{ $auTitle }}</h3>
-            <p class="mt-2.5 text-[13px] md:text-[11px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $auDesc }}</p>
+            <h3 class="mt-4 text-[16px] md:text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug whitespace-pre-line">{{ $auTitle }}</h3>
+            <p class="mt-2.5 text-[14px] md:text-[11px] text-[#6B665C] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $auDesc }}</p>
         </div>
         @endforeach
     </div>
@@ -312,7 +323,7 @@
             {{ $isFr ? 'Rejoignez-nous pour faire rayonner l\'artisanat camerounais !' : 'Join us in making Cameroonian craftsmanship shine!' }}
         </h2>
         <a href="{{ route('industries.index', ['lang' => $lang]) }}"
-            class="mt-7 inline-flex items-center gap-3 bg-goldbt hover:bg-[#c9942e] text-[#4a3a0b] dark:text-[#EDB33A] text-[13px] font-semibold px-6 py-3 rounded-md transition-colors">
+            class="mt-7 inline-flex items-center gap-3 bg-goldbt hover:bg-[#c9942e] text-[#4a3a0b] dark:text-[#EDB33A] text-[14px] md:text-[13px] font-semibold px-6 py-3 rounded-md transition-colors">
             {{ $isFr ? 'Découvrir nos collections' : 'Discover our collections' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -338,9 +349,9 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[16px] md:text-[10px] font-medium self-stretch text-center leading-tight break-words">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

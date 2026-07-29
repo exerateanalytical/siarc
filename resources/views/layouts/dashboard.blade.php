@@ -89,7 +89,7 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
                 {{-- Dark-mode control. Presence of a `.theme-toggle` in the page
                      suppresses the floating fallback in pages.partials.theme. --}}
                 @include('pages.partials.theme-toggle')
-                <a href="{{ request()->fullUrlWithQuery(['lang' => $lang === 'fr' ? 'en' : 'fr']) }}" class="hidden sm:flex items-center justify-center h-[34px] px-3 rounded-lg border border-[#E5E7E5] dark:border-[#262B21] text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14532D] dark:hover:border-[#2E9250] transition-colors">
+                <a href="{{ request()->fullUrlWithQuery(['lang' => $lang === 'fr' ? 'en' : 'fr']) }}" class="hidden sm:flex items-center justify-center h-[34px] px-3 rounded-lg border border-[#E5E7E5] dark:border-[#262B21] text-[14px] md:text-[12px] font-semibold text-[#3B382F] dark:text-[#B4B5A6] hover:border-[#14532D] dark:hover:border-[#2E9250] transition-colors">
                     {{ strtoupper($lang === 'fr' ? 'en' : 'fr') }}
                 </a>
                 <a href="{{ route('messages.inbox') }}" class="relative flex items-center justify-center w-[38px] h-[38px] rounded-lg text-[#3B382F] dark:text-[#B4B5A6] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] transition-colors" title="Messages">
@@ -98,11 +98,11 @@ body { font-family: 'Poppins', system-ui, sans-serif; }</style>
                 <a href="{{ route('notifications.index') }}" class="relative flex items-center justify-center w-[38px] h-[38px] rounded-lg text-[#3B382F] dark:text-[#B4B5A6] hover:bg-[#F6F7F6] dark:hover:bg-[#242A1E] transition-colors" title="Notifications">
                     <i data-lucide="bell" class="w-[19px] h-[19px]" style="stroke-width:1.7"></i>
                     @if($unreadNotifications > 0)
-                    <span class="absolute top-0.5 right-0.5 min-w-[17px] h-[17px] px-1 bg-[#E01E1E] dark:bg-[#C0343B] text-white text-[10px] font-bold rounded-full flex items-center justify-center">{{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}</span>
+                    <span class="absolute top-0.5 right-0.5 min-w-[20px] h-5 md:min-w-[17px] md:h-[17px] px-1 bg-[#E01E1E] dark:bg-[#C0343B] text-white text-[14px] md:text-[10px] font-bold rounded-full flex items-center justify-center">{{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}</span>
                     @endif
                 </a>
                 <a href="{{ route('profile.show') }}" class="w-[36px] h-[36px] bg-[#DFEDE3] dark:bg-[#0C3D1D] hover:bg-[#CFE5D6] dark:hover:bg-[#0C3D1D] rounded-full flex items-center justify-center ml-1 transition-colors" title="{{ $lang === 'fr' ? 'Mon profil' : 'My Profile' }}">
-                    <span class="text-[#14652F] dark:text-[#339B56] text-[12px] font-bold">{{ $dashInitials }}</span>
+                    <span class="text-[#14652F] dark:text-[#339B56] text-[14px] md:text-[12px] font-bold">{{ $dashInitials }}</span>
                 </a>
             </div>
         </header>

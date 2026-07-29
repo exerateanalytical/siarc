@@ -22,13 +22,53 @@
     ];
 
     $hasDbFaqs = $faqCategories->isNotEmpty() || $uncategorizedFaqs->isNotEmpty();
+
+    /*
+     | FAQPage schema built from exactly what this page renders: the CMS-
+     | managed FAQs when there are any, otherwise the same $fallbackFaqs
+     | array the body below falls back to — never content invented only
+     | for the schema.
+     */
+    $seoFaqEntries = collect();
+    if ($hasDbFaqs) {
+        foreach ($faqCategories as $faqCat) {
+            foreach ($faqCat->faqs as $f) {
+                $q = $isFr ? $f->question_fr : ($f->question_en ?? $f->question_fr);
+                $a = $isFr ? $f->answer_fr : ($f->answer_en ?? $f->answer_fr);
+                if ($q && $a) $seoFaqEntries->push([$q, $a]);
+            }
+        }
+        foreach ($uncategorizedFaqs as $f) {
+            $q = $isFr ? $f->question_fr : ($f->question_en ?? $f->question_fr);
+            $a = $isFr ? $f->answer_fr : ($f->answer_en ?? $f->answer_fr);
+            if ($q && $a) $seoFaqEntries->push([$q, $a]);
+        }
+    } else {
+        $seoFaqEntries = collect($fallbackFaqs);
+    }
+
+    $seoJsonLd = $seoFaqEntries->isEmpty() ? [] : [[
+        '@context'   => 'https://schema.org',
+        '@type'      => 'FAQPage',
+        'mainEntity' => $seoFaqEntries->map(fn ($pair) => [
+            '@type'          => 'Question',
+            'name'           => strip_tags($pair[0]),
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => strip_tags($pair[1])],
+        ])->all(),
+    ]];
+
+    $title = $isFr ? 'FAQ — Artisan Hub 237' : 'FAQ — Artisan Hub 237';
+    $description = $isFr
+        ? 'Questions fréquentes sur l\'inscription, la vérification, les devis et les certificats sur Artisan Hub 237.'
+        : 'Frequently asked questions about signing up, verification, quotes and certificates on Artisan Hub 237.';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $isFr ? 'FAQ — Artisan Hub 237' : 'FAQ — Artisan Hub 237' }}</title>
+    <meta name="description" content="{{ $description }}">
+    <title>{{ $title }}</title>
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>tailwind.config = { theme: { extend: { colors: { leaf: '#164C28', gold: '#D9A439', goldbt: '#E9A830' }, fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } }</script>
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
@@ -41,6 +81,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 
@@ -49,7 +90,7 @@
 <section class="bg-[#0B2C1E]">
     <div class="max-w-[820px] mx-auto px-5 py-10 text-center">
         <h1 class="text-[26px] font-bold text-white">{{ $isFr ? 'Foire aux questions' : 'Frequently asked questions' }}</h1>
-        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Les réponses aux questions les plus fréquentes sur Artisan Hub 237.' : 'Answers to the most common questions about Artisan Hub 237.' }}</p>
+        <p class="mt-2 text-[14px] md:text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Les réponses aux questions les plus fréquentes sur Artisan Hub 237.' : 'Answers to the most common questions about Artisan Hub 237.' }}</p>
     </div>
 </section>
 
@@ -60,7 +101,7 @@
         <div class="space-y-3">
             @foreach($cat->faqs as $faq)
             <details class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
-                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
+                <summary class="flex items-center justify-between gap-3 text-[16px] md:text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $isFr ? $faq->question_fr : ($faq->question_en ?? $faq->question_fr) }}
                     <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
@@ -73,7 +114,7 @@
         <div class="mt-6 space-y-3">
             @foreach($uncategorizedFaqs as $faq)
             <details class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
-                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
+                <summary class="flex items-center justify-between gap-3 text-[16px] md:text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $isFr ? $faq->question_fr : ($faq->question_en ?? $faq->question_fr) }}
                     <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
@@ -86,7 +127,7 @@
         <div class="space-y-3">
             @foreach($fallbackFaqs as [$fq, $fa])
             <details class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-xl px-5 py-4">
-                <summary class="flex items-center justify-between gap-3 text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
+                <summary class="flex items-center justify-between gap-3 text-[16px] md:text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ $fq }}
                     <i data-lucide="chevron-down" class="faq-chev w-4 h-4 shrink-0 text-[#14652F] dark:text-[#339B56] transition-transform"></i>
                 </summary>
@@ -98,11 +139,11 @@
 
     <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
         <i data-lucide="message-circle" class="w-[28px] h-[28px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
-        <p class="flex-1 min-w-[240px] text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
+        <p class="flex-1 min-w-[240px] text-[14px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
             <span class="font-bold">{{ $isFr ? 'Vous ne trouvez pas votre réponse ?' : 'Can\'t find your answer?' }}</span>
             {{ $isFr ? 'Écrivez-nous, nous répondons rapidement.' : 'Write to us — we reply quickly.' }}
         </p>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[14px] md:text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>
     </div>

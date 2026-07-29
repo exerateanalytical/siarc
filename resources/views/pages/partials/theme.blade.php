@@ -107,7 +107,7 @@
        keeps its 34px look on a pointer device, where it was measured off the
        artwork, and grows to a thumb-sized target on a phone. */
     @media (max-width: 767px) {
-        .theme-toggle { height: 44px; min-width: 44px; padding: 0 8px 0 12px; }
+        .theme-toggle { height: 44px; min-width: 44px; padding: 0 8px 0 12px; font-size: 14px; }
     }
 
     .theme-toggle__track {

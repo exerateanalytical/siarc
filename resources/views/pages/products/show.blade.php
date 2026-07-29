@@ -95,14 +95,58 @@
         'cuir-maroquinerie', 'musique-instruments', 'produits-naturels', 'agroalimentaire', 'technologies-innovation',
     ]) ? $slug : (['artisanat' => 'arts-decoration', 'aquaculture' => 'produits-naturels', 'agriculture' => 'produits-naturels'][$slug] ?? 'arts-decoration')) . '.png');
     $productDefaultImg = $defaultBySlug($industry->slug ?? $business->industry?->slug);
+
+    /*
+     | SEO/AEO structured data for this product. Price, currency and
+     | availability come straight off price_amount/price_currency/
+     | is_available — the 'offers' block is only added when a real price is
+     | on the record. No rating/review is ever attached here: this
+     | platform's reviews are written about the artisan (business_reviews),
+     | never about an individual piece, so a Product AggregateRating would
+     | claim something the page itself does not show.
+     */
+    $seoMetaDescription = \Illuminate\Support\Str::limit(strip_tags((string) $description), 150);
+    $seoOgTitle = "{$name} — Artisan Hub 237";
+
+    $seoProductSchema = array_filter([
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Product',
+        'name'        => $name,
+        'description' => $seoMetaDescription ?: null,
+        'sku'         => $product->sku ?: null,
+        'category'    => $categoryName,
+        'image'       => $mainImage ? [asset('storage/' . $mainImage->file_path)] : null,
+        'brand'       => ['@type' => 'Brand', 'name' => $businessName],
+    ]);
+    if ($product->price_amount !== null) {
+        $seoProductSchema['offers'] = [
+            '@type'           => 'Offer',
+            'priceCurrency'   => $product->price_currency ?: 'XAF',
+            'price'           => (string) $product->price_amount,
+            'availability'    => $product->is_available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            'url'             => \App\Support\Seo::canonical(request(), route('products.show', ['slug' => $product->slug], false)),
+        ];
+    }
+
+    $seoBreadcrumb = \App\Support\Seo::breadcrumbSchema(array_filter([
+        ['name' => $isFr ? 'Accueil' : 'Home', 'url' => route('home', ['lang' => $lang])],
+        ['name' => $isFr ? 'Produits' : 'Products', 'url' => route('products.index', ['lang' => $lang])],
+        $categoryName ? ['name' => $categoryName, 'url' => route('products.index', ['lang' => $lang, 'categorie' => $industry->slug ?? $business->industry?->slug])] : null,
+        ['name' => $name, 'url' => route('products.show', ['slug' => $product->slug])],
+    ]));
+
+    $seoJsonLd = [$seoProductSchema, $seoBreadcrumb];
+    $seoOgType = 'product';
+    $seoOgDescription = $seoMetaDescription;
+    $seoOgImage = $mainImage ? asset('storage/' . $mainImage->file_path) : null;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) $description), 150) }}">
-    <title>{{ $name }} — {{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
+    <meta name="description" content="{{ $seoMetaDescription }}">
+    <title>{{ $seoOgTitle }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -134,6 +178,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

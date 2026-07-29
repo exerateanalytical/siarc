@@ -85,6 +85,11 @@ class BusinessWebController extends Controller
             // Signup already collected the member's phone and email; the create
             // form starts from them (editable) instead of asking again.
             'owner' => User::find($siacUser['id']),
+            // The fast signup form (/inscription-rapide) already asked for the
+            // artisan's trade, before an account or business record existed to
+            // hold it. It rode in the session; this is where it lands, editable,
+            // instead of being asked a second time.
+            'prefillIndustryId' => session('pending_industry_id'),
         ]);
     }
 
@@ -101,6 +106,7 @@ class BusinessWebController extends Controller
         $user = User::findOrFail($siacUser['id']);
 
         $business = $this->service->create($user, $data);
+        session()->forget('pending_industry_id');
         $this->handleUploads($request, $business);
 
         /*
@@ -188,16 +194,13 @@ class BusinessWebController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate([
-            'industry_id'      => ['required', 'exists:industries,id'],
-            'region_id'        => ['nullable', 'exists:regions,id'],
-            'city_id'          => ['nullable', 'exists:cities,id'],
-            'name_fr'          => ['required', 'string', 'max:255'],
-            'name_en'          => ['nullable', 'string', 'max:255'],
-            'tagline_fr'       => ['nullable', 'string', 'max:255'],
-            'tagline_en'       => ['nullable', 'string', 'max:255'],
-            'description_fr'   => ['nullable', 'string', 'max:5000'],
-            'description_en'   => ['nullable', 'string', 'max:5000'],
+        $data = $request->validate([
+            'industry_id'           => ['required', 'exists:industries,id'],
+            'region_id'             => ['nullable', 'exists:regions,id'],
+            'city_id'               => ['nullable', 'exists:cities,id'],
+            'business_name'         => ['required', 'string', 'max:255'],
+            'business_tagline'      => ['nullable', 'string', 'max:255'],
+            'business_description'  => ['nullable', 'string', 'max:5000'],
             'phone'            => ['nullable', 'string', 'max:30'],
             'whatsapp'         => ['nullable', 'string', 'max:30'],
             'email'            => ['nullable', 'email', 'max:255'],
@@ -211,5 +214,20 @@ class BusinessWebController extends Controller
             'logo'             => ['nullable', 'image', 'max:12288'],
             'cover_image'      => ['nullable', 'image', 'max:12288'],
         ]);
+
+        // The form asks for the name/tagline/description ONCE, in the artisan's
+        // own language — never a French+English pair to fill twice (owner note,
+        // 2026-07-29: "most of these artisans are uneducated"). Mirrored into
+        // both locale columns so name_fr (NOT NULL) is always satisfied and any
+        // code that reads name_fr/name_en directly, without the $isFr fallback
+        // convention, still finds real content either way.
+        $data['name_fr'] = $data['name_en'] = $data['business_name'];
+        unset($data['business_name']);
+        $data['tagline_fr'] = $data['tagline_en'] = $data['business_tagline'] ?? null;
+        unset($data['business_tagline']);
+        $data['description_fr'] = $data['description_en'] = $data['business_description'] ?? null;
+        unset($data['business_description']);
+
+        return $data;
     }
 }

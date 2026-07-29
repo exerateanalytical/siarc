@@ -23,15 +23,15 @@
 <section class="relative bg-gradient-to-br from-[#0E2C1A] to-[#123D24] overflow-hidden">
     <img src="{{ asset('images/landing/hh-kente.png') }}" alt="" class="absolute inset-x-0 bottom-0 h-[16px] w-full object-cover opacity-70" aria-hidden="true">
     <div class="max-w-[1240px] mx-auto px-4 sm:px-6 py-12 text-center">
-        <span class="inline-block bg-[#0A3B22] border border-[#E9C25A]/40 rounded-md px-3 py-1 text-[12px] md:text-[10.5px] font-bold tracking-[0.12em] text-[#E9C25A] uppercase">{{ $isFr ? 'Patrimoine' : 'Heritage' }}</span>
+        <span class="inline-block bg-[#0A3B22] border border-[#E9C25A]/40 rounded-md px-3 py-1 text-[14px] md:text-[10.5px] font-bold tracking-[0.12em] text-[#E9C25A] uppercase">{{ $isFr ? 'Patrimoine' : 'Heritage' }}</span>
         <h1 class="mt-4 font-serif text-[34px] sm:text-[44px] font-bold text-[#F3E7C9] leading-tight">{{ $isFr ? 'Collections Héritage' : 'Heritage Collections' }}</h1>
-        <p class="mt-3 text-[13.5px] text-[#DCEAE0] max-w-[600px] mx-auto leading-relaxed">{{ $isFr ? 'Découvrez le patrimoine artisanal du Cameroun organisé par thèmes : masques, tissus, poteries, bronzes et bien plus encore.' : 'Explore Cameroon\'s craft heritage organised by theme: masks, textiles, pottery, bronzes and much more.' }}</p>
+        <p class="mt-3 text-[16px] md:text-[13.5px] text-[#DCEAE0] max-w-[600px] mx-auto leading-relaxed">{{ $isFr ? 'Découvrez le patrimoine artisanal du Cameroun organisé par thèmes : masques, tissus, poteries, bronzes et bien plus encore.' : 'Explore Cameroon\'s craft heritage organised by theme: masks, textiles, pottery, bronzes and much more.' }}</p>
         <div class="mt-5 flex items-center justify-center gap-8 text-white">
-            <div><p class="text-[26px] font-bold">{{ $collections->count() }}</p><p class="text-[13px] md:text-[11px] text-[#CFE3D5]">Collections</p></div>
+            <div><p class="text-[26px] font-bold">{{ $collections->count() }}</p><p class="text-[14px] md:text-[11px] text-[#CFE3D5]">Collections</p></div>
             <div class="w-px h-10 bg-white/20"></div>
-            <div><p class="text-[26px] font-bold">{{ number_format($totalProducts) }}</p><p class="text-[13px] md:text-[11px] text-[#CFE3D5]">{{ $isFr?'Objets':'Items' }}</p></div>
+            <div><p class="text-[26px] font-bold">{{ number_format($totalProducts) }}</p><p class="text-[14px] md:text-[11px] text-[#CFE3D5]">{{ $isFr?'Objets':'Items' }}</p></div>
             <div class="w-px h-10 bg-white/20"></div>
-            <div><p class="text-[26px] font-bold">{{ number_format($totalArtisans) }}</p><p class="text-[13px] md:text-[11px] text-[#CFE3D5]">Artisans</p></div>
+            <div><p class="text-[26px] font-bold">{{ number_format($totalArtisans) }}</p><p class="text-[14px] md:text-[11px] text-[#CFE3D5]">Artisans</p></div>
         </div>
     </div>
 </section>
@@ -43,20 +43,20 @@
         <article class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(30,25,15,0.06)] hover:shadow-md transition-shadow group">
             <div class="h-[180px] overflow-hidden bg-[#F1EDE2] dark:bg-[#0A0C09] relative">
                 <img src="{{ $cover }}" alt="{{ $c->name_fr }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                @if($c->category_fr)<span class="absolute top-3 left-3 bg-white/90 dark:bg-[#12150F]/90 rounded-md px-2.5 py-1 text-[12px] md:text-[10.5px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ $c->category_fr }}</span>@endif
+                @if($c->category_fr)<span class="absolute top-3 left-3 bg-white/90 dark:bg-[#12150F]/90 rounded-md px-2.5 py-1 text-[14px] md:text-[10.5px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ $c->category_fr }}</span>@endif
             </div>
             <div class="p-5">
                 <h2 class="font-serif text-[18px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug">{{ $isFr ? $c->name_fr : ($c->name_en ?? $c->name_fr) }}</h2>
-                @if($c->description_fr)<p class="mt-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed line-clamp-2">{{ $isFr ? $c->description_fr : ($c->description_en ?? $c->description_fr) }}</p>@endif
-                <div class="mt-3 flex items-center gap-4 text-[13px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
+                @if($c->description_fr)<p class="mt-1.5 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed line-clamp-2">{{ $isFr ? $c->description_fr : ($c->description_en ?? $c->description_fr) }}</p>@endif
+                <div class="mt-3 flex items-center gap-4 text-[14px] md:text-[11.5px] text-[#8A857A] dark:text-[#868778]">
                     @if($c->region_fr)<span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $c->region_fr }}</span>@endif
                     <span class="flex items-center gap-1.5"><i data-lucide="package" class="w-3.5 h-3.5 text-[#C9942E]"></i>{{ $c->products_count }} {{ $isFr?'objets':'items' }}</span>
                 </div>
-                <a href="{{ route('collections.show', ['slug'=>$c->slug, 'lang'=>$lang]) }}" class="mt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">{{ $isFr?'Explorer la collection':'Explore collection' }}<i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                <a href="{{ route('collections.show', ['slug'=>$c->slug, 'lang'=>$lang]) }}" class="mt-4 inline-flex items-center gap-2 text-[14px] md:text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">{{ $isFr?'Explorer la collection':'Explore collection' }}<i data-lucide="arrow-right" class="w-4 h-4"></i></a>
             </div>
         </article>
         @empty
-        <p class="col-span-full text-center py-12 text-[13px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune collection publiée pour le moment.' : 'No published collections yet.' }}</p>
+        <p class="col-span-full text-center py-12 text-[14px] md:text-[13px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Aucune collection publiée pour le moment.' : 'No published collections yet.' }}</p>
         @endforelse
     </div>
 </div>

@@ -36,8 +36,14 @@ class ResponsiveContractTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** docs/RESPONSIVE-CONTRACT.md §2. Absolute floor for rendered text below `md`. */
-    private const FONT_FLOOR = 12.0;
+    /**
+     * docs/RESPONSIVE-CONTRACT.md §2. Absolute floor for rendered text below
+     * `md`. Raised 2026-07-29 from 12 to 14 — "very very visible" on mobile,
+     * no exception — after a 9.5px sidebar tagline and 10.5px group titles
+     * turned up sub-floor even under the old rule, in a file neither earlier
+     * sweep reached.
+     */
+    private const FONT_FLOOR = 14.0;
 
     /** §1. The narrowest device the platform supports. */
     private const MOBILE_FLOOR = 360;
@@ -517,35 +523,37 @@ class ResponsiveContractTest extends TestCase
         );
 
         $this->assertMatchesRegularExpression(
-            '/@media\s*\(max-width:\s*767\.98px\)\s*\{[^}]*text-\\\\\[10px\\\\\][^}]*font-size:\s*12px\s*!important/s',
+            '/@media\s*\(max-width:\s*767\.98px\)\s*\{[^}]*text-\\\\\[10px\\\\\][^}]*font-size:\s*14px\s*!important/s',
             $kit,
             'The mobile type floor rule is missing from the UI kit stylesheet '
             . '(docs/RESPONSIVE-CONTRACT.md §2).'
         );
 
-        // The floor became a ramp (2026-07-29): the legacy size bands are
-        // remapped upward per tier, not flattened to a single minimum. Each
-        // tier must survive to the browser, for the same reason as above.
+        // The floor is flat (2026-07-29): every legacy size band under 14px is
+        // raised to exactly 14px — no separate 12/13px tiers left below the
+        // floor. Each of the two ends of the old ramp must still land on the
+        // new flat floor, for the same reason as above.
         $this->assertMatchesRegularExpression(
-            '/text-\\\\\[11px\\\\\][^{}]*\{[^}]*font-size:\s*13px\s*!important/s',
+            '/text-\\\\\[11px\\\\\][^{}]*\{[^}]*font-size:\s*14px\s*!important/s',
             $kit,
-            'The secondary tier (11–11.5px → 13px) is missing from the phone type ramp.'
+            'The 11px band is missing from the flat 14px phone type floor.'
         );
         $this->assertMatchesRegularExpression(
-            '/text-\\\\\[12px\\\\\][^{}]*\{[^}]*font-size:\s*14px\s*!important/s',
+            '/text-\\\\\[13\\\\\.5px\\\\\][^{}]*\{[^}]*font-size:\s*14px\s*!important/s',
             $kit,
-            'The body tier (12–12.5px → 14px) is missing from the phone type ramp.'
+            'The 13.5px band is missing from the flat 14px phone type floor.'
         );
     }
 
     /**
      * Body copy — a paragraph a buyer reads at length — must render at 14px or
-     * more on a phone (docs/RESPONSIVE-CONTRACT.md §2, "the ramp, not just a
-     * floor"). PHPUnit cannot compute styles, but it can compute what the kit's
-     * ramp will do to a class: an unprefixed `text-[N px]` renders at
-     * remap(N) below `md` (≤10.6 → 12, 11–11.5 → 13, 12–12.5 → 14). So every
-     * <p> owning more than 180 characters of text must carry either no
-     * arbitrary size (inherits 16px), or one whose remapped value is ≥ 14.
+     * more on a phone (docs/RESPONSIVE-CONTRACT.md §2, "very very visible, no
+     * exception"). PHPUnit cannot compute styles, but it can compute what the
+     * kit's floor will do to a class: an unprefixed `text-[N px]` renders at
+     * max(N, 14) below `md` — anything under 14 is flattened to 14 by the kit's
+     * CSS floor. So every <p> owning more than 180 characters of text must
+     * carry either no arbitrary size (inherits 16px), or one whose floored
+     * value is ≥ 14.
      */
     public function test_long_paragraphs_read_at_body_size_on_phones(): void
     {
@@ -575,12 +583,7 @@ class ResponsiveContractTest extends TestCase
                         continue;
                     }
                     $stated = (float) $m[1];
-                    $rendered = match (true) {
-                        $stated <= 10.6 => 12.0,   // caption tier remap
-                        $stated <= 11.5 => 13.0,   // secondary tier remap
-                        $stated <= 12.5 => 14.0,   // body tier remap
-                        default => $stated,
-                    };
+                    $rendered = max($stated, 14.0);   // the kit's flat CSS floor
                     if ($rendered < 14.0) {
                         $failures[] = "{$uri}: a paragraph of "
                             . mb_strlen(trim($p->textContent)) . " chars renders at {$rendered}px "

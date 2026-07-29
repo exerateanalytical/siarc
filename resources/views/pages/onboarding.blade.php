@@ -168,26 +168,26 @@
         <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center gap-2.5 sm:gap-3 min-w-0 min-h-[44px]">
             <img src="{{ brand_asset('mark') }}" alt="" class="w-[42px] h-[42px] sm:w-[50px] sm:h-[50px] object-contain shrink-0">
             <span class="leading-tight min-w-0">
-                <span class="block text-[12px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">Artisan Hub 237</span>
-                <span class="block text-[13px] md:text-[11px] text-[#2E7D4F] dark:text-[#339B56] sm:whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+                <span class="block text-[14px] font-bold tracking-[0.02em] text-[#1B1B18] dark:text-[#F3EFE7] uppercase whitespace-nowrap">Artisan Hub 237</span>
+                <span class="block text-[14px] md:text-[11px] text-[#2E7D4F] dark:text-[#339B56] sm:whitespace-nowrap">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             </span>
         </a>
         <div class="flex items-center gap-4 shrink-0">
             <a href="{{ route('contact', ['lang' => $lang]) }}" class="hidden sm:flex items-center gap-2.5">
                 <i data-lucide="headphones" class="w-5 h-5 text-[#14532D] dark:text-[#339B56]" style="stroke-width:1.7"></i>
                 <span class="leading-tight text-left">
-                    <span class="block text-[12.5px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</span>
-                    <span class="block text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Contactez-nous' : 'Contact us' }}</span>
+                    <span class="block text-[14px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide ?' : 'Need help?' }}</span>
+                    <span class="block text-[14px] md:text-[11px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Contactez-nous' : 'Contact us' }}</span>
                 </span>
             </a>
             <div class="relative group">
-                <button class="flex items-center justify-center gap-1.5 min-h-[44px] lg:min-h-0 border border-[#E5E3E0] dark:border-[#262B21] rounded-lg px-3.5 py-2 text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
+                <button class="flex items-center justify-center gap-1.5 min-h-[44px] lg:min-h-0 border border-[#E5E3E0] dark:border-[#262B21] rounded-lg px-3.5 py-2 text-[14px] md:text-[13px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">
                     {{ strtoupper($lang) }}
                     <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#8A857A] dark:text-[#868778]"></i>
                 </button>
                 <div class="absolute right-0 top-full w-28 bg-white dark:bg-[#12150F] rounded-lg shadow-lg border border-[#E7E7E5] dark:border-[#262B21] py-1 hidden group-hover:block z-50">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="flex items-center min-h-[44px] lg:min-h-0 px-3 py-1.5 text-[12.5px] {{ $isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">FR — Français</a>
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="flex items-center min-h-[44px] lg:min-h-0 px-3 py-1.5 text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">EN — English</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'fr']) }}" class="flex items-center min-h-[44px] lg:min-h-0 px-3 py-1.5 text-[14px] md:text-[12.5px] {{ $isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">FR — Français</a>
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="flex items-center min-h-[44px] lg:min-h-0 px-3 py-1.5 text-[14px] md:text-[12.5px] {{ !$isFr ? 'font-semibold text-leaf dark:text-[#339B56]' : 'text-[#262521] dark:text-[#F3EFE7]' }}">EN — English</a>
                 </div>
             </div>
         </div>
@@ -211,7 +211,7 @@
                 <h2 class="text-[15px] font-bold tracking-[0.02em] text-white uppercase leading-snug">
                     {{ $isFr ? 'Créer mon compte' : 'Create my account' }}<br>{{ $isFr ? 'Artisan / Entreprise' : 'Artisan / Business' }}
                 </h2>
-                <p id="side-sub" class="mt-2 text-[13px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
+                <p id="side-sub" class="mt-2 text-[14px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
                     {{ $isFr ? 'Rejoignez la plus grande vitrine de l\'artisanat camerounais' : 'Join the largest showcase of Cameroonian craftsmanship' }}
                 </p>
 
@@ -220,10 +220,10 @@
                     <li class="relative wizard-step" data-step="{{ $wsIdx + 1 }}">
                         @if($wsIdx < $stepCount - 1)<span class="absolute left-[17px] top-[38px] bottom-0 w-px bg-white/20"></span>@endif
                         <button type="button" onclick="goToStep({{ $wsIdx + 1 }})" class="w-full text-left flex items-start gap-3.5 rounded-xl px-2 py-2.5 step-row">
-                            <span class="step-circle relative z-10 w-[34px] h-[34px] shrink-0 rounded-full border border-white/40 bg-obside flex items-center justify-center text-[13px] font-semibold text-white">{{ $wsIdx + 1 }}</span>
+                            <span class="step-circle relative z-10 w-[34px] h-[34px] shrink-0 rounded-full border border-white/40 bg-obside flex items-center justify-center text-[14px] font-semibold text-white">{{ $wsIdx + 1 }}</span>
                             <span class="pt-0.5 min-w-0">
-                                <span class="step-title block text-[13px] font-semibold text-white leading-snug">{{ $wsTitle }}</span>
-                                <span class="step-sub block mt-0.5 text-[13px] md:text-[11px] text-[#B9CBBE] leading-snug">{{ $wsSub }}</span>
+                                <span class="step-title block text-[14px] font-semibold text-white leading-snug">{{ $wsTitle }}</span>
+                                <span class="step-sub block mt-0.5 text-[14px] md:text-[11px] text-[#B9CBBE] leading-snug">{{ $wsSub }}</span>
                             </span>
                         </button>
                     </li>
@@ -231,11 +231,11 @@
                 </ol>
 
                 <div class="mt-5 rounded-xl border border-white/15 p-4">
-                    <p class="flex items-center gap-2.5 text-[12.5px] font-bold text-white">
+                    <p class="flex items-center gap-2.5 text-[14px] font-bold text-white">
                         <img src="{{ asset('images/landing/ob-shield.png') }}" alt="" class="w-[22px] h-[24px]" aria-hidden="true">
                         <span id="side-secure-title">{{ $isFr ? 'Sécurisé & Vérifié' : 'Secure & Verified' }}</span>
                     </p>
-                    <p id="side-secure-text" class="mt-2.5 text-[13px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
+                    <p id="side-secure-text" class="mt-2.5 text-[14px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
                         {{ $isFr
                             ? 'Vos données sont protégées et utilisées uniquement pour la vérification et la gestion de votre compte.'
                             : 'Your data is protected and used only for the verification and management of your account.'
@@ -244,8 +244,8 @@
                 </div>
 
                 <div class="mt-4 rounded-xl border border-white/15 p-4">
-                    <p class="text-[12.5px] font-bold text-[#E5A82E]">{{ $isFr ? 'Et le reste de mon profil ?' : 'What about the rest of my profile?' }}</p>
-                    <p class="mt-2 text-[13px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
+                    <p class="text-[14px] font-bold text-[#E5A82E]">{{ $isFr ? 'Et le reste de mon profil ?' : 'What about the rest of my profile?' }}</p>
+                    <p class="mt-2 text-[14px] md:text-[11.5px] text-[#B9CBBE] leading-relaxed">
                         {{ $isFr
                             ? "Entreprise, catégories, atelier, produits et documents se renseignent depuis votre tableau de bord, juste après la création du compte."
                             : 'Business, categories, workshop, products and documents are filled in from your dashboard, right after the account is created.'
@@ -262,14 +262,14 @@
             <div id="panel-1" class="ob-panel">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Étape 1 sur 3' : 'Step 1 of 3' }}</p>
+                        <p class="text-[14px] text-[#6F6B60] dark:text-[#868778]">{{ $isFr ? 'Étape 1 sur 3' : 'Step 1 of 3' }}</p>
                         <h1 class="mt-1 text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Choisissez votre type de compte' : 'Choose your account type' }}</h1>
-                        <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[430px]">
+                        <p class="mt-1.5 text-[14px] md:text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[430px]">
                             {{ $isFr ? 'Sélectionnez le profil qui correspond le mieux à votre activité sur la plateforme.' : 'Select the profile that best matches your activity on the platform.' }}
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7]">33% {{ $isFr ? 'terminé' : 'complete' }}</p>
+                        <p class="text-[14px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7]">33% {{ $isFr ? 'terminé' : 'complete' }}</p>
                         <div class="mt-1.5 w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-[33%] rounded-full bg-[#10592E]"></div></div>
                     </div>
                 </div>
@@ -299,10 +299,10 @@
                             </span>
                             <img src="{{ asset('images/landing/' . $atIcon) }}" alt="" class="w-[60px] h-[60px]" aria-hidden="true">
                             <h3 class="mt-5 text-[16.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $atTitle }}</h3>
-                            <p class="mt-2 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $atDesc }}</p>
+                            <p class="mt-2 text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $atDesc }}</p>
                             <ul class="mt-4 space-y-2.5">
                                 @foreach($atPerks as $perk)
-                                <li class="flex items-center gap-2.5 text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">
+                                <li class="flex items-center gap-2.5 text-[14px] md:text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">
                                     <span class="w-[17px] h-[17px] shrink-0 rounded-full flex items-center justify-center" style="background:{{ $atColor }}">
                                         <i data-lucide="check" class="w-2.5 h-2.5 text-white" style="stroke-width:3.5"></i>
                                     </span>
@@ -323,7 +323,7 @@
                         </span>
                         <div>
                             <h3 class="text-[14px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Pourquoi devenir membre ?' : 'Why become a member?' }}</h3>
-                            <p class="mt-1 text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+                            <p class="mt-1 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
                                 {{ $isFr
                                     ? 'En devenant membre, vous accédez à une visibilité nationale et internationale, aux demandes de devis qualifiées et à des outils pour développer votre activité.'
                                     : 'By becoming a member, you gain national and international visibility, qualified quote requests and tools to grow your business.'
@@ -340,7 +340,7 @@
                     </button>
                 </div>
 
-                <p class="mt-6 pt-5 border-t border-[#F0F0EE] dark:border-[#262B21] text-center text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
+                <p class="mt-6 pt-5 border-t border-[#F0F0EE] dark:border-[#262B21] text-center text-[14px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
                     {{ $isFr ? 'Vous avez déjà un compte ?' : 'Already have an account?' }}
                     <a href="/login?lang={{ $lang }}" class="ml-1.5 font-semibold text-[#14532D] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
                 </p>
@@ -348,22 +348,22 @@
 
             <!-- ═══════ Step 2 — identity & security ═══════ -->
             <div id="panel-2" class="ob-panel hidden">
-                <button type="button" onclick="goToStep(1)" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
+                <button type="button" onclick="goToStep(1)" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[14px] md:text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     {{ $isFr ? 'Retour' : 'Back' }}
                 </button>
                 <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <h1 class="text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Vos informations personnelles' : 'Your personal information' }}</h1>
-                        <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">
+                        <p class="mt-1.5 text-[14px] md:text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">
                             {{ $isFr ? 'Ces informations nous permettent de vous identifier et de sécuriser votre compte.' : 'This information lets us identify you and secure your account.' }}
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 2 sur 3' : 'Step 2 of 3' }}</p>
+                        <p class="text-[14px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 2 sur 3' : 'Step 2 of 3' }}</p>
                         <div class="mt-1.5 flex items-center gap-2.5">
                             <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-[66%] rounded-full bg-[#10592E]"></div></div>
-                            <span class="text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">66% {{ $isFr ? 'terminé' : 'complete' }}</span>
+                            <span class="text-[14px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">66% {{ $isFr ? 'terminé' : 'complete' }}</span>
                         </div>
                     </div>
                 </div>
@@ -393,7 +393,7 @@
                                  the kit's field-group is for — no second bordered box. --}}
                             <div class="ui-field-group ui-field--lg">
                                 <img src="{{ asset('images/landing/ob-flag.png') }}" alt="" class="w-[20px] h-[14px] shrink-0 rounded-[2px]">
-                                <span class="shrink-0 text-[13.5px] text-[#1B1B18] dark:text-[#F3EFE7]">+237</span>
+                                <span class="shrink-0 text-[14px] text-[#1B1B18] dark:text-[#F3EFE7]">+237</span>
                                 <input type="tel" id="ob-phone" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="ui-field-bare">
                             </div>
                         </div>
@@ -439,7 +439,7 @@
 
             <!-- ═══════ Step 3 — review & account creation ═══════ -->
             <div id="panel-3" class="ob-panel hidden">
-                <button type="button" onclick="goToStep(2)" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
+                <button type="button" onclick="goToStep(2)" class="inline-flex items-center min-h-[44px] lg:min-h-0 gap-2 text-[14px] md:text-[13px] font-medium text-[#1B1B18] dark:text-[#F3EFE7] hover:text-leaf hover:dark:text-[#339B56]">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     {{ $isFr ? 'Retour' : 'Back' }}
                 </button>
@@ -447,15 +447,15 @@
                     <div>
                         <h1 class="text-[23px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] flex flex-wrap items-center gap-3">
                             {{ $isFr ? 'Vérification & création' : 'Review & creation' }}
-                            <span class="inline-flex items-center bg-[#EBF4ED] dark:bg-[#0C3D1D] rounded-full px-3.5 py-1.5 text-[13px] md:text-[11.5px] font-semibold text-[#14532D] dark:text-[#339B56]">{{ $isFr ? 'Dernière étape' : 'Last step' }}</span>
+                            <span class="inline-flex items-center bg-[#EBF4ED] dark:bg-[#0C3D1D] rounded-full px-3.5 py-1.5 text-[14px] md:text-[11.5px] font-semibold text-[#14532D] dark:text-[#339B56]">{{ $isFr ? 'Dernière étape' : 'Last step' }}</span>
                         </h1>
-                        <p class="mt-1.5 text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">{{ $isFr ? 'Relisez les informations que vous venez de saisir. Elles pourront être modifiées à tout moment depuis votre tableau de bord.' : 'Check the information you have just entered. You will be able to edit it at any time from your dashboard.' }}</p>
+                        <p class="mt-1.5 text-[16px] md:text-[13px] text-[#6F6B60] dark:text-[#868778] max-w-[460px]">{{ $isFr ? 'Relisez les informations que vous venez de saisir. Elles pourront être modifiées à tout moment depuis votre tableau de bord.' : 'Check the information you have just entered. You will be able to edit it at any time from your dashboard.' }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 3 sur 3' : 'Step 3 of 3' }}</p>
+                        <p class="text-[14px] md:text-[12px] text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr ? 'Étape 3 sur 3' : 'Step 3 of 3' }}</p>
                         <div class="mt-1.5 flex items-center gap-2.5">
                             <div class="w-[150px] h-[7px] rounded-full bg-[#E8EAE9] dark:bg-[#0A0C09]"><div class="h-full w-full rounded-full bg-[#10592E]"></div></div>
-                            <span class="text-[13px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">100% {{ $isFr ? 'terminé' : 'complete' }}</span>
+                            <span class="text-[14px] md:text-[11.5px] text-[#3B382F] dark:text-[#F3EFE7] whitespace-nowrap">100% {{ $isFr ? 'terminé' : 'complete' }}</span>
                         </div>
                     </div>
                 </div>
@@ -503,10 +503,10 @@
                     <ol class="mt-4 space-y-3">
                         @foreach($nextSteps as $nsIdx => [$nsIcon, $nsHref, $nsTitle, $nsDesc, $nsBtn])
                         <li class="flex items-start gap-3.5">
-                            <span class="w-[30px] h-[30px] shrink-0 rounded-full bg-[#EBF4ED] dark:bg-[#0C3D1D] flex items-center justify-center text-[12px] font-bold text-[#14532D] dark:text-[#339B56]">{{ $nsIdx + 1 }}</span>
+                            <span class="w-[30px] h-[30px] shrink-0 rounded-full bg-[#EBF4ED] dark:bg-[#0C3D1D] flex items-center justify-center text-[14px] md:text-[12px] font-bold text-[#14532D] dark:text-[#339B56]">{{ $nsIdx + 1 }}</span>
                             <div class="min-w-0 pt-0.5">
-                                <p class="text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $nsTitle }}</p>
-                                <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $nsDesc }}</p>
+                                <p class="text-[14px] md:text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $nsTitle }}</p>
+                                <p class="mt-1 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed">{{ $nsDesc }}</p>
                             </div>
                         </li>
                         @endforeach
@@ -590,7 +590,7 @@
                 <div class="flex-1 min-w-0 text-center sm:text-left">
                     <p class="text-[16px] font-semibold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Félicitations !' : 'Congratulations!' }} 🎉</p>
                     <h1 class="mt-1.5 text-[22px] sm:text-[26px] font-bold text-[#1B1B18] dark:text-[#F3EFE7] leading-snug">{{ $isFr ? 'Votre compte a été créé.' : 'Your account has been created.' }}</h1>
-                    <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[480px]">
+                    <p class="mt-3 text-[16px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[480px]">
                         {{ $isFr
                             ? "Bienvenue sur Artisan Hub 237. Vous êtes déjà connecté : il ne reste plus qu'à compléter votre profil pour être visible des acheteurs."
                             : 'Welcome to Artisan Hub 237. You are already signed in: all that is left is to complete your profile so buyers can find you.'
@@ -621,19 +621,66 @@
                 </div>
             </section>
 
+            <!-- Email verification notice. Two honest versions: the code was sent,
+                 or the relay failed and the account still exists — never the first
+                 message when the second is what happened. This is the FIRST thing
+                 after the account-info row, above "next steps": verifying the
+                 address gates every write below (business, products, KYC all sit
+                 behind the `verified.email` middleware), so it is presented as the
+                 immediate next action, not an afterthought at the bottom of the
+                 page. -->
+            @if(request('mail') === 'failed')
+            <section class="mt-4 ui-card border-[#EFD08A] dark:border-[#4A3A12] flex flex-col sm:flex-row items-start gap-5">
+                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#FBF1DD] dark:bg-[#3A2B06] flex items-center justify-center">
+                    <i data-lucide="mail-warning" class="w-5 h-5 text-[#C9942E] dark:text-[#EDB33A]" style="stroke-width:1.8"></i>
+                </span>
+                <div class="min-w-0">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Votre compte est créé — l\'email de vérification n\'est pas parti' : 'Your account is created — the verification email did not go out' }}</h2>
+                    <p class="mt-1.5 text-[16px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+                        {{ $isFr
+                            ? 'Nous n\'avons pas pu envoyer le code à'
+                            : 'We could not send the code to' }}
+                        <span class="font-semibold break-all">{{ $siacUser['email'] ?? '—' }}</span>{{ $isFr ? ' pour le moment. Votre compte existe bien : vous pourrez demander un nouveau code à tout moment depuis la page de vérification.' : ' right now. Your account does exist: you can request a fresh code at any time from the verification page.' }}
+                    </p>
+                    <a href="{{ route('email.verify', ['lang' => $lang]) }}" class="mt-3 ui-btn ui-btn-primary">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        {{ $isFr ? 'Renvoyer le code de vérification' : 'Resend the verification code' }}
+                    </a>
+                </div>
+            </section>
+            @else
+            <section class="mt-4 ui-card flex flex-col sm:flex-row items-start gap-5">
+                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] dark:bg-[#0C3D1D] flex items-center justify-center">
+                    <i data-lucide="mail" class="w-5 h-5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
+                </span>
+                <div class="min-w-0">
+                    <h2 class="ui-card-title">{{ $isFr ? 'Vérifiez votre adresse email' : 'Verify your email address' }}</h2>
+                    <p class="mt-1.5 text-[16px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+                        {{ $isFr ? 'Un code de vérification vient d\'être envoyé à' : 'A verification code has just been sent to' }}
+                        <span class="font-semibold text-[#14652F] dark:text-[#339B56] break-all">{{ $siacUser['email'] ?? '—' }}</span>.
+                        {{ $isFr ? 'Pensez à vérifier vos spams si vous ne le voyez pas.' : 'Remember to check your spam folder if you do not see it.' }}
+                    </p>
+                    <a href="{{ route('email.verify', ['lang' => $lang]) }}" class="mt-3 ui-btn ui-btn-primary">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        {{ $isFr ? 'Saisir mon code maintenant' : 'Enter my code now' }}
+                    </a>
+                </div>
+            </section>
+            @endif
+
             <!-- Next steps: the real pages that do the rest -->
             <section class="mt-4 ui-card">
                 <h2 class="ui-card-title">{{ $isFr ? 'Les prochaines étapes' : 'The next steps' }}</h2>
-                <p class="ui-card-sub">{{ $isFr ? 'Chaque étape se fait sur sa propre page et peut être reprise plus tard.' : 'Each step has its own page and can be resumed later.' }}</p>
+                <p class="ui-card-sub">{{ $isFr ? 'Une fois votre email vérifié : entreprise, produits, puis la vérification de votre profil.' : 'Once your email is verified: business, products, then profile verification.' }}</p>
                 <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($nextSteps as $nsIdx => [$nsIcon, $nsHref, $nsTitle, $nsDesc, $nsBtn])
                     <div class="ui-card flex flex-col">
                         <span class="w-[54px] h-[54px] rounded-2xl bg-[#E8F2EC] dark:bg-[#0C3D1D] flex items-center justify-center">
                             <i data-lucide="{{ $nsIcon }}" class="w-[24px] h-[24px] text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
                         </span>
-                        <p class="mt-4 text-[13px] md:text-[11.5px] font-semibold text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
+                        <p class="mt-4 text-[14px] md:text-[11.5px] font-semibold text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Étape' : 'Step' }} {{ $nsIdx + 1 }}</p>
                         <h3 class="mt-0.5 text-[14.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $nsTitle }}</h3>
-                        <p class="mt-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed flex-1">{{ $nsDesc }}</p>
+                        <p class="mt-2.5 text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed flex-1">{{ $nsDesc }}</p>
                         <a href="{{ $nsHref }}" class="mt-5 ui-btn ui-btn-secondary">
                             {{ $nsBtn }}
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -653,48 +700,10 @@
                 </div>
             </section>
 
-            <!-- Email verification notice. Two honest versions: the code was sent,
-                 or the relay failed and the account still exists — never the first
-                 message when the second is what happened. -->
-            @if(request('mail') === 'failed')
-            <section class="mt-4 ui-card border-[#EFD08A] dark:border-[#4A3A12] flex flex-col sm:flex-row items-start gap-5">
-                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#FBF1DD] dark:bg-[#3A2B06] flex items-center justify-center">
-                    <i data-lucide="mail-warning" class="w-5 h-5 text-[#C9942E] dark:text-[#EDB33A]" style="stroke-width:1.8"></i>
-                </span>
-                <div class="min-w-0">
-                    <h2 class="ui-card-title">{{ $isFr ? 'Votre compte est créé — l\'email de vérification n\'est pas parti' : 'Your account is created — the verification email did not go out' }}</h2>
-                    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
-                        {{ $isFr
-                            ? 'Nous n\'avons pas pu envoyer le code à'
-                            : 'We could not send the code to' }}
-                        <span class="font-semibold break-all">{{ $siacUser['email'] ?? '—' }}</span>{{ $isFr ? ' pour le moment. Votre compte existe bien : vous pourrez demander un nouveau code à tout moment depuis la page de vérification.' : ' right now. Your account does exist: you can request a fresh code at any time from the verification page.' }}
-                    </p>
-                    <a href="{{ route('email.verify', ['lang' => $lang]) }}" class="mt-3 ui-btn ui-btn-secondary">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        {{ $isFr ? 'Renvoyer le code de vérification' : 'Resend the verification code' }}
-                    </a>
-                </div>
-            </section>
-            @else
-            <section class="mt-4 ui-card flex flex-col sm:flex-row items-start gap-5">
-                <span class="w-[46px] h-[46px] shrink-0 rounded-full bg-[#E3F0E7] dark:bg-[#0C3D1D] flex items-center justify-center">
-                    <i data-lucide="mail" class="w-5 h-5 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.8"></i>
-                </span>
-                <div class="min-w-0">
-                    <h2 class="ui-card-title">{{ $isFr ? 'Vérifiez votre adresse email' : 'Verify your email address' }}</h2>
-                    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
-                        {{ $isFr ? 'Un code de vérification vient d\'être envoyé à' : 'A verification code has just been sent to' }}
-                        <span class="font-semibold text-[#14652F] dark:text-[#339B56] break-all">{{ $siacUser['email'] ?? '—' }}</span>.
-                        {{ $isFr ? 'Pensez à vérifier vos spams si vous ne le voyez pas.' : 'Remember to check your spam folder if you do not see it.' }}
-                    </p>
-                </div>
-            </section>
-            @endif
-
             <!-- Help bar -->
             <section class="mt-4 bg-[#EFF5F1] dark:bg-[#0A0C09] rounded-xl px-6 py-4 flex items-start gap-5">
                 <i data-lucide="headphones" class="w-[30px] h-[30px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
-                <p class="text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
+                <p class="text-[16px] md:text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] leading-relaxed">
                     <span class="font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? "Besoin d'aide ?" : 'Need help?' }}</span>
                     {{ $isFr ? 'Notre équipe est là pour vous accompagner.' : 'Our team is here to support you.' }}<br>
                     {{ $isFr ? 'Contactez-nous par email à' : 'Contact us by email at' }}
@@ -749,8 +758,8 @@
     <section id="strip-help" class="mt-4 bg-[#FEFAF3] dark:bg-[#12150F] border border-[#F2E8D8] dark:border-[#6A5210] rounded-2xl px-6 py-4 flex flex-wrap items-center gap-4">
         <img src="{{ asset('images/landing/ob-help.png') }}" alt="" class="w-[46px] h-[46px] shrink-0" aria-hidden="true">
         <div class="min-w-0">
-            <h2 class="text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide pour vous inscrire ?' : 'Need help signing up?' }}</h2>
-            <p class="mt-0.5 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Notre équipe est disponible pour vous accompagner à chaque étape.' : 'Our team is available to support you at every step.' }}</p>
+            <h2 class="text-[16px] md:text-[13.5px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $isFr ? 'Besoin d\'aide pour vous inscrire ?' : 'Need help signing up?' }}</h2>
+            <p class="mt-0.5 text-[14px] md:text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Notre équipe est disponible pour vous accompagner à chaque étape.' : 'Our team is available to support you at every step.' }}</p>
         </div>
         <a href="{{ route('contact', ['lang' => $lang]) }}" class="sm:ml-auto shrink-0 ui-btn ui-btn-secondary">
             <i data-lucide="message-circle" class="w-4 h-4"></i>

@@ -187,14 +187,60 @@
     /* Footer family for vendor detail pages. */
     $dfShowHelp = true;
     $dfSocialStyle = 'outline';
+
+    /*
+     | SEO/AEO structured data for this profile. Only real columns feed it:
+     | vendor_type decides Person (a lone artisan) vs LocalBusiness
+     | (cooperative/enterprise); location is the same city/region granularity
+     | already used above — never gps_lat/gps_lng; the certificate link is
+     | only added when the business actually carries a certificate_no.
+     */
+    $title = "{$businessName} — Artisan Hub 237";
+    $description = \Illuminate\Support\Str::limit(strip_tags((string) $descriptionText), 150);
+
+    $seoAddress = array_filter([
+        '@type'           => 'PostalAddress',
+        'addressLocality' => $cityName,
+        'addressRegion'   => $regionName,
+        'addressCountry'  => 'CM',
+    ]);
+
+    $seoBusinessSchema = array_filter([
+        '@context'    => 'https://schema.org',
+        '@type'       => $business->vendor_type === 'artisan' ? 'Person' : 'LocalBusiness',
+        'name'        => $businessName,
+        'url'         => \App\Support\Seo::canonical(request(), route('businesses.show', ['slug' => $business->slug], false)),
+        'description' => $description ?: null,
+        'image'       => $heroImage ? asset('storage/' . $heroImage) : null,
+        'jobTitle'    => $business->vendor_type === 'artisan' ? $industryName : null,
+        'address'     => count($seoAddress) > 1 ? $seoAddress : null,
+    ]);
+    if (! empty($business->certificate_no)) {
+        $seoBusinessSchema['hasCredential'] = [
+            '@type' => 'EducationalOccupationalCredential',
+            'name'  => $isFr ? 'Certificat de membre vérifié — Artisan Hub 237' : 'Verified member certificate — Artisan Hub 237',
+            'url'   => route('artisan.verification.certificate', ['slug' => $business->slug]),
+        ];
+    }
+
+    $seoBreadcrumb = \App\Support\Seo::breadcrumbSchema(array_filter([
+        ['name' => $isFr ? 'Accueil' : 'Home', 'url' => route('home', ['lang' => $lang])],
+        ['name' => $isFr ? 'Artisans & Entreprises' : 'Artisans & Businesses', 'url' => route('businesses.index', ['lang' => $lang])],
+        $industryName ? ['name' => $industryName, 'url' => route('businesses.index', ['lang' => $lang, 'industry' => $business->industry?->slug])] : null,
+        ['name' => $businessName, 'url' => route('businesses.show', ['slug' => $business->slug])],
+    ]));
+
+    $seoJsonLd = [$seoBusinessSchema, $seoBreadcrumb];
+    $seoOgType = 'profile';
+    $seoOgImage = $heroImage ? asset('storage/' . $heroImage) : null;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) $descriptionText), 150) }}">
-    <title>{{ $businessName }} — Artisan Hub 237</title>
+    <meta name="description" content="{{ $description }}">
+    <title>{{ $title }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -311,6 +357,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FCF9F6] dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

@@ -30,7 +30,7 @@
 <section class="bg-[#0B2C1E]">
     <div class="max-w-[900px] mx-auto px-5 py-10 text-center">
         <h1 class="text-[26px] font-bold text-white">{{ $isFr ? 'Espace presse' : 'Press room' }}</h1>
-        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Informations, chiffres clés et contact média d\'Artisan Hub 237.' : 'Information, key figures and media contact for Artisan Hub 237.' }}</p>
+        <p class="mt-2 text-[14px] md:text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Informations, chiffres clés et contact média d\'Artisan Hub 237.' : 'Information, key figures and media contact for Artisan Hub 237.' }}</p>
     </div>
 </section>
 
@@ -49,7 +49,7 @@
         @foreach($pressFacts as [$pfValue, $pfLabel])
         <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-5 text-center">
             <p class="text-[24px] font-bold text-[#14652F] dark:text-[#339B56]">{{ $pfValue }}</p>
-            <p class="mt-1 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $pfLabel }}</p>
+            <p class="mt-1 text-[14px] md:text-[12px] text-[#55524A] dark:text-[#B4B5A6]">{{ $pfLabel }}</p>
         </div>
         @endforeach
     </section>
@@ -63,9 +63,9 @@
             <p class="mt-2.5 text-[15px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                 {{ $isFr ? 'Pour toute demande d\'interview, de reportage ou d\'information :' : 'For any interview, report or information request:' }}
             </p>
-            <p class="mt-2 text-[13px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ config('legal.company.email') }}</p>
-            <p class="mt-1 text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">@if(config('legal.company.phone')){{ config('legal.company.phone') }} — @endif{{ $isFr ? 'Lun - Ven : 8h00 - 17h00' : 'Mon - Fri: 8am - 5pm' }}</p>
-            <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap mt-4 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+            <p class="mt-2 text-[14px] md:text-[13px] font-semibold text-[#14652F] dark:text-[#339B56]">{{ config('legal.company.email') }}</p>
+            <p class="mt-1 text-[14px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">@if(config('legal.company.phone')){{ config('legal.company.phone') }} — @endif{{ $isFr ? 'Lun - Ven : 8h00 - 17h00' : 'Mon - Fri: 8am - 5pm' }}</p>
+            <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap mt-4 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[14px] md:text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
                 {{ $isFr ? 'Écrire au service presse' : 'Write to the press office' }}
             </a>
         </div>
@@ -76,11 +76,11 @@
             </h2>
             <div class="mt-3 flex items-center gap-4">
                 <img src="{{ brand_asset('mark') }}" alt="Logo" class="w-[61px] h-[61px] object-contain">
-                <p class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+                <p class="text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                     {{ $isFr ? 'Le logo de la plateforme. Merci de ne pas le modifier ni le déformer.' : 'The platform logo. Please do not alter or distort it.' }}
                 </p>
             </div>
-            <a href="{{ brand_asset('mark') }}" download class="ui-tap mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] px-5 py-2.5 rounded-lg transition-colors">
+            <a href="{{ brand_asset('mark') }}" download class="ui-tap mt-4 inline-flex items-center gap-2.5 border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] text-[14px] md:text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] px-5 py-2.5 rounded-lg transition-colors">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 {{ $isFr ? 'Télécharger le logo' : 'Download the logo' }}
             </a>

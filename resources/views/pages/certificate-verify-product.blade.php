@@ -93,14 +93,23 @@
     $v = $verdicts[$status] ?? null;
 
     $dfShowHelp = true;
+
+    $title = ($isFr ? 'Vérifier un certificat' : 'Verify a certificate') . ' — Artisan Hub 237';
+    $description = $isFr
+        ? 'Vérifiez l\'authenticité d\'un certificat de produit Artisan Hub 237.'
+        : 'Verify an Artisan Hub 237 product certificate.';
+    $seoJsonLd = [\App\Support\Seo::breadcrumbSchema([
+        ['name' => $isFr ? 'Accueil' : 'Home', 'url' => route('home', ['lang' => $lang])],
+        ['name' => $isFr ? 'Vérifier un certificat' : 'Verify a certificate', 'url' => route('product.certificate.verify')],
+    ])];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Vérifiez l\'authenticité d\'un certificat de produit Artisan Hub 237.' : 'Verify an Artisan Hub 237 product certificate.' }}">
-    <title>{{ $isFr ? 'Vérifier un certificat' : 'Verify a certificate' }} — Artisan Hub 237</title>
+    <meta name="description" content="{{ $description }}">
+    <title>{{ $title }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -117,6 +126,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
@@ -127,7 +137,7 @@
     <h1 class="font-serif text-[26px] sm:text-[32px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-tight">
         {{ $isFr ? 'Vérifier un certificat' : 'Verify a certificate' }}
     </h1>
-    <p class="mt-2.5 text-[13.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[520px]">
+    <p class="mt-2.5 text-[14px] md:text-[13.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed max-w-[520px]">
         {{ $isFr
            ? 'Saisissez le numéro figurant sur le certificat d\'authenticité. Le code de vérification est facultatif, mais le fournir confirme que vous avez le certificat sous les yeux.'
            : 'Enter the number printed on the certificate of authenticity. The PIN is optional, but supplying it confirms you are holding the certificate itself.' }}
@@ -224,7 +234,7 @@
             <span class="ui-pill {{ $sigLabel[1] }}">{{ $sigLabel[0] }}</span>
             @if($sig['kid'])
             <p class="mt-2 ui-dt">{{ $isFr ? 'Identifiant de clé' : 'Key id' }}</p>
-            <p class="mt-1 font-mono text-[10.5px] text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $sig['kid'] }}</p>
+            <p class="mt-1 font-mono text-[14px] md:text-[10.5px] text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $sig['kid'] }}</p>
             @endif
             {{-- The point of publishing the key: this check does not depend on
                  us being asked, or on our answer being believed. --}}
@@ -269,7 +279,7 @@
             <div class="min-w-0">
                 <p class="text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $vName }}</p>
                 @if($vBiz)
-                <p class="mt-1 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
+                <p class="mt-1 text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
                     {{ $isFr ? 'par' : 'by' }} <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $vBiz->name_fr }}</span>
                     @if(in_array($vBiz->verification_tier, ['verified','certified'], true))
                     <span class="ui-pill ui-pill-ok ml-1.5">{{ $isFr ? 'Vérifié' : 'Verified' }}</span>
@@ -296,24 +306,24 @@
                      comparing two copies of a certificate has something
                      complete to compare. --}}
                 <details class="mt-4">
-                    <summary class="text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] cursor-pointer">
+                    <summary class="text-[14px] md:text-[12.5px] font-semibold text-[#157A43] dark:text-[#339B56] cursor-pointer">
                         {{ $isFr ? 'Empreintes complètes' : 'Full fingerprints' }}
                     </summary>
                     <div class="mt-2 space-y-2">
                         <div>
                             <p class="ui-dt">{{ $isFr ? 'Empreinte du contenu (SHA-256)' : 'Content hash (SHA-256)' }}</p>
-                            <p class="mt-1 font-mono text-[10.5px] leading-relaxed text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $cert->content_hash }}</p>
+                            <p class="mt-1 font-mono text-[14px] md:text-[10.5px] leading-relaxed text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $cert->content_hash }}</p>
                         </div>
                         @if($cert->image_phash)
                         <div>
                             <p class="ui-dt">{{ $isFr ? 'Empreinte de l\'image' : 'Perceptual image hash' }}</p>
-                            <p class="mt-1 font-mono text-[10.5px] text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $cert->image_phash }}</p>
+                            <p class="mt-1 font-mono text-[14px] md:text-[10.5px] text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $cert->image_phash }}</p>
                         </div>
                         @endif
                         @if($cert->signature)
                         <div>
                             <p class="ui-dt">{{ $isFr ? 'Signature (HMAC-SHA256)' : 'Signature (HMAC-SHA256)' }}</p>
-                            <p class="mt-1 font-mono text-[10.5px] leading-relaxed text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $cert->signature }}</p>
+                            <p class="mt-1 font-mono text-[14px] md:text-[10.5px] leading-relaxed text-[#55524A] dark:text-[#B4B5A6] break-all">{{ $cert->signature }}</p>
                         </div>
                         @endif
                         <p class="ui-hint">
@@ -337,12 +347,12 @@
          buyer reaches from a QR code with the object in their hand. --}}
     <div class="ui-card mt-5">
         <h2 class="ui-card-title">{{ $isFr ? 'Ce que cette vérification prouve' : 'What this check proves' }}</h2>
-        <p class="mt-2 text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
+        <p class="mt-2 text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'Elle confirme qu\'un produit portant ces informations a bien été enregistré sur Artisan Hub 237 par l\'artisan indiqué, à la date affichée.'
                : 'It confirms that a product with these details was registered on Artisan Hub 237 by the artisan shown, on the date displayed.' }}
         </p>
-        <p class="mt-3 text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
+        <p class="mt-3 text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] leading-relaxed">
             {{ $isFr
                ? 'Elle ne prouve pas que l\'objet devant vous est celui qui figure sur les photographies. Comparez vous-même les images, les dimensions et les matériaux avant d\'acheter.'
                : 'It does not prove that the object in front of you is the one in the photographs. Compare the images, dimensions and materials yourself before buying.' }}

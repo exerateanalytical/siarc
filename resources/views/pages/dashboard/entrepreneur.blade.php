@@ -431,33 +431,33 @@
 
             <!-- Mobile bottom nav -->
             <nav class="fixed bottom-0 inset-x-0 z-30 bg-white dark:bg-[#12150F] border-t border-[#EDEDEB] dark:border-[#262B21] flex items-stretch h-[64px]" style="padding-bottom: env(safe-area-inset-bottom)">
-                <a href="{{ route('dashboard.entrepreneur') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#157A43] dark:text-[#339B56]">
+                <a href="{{ route('dashboard.entrepreneur') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 text-[#157A43] dark:text-[#339B56]">
                     <i data-lucide="house" class="w-[22px] h-[22px]"></i>
-                    <span class="text-[10px] font-semibold">{{ $isFr ? 'Accueil' : 'Home' }}</span>
+                    <span class="text-[16px] font-semibold self-stretch text-center leading-tight break-words">{{ $isFr ? 'Accueil' : 'Home' }}</span>
                     <span class="w-6 h-[3px] rounded-full bg-[#157A43] dark:bg-[#2E9250]"></span>
                 </a>
-                <a href="{{ $ownStoreUrl }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
+                <a href="{{ $ownStoreUrl }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
                     <i data-lucide="package" class="w-[22px] h-[22px]"></i>
-                    <span class="text-[10px]">{{ $isFr ? 'Produits' : 'Products' }}</span>
+                    <span class="text-[16px] self-stretch text-center leading-tight break-words">{{ $isFr ? 'Produits' : 'Products' }}</span>
                 </a>
-                <a href="{{ route('products.web-create') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
+                <a href="{{ route('products.web-create') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
                     <span class="-mt-7 w-[52px] h-[52px] rounded-full bg-[#0B4D27] dark:bg-[#2E9250] shadow-lg flex items-center justify-center text-white dark:text-[#04150A]">
                         <i data-lucide="plus" class="w-6 h-6"></i>
                     </span>
-                    <span class="text-[10px] mt-0.5">{{ $isFr ? 'Ajouter' : 'Add' }}</span>
+                    <span class="text-[16px] mt-0.5 self-stretch text-center leading-tight break-words">{{ $isFr ? 'Ajouter' : 'Add' }}</span>
                 </a>
-                <a href="{{ route('messages.inbox') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
+                <a href="{{ route('messages.inbox') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
                     <span class="relative">
                         <i data-lucide="clipboard-list" class="w-[22px] h-[22px]"></i>
                         @if($ordersCount)
                         <span class="absolute -top-1.5 -right-3 bg-[#D40C0F] dark:bg-[#C0343B] text-white text-[8.5px] font-bold min-w-[17px] h-[15px] px-0.5 rounded-full flex items-center justify-center">{{ $ordersCount }}</span>
                         @endif
                     </span>
-                    <span class="text-[10px]">{{ $isFr ? 'Commandes' : 'Orders' }}</span>
+                    <span class="text-[16px] self-stretch text-center leading-tight break-words">{{ $isFr ? 'Commandes' : 'Orders' }}</span>
                 </a>
-                <button type="button" class="sm-menu-btn flex-1 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
+                <button type="button" class="sm-menu-btn flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 text-[#55524A] dark:text-[#B4B5A6]">
                     <i data-lucide="circle-user" class="w-[22px] h-[22px]"></i>
-                    <span class="text-[10px]">Menu</span>
+                    <span class="text-[16px] self-stretch text-center leading-tight break-words">Menu</span>
                 </button>
             </nav>
         </div>

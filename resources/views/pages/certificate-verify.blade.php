@@ -69,14 +69,23 @@
     $securityChecks = $isFr
         ? ['Numéro de certificat unique', 'Vérification en ligne en temps réel', 'Statut révocable par la plateforme', 'Dates d\'émission et d\'expiration enregistrées', 'Adresse de vérification officielle']
         : ['Unique certificate number', 'Real-time online verification', 'Revocable by the platform', 'Issue and expiry dates on record', 'Official verification address'];
+
+    $title = $isFr ? 'Vérification de certificat — Artisan Hub 237' : 'Certificate verification — Artisan Hub 237';
+    $description = $isFr
+        ? 'Vérifiez l\'authenticité d\'un certificat d\'adhésion d\'Artisan Hub 237.'
+        : 'Verify the authenticity of a membership certificate of Artisan Hub 237.';
+    $seoJsonLd = [\App\Support\Seo::breadcrumbSchema([
+        ['name' => $isFr ? 'Accueil' : 'Home', 'url' => route('home', ['lang' => $lang])],
+        ['name' => $isFr ? 'Vérification de certificat' : 'Certificate verification', 'url' => route('certificate.verify')],
+    ])];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Vérifiez l\'authenticité d\'un certificat d\'adhésion d\'Artisan Hub 237.' : 'Verify the authenticity of a membership certificate of Artisan Hub 237.' }}">
-    <title>{{ $isFr ? 'Vérification de certificat — Artisan Hub 237' : 'Certificate verification — Artisan Hub 237' }}</title>
+    <meta name="description" content="{{ $description }}">
+    <title>{{ $title }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -107,6 +116,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 

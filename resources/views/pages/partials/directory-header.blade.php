@@ -86,7 +86,7 @@
 
 <!-- Tricolor top bar -->
 @if($dirTopBar ?? false)
-<div class="relative flex h-[26px] overflow-hidden text-[12px] md:text-[10.5px]">
+<div class="relative flex h-[26px] overflow-hidden text-[14px] md:text-[10.5px]">
     <div class="w-[37.5%] bg-[#012C1B] flex items-center pl-4 sm:pl-6">
         <span class="text-white/90 truncate">{{ $isFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
     </div>
@@ -270,7 +270,7 @@
                     {{-- Main page links — same $dirNavItems array as the green bar below --}}
                     <nav class="mt-4 -mx-1">
                         @php
-                            $mmRow = 'flex items-center gap-3 min-h-[48px] px-3 rounded-lg text-[15px]';
+                            $mmRow = 'flex items-center gap-3 min-h-[48px] px-3 rounded-lg text-[16px]';
                             $mmOn  = 'font-semibold text-[#0F4227] dark:text-[#339B56] bg-[#0F4227]/[0.07] dark:bg-[#339B56]/[0.12]';
                             $mmOff = 'font-medium text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]';
                         @endphp
@@ -291,7 +291,7 @@
                     </nav>
 
                     {{-- The desktop utility row, which is hidden on a phone. --}}
-                    <p class="mt-5 mb-1 px-2 text-[12px] font-bold uppercase tracking-[0.08em] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Raccourcis' : 'Shortcuts' }}</p>
+                    <p class="mt-5 mb-1 px-2 text-[14px] font-bold uppercase tracking-[0.08em] text-[#8A857A] dark:text-[#868778]">{{ $isFr ? 'Raccourcis' : 'Shortcuts' }}</p>
                     <div class="-mx-1 grid grid-cols-2 gap-1">
                         @foreach($dirUtility as [$duIcon, $duLabel, $duHref])
                         <a href="{{ $duHref }}" class="flex items-center gap-2.5 min-h-[48px] px-3 rounded-lg text-[14px] font-medium text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#E7E1D4]/50 dark:hover:bg-[#1A1E16]">
@@ -311,7 +311,10 @@
                         @else
                         <a href="{{ route('login', ['lang' => $lang]) }}" class="inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg bg-[#02301B] text-white text-[14px] font-semibold">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
                         @endif
-                        <a href="{{ route('onboarding', ['lang' => $lang]) }}" class="inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg bg-[#C9942E] text-[#231903] text-[13px] font-bold uppercase tracking-[0.04em] text-center leading-tight">
+                        {{-- Mobile signup is the fast form only (owner directive, 2026-07-29):
+                             name, contact, trade, account type, register, then straight to
+                             email verification — not the longer desktop wizard. --}}
+                        <a href="{{ route('register.quick', ['lang' => $lang]) }}" class="inline-flex items-center justify-center min-h-[44px] px-3 rounded-lg bg-[#C9942E] text-[#231903] text-[14px] font-bold uppercase tracking-[0.04em] text-center leading-tight">
                             {{ $isFr ? 'Vendre ici' : 'Sell here' }}
                         </a>
                     </div>

@@ -77,8 +77,14 @@
         <h2 class="text-[15px] font-semibold">Microtexte (coaMicrotextLine / coaMicrotextPath)</h2>
         <p class="mt-1 text-[12.5px] text-[#6B6659]">Corps 1,6 px. Illisible à 100 %, lisible au zoom — c'est exactement l'effet recherché.</p>
 
+        {{-- "À taille réelle" means true 1:1 scale, so this must not shrink to fit
+             the viewport like a responsive graphic would — that would misrepresent
+             the actual size being demonstrated. It scrolls instead, same pattern
+             as the ×14 zoom panel just below. --}}
         <p class="mt-4 text-[11px] uppercase tracking-[.18em] text-[#6B6659]">À taille réelle</p>
-        <svg viewBox="0 0 320 4" class="w-[320px] block mt-1"><use href="#coaMicrotextLine"/></svg>
+        <div class="mt-1 overflow-x-auto border border-[#EEE8DA] rounded-lg bg-[#FEFDF7]">
+            <svg viewBox="0 0 320 4" width="320" height="4" class="block"><use href="#coaMicrotextLine"/></svg>
+        </div>
 
         <p class="mt-5 text-[11px] uppercase tracking-[.18em] text-[#6B6659]">Zoom ×14 — le texte se résout</p>
         <div class="mt-1 overflow-x-auto border border-[#EEE8DA] rounded-lg bg-[#FEFDF7]">
@@ -111,10 +117,12 @@
         {{-- At 1:1 the screen is almost invisible, which is the point; this panel
              enlarges a 60-unit square so the line pitch can actually be judged. --}}
         <p class="mt-4 text-[11px] uppercase tracking-[.18em] text-[#6B6659]">Zoom ×6 — le pas de trame</p>
-        <svg viewBox="0 0 60 60" width="360" height="360" class="mt-1 block border border-[#EEE8DA] rounded-lg">
-            <rect width="60" height="60" fill="#FEFDF7"/>
-            <rect width="60" height="60" fill="url(#coaAntiCopy)"/>
-        </svg>
+        <div class="mt-1 overflow-x-auto border border-[#EEE8DA] rounded-lg">
+            <svg viewBox="0 0 60 60" width="360" height="360" class="block">
+                <rect width="60" height="60" fill="#FEFDF7"/>
+                <rect width="60" height="60" fill="url(#coaAntiCopy)"/>
+            </svg>
+        </div>
     </section>
 
     {{-- Iridescent treatment — named honestly. --}}

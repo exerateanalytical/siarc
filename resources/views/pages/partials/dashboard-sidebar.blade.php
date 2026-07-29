@@ -167,11 +167,11 @@
     class="dash-aside fixed lg:static inset-y-0 left-0 z-40 w-[268px] shrink-0 bg-[#02301B] dark:bg-[#0C3B1E] dark:border-r dark:border-[#2A6B41] flex flex-col h-full lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
 
     {{-- Brand --}}
-    <a href="{{ route('home', ['lang' => $sbLang]) }}" class="h-[64px] flex items-center gap-3 px-4 border-b border-white/10 shrink-0">
+    <a href="{{ route('home', ['lang' => $sbLang]) }}" class="min-h-[64px] py-2 flex items-center gap-3 px-4 border-b border-white/10 shrink-0">
         <img src="{{ brand_asset('mark') }}" alt="" class="w-[37px] h-[37px] object-contain shrink-0">
         <span class="leading-tight min-w-0">
-            <span class="block text-[11.5px] font-bold tracking-[0.02em] text-white uppercase whitespace-nowrap">Artisan Hub 237</span>
-            <span class="block text-[9.5px] font-semibold text-[#E5A82E] whitespace-nowrap">{{ $sbIsFr ? 'Notre héritage, notre fierté' : 'Our heritage, our pride' }}</span>
+            <span class="block text-[14px] font-bold tracking-[0.02em] text-white uppercase truncate">Artisan Hub 237</span>
+            <span class="block text-[14px] leading-tight font-semibold text-[#E5A82E]">{{ $sbIsFr ? 'Notre héritage, notre fierté' : 'Our heritage, our pride' }}</span>
         </span>
     </a>
 
@@ -180,8 +180,8 @@
         <div class="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 flex items-center gap-3">
             <span class="w-[38px] h-[38px] shrink-0 rounded-full bg-[#E5A82E] flex items-center justify-center text-[14px] font-bold text-[#02301B]">{{ $sbInitials }}</span>
             <div class="min-w-0">
-                <p class="text-[12.5px] font-bold text-white truncate">{{ $sbName }}</p>
-                <p class="flex items-center gap-1.5 text-[11px] font-semibold text-[#E5A82E]">
+                <p class="text-[14px] font-bold text-white truncate">{{ $sbName }}</p>
+                <p class="flex items-center gap-1.5 text-[14px] font-semibold text-[#E5A82E]">
                     <i data-lucide="{{ $sbRoleIcon }}" class="w-3 h-3 shrink-0"></i>
                     <span class="truncate">{{ $sbRoleLabel[$sbLang] }}</span>
                 </p>
@@ -194,7 +194,7 @@
         @foreach($sbGroups as [$sbGroupTitle, $sbItems])
         <div class="px-3 mb-4">
             @if($sbGroupTitle)
-            <p class="px-2.5 text-[10.5px] font-bold text-[#E5A82E] uppercase tracking-[0.08em] mb-1.5">{{ $sbGroupTitle[$sbLang] }}</p>
+            <p class="px-2.5 text-[14px] font-bold text-[#E5A82E] uppercase tracking-[0.02em] mb-1.5 truncate">{{ $sbGroupTitle[$sbLang] }}</p>
             @endif
             @foreach($sbItems as [$sbRoute, $sbIcon, $sbLabelFr, $sbLabelEn])
             @continue(! \Illuminate\Support\Facades\Route::has($sbRoute))
@@ -209,12 +209,12 @@
                      `brand-ink` #04150A on it (4.78:1). Gold at #E5A82E is only
                      2.54:1 on that fill, so the active icon takes the ink too and the
                      gold survives as the left marker bar (6.01:1 on the rail). --}}
-                class="relative flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] mb-0.5 transition-colors {{ $sbActive ? 'bg-[#14532D] dark:bg-[#2E9250] text-white dark:text-[#04150A] font-bold' : 'text-[#DCE7DF] hover:bg-white/5 hover:text-white' }}">
+                class="relative flex items-center gap-3 px-3 py-[9px] rounded-xl text-[16px] md:text-[13px] mb-0.5 transition-colors {{ $sbActive ? 'bg-[#14532D] dark:bg-[#2E9250] text-white dark:text-[#04150A] font-bold' : 'text-[#DCE7DF] hover:bg-white/5 hover:text-white' }}">
                 @if($sbActive)<span class="absolute left-0 inset-y-1.5 w-[3px] rounded-r bg-[#E5A82E]"></span>@endif
                 <i data-lucide="{{ $sbIcon }}" class="w-[17px] h-[17px] shrink-0 {{ $sbActive ? 'text-[#E5A82E] dark:text-[#04150A]' : 'text-[#A9C4B3]' }}" style="stroke-width:1.7"></i>
                 <span class="truncate">{{ $sbIsFr ? $sbLabelFr : $sbLabelEn }}</span>
                 @if($sbBadge && $sbBadge !== '0')
-                <span class="ml-auto shrink-0 min-w-[22px] text-center text-[10.5px] font-bold px-1.5 py-[2px] rounded-full bg-[#DC0508] text-white">{{ $sbBadge }}</span>
+                <span class="ml-auto shrink-0 min-w-[26px] text-center text-[14px] leading-tight font-bold px-1.5 py-[1px] rounded-full bg-[#DC0508] text-white">{{ $sbBadge }}</span>
                 @endif
             </a>
             @endforeach
@@ -224,13 +224,13 @@
 
     {{-- Footer actions --}}
     <div class="p-3 border-t border-white/10 shrink-0 space-y-0.5">
-        <a href="{{ route('home', ['lang' => $sbLang]) }}" class="flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] text-[#DCE7DF] hover:bg-white/5 hover:text-white transition-colors">
+        <a href="{{ route('home', ['lang' => $sbLang]) }}" class="flex items-center gap-3 px-3 py-[9px] rounded-xl text-[16px] md:text-[13px] text-[#DCE7DF] hover:bg-white/5 hover:text-white transition-colors">
             <i data-lucide="arrow-left" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.7"></i>
             {{ $sbIsFr ? 'Retour au site' : 'Back to site' }}
         </a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="w-full flex items-center gap-3 px-3 py-[9px] rounded-xl text-[13px] text-[#F2B8B8] hover:bg-white/5 transition-colors text-left">
+            <button type="submit" class="w-full flex items-center gap-3 px-3 py-[9px] rounded-xl text-[16px] md:text-[13px] text-[#F2B8B8] hover:bg-white/5 transition-colors text-left">
                 <i data-lucide="log-out" class="w-[17px] h-[17px] shrink-0" style="stroke-width:1.7"></i>
                 {{ $sbIsFr ? 'Déconnexion' : 'Log out' }}
             </button>

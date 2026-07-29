@@ -42,8 +42,8 @@
             <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-3.5 px-2 sm:px-5 min-w-0">
                 <i data-lucide="{{ $whyIcon }}" class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 text-[#B07E23] dark:text-[#EDB33A]" style="stroke-width:1.4"></i>
                 <div class="min-w-0">
-                    <h3 class="text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug lg:whitespace-pre-line">{{ $whyTitle }}</h3>
-                    <p class="mt-2 text-[12px] text-[#7A756A] dark:text-[#868778] leading-relaxed lg:whitespace-pre-line">{{ $whyDesc }}</p>
+                    <h3 class="text-[16px] md:text-[13.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug lg:whitespace-pre-line">{{ $whyTitle }}</h3>
+                    <p class="mt-2 text-[14px] md:text-[12px] text-[#7A756A] dark:text-[#868778] leading-relaxed lg:whitespace-pre-line">{{ $whyDesc }}</p>
                 </div>
             </div>
             @endforeach
@@ -67,9 +67,9 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[16px] md:text-[10px] font-medium self-stretch text-center leading-tight break-words">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

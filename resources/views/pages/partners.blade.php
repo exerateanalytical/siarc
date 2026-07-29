@@ -42,7 +42,7 @@ $partnerTiles = [
                 ]) as [$fIcon, $fText])
                 <div class="flex items-start gap-2.5">
                     <span class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0"><i data-lucide="{{ $fIcon }}" class="w-4 h-4 text-[#E9C25A]"></i></span>
-                    <p class="text-[13px] md:text-[11.5px] text-[#C9D6CD] leading-snug">{{ $fText }}</p>
+                    <p class="text-[14px] md:text-[11.5px] text-[#C9D6CD] leading-snug">{{ $fText }}</p>
                 </div>
                 @endforeach
             </div>
@@ -63,12 +63,12 @@ $partnerTiles = [
         ] as [$kIcon, $kColor, $kTile, $kVal, $kLabel])
         <div class="flex items-center gap-3">
             <span class="w-[46px] h-[46px] rounded-full flex items-center justify-center shrink-0" style="background-color: {{ $kTile }}"><i data-lucide="{{ $kIcon }}" class="w-5 h-5" style="color: {{ $kColor }}"></i></span>
-            <div class="min-w-0"><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $kVal }}</p><p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $kLabel }}</p></div>
+            <div class="min-w-0"><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $kVal }}</p><p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $kLabel }}</p></div>
         </div>
         @endforeach
         <div class="flex items-center gap-3">
             <span class="w-[46px] h-[46px] rounded-full bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center shrink-0"><i data-lucide="map" class="w-5 h-5 text-[#157A43] dark:text-[#339B56]"></i></span>
-            <div class="min-w-0"><p class="text-[15px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">Cameroun</p><p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $isFr ? 'Couverture' : 'Coverage' }} {{ $pubRegionsCovered }} {{ $isFr ? 'régions' : 'regions' }}</p></div>
+            <div class="min-w-0"><p class="text-[15px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">Cameroun</p><p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $isFr ? 'Couverture' : 'Coverage' }} {{ $pubRegionsCovered }} {{ $isFr ? 'régions' : 'regions' }}</p></div>
         </div>
     </div>
 </section>
@@ -108,19 +108,19 @@ $partnerTiles = [
                     @elseif($partner->logo)<img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name_fr }}" class="w-full h-full object-contain">
                     @else<i data-lucide="building-2" class="w-6 h-6 text-[#D9CFBB]"></i>@endif
                 </div>
-                <span class="text-[12px] md:text-[10.5px] font-semibold px-2 py-0.5 rounded-full shrink-0 {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] dark:bg-[#0A0C09] text-[#6F6B60] dark:text-[#868778]' }}">{{ $partner->partner_type }}</span>
+                <span class="text-[14px] md:text-[10.5px] font-semibold px-2 py-0.5 rounded-full shrink-0 {{ $typeCls[$partner->partner_type] ?? 'bg-[#EEECE6] dark:bg-[#0A0C09] text-[#6F6B60] dark:text-[#868778]' }}">{{ $partner->partner_type }}</span>
             </div>
-            <a href="{{ route('partners.show', ['id' => $partner->id, 'lang' => $lang]) }}" class="text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] hover:text-[#14652F] hover:dark:text-[#339B56]">{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</a>
-            <p class="text-[13px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i>{{ $partner->address ?? $partner->country }}</p>
+            <a href="{{ route('partners.show', ['id' => $partner->id, 'lang' => $lang]) }}" class="text-[16px] md:text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] hover:text-[#14652F] hover:dark:text-[#339B56]">{{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}</a>
+            <p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i>{{ $partner->address ?? $partner->country }}</p>
             @if($partner->description_fr)
-            <p class="text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] mt-2 line-clamp-3 flex-1">{{ $isFr ? $partner->description_fr : ($partner->description_en ?? $partner->description_fr) }}</p>
+            <p class="text-[14px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] mt-2 line-clamp-3 flex-1">{{ $isFr ? $partner->description_fr : ($partner->description_en ?? $partner->description_fr) }}</p>
             @endif
-            <a href="{{ route('partners.show', ['id' => $partner->id, 'lang' => $lang]) }}" class="mt-3 block text-center border border-[#CFE0D4] dark:border-[#262B21] text-[#14652F] dark:text-[#339B56] hover:bg-[#E2F3E8] hover:dark:bg-[#0C3D1D] text-[12px] font-semibold py-2 rounded-lg">{{ $isFr ? 'Voir le profil' : 'View profile' }}</a>
+            <a href="{{ route('partners.show', ['id' => $partner->id, 'lang' => $lang]) }}" class="mt-3 block text-center border border-[#CFE0D4] dark:border-[#262B21] text-[#14652F] dark:text-[#339B56] hover:bg-[#E2F3E8] hover:dark:bg-[#0C3D1D] text-[14px] md:text-[12px] font-semibold py-2 rounded-lg">{{ $isFr ? 'Voir le profil' : 'View profile' }}</a>
         </div>
         @empty
         <div class="col-span-full text-center py-16 text-[#8A857A] dark:text-[#868778]">
             <i data-lucide="handshake" class="w-12 h-12 mx-auto mb-3 text-[#DCE7DF]"></i>
-            <p class="text-[13.5px]">{{ $isFr ? 'Aucun partenaire trouvé.' : 'No partners found.' }}</p>
+            <p class="text-[14px] md:text-[13.5px]">{{ $isFr ? 'Aucun partenaire trouvé.' : 'No partners found.' }}</p>
         </div>
         @endforelse
     </div>
@@ -131,11 +131,11 @@ $partnerTiles = [
 
     <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
         <i data-lucide="heart-handshake" class="w-[28px] h-[28px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
-        <p class="flex-1 min-w-[240px] text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
+        <p class="flex-1 min-w-[240px] text-[14px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
             <span class="font-bold">{{ $isFr ? 'Devenir partenaire ?' : 'Become a partner?' }}</span>
             {{ $isFr ? 'Rejoignez les institutions qui soutiennent l\'artisanat camerounais.' : 'Join the institutions supporting Cameroonian craftsmanship.' }}
         </p>
-        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <a href="{{ route('contact', ['lang' => $lang]) }}" class="ui-tap shrink-0 inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[14px] md:text-[13px] font-semibold px-5 py-2.5 rounded-lg transition-colors">
             {{ $isFr ? 'Nous contacter' : 'Contact us' }}
         </a>
     </div>

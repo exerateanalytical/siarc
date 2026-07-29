@@ -93,6 +93,13 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @php
+        $title = $isFr ? 'Annuaire des produits — Artisan Hub 237' : 'Product directory — Artisan Hub 237';
+        $description = $isFr
+            ? 'Annuaire des produits — Découvrez des milliers de créations authentiques fabriquées par nos artisans et entreprises.'
+            : 'Product directory — Discover thousands of authentic creations made by our artisans and businesses.';
+    @endphp
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
@@ -188,7 +195,7 @@
             <img src="{{ asset('images/landing/product-stamp.png') }}" alt="{{ $isFr ? 'Authenticité garantie' : 'Guaranteed authenticity' }}"
                 class="hidden xl:block absolute right-0 top-2 w-[84px] select-none pointer-events-none">
 
-            <nav class="flex items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
+            <nav class="flex items-center gap-2 text-[14px] md:text-[12.5px]" aria-label="Breadcrumb">
                 <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
                 <span class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Annuaire des produits' : 'Product directory' }}</span>
@@ -197,7 +204,7 @@
             <div class="mt-3 flex flex-wrap items-end justify-between gap-4 xl:pr-[110px]">
                 <div>
                     <h1 class="font-serif text-[30px] sm:text-[34px] leading-tight text-[#1D1B16] dark:text-[#F3EFE7] font-semibold">{{ $isFr ? 'Annuaire des produits' : 'Product directory' }}</h1>
-                    <p class="mt-1.5 text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Découvrez des milliers de créations authentiques fabriquées par nos artisans et entreprises.' : 'Discover thousands of authentic creations made by our artisans and businesses.' }}</p>
+                    <p class="mt-1.5 text-[14px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Découvrez des milliers de créations authentiques fabriquées par nos artisans et entreprises.' : 'Discover thousands of authentic creations made by our artisans and businesses.' }}</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     {{-- 44px on phones, the drawn 40px from `md` up: the sort box
@@ -211,7 +218,7 @@
                     <form method="GET" action="{{ route('products.index') }}" class="flex items-center gap-2 h-[46px] md:h-[40px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         @if($activeCat !== '')<input type="hidden" name="categorie" value="{{ $activeCat }}">@endif
-                        <label for="sort-select" class="text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
+                        <label for="sort-select" class="text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort-select" name="sort" onchange="this.form.submit()"
                             class="ui-field-bare font-medium cursor-pointer w-auto">
                             <option value="recents" {{ ($sort ?? 'recents') === 'recents' ? 'selected' : '' }}>{{ $isFr ? 'Plus récents' : 'Most recent' }}</option>
@@ -230,7 +237,7 @@
                 </div>
             </div>
 
-            <p class="mt-5 flex items-center gap-2 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
+            <p class="mt-5 flex items-center gap-2 text-[14px] md:text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
                 <i data-lucide="package" class="w-[15px] h-[15px] text-[#0B3D28] dark:text-[#339B56]"></i>
                 {{ $fmt($liveCount) }} {{ $isFr ? 'produits disponibles' : 'products available' }}
             </p>
@@ -244,9 +251,9 @@
                             <img src="{{ $product['img'] }}" alt="{{ $product['name'] }}" class="prod-img w-full h-[168px] object-cover">
                         </a>
                         @if($product['badge'] === 'new')
-                        <span class="absolute top-2.5 left-2.5 bg-[#0E3D26] text-white text-[12px] md:text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">{{ $isFr ? 'Nouveau' : 'New' }}</span>
+                        <span class="absolute top-2.5 left-2.5 max-w-[96px] md:max-w-none truncate bg-[#0E3D26] text-white text-[14px] md:text-[9.5px] font-bold tracking-normal md:tracking-[0.06em] uppercase rounded-md px-1.5 py-1 md:px-2">{{ $isFr ? 'Nouveau' : 'New' }}</span>
                         @elseif($product['badge'] === 'best')
-                        <span class="absolute top-2.5 left-2.5 bg-[#EFA912] text-white text-[12px] md:text-[9.5px] font-bold tracking-[0.06em] uppercase rounded-md px-2 py-1">Best-seller</span>
+                        <span class="absolute top-2.5 left-2.5 max-w-[96px] md:max-w-none truncate bg-[#EFA912] text-white text-[14px] md:text-[9.5px] font-bold tracking-normal md:tracking-[0.06em] uppercase rounded-md px-1.5 py-1 md:px-2">Best-seller</span>
                         @endif
                         <a href="{{ $siacUser ? route('saved.index') : route('login', ['lang' => $lang]) }}" aria-label="{{ $isFr ? 'Ajouter aux favoris' : 'Save to favorites' }}"
                             class="absolute top-2 right-2 w-11 h-11 md:w-8 md:h-8 bg-white/95 dark:bg-[#12150F]/95 hover:bg-white hover:dark:bg-[#12150F] rounded-full flex items-center justify-center text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
@@ -254,19 +261,19 @@
                         </a>
                     </div>
                     <div class="p-3">
-                        <h3 class="text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">
+                        <h3 class="text-[14px] md:text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">
                             <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}" class="ui-tap-inset hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $product['name'] }}</a>
                         </h3>
-                        <p class="mt-1 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $product['cat'] }}</p>
+                        <p class="mt-1 text-[14px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] truncate">{{ $product['cat'] }}</p>
                         <a href="{{ route('products.show', ['slug' => $product['slug'], 'lang' => $lang]) }}"
-                            class="mt-3 w-full h-[44px] md:h-[34px] border border-[#E2E6E3] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[12px] md:text-[10.5px] font-bold tracking-[0.08em] text-[#26312B] dark:text-[#F3EFE7] uppercase transition-colors">
+                            class="mt-3 w-full h-[44px] md:h-[34px] border border-[#E2E6E3] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center gap-2 text-[14px] md:text-[10.5px] font-bold tracking-[0.08em] text-[#26312B] dark:text-[#F3EFE7] uppercase transition-colors">
                             <i data-lucide="message-square" class="w-[13px] h-[13px]"></i>
                             {{ $isFr ? 'Enquérir' : 'Inquire' }}
                         </a>
                     </div>
                 </article>
                 @empty
-                <p class="col-span-full py-10 text-center text-[13px] text-[#6F6B60] dark:text-[#868778]">
+                <p class="col-span-full py-10 text-center text-[14px] md:text-[13px] text-[#6F6B60] dark:text-[#868778]">
                     {{ $isFr ? 'Aucun produit ne correspond à ces critères.' : 'No product matches these criteria.' }}
                 </p>
                 @endforelse
@@ -283,9 +290,9 @@
 
                 @foreach(range(1, $products->lastPage()) as $pageNum)
                 @if($pageNum === $products->currentPage())
-                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[14px] md:text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
                 @else
-                <a href="{{ $products->url($pageNum) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
+                <a href="{{ $products->url($pageNum) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
                 @endif
                 @endforeach
 
@@ -310,8 +317,8 @@
                     <i data-lucide="{{ $trustIcon }}" class="w-[21px] h-[21px] text-[#04291A] dark:text-[#EDB33A]" stroke-width="1.6"></i>
                 </span>
                 <div class="leading-tight">
-                    <p class="text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
-                    <p class="mt-0.5 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line">{{ $trustSub }}</p>
+                    <p class="text-[14px] md:text-[12.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
+                    <p class="mt-0.5 text-[14px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line">{{ $trustSub }}</p>
                 </div>
             </div>
             @endforeach

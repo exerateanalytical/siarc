@@ -172,7 +172,7 @@
         <i data-lucide="circle-check" class="w-5 h-5 shrink-0 text-[#157A43] dark:text-[#339B56]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'Ce que nous faisons aujourd\'hui' : 'What we do today' }}</h2>
     </div>
-    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
+    <p class="mt-1.5 text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6]">
         {{ $isFr ? 'Chacun de ces points fonctionne dès maintenant sur la plateforme.' : 'Every point below works on the platform right now.' }}
     </p>
 
@@ -206,7 +206,7 @@
         <i data-lucide="hammer" class="w-5 h-5 shrink-0 text-[#C9942E]"></i>
         <h2 class="text-[17px] font-bold">{{ $isFr ? 'En développement' : 'Planned' }}</h2>
     </div>
-    <p class="mt-1.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+    <p class="mt-1.5 text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
         {{ $isFr
            ? 'Ces protections sont à notre feuille de route. Aucune n\'est disponible aujourd\'hui : ne comptez sur aucune d\'entre elles pour une pièce que vous vendez maintenant.'
            : 'These protections are on our roadmap. None of them is available today: do not rely on any of them for a piece you are selling now.' }}
@@ -216,7 +216,7 @@
         @foreach($planned as $item)
         <div class="bg-white dark:bg-[#12150F] border border-dashed border-[#E3DECF] dark:border-[#262B21] rounded-xl px-3.5 py-3 flex items-start gap-2">
             <i data-lucide="clock" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-[#B8B2A4]"></i>
-            <span class="text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-snug">{{ $item }}</span>
+            <span class="text-[14px] md:text-[12.5px] text-[#8A857A] dark:text-[#868778] leading-snug">{{ $item }}</span>
         </div>
         @endforeach
     </div>

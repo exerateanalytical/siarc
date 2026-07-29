@@ -4,6 +4,17 @@
 $isEdit = (bool) $business;
 $action = $isEdit ? route('business.update') : route('business.store');
 $v = fn ($field, $default = '') => old($field, $isEdit ? ($business->{$field} ?? $default) : $default);
+$isFr = $lang === 'fr';
+// One name/tagline/description field, in whichever language the artisan is
+// using right now — never a French+English pair to type twice (the owner's
+// note: "most of these artisans are uneducated"). It reads from whichever
+// column is filled (falls back to the other one), matching the display
+// convention used everywhere else on the site, and old() still wins on a
+// failed validation round-trip.
+$vLang = function ($frField, $enField, $key) use ($isFr, $isEdit, $business) {
+    $stored = $isEdit ? ($isFr ? ($business->{$frField} ?: $business->{$enField}) : ($business->{$enField} ?: $business->{$frField})) : '';
+    return old($key, $stored ?? '');
+};
 $pageTitle = $isEdit ? ($lang === 'fr' ? 'Modifier mon entreprise' : 'Edit my business') : ($lang === 'fr' ? 'Créer mon entreprise' : 'Create my business');
 
 $fileCls = 'ui-file';
@@ -12,10 +23,44 @@ $fileCls = 'ui-file';
 @section('content')
 <div class="max-w-2xl">
 
+    {{-- "Set up your shop" is one journey in two pages: business details, then
+         verification. Not a data-model merge — every field and validation rule
+         below is unchanged — just one continuous path instead of two forms an
+         artisan had to discover separately. --}}
+    @unless($isEdit)
+    <div class="mb-4 flex items-center gap-2 text-[12.5px] font-semibold text-[#6F6B60] dark:text-[#868778]">
+        <span class="inline-flex items-center gap-1.5 text-[#14532D] dark:text-[#339B56]">
+            <span class="w-5 h-5 rounded-full bg-[#14532D] dark:bg-[#339B56] text-white dark:text-[#0A0C09] flex items-center justify-center text-[11px] font-bold">1</span>
+            {{ $lang === 'fr' ? 'Détails de l\'entreprise' : 'Business details' }}
+        </span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="inline-flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full border border-[#D9D2C4] dark:border-[#262B21] flex items-center justify-center text-[11px] font-bold">2</span>
+            {{ $lang === 'fr' ? 'Vérification' : 'Verification' }}
+        </span>
+        <span class="ml-auto">{{ $lang === 'fr' ? 'Étape 1 sur 2' : 'Step 1 of 2' }}</span>
+    </div>
+    @endunless
+
     @if(session('success'))
     <div class="ui-alert ui-alert-ok mb-4">
         <i data-lucide="check-circle-2" class="w-4 h-4"></i>{{ session('success') }}
     </div>
+    @endif
+
+    @if($isEdit && $business && $business->verification_tier === 'unverified')
+    <a href="{{ route('verification.show') }}" class="mb-4 flex items-center justify-between gap-3 ui-card hover:border-[#14532D] hover:dark:border-[#339B56] transition-colors">
+        <span class="flex items-center gap-3 min-w-0">
+            <span class="w-9 h-9 shrink-0 rounded-full bg-[#EBF4ED] dark:bg-[#0C3D1D] flex items-center justify-center">
+                <i data-lucide="badge-check" class="w-[18px] h-[18px] text-[#14532D] dark:text-[#339B56]"></i>
+            </span>
+            <span class="min-w-0">
+                <span class="block text-[13px] font-bold text-[#1B1B18] dark:text-[#F3EFE7]">{{ $lang === 'fr' ? 'Étape suivante : faire vérifier votre profil' : 'Next step: get your profile verified' }}</span>
+                <span class="block text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $lang === 'fr' ? 'Déposez vos documents pour obtenir le badge vérifié.' : 'Upload your documents to get the verified badge.' }}</span>
+            </span>
+        </span>
+        <i data-lucide="arrow-right" class="w-4 h-4 shrink-0 text-[#14532D] dark:text-[#339B56]"></i>
+    </a>
     @endif
 
     @if($errors->any())
@@ -37,37 +82,19 @@ $fileCls = 'ui-file';
         <div class="ui-card">
             <h2 class="ui-card-title mb-4">{{ $lang === 'fr' ? 'Identité' : 'Identity' }}</h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Nom (français)' : 'Name (French)' }} <span class="ui-req">*</span></label>
-                    <input name="name_fr" required value="{{ $v('name_fr') }}" class="ui-field">
-                </div>
-                <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Nom (anglais)' : 'Name (English)' }}</label>
-                    <input name="name_en" value="{{ $v('name_en') }}" class="ui-field">
-                </div>
+            <div class="mb-4">
+                <label class="ui-label">{{ $lang === 'fr' ? "Nom de l'entreprise" : 'Business name' }} <span class="ui-req">*</span></label>
+                <input name="business_name" required value="{{ $vLang('name_fr', 'name_en', 'business_name') }}" class="ui-field">
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Slogan (français)' : 'Tagline (French)' }}</label>
-                    <input name="tagline_fr" value="{{ $v('tagline_fr') }}" maxlength="255" class="ui-field">
-                </div>
-                <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Slogan (anglais)' : 'Tagline (English)' }}</label>
-                    <input name="tagline_en" value="{{ $v('tagline_en') }}" maxlength="255" class="ui-field">
-                </div>
+            <div class="mb-4">
+                <label class="ui-label">{{ $lang === 'fr' ? 'Slogan' : 'Tagline' }}</label>
+                <input name="business_tagline" value="{{ $vLang('tagline_fr', 'tagline_en', 'business_tagline') }}" maxlength="255" class="ui-field">
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Description (français)' : 'Description (French)' }}</label>
-                    <textarea name="description_fr" rows="4" class="ui-field ui-textarea">{{ $v('description_fr') }}</textarea>
-                </div>
-                <div>
-                    <label class="ui-label">{{ $lang === 'fr' ? 'Description (anglais)' : 'Description (English)' }}</label>
-                    <textarea name="description_en" rows="4" class="ui-field ui-textarea">{{ $v('description_en') }}</textarea>
-                </div>
+            <div>
+                <label class="ui-label">{{ $lang === 'fr' ? 'Description' : 'Description' }}</label>
+                <textarea name="business_description" rows="4" class="ui-field ui-textarea">{{ $vLang('description_fr', 'description_en', 'business_description') }}</textarea>
             </div>
         </div>
 
@@ -86,7 +113,7 @@ $fileCls = 'ui-file';
                         @foreach($industries as $groupName => $trades)
                         <optgroup label="{{ $groupName }}">
                             @foreach($trades as $ind)
-                            <option value="{{ $ind->id }}" {{ $v('industry_id') == $ind->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $ind->name_fr : ($ind->name_en ?: $ind->name_fr) }}</option>
+                            <option value="{{ $ind->id }}" {{ old('industry_id', $isEdit ? ($business->industry_id ?? '') : ($prefillIndustryId ?? '')) == $ind->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $ind->name_fr : ($ind->name_en ?: $ind->name_fr) }}</option>
                             @endforeach
                         </optgroup>
                         @endforeach

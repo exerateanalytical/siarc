@@ -49,6 +49,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 
@@ -109,9 +110,14 @@
 @endphp
 <nav class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-white border-t border-[#EEEDEA] flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom)">
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-[#14652F]' : 'text-[#8A857A]' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-[#14652F]' : 'text-[#8A857A]' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5 {{ $tab['active'] ? 'fill-[#DFEDE3]' : '' }}"></i>
-        <span class="text-[12px] md:text-[10px] font-semibold">{{ $tab['label'] }}</span>
+        {{-- `self-stretch` takes the label out of the row's `items-center` sizing
+             so it spans the full column and centres each wrapped line — a 5-tab
+             row at the universal 16px means the longest label ("Messages") no
+             longer fits one line at 360px, and wrapping to two centred lines
+             beats letting it bleed into the next tab. --}}
+        <span class="text-[16px] md:text-[10px] font-semibold self-stretch text-center leading-tight break-words">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

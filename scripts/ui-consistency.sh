@@ -127,8 +127,8 @@ create_shop() { # create_shop <jar> <email>
   ind=$(grep -oE '<option value="[0-9]+"' "$T/tk.html" | head -1 | grep -oE '[0-9]+')
   curl -s -c "$jar" -b "$jar" -X POST "$BASE/tableau-de-bord/entreprise/creer" \
     --data-urlencode "_token=$tk" --data-urlencode "industry_id=$ind" \
-    --data-urlencode "name_fr=UI Check Atelier $STAMP" \
-    --data-urlencode "description_fr=Boutique temporaire creee par la verification d'interface." \
+    --data-urlencode "business_name=UI Check Atelier $STAMP" \
+    --data-urlencode "business_description=Boutique temporaire creee par la verification d'interface." \
     --data-urlencode "email=$mail" -o /dev/null
 }
 

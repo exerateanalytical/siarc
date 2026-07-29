@@ -34,14 +34,62 @@
         ['truck','Reliable delivery',       "Fast delivery anywhere\nin the world."],
         ['headset','Dedicated support',       "A team at your service\n7 days a week."],
     ];
+
+    /*
+     | SEO/AEO for the category browse page. $current is the real node this
+     | request is drilled into (null = root); title/description and the
+     | breadcrumb trail are built from it and from the real rolled-up
+     | $headBiz/$headProd counts, never a made-up number. ?cat= (and, at
+     | root, ?view=filieres) changes the actual content shown so it stays on
+     | the canonical URL; ?lang=/?sort= do not, so those are stripped.
+     */
+    $seoCatQuery = array_filter([
+        'cat'  => $current->slug ?? null,
+        'view' => (! $current && $view === 'filieres') ? 'filieres' : null,
+    ]);
+    $seoCanonical = url('/galerie/secteurs') . ($seoCatQuery ? '?' . http_build_query($seoCatQuery) : '');
+    $seoHreflangQuery = $seoCatQuery;
+
+    $title = $current
+        ? ($nm($current) . ' — Artisan Hub 237')
+        : ($isFr ? 'Toutes les catégories — Artisan Hub 237' : 'All categories — Artisan Hub 237');
+    // Real rolled-up counts when the category has any; a bare but truthful
+    // line when it doesn't — "0 artisans" is honest yet tells a searcher
+    // nothing worth clicking.
+    if ($current) {
+        $descCounts = collect([
+            $headBiz > 0 ? ($fmt($headBiz) . ($isFr ? ' artisans' : ' artisans')) : null,
+            $headProd > 0 ? ($fmt($headProd) . ($isFr ? ' produits' : ' products')) : null,
+        ])->filter()->implode($isFr ? ' et ' : ' and ');
+        $description = $descCounts !== ''
+            ? ($isFr
+                ? "{$nm($current)} — {$descCounts} camerounais sur Artisan Hub 237."
+                : "{$nm($current)} — {$descCounts} from Cameroonian artisans on Artisan Hub 237.")
+            : ($isFr
+                ? "{$nm($current)} — catégorie de l'artisanat camerounais sur Artisan Hub 237."
+                : "{$nm($current)} — a category of Cameroonian craft on Artisan Hub 237.");
+    } else {
+        $description = $isFr
+            ? 'Toutes les catégories de l\'artisanat camerounais — explorez nos créations par catégorie.'
+            : 'All categories of Cameroonian crafts — explore our creations by category.';
+    }
+
+    $seoBreadcrumb = \App\Support\Seo::breadcrumbSchema(array_merge(
+        [
+            ['name' => $isFr ? 'Accueil' : 'Home', 'url' => route('home', ['lang' => $lang])],
+            ['name' => $isFr ? 'Catégories' : 'Categories', 'url' => route('industries.index', ['lang' => $lang])],
+        ],
+        collect($trail)->map(fn ($node) => ['name' => $nm($node), 'url' => route('industries.index', ['lang' => $lang, 'cat' => $node->slug])])->all()
+    ));
+    $seoJsonLd = [$seoBreadcrumb];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $isFr ? 'Toutes les catégories de l\'artisanat camerounais — explorez nos créations par catégorie.' : 'All categories of Cameroonian crafts — explore our creations by category.' }}">
-    <title>{{ $isFr ? 'Toutes les catégories — Artisan Hub 237' : 'All categories — Artisan Hub 237' }}</title>
+    <meta name="description" content="{{ $description }}">
+    <title>{{ $title }}</title>
 
     <script src="{{ asset('vendor/tailwindcss.js') }}"></script>
     <script>
@@ -78,6 +126,7 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FEFDFC] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
@@ -149,7 +198,7 @@
         <!-- Main -->
         <main class="flex-1 min-w-0">
             <!-- Breadcrumb -->
-            <nav class="flex flex-wrap items-center gap-2 text-[13px]" aria-label="Breadcrumb">
+            <nav class="flex flex-wrap items-center gap-2 text-[14px] md:text-[13px]" aria-label="Breadcrumb">
                 <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#166534] dark:text-[#339B56] hover:underline">{{ $isFr ? 'Accueil' : 'Home' }}</a>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B4B0A6]"></i>
                 <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="{{ $current ? 'text-[#166534] dark:text-[#339B56] hover:underline' : 'text-[#6F6B60] dark:text-[#868778]' }}">{{ $isFr ? 'Catégories' : 'Categories' }}</a>
@@ -166,7 +215,7 @@
             <div class="mt-4 flex flex-wrap items-end justify-between gap-5">
                 <div class="min-w-0">
                     @if($current)
-                    <span class="inline-block text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#B8860B]">{{ $levelLabel($current->level) }}</span>
+                    <span class="inline-block text-[14px] md:text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#B8860B]">{{ $levelLabel($current->level) }}</span>
                     @endif
                     <h1 class="font-serif text-[28px] sm:text-[36px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-tight">
                         {{ $current ? $nm($current) : ($view === 'filieres' ? ($isFr ? 'Toutes les filières' : 'All branches') : ($isFr ? 'Toutes les catégories' : 'All categories')) }}
@@ -187,7 +236,7 @@
                                 : 'Explore Cameroonian crafts by the official nomenclature: sector, branch, trade group and trade.' }}
                         @endif
                     </p>
-                    <p class="mt-3 text-[13px] text-[#6F6B60] dark:text-[#868778]">
+                    <p class="mt-3 text-[14px] md:text-[13px] text-[#6F6B60] dark:text-[#868778]">
                         <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $fmt($headBiz) }}</span> {{ $isFr ? 'artisans' : 'artisans' }}
                         <span class="mx-1.5 text-[#CFC9BB]">·</span>
                         <span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $fmt($headProd) }}</span> {{ $isFr ? 'produits' : 'products' }}
@@ -199,7 +248,7 @@
                         <input type="hidden" name="lang" value="{{ $lang }}">
                         @if($current)<input type="hidden" name="cat" value="{{ $current->slug }}">@endif
                         @if(!$current && $view === 'filieres')<input type="hidden" name="view" value="filieres">@endif
-                        <label for="sort" class="text-[13.5px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
+                        <label for="sort" class="text-[14px] md:text-[13.5px] text-[#6F6B60] dark:text-[#868778] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort" name="sort" onchange="this.form.submit()"
                             class="ui-field-bare font-semibold cursor-pointer w-auto pr-1">
                             <option value="" @selected(empty($sort))>{{ $isFr ? 'Ordre officiel' : 'Official order' }}</option>
@@ -222,12 +271,12 @@
 
             @unless($current)
             <div class="mt-5 inline-flex items-center bg-[#F4F2ED] dark:bg-[#0A0C09] rounded-xl p-1 gap-1">
-                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[44px] md:h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' : 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
-                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[44px] md:h-[36px] inline-flex items-center rounded-lg text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="px-4 h-[44px] md:h-[36px] inline-flex items-center rounded-lg text-[14px] md:text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' : 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' }}">{{ $isFr ? 'Par secteur' : 'By sector' }}</a>
+                <a href="{{ route('industries.index', ['lang' => $lang, 'view' => 'filieres']) }}" class="px-4 h-[44px] md:h-[36px] inline-flex items-center rounded-lg text-[14px] md:text-[13px] font-semibold transition-colors {{ $view === 'filieres' ? 'bg-white dark:bg-[#12150F] shadow-sm text-[#14532D] dark:text-[#339B56]' : 'text-[#6F6B60] dark:text-[#868778] hover:text-[#1D1B16] hover:dark:text-[#F3EFE7]' }}">{{ $isFr ? 'Toutes les filières' : 'All branches' }}</a>
             </div>
             @endunless
 
-            <p class="{{ $current ? 'mt-5' : 'mt-3' }} text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
+            <p class="{{ $current ? 'mt-5' : 'mt-3' }} text-[14px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6]">
                 {{ $fmt($children->count()) }}
                 @if(!$current && $view === 'filieres')
                     {{ $isFr ? ($children->count() === 1 ? 'filière' : 'filières') : ($children->count() === 1 ? 'branch' : 'branches') }}
@@ -244,7 +293,7 @@
                 </span>
                 <p class="mt-4 text-[14px] text-[#55524A] dark:text-[#B4B5A6] max-w-[380px] mx-auto">{{ $isFr ? "Ce métier n'a pas de sous-catégorie. Découvrez les artisans qui l'exercent." : 'This trade has no sub-category. Discover the artisans who practise it.' }}</p>
                 @if($current)
-                <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $current->slug]) }}" class="mt-5 inline-flex items-center gap-2 bg-[#0E3022] hover:bg-leaf text-white text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                <a href="{{ route('businesses.index', ['lang' => $lang, 'industry' => $current->slug]) }}" class="mt-5 inline-flex items-center gap-2 bg-[#0E3022] hover:bg-leaf text-white text-[14px] md:text-[13px] font-semibold px-4 py-2.5 rounded-lg transition-colors">
                     {{ $isFr ? 'Voir les artisans' : 'View artisans' }}<i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
                 @endif
@@ -272,8 +321,8 @@
                              line — at 360 "Sculpteur/décorateur sur tous matériaux"
                              read as "culpteur/décorateu". Clamp only; the parent `a`
                              is already `text-center`. --}}
-                        <h3 class="mt-3 text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[34px] break-words">{{ $nm($tile) }}</h3>
-                        <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
+                        <h3 class="mt-3 text-[14px] md:text-[13px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[40px] md:min-h-[34px] break-words">{{ $nm($tile) }}</h3>
+                        <p class="mt-1 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$tile->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }}</p>
                     </a>
                     @endforeach
                 </div>
@@ -301,14 +350,14 @@
                         <i data-lucide="{{ $nodeIcon($child->level) }}" class="w-8 h-8 text-[#1D4A2E] dark:text-[#339B56]" style="stroke-width:1.5"></i>
                     </span>
                     @endif
-                    <span class="mt-3 inline-block text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
+                    <span class="mt-3 inline-block text-[14px] md:text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
                     {{-- Same `line-clamp` / `flex` conflict as the featured tiles above. --}}
                     <h2 class="mt-1 text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 min-h-[38px] break-words">
                         {{ $nm($child) }}
                     </h2>
                     <div class="mx-auto mt-1.5 h-[2px] w-6 bg-[#E2B54D] rounded-full"></div>
-                    <p class="mt-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
-                    <a href="{{ $href }}" class="ui-tap-inset mt-3.5 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
+                    <p class="mt-2 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
+                    <a href="{{ $href }}" class="ui-tap-inset mt-3.5 inline-flex items-center gap-2 text-[14px] md:text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                         {{ $leaf ? ($isFr ? 'Voir les artisans' : 'View artisans') : ($isFr ? 'Explorer' : 'Explore') }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -331,11 +380,11 @@
                     </span>
                     @endif
                     <div class="min-w-0">
-                        <span class="text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
+                        <span class="text-[14px] md:text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#B8860B]">{{ $levelLabel($child->level) }}</span>
                         <h2 class="text-[15px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] truncate">{{ $nm($child) }}</h2>
-                        <p class="mt-0.5 text-[12.5px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
+                        <p class="mt-0.5 text-[14px] md:text-[12.5px] text-[#6F6B60] dark:text-[#868778]">{{ $fmt($biz[$child->id] ?? 0) }} {{ $isFr ? 'artisans' : 'artisans' }} <span class="text-[#CFC9BB]">·</span> {{ $fmt($prod[$child->id] ?? 0) }} {{ $isFr ? 'produits' : 'products' }}</p>
                     </div>
-                    <a href="{{ $href }}" class="ml-auto shrink-0 inline-flex items-center gap-2 text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
+                    <a href="{{ $href }}" class="ml-auto shrink-0 inline-flex items-center gap-2 text-[14px] md:text-[13px] font-semibold text-[#166534] dark:text-[#339B56] hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                         {{ $leaf ? ($isFr ? 'Voir les artisans' : 'View artisans') : ($isFr ? 'Explorer' : 'Explore') }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -352,8 +401,8 @@
                         <i data-lucide="{{ $trustIcon }}" class="w-[26px] h-[26px] text-[#04291A] dark:text-[#EDB33A]" stroke-width="1.5"></i>
                     </span>
                     <div>
-                        <h3 class="text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</h3>
-                        <p class="mt-1 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $trustDesc }}</p>
+                        <h3 class="text-[14px] md:text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</h3>
+                        <p class="mt-1 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778] leading-relaxed whitespace-pre-line">{{ $trustDesc }}</p>
                     </div>
                 </div>
                 @endforeach

@@ -43,9 +43,9 @@
     @if($bLink)<a href="{{ $bHref }}" class="flex items-center gap-3 shrink-0">@endif
         <img src="{{ $bMark }}" alt="{{ $bAlt }}" class="{{ $h ?? 'h-11 w-11' }} object-contain shrink-0" width="640" height="640">
         <span class="leading-tight">
-            <span class="block text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">Artisan Hub 237</span>
+            <span class="block text-[14px] md:text-[13px] font-bold tracking-[0.02em] text-[#1B1B18] uppercase whitespace-nowrap">Artisan Hub 237</span>
             @if(($tagline ?? true) !== false)
-            <span class="block text-[10.5px] font-semibold text-[#157A43] whitespace-nowrap">{{ $bIsFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
+            <span class="block text-[14px] leading-tight md:text-[10.5px] md:leading-normal font-semibold text-[#157A43] whitespace-normal md:whitespace-nowrap">{{ $bIsFr ? 'Notre héritage, notre fierté, notre avenir' : 'Our heritage, our pride, our future' }}</span>
             @endif
         </span>
     @if($bLink)</a>@endif

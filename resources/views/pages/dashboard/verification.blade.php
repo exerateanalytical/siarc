@@ -30,6 +30,22 @@ $fileCls = 'ui-file';
 @section('content')
 <div class="max-w-2xl">
 
+    {{-- Same journey as the business form, continued: step 2 of the "set up
+         your shop" path. See resources/views/pages/dashboard/business-form.blade.php
+         for step 1 — nothing here changed data-model-wise, only the framing. --}}
+    <div class="mb-4 flex items-center gap-2 text-[12.5px] font-semibold text-[#6F6B60] dark:text-[#868778]">
+        <a href="{{ route('business.edit') }}" class="inline-flex items-center gap-1.5 hover:text-[#14532D] hover:dark:text-[#339B56]">
+            <span class="w-5 h-5 rounded-full border border-[#D9D2C4] dark:border-[#262B21] flex items-center justify-center text-[11px] font-bold">1</span>
+            {{ $lang === 'fr' ? 'Détails de l\'entreprise' : 'Business details' }}
+        </a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="inline-flex items-center gap-1.5 text-[#14532D] dark:text-[#339B56]">
+            <span class="w-5 h-5 rounded-full bg-[#14532D] dark:bg-[#339B56] text-white dark:text-[#0A0C09] flex items-center justify-center text-[11px] font-bold">2</span>
+            {{ $lang === 'fr' ? 'Vérification' : 'Verification' }}
+        </span>
+        <span class="ml-auto">{{ $lang === 'fr' ? 'Étape 2 sur 2' : 'Step 2 of 2' }}</span>
+    </div>
+
     @if(session('success'))
     <div class="ui-alert ui-alert-ok mb-4">
         <i data-lucide="check-circle-2" class="w-4 h-4"></i>{{ session('success') }}

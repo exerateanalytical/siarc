@@ -130,15 +130,57 @@ class AccountLifecycleTest extends TestCase
     public function test_quick_register_survives_a_throwing_mailer(): void
     {
         $this->useDeadMailer();
+        $industryId = DB::table('industries')->where('level', 4)->value('id');
 
         $res = $this->post('/inscription-rapide', [
+            'first_name'   => 'Rapide',
+            'last_name'    => 'Signup',
             'email'        => 'rapide@example.cm',
+            'industry_id'  => $industryId,
             'password'     => 'MotDePasse#2026',
             'account_type' => 'artisan',
         ]);
 
-        $res->assertRedirect('/tableau-de-bord');
+        // The fast form sends the member straight to email verification — never
+        // back to the dashboard — even when the mail relay is dead: the account
+        // still exists and the verify page offers a resend.
+        $res->assertRedirect(route('email.verify', ['lang' => 'fr']));
         $this->assertNotNull(DB::table('users')->where('email', 'rapide@example.cm')->first());
+    }
+
+    /**
+     * The owner's own words: "immediately they input their name, contact
+     * details, select category and account type and register. they should be
+     * sent an email to verify their accounts" — the fast form is that
+     * sequence, and it must land on the verification step before any
+     * business/product/KYC page exists to visit.
+     */
+    public function test_quick_register_reaches_email_verification_before_any_business_step(): void
+    {
+        $industryId = DB::table('industries')->where('level', 4)->value('id');
+
+        $res = $this->post('/inscription-rapide', [
+            'first_name'   => 'Minh',
+            'last_name'    => 'Atangana',
+            'phone'        => '+237690000099',
+            'email'        => 'minh.atangana@example.cm',
+            'industry_id'  => $industryId,
+            'password'     => 'MotDePasse#2026',
+            'account_type' => 'artisan',
+        ]);
+
+        $res->assertRedirect(route('email.verify', ['lang' => 'fr']));
+
+        $user = DB::table('users')->where('email', 'minh.atangana@example.cm')->first();
+        $this->assertNotNull($user);
+        $this->assertSame('Minh Atangana', $user->name);
+        $this->assertSame(0, (int) $user->is_email_verified);
+
+        // Business creation is gated behind a verified email — the sequence
+        // cannot be skipped even by requesting the URL directly.
+        $this->withSession(['siac_user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => 'business_owner', 'is_admin' => false]])
+            ->post('/tableau-de-bord/entreprise/creer', [])
+            ->assertRedirect(route('email.verify'));
     }
 
     /**

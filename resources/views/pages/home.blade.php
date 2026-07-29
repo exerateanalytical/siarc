@@ -158,6 +158,13 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @php
+        $title = $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237';
+        $description = $isFr
+            ? 'Artisan Hub 237 — Notre héritage, notre fierté, notre avenir. Découvrez les artisans et producteurs camerounais.'
+            : 'Artisan Hub 237 — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.';
+    @endphp
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-cream dark:bg-[#0A0C09] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
@@ -197,7 +204,7 @@
             <!-- Pagination -->
             <div class="flex items-center justify-center gap-6 mt-12">
                 @foreach($heroSlides as $i => $slide)
-                <button data-slide="{{ $i }}" class="hero-dot text-[13px] tracking-wider pb-1.5 border-b-2 transition-colors {{ $i === 0 ? 'text-white border-gold' : 'text-white/55 border-transparent hover:text-white' }}">
+                <button data-slide="{{ $i }}" class="hero-dot text-[14px] md:text-[13px] tracking-wider pb-1.5 border-b-2 transition-colors {{ $i === 0 ? 'text-white border-gold' : 'text-white/55 border-transparent hover:text-white' }}">
                     {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}
                 </button>
                 @endforeach
@@ -226,8 +233,8 @@
             </div>
             <div class="leading-tight">
                 <p class="text-[19px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['n'] }}</p>
-                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['label'] }}</p>
-                <p class="text-[13px] md:text-[11px] text-muted dark:text-[#868778] mt-1 leading-snug max-w-[130px]">{{ $stat['cap'] }}</p>
+                <p class="text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $stat['label'] }}</p>
+                <p class="text-[14px] md:text-[11px] text-muted dark:text-[#868778] mt-1 leading-snug max-w-[130px]">{{ $stat['cap'] }}</p>
             </div>
         </div>
         @endforeach
@@ -262,7 +269,7 @@
                 <span class="block w-20 h-20 rounded-full overflow-hidden shrink-0">
                     <img src="{{ asset('images/landing/' . $scIcon) }}" alt="" class="w-full h-full object-cover scale-[1.17]" aria-hidden="true">
                 </span>
-                <p class="mt-4 text-[13px] font-medium text-[#1D1B16] dark:text-[#F3EFE7] leading-[1.4] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
+                <p class="mt-4 text-[14px] md:text-[13px] font-medium text-[#1D1B16] dark:text-[#F3EFE7] leading-[1.4] whitespace-pre-line grow flex items-center justify-center">{{ $scLabel }}</p>
                 <span class="absolute bottom-0 inset-x-0 flex h-[3px]">
                     <span class="flex-1 bg-flagg"></span><span class="flex-1 bg-flagr"></span><span class="flex-1 bg-flagy"></span>
                 </span>
@@ -272,7 +279,7 @@
     </div>
 
     <div class="mt-8 text-center">
-        <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
+        <a href="{{ route('industries.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2 text-[14px] md:text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
             {{ $isFr ? 'Voir tous les secteurs' : 'View all sectors' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -307,23 +314,23 @@
                     <h3 class="text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-1">
                         {{ $isFr ? $business->name_fr : ($business->name_en ?? $business->name_fr) }}
                     </h3>
-                    <p class="mt-0.5 text-[13px] md:text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">
+                    <p class="mt-0.5 text-[14px] md:text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">
                         {{ $isFr ? ($business->industry->name_fr ?? '') : ($business->industry->name_en ?? $business->industry->name_fr ?? '') }}
                     </p>
-                    <p class="mt-2 flex items-center gap-1 text-[13px] md:text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6]">
+                    <p class="mt-2 flex items-center gap-1 text-[14px] md:text-[11.5px] text-[#6B665C] dark:text-[#B4B5A6]">
                         <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
                         <span class="line-clamp-1">{{ $business->region->name_fr ?? ($business->city->name_fr ?? 'Cameroun') }} {{ $business->region ? 'Region' : '' }}</span>
                     </p>
                 </div>
             </a>
             @empty
-            <p class="text-[13px] text-muted dark:text-[#868778] py-8 mx-auto">{{ $isFr ? 'Aucune entreprise en vedette pour le moment.' : 'No featured businesses yet.' }}</p>
+            <p class="text-[14px] md:text-[13px] text-muted dark:text-[#868778] py-8 mx-auto">{{ $isFr ? 'Aucune entreprise en vedette pour le moment.' : 'No featured businesses yet.' }}</p>
             @endforelse
         </div>
     </div>
 
     <div class="mt-8 text-center">
-        <a href="{{ route('businesses.index', ['lang' => $lang, 'featured' => 1]) }}" class="inline-flex items-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
+        <a href="{{ route('businesses.index', ['lang' => $lang, 'featured' => 1]) }}" class="inline-flex items-center gap-2 text-[14px] md:text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
             {{ $isFr ? 'Voir toutes les entreprises' : 'View all businesses' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
@@ -345,10 +352,10 @@
             <div class="flex items-start justify-between gap-4">
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-3">
-                        <span class="text-[13px] md:text-[11px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">
+                        <span class="text-[14px] md:text-[11px] font-semibold tracking-[0.18em] text-gold dark:text-[#EDB33A] uppercase">
                             {{ $isFr ? 'Focus' : 'Focus' }}{{ $evIndustry ? ' — ' . mb_strtoupper(\Illuminate\Support\Str::before($evIndustry, ' &')) : '' }}
                         </span>
-                        <span class="border border-white/25 rounded px-2.5 py-1 text-[12px] md:text-[9.5px] font-medium tracking-[0.12em] text-white/85 uppercase">
+                        <span class="border border-white/25 rounded px-2.5 py-1 text-[14px] md:text-[9.5px] font-medium tracking-[0.12em] text-white/85 uppercase">
                             {{ $evOngoing ? ($isFr ? 'Événement actuel' : 'Current event') : ($isFr ? 'Événement à venir' : 'Upcoming event') }}
                         </span>
                     </div>
@@ -358,21 +365,21 @@
                         {{ $isFr ? $currentEvent->name_fr : ($currentEvent->name_en ?? $currentEvent->name_fr) }}
                     </p>
 
-                    <p class="mt-4 flex items-center gap-2 text-[13px] text-white/90">
+                    <p class="mt-4 flex items-center gap-2 text-[14px] md:text-[13px] text-white/90">
                         <i data-lucide="calendar" class="w-4 h-4 text-goldic shrink-0"></i>
                         {{ $dateRange($currentEvent->starts_at, $currentEvent->ends_at) }}
                     </p>
-                    <p class="mt-2 flex items-center gap-2 text-[13px] text-white/90">
+                    <p class="mt-2 flex items-center gap-2 text-[14px] md:text-[13px] text-white/90">
                         <i data-lucide="map-pin" class="w-4 h-4 text-goldic shrink-0"></i>
                         <span class="line-clamp-1">{{ $isFr ? $currentEvent->location_fr : ($currentEvent->location_en ?? $currentEvent->location_fr) }}</span>
                     </p>
 
-                    <p class="mt-4 text-[12.5px] text-white/70 leading-relaxed line-clamp-2">
+                    <p class="mt-4 text-[14px] md:text-[12.5px] text-white/70 leading-relaxed line-clamp-2">
                         {{ $isFr ? $currentEvent->description_fr : ($currentEvent->description_en ?? $currentEvent->description_fr) }}
                     </p>
 
                     <a href="{{ route('events.show', $currentEvent->slug) }}"
-                        class="mt-5 inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[12.5px] font-medium px-5 py-2.5 rounded transition-colors self-start">
+                        class="mt-5 inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[14px] md:text-[12.5px] font-medium px-5 py-2.5 rounded transition-colors self-start">
                         {{ $isFr ? 'Découvrir l\'événement' : 'Discover the event' }}
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -385,8 +392,8 @@
         @else
         <div class="rounded-xl bg-gradient-to-br from-deepgr to-inkgr p-7 flex flex-col items-start justify-center">
             <h2 class="mt-4 font-serif text-[28px] text-white font-medium">{{ $isFr ? 'Événements à venir' : 'Upcoming events' }}</h2>
-            <p class="mt-3 text-[13px] text-white/70">{{ $isFr ? 'Les prochains événements seront annoncés bientôt.' : 'Upcoming events will be announced soon.' }}</p>
-            <a href="{{ route('events.index') }}" class="mt-5 inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[12.5px] font-medium px-5 py-2.5 rounded transition-colors">
+            <p class="mt-3 text-[14px] md:text-[13px] text-white/70">{{ $isFr ? 'Les prochains événements seront annoncés bientôt.' : 'Upcoming events will be announced soon.' }}</p>
+            <a href="{{ route('events.index') }}" class="mt-5 inline-flex items-center gap-2.5 bg-leaf hover:bg-[#1B5E33] text-white text-[14px] md:text-[12.5px] font-medium px-5 py-2.5 rounded transition-colors">
                 {{ $isFr ? 'Voir les événements' : 'View events' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -395,7 +402,7 @@
 
         <!-- Current events -->
         <div class="bg-[#FDFBF6] dark:bg-[#12150F] border border-sand dark:border-[#262B21] rounded-xl p-5 flex flex-col">
-            <h3 class="text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Current Events' : 'Current Events' }}</h3>
+            <h3 class="text-[15px] md:text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Current Events' : 'Current Events' }}</h3>
 
             <div class="mt-2 flex-1 divide-y divide-[#EEE8DB] dark:divide-[#262B21]">
                 @forelse($upcomingEvents as $ev)
@@ -403,19 +410,19 @@
                     <img src="{{ $ev->cover_image ? asset('storage/' . $ev->cover_image) : asset('images/landing/' . $eventFallbacks[$loop->index % 3]) }}" alt=""
                         class="w-14 h-14 rounded-md object-cover shrink-0">
                     <div class="min-w-0">
-                        <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 group-hover:text-leaf group-hover:dark:text-[#339B56] transition-colors">
+                        <p class="text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 group-hover:text-leaf group-hover:dark:text-[#339B56] transition-colors">
                             {{ $isFr ? $ev->name_fr : ($ev->name_en ?? $ev->name_fr) }}
                         </p>
-                        <p class="mt-1 text-[13px] md:text-[11.5px] text-muted dark:text-[#868778]">{{ $dateRange($ev->starts_at, $ev->ends_at) }}</p>
-                        <p class="text-[13px] md:text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">{{ $isFr ? $ev->location_fr : ($ev->location_en ?? $ev->location_fr) }}</p>
+                        <p class="mt-1 text-[14px] md:text-[11.5px] text-muted dark:text-[#868778]">{{ $dateRange($ev->starts_at, $ev->ends_at) }}</p>
+                        <p class="text-[14px] md:text-[11.5px] text-muted dark:text-[#868778] line-clamp-1">{{ $isFr ? $ev->location_fr : ($ev->location_en ?? $ev->location_fr) }}</p>
                     </div>
                 </a>
                 @empty
-                <p class="py-6 text-[12.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'Aucun événement programmé pour le moment.' : 'No scheduled events at the moment.' }}</p>
+                <p class="py-6 text-[14px] md:text-[12.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'Aucun événement programmé pour le moment.' : 'No scheduled events at the moment.' }}</p>
                 @endforelse
             </div>
 
-            <a href="{{ route('events.index') }}" class="mt-3 pt-3.5 border-t border-[#EEE8DB] dark:border-[#262B21] flex items-center justify-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
+            <a href="{{ route('events.index') }}" class="mt-3 pt-3.5 border-t border-[#EEE8DB] dark:border-[#262B21] flex items-center justify-center gap-2 text-[14px] md:text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
                 {{ $isFr ? 'Voir tous les événements' : 'View all events' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -423,7 +430,7 @@
 
         <!-- Partners -->
         <div class="bg-[#F3EDE1] dark:bg-[#0A0C09] rounded-xl p-5 flex flex-col">
-            <h3 class="text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Our Partners' : 'Our Partners' }}</h3>
+            <h3 class="text-[15px] md:text-[13px] font-bold tracking-[0.15em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr ? 'Our Partners' : 'Our Partners' }}</h3>
 
             <div class="mt-4 flex-1 grid grid-cols-4 gap-2.5 content-start">
                 @forelse($partners as $partner)
@@ -437,21 +444,21 @@
                     @if($partner->logo ?? false)
                     <img src="{{ asset('storage/' . $partner->logo) }}" alt="{{ $partner->name_fr }}" class="h-8 w-full object-contain px-1">
                     @else
-                    <span class="w-7 h-7 rounded-full bg-leaf/10 text-leaf dark:text-[#339B56] text-[12px] md:text-[10px] font-bold flex items-center justify-center">
+                    <span class="w-8 h-8 rounded-full bg-leaf/10 text-leaf dark:text-[#339B56] text-[14px] md:text-[10px] font-bold flex items-center justify-center shrink-0">
                         {{ mb_strtoupper(mb_substr($partner->name_fr, 0, 2)) }}
                     </span>
                     @endif
-                    <span class="text-[12px] md:text-[8.5px] text-muted dark:text-[#868778] text-center leading-tight w-full px-0.5 truncate">
+                    <span class="text-[14px] md:text-[8.5px] text-muted dark:text-[#868778] text-center leading-tight w-full px-0.5 truncate">
                         {{ $isFr ? $partner->name_fr : ($partner->name_en ?? $partner->name_fr) }}
                     </span>
                 </div>
                 @endif
                 @empty
-                <p class="col-span-4 py-6 text-[12.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'Nos partenaires seront annoncés bientôt.' : 'Our partners will be announced soon.' }}</p>
+                <p class="col-span-4 py-6 text-[14px] md:text-[12.5px] text-muted dark:text-[#868778]">{{ $isFr ? 'Nos partenaires seront annoncés bientôt.' : 'Our partners will be announced soon.' }}</p>
                 @endforelse
             </div>
 
-            <a href="{{ route('partners.index') }}" class="mt-3 pt-3.5 flex items-center justify-center gap-2 text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
+            <a href="{{ route('partners.index') }}" class="mt-3 pt-3.5 flex items-center justify-center gap-2 text-[14px] md:text-[13px] font-semibold text-leaf dark:text-[#339B56] hover:text-[#1B5E33] hover:dark:text-[#339B56]">
                 {{ $isFr ? 'Voir tous les partenaires' : 'View all partners' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -474,8 +481,8 @@
                 <div class="flex items-center gap-3">
                     <i data-lucide="{{ $mIcon }}" class="w-8 h-8 text-goldic shrink-0" stroke-width="1.4"></i>
                     <div class="leading-tight">
-                        <p class="text-[13px] font-semibold text-white">{{ $mTitle }}</p>
-                        <p class="text-[13px] md:text-[11.5px] text-white/65 mt-0.5">{{ $mSub }}</p>
+                        <p class="text-[14px] font-semibold text-white">{{ $mTitle }}</p>
+                        <p class="text-[14px] md:text-[11.5px] text-white/65 mt-0.5">{{ $mSub }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -500,9 +507,9 @@
         ];
     @endphp
     @foreach($bottomTabs as $tab)
-    <a href="{{ $tab['href'] }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
+    <a href="{{ $tab['href'] }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 {{ $tab['active'] ? 'text-leaf dark:text-[#339B56]' : 'text-gray-400' }}">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5"></i>
-        <span class="text-[12px] md:text-[10px] font-medium">{{ $tab['label'] }}</span>
+        <span class="text-[16px] md:text-[10px] font-medium self-stretch text-center leading-tight break-words">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

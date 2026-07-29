@@ -32,7 +32,7 @@
 <section class="bg-[#0B2C1E]">
     <div class="max-w-[1024px] mx-auto px-5 py-10 text-center">
         <h1 class="text-[26px] font-bold text-white">{{ $isFr ? 'Actualités' : 'News' }}</h1>
-        <p class="mt-2 text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Foires, salons, expositions et nouveautés de l\'artisanat camerounais.' : 'Fairs, shows, exhibitions and news from Cameroonian craftsmanship.' }}</p>
+        <p class="mt-2 text-[14px] md:text-[13.5px] text-[#B9C4BC]">{{ $isFr ? 'Foires, salons, expositions et nouveautés de l\'artisanat camerounais.' : 'Fairs, shows, exhibitions and news from Cameroonian craftsmanship.' }}</p>
     </div>
 </section>
 
@@ -40,13 +40,13 @@
     @if($articles->isEmpty())
     <div class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl text-center py-14 px-5">
         <i data-lucide="newspaper" class="w-9 h-9 text-[#DCE7DF] mx-auto mb-3"></i>
-        <p class="text-[13.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Aucune actualité pour le moment. Revenez bientôt !' : 'No news for now. Come back soon!' }}</p>
+        <p class="text-[14px] md:text-[13.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr ? 'Aucune actualité pour le moment. Revenez bientôt !' : 'No news for now. Come back soon!' }}</p>
     </div>
     @else
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         @foreach($articles as $a)
         <article class="bg-white dark:bg-[#12150F] border border-[#ECECEA] dark:border-[#262B21] rounded-2xl p-5 flex flex-col">
-            <p class="flex items-center gap-2 text-[13px] md:text-[11.5px] font-semibold text-[#14652F] dark:text-[#339B56]">
+            <p class="flex items-center gap-2 text-[14px] md:text-[11.5px] font-semibold text-[#14652F] dark:text-[#339B56]">
                 <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
                 {{ $newsDate($a->published_at) }}
             </p>
@@ -54,11 +54,11 @@
                 <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? $a->title_fr : ($a->title_en ?? $a->title_fr) }}</a>
             </h2>
             @if($a->excerpt_fr)
-            <p class="mt-2.5 text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed line-clamp-3" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+            <p class="mt-2.5 text-[14px] md:text-[12.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed line-clamp-3" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
                 {{ $isFr ? $a->excerpt_fr : ($a->excerpt_en ?? $a->excerpt_fr) }}
             </p>
             @endif
-            <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="mt-auto pt-4 inline-flex items-center gap-2 text-[12.5px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
+            <a href="{{ route('news.show', ['slug' => $a->slug, 'lang' => $lang]) }}" class="mt-auto pt-4 inline-flex items-center gap-2 text-[14px] md:text-[12.5px] font-semibold text-[#14652F] dark:text-[#339B56] hover:text-[#14532D] hover:dark:text-[#339B56]">
                 {{ $isFr ? 'Lire la suite' : 'Read more' }}
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -68,7 +68,7 @@
     @endif
 
     <p class="mt-8 text-center">
-        <a href="{{ route('events.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[13px] font-semibold px-6 py-3 rounded-lg transition-colors">
+        <a href="{{ route('events.index', ['lang' => $lang]) }}" class="inline-flex items-center gap-2.5 bg-[#0A3020] hover:bg-[#14652F] text-white text-[14px] md:text-[13px] font-semibold px-6 py-3 rounded-lg transition-colors">
             {{ $isFr ? 'Voir tous les événements' : 'See all the events' }}
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>

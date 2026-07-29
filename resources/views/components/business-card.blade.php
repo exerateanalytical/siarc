@@ -25,7 +25,7 @@
             </div>
             @endif
         </a>
-        <span class="absolute top-2 left-2 bg-[#EFA912] text-[#3A2A03] text-[10px] font-bold tracking-[0.04em] px-2.5 py-1 rounded-md">{{ $bcType }}</span>
+        <span class="absolute top-2 left-2 bg-[#EFA912] text-[#3A2A03] text-[14px] md:text-[10px] font-bold tracking-[0.04em] px-2.5 py-1 rounded-md">{{ $bcType }}</span>
         @if($bcUser)
         <form method="POST" action="{{ route('businesses.toggle-save', $business->slug) }}" class="absolute top-2 right-2">
             @csrf
@@ -43,7 +43,7 @@
         @endif
     </div>
     <div class="p-3.5 flex-1 flex flex-col">
-        <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
+        <h3 class="flex items-center gap-1.5 text-[16px] md:text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
             <a href="{{ $bcUrl }}" class="ui-tap-inset truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">
                 {{ $bcIsFr ? $business->name_fr : ($business->name_en ?? $business->name_fr) }}
             </a>
@@ -55,20 +55,20 @@
             @endif
         </h3>
         @if($business->industry)
-        <p class="mt-1 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $bcIsFr ? $business->industry->name_fr : ($business->industry->name_en ?? $business->industry->name_fr) }}</p>
+        <p class="mt-1 text-[14px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $bcIsFr ? $business->industry->name_fr : ($business->industry->name_en ?? $business->industry->name_fr) }}</p>
         @endif
-        <p class="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
+        <p class="mt-1.5 flex items-center gap-1.5 text-[14px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
             <i data-lucide="map-pin" class="w-[12px] h-[12px]"></i>
             {{ $business->city->name_fr ?? ($business->region->name_fr ?? ($bcIsFr ? 'Cameroun' : 'Cameroon')) }}
         </p>
         @if($business->tagline_fr)
-        <p class="mt-2 text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed line-clamp-2">
+        <p class="mt-2 text-[14px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed line-clamp-2">
             {{ $bcIsFr ? $business->tagline_fr : ($business->tagline_en ?? $business->tagline_fr) }}
         </p>
         @endif
         <div class="mt-auto pt-3.5 flex items-center gap-2">
             <a href="{{ $bcUrl }}"
-                class="flex-1 h-[44px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                class="flex-1 h-[44px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[14px] md:text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                 {{ $bcIsFr ? 'Voir le profil' : 'View profile' }}
             </a>
             <a href="{{ $bcUser ? route('messages.compose', ['business' => $business->slug, 'lang' => $lang]) : '/login?lang=' . $lang }}" aria-label="{{ $bcIsFr ? 'Envoyer un message' : 'Send a message' }}"

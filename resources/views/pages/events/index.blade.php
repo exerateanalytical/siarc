@@ -171,7 +171,7 @@
 <main class="pb-16 sm:pb-0">
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-4 pb-12">
 
-    <nav class="flex items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
+    <nav class="flex items-center gap-2 text-[14px] md:text-[12.5px]" aria-label="Breadcrumb">
         <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
         <span class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Événements' : 'Events' }}</span>
@@ -296,10 +296,10 @@
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <h1 class="font-serif text-[30px] sm:text-[34px] leading-tight text-[#12432A] dark:text-[#339B56] font-semibold">{{ $isFr ? 'Événements' : 'Events' }}</h1>
-                    <p class="mt-1.5 text-[13.5px] font-semibold text-[#C9862B]">{{ $isFr ? 'Participez aux événements qui valorisent l\'artisanat camerounais' : 'Take part in the events that celebrate Cameroonian craftsmanship' }}</p>
+                    <p class="mt-1.5 text-[14px] md:text-[13.5px] font-semibold text-[#C9862B]">{{ $isFr ? 'Participez aux événements qui valorisent l\'artisanat camerounais' : 'Take part in the events that celebrate Cameroonian craftsmanship' }}</p>
                 </div>
                 <a href="{{ ($siacUser['is_admin'] ?? false) ? route('admin.events') : route('contact', ['lang' => $lang]) }}"
-                    class="inline-flex items-center gap-2 bg-[#02301B] hover:bg-leaf text-white text-[12.5px] font-semibold px-4 h-11 md:h-[42px] rounded-lg transition-colors">
+                    class="inline-flex items-center gap-2 bg-[#02301B] hover:bg-leaf text-white text-[14px] md:text-[12.5px] font-semibold px-4 h-11 md:h-[42px] rounded-lg transition-colors">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     {{ $isFr ? 'Soumettre un événement' : 'Submit an event' }}
                 </a>
@@ -311,18 +311,18 @@
                 @php $pillActive = $etKey === $activeType; @endphp
                 <a href="{{ route('events.index', array_filter(['lang' => $lang, 'type' => $etKey])) }}"
                     {{-- h-11 on phones for the 44px tap minimum; the drawn 34px chip returns at md. --}}
-                    class="shrink-0 px-3.5 h-11 md:h-[34px] rounded-lg border text-[12px] font-medium flex items-center transition-colors {{ $pillActive ? 'bg-[#02301B] border-[#02301B] text-white' : 'bg-white dark:bg-[#12150F] border-[#E3E3E1] dark:border-[#262B21] text-[#3A3A35] dark:text-[#F3EFE7] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56]' }}">
+                    class="shrink-0 px-3.5 h-11 md:h-[34px] rounded-lg border text-[14px] md:text-[12px] font-medium flex items-center transition-colors {{ $pillActive ? 'bg-[#02301B] border-[#02301B] text-white' : 'bg-white dark:bg-[#12150F] border-[#E3E3E1] dark:border-[#262B21] text-[#3A3A35] dark:text-[#F3EFE7] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56]' }}">
                     {{ $etLabel }}
                 </a>
                 @endforeach
             </div>
 
             <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? '128 événements trouvés' : '128 events found' }}</p>
+                <p class="text-[14px] md:text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? '128 événements trouvés' : '128 events found' }}</p>
                 <form method="GET" action="{{ route('events.index') }}" class="flex items-center gap-2 h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     @if($activeType !== '')<input type="hidden" name="type" value="{{ $activeType }}">@endif
-                    <label for="sort-select" class="text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
+                    <label for="sort-select" class="text-[14px] md:text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                     <select id="sort-select" name="sort" onchange="this.form.submit()"
                         class="ui-field-bare font-medium cursor-pointer w-auto">
                         <option value="recents" {{ request('sort', 'recents') === 'recents' ? 'selected' : '' }}>{{ $isFr ? 'Plus récents' : 'Most recent' }}</option>
@@ -339,10 +339,10 @@
                     <!-- Left stub -->
                     <div class="relative md:w-[128px] shrink-0 flex md:flex-col items-center justify-center gap-2 md:gap-0 py-4 md:py-6 px-4 text-center" style="background-color: {{ $stub }}">
                         <p class="text-[30px] font-bold leading-none {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['day'] }}</p>
-                        <p class="mt-0 md:mt-1 text-[13px] font-bold tracking-[0.08em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['month'] }}</p>
-                        <p class="text-[12.5px] font-bold {{ $onGold ? 'text-[#5A3E06] dark:text-[#EDB33A]' : 'text-[#E5A82E]' }}">{{ $event['year'] }}</p>
-                        <p class="mt-0 md:mt-3 text-[12.5px] font-semibold {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['from'] }}</p>
-                        <p class="text-[13px] md:text-[11px] {{ $onGold ? 'text-[#5A4A18] dark:text-[#EDB33A]' : 'text-white/80' }}">à {{ $event['to'] }}</p>
+                        <p class="mt-0 md:mt-1 text-[14px] md:text-[13px] font-bold tracking-[0.08em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['month'] }}</p>
+                        <p class="text-[14px] md:text-[12.5px] font-bold {{ $onGold ? 'text-[#5A3E06] dark:text-[#EDB33A]' : 'text-[#E5A82E]' }}">{{ $event['year'] }}</p>
+                        <p class="mt-0 md:mt-3 text-[14px] md:text-[12.5px] font-semibold {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['from'] }}</p>
+                        <p class="text-[14px] md:text-[11px] {{ $onGold ? 'text-[#5A4A18] dark:text-[#EDB33A]' : 'text-white/80' }}">à {{ $event['to'] }}</p>
                         <span class="hidden md:block mt-3 w-[64px] h-[18px] barcode" aria-hidden="true"></span>
                         <span class="hidden md:block absolute -right-[9px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] bg-[#FEFEFE] dark:bg-[#12150F] rounded-full border border-[#EFEDEA] dark:border-[#262B21]" aria-hidden="true"></span>
                     </div>
@@ -350,23 +350,23 @@
                     <div class="flex-1 bg-white dark:bg-[#12150F] px-5 py-4 flex flex-col sm:flex-row gap-5 items-start">
                         <img src="{{ asset('images/landing/' . $event['icon']) }}" alt="" class="hidden sm:block w-[104px] h-auto object-contain shrink-0 self-center" aria-hidden="true">
                         <div class="min-w-0">
-                            <span class="inline-block text-[12px] md:text-[9.5px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-2.5 py-1" style="background-color: {{ $badgeColors[$event['badgeColor']] }}">{{ $event['badge'] }}</span>
+                            <span class="inline-block text-[14px] md:text-[9.5px] font-bold tracking-[0.08em] uppercase text-white rounded-md px-2.5 py-1" style="background-color: {{ $badgeColors[$event['badgeColor']] }}">{{ $event['badge'] }}</span>
                             <h3 class="mt-2 flex items-start gap-2 text-[17px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug">
                                 <a href="{{ route('events.show', ['slug' => $event['slug']]) }}" class="hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $event['title'] }}</a>
                                 <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0 mt-1"><circle cx="8" cy="8" r="8" fill="#17A34A"/><path d="M4.7 8.2 7 10.4l4.3-4.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </h3>
-                            <p class="mt-2 flex items-center gap-2 text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
+                            <p class="mt-2 flex items-center gap-2 text-[14px] md:text-[12.5px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
                                 <i data-lucide="map-pin" class="w-[13px] h-[13px] text-[#C9862B]"></i>
                                 {{ $event['city'] }}
                             </p>
-                            <p class="mt-1 flex items-center gap-2 text-[12px] text-[#6F6B60] dark:text-[#868778]">
+                            <p class="mt-1 flex items-center gap-2 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778]">
                                 <i data-lucide="landmark" class="w-[13px] h-[13px] text-[#C9862B]"></i>
                                 {{ $event['venue'] }}
                             </p>
-                            <p class="mt-2 text-[12px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $event['desc'] }}</p>
+                            <p class="mt-2 text-[14px] md:text-[12px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">{{ $event['desc'] }}</p>
                             <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5">
                                 @foreach($event['tags'] as [$tagIcon, $tagLabel])
-                                <span class="flex items-center gap-1.5 text-[13px] md:text-[11px] text-[#55524A] dark:text-[#B4B5A6]">
+                                <span class="flex items-center gap-1.5 text-[14px] md:text-[11px] text-[#55524A] dark:text-[#B4B5A6]">
                                     <i data-lucide="{{ $tagIcon }}" class="w-[12px] h-[12px]"></i>
                                     {{ $tagLabel }}
                                 </span>
@@ -379,10 +379,10 @@
                         <span class="hidden md:block absolute -left-[9px] top-1/2 -translate-y-1/2 w-[18px] h-[18px] bg-white dark:bg-[#12150F] rounded-full border border-[#EFEDEA] dark:border-[#262B21]" aria-hidden="true"></span>
                         <svg viewBox="0 0 24 24" class="w-7 h-7 {{ $onGold ? 'fill-[#0E3D26] dark:fill-[#339B56]' : 'fill-[#E5A82E]' }}"><path d="M12 2.5 14.9 9l7.1.4-5.5 4.6 1.8 6.9L12 17l-6.3 3.9 1.8-6.9L2 9.4 9.1 9z"/></svg>
                         @if($event['price'])
-                        <p class="text-[12px] font-bold uppercase tracking-[0.04em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['price'] }}</p>
+                        <p class="text-[14px] md:text-[12px] font-bold uppercase tracking-[0.04em] {{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }}">{{ $event['price'] }}</p>
                         @endif
                         <a href="{{ route('events.show', ['slug' => $event['slug']]) }}"
-                            class="inline-flex items-center justify-center px-4 h-[32px] rounded-md text-[13px] md:text-[11.5px] font-bold transition-colors {{ $onGold ? 'bg-white dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#F6F1E7] hover:dark:bg-[#0A0C09]' : 'bg-[#E9A825] text-[#3A2E08] dark:text-[#EDB33A] hover:bg-goldbt hover:dark:bg-[#3A2B06]' }}">
+                            class="inline-flex items-center justify-center px-4 h-[32px] rounded-md text-[14px] md:text-[11.5px] font-bold transition-colors {{ $onGold ? 'bg-white dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] hover:bg-[#F6F1E7] hover:dark:bg-[#0A0C09]' : 'bg-[#E9A825] text-[#3A2E08] dark:text-[#EDB33A] hover:bg-goldbt hover:dark:bg-[#3A2B06]' }}">
                             {{ $isFr ? 'Voir détails' : 'View details' }}
                         </a>
                         <a href="{{ $siacUser ? route('saved.index') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Sauvegarder' : 'Bookmark' }}" class="{{ $onGold ? 'text-[#1D1B16] dark:text-[#F3EFE7]' : 'text-white' }} hover:opacity-80">
@@ -395,7 +395,7 @@
 
             <div class="mt-7 flex justify-center">
                 <a href="{{ route('events.index', ['lang' => $lang]) }}"
-                    class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg px-5 h-11 md:h-[40px] text-[12.5px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7] transition-colors">
+                    class="inline-flex items-center gap-2.5 bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg px-5 h-11 md:h-[40px] text-[14px] md:text-[12.5px] font-semibold text-[#3A3A35] dark:text-[#F3EFE7] transition-colors">
                     {{ $isFr ? 'Charger plus d\'événements' : 'Load more events' }}
                     <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                 </a>

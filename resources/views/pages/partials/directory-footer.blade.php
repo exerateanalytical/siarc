@@ -138,7 +138,7 @@
                         <p class="mt-1.5 text-[14px] text-[#E4EAE4] leading-snug">
                             {{ $isFr ? 'Un registre. Une vérité. Une confiance à vie.' : 'One Registry. One Truth. A Lifetime of Trust.' }}
                         </p>
-                        <p class="mt-3.5 text-[12px] md:text-[10.5px] text-[#93A79B] leading-relaxed">
+                        <p class="mt-3.5 text-[16px] md:text-[10.5px] text-[#93A79B] leading-relaxed">
                             {{ $isFr
                                ? "Artisan Hub 237 est une plateforme privée dédiée à l'artisanat africain authentique. Nous vérifions, protégeons et faisons connaître les artisans et leur héritage culturel."
                                : 'Artisan Hub 237 is a private platform for authentic African craftsmanship. We verify, protect, and promote artisans and their cultural heritage.' }}
@@ -149,12 +149,12 @@
 
             <!-- QUICK LINKS, column one -->
             <div class="min-w-0 lg:border-l lg:border-white/10 lg:pl-7">
-                <h4 class="text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4">{{ $isFr ? 'Liens rapides' : 'Quick links' }}</h4>
+                <h4 class="text-[14px] md:text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4">{{ $isFr ? 'Liens rapides' : 'Quick links' }}</h4>
                 {{-- Row height, not just line height: a 12px link in a 21px row
                      is a 21px tap target. `min-h-[44px]` below `md` gives the
                      thumb the contract's floor; the artwork's tight 9px rhythm
                      returns on a pointer device. --}}
-                <ul class="md:space-y-[9px] text-[13px] md:text-[12px] text-[#C6D0C7]">
+                <ul class="md:space-y-[9px] text-[14px] md:text-[12px] text-[#C6D0C7]">
                     @foreach($dfQuickLinksOne as $dfLabel => $dfHref)
                     <li><a href="{{ $dfHref }}" class="flex items-center min-h-[44px] md:min-h-0 hover:text-white transition-colors">{{ $dfLabel }}</a></li>
                     @endforeach
@@ -167,7 +167,7 @@
                      on the wide layout without repeating the word. On the
                      stacked layout it is gone entirely. --}}
                 <h4 class="hidden lg:block lg:invisible text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4" aria-hidden="true">{{ $isFr ? 'Liens rapides' : 'Quick links' }}</h4>
-                <ul class="md:space-y-[9px] text-[13px] md:text-[12px] text-[#C6D0C7]">
+                <ul class="md:space-y-[9px] text-[14px] md:text-[12px] text-[#C6D0C7]">
                     @foreach($dfQuickLinksTwo as $dfLabel => $dfHref)
                     <li><a href="{{ $dfHref }}" class="flex items-center min-h-[44px] md:min-h-0 hover:text-white transition-colors">{{ $dfLabel }}</a></li>
                     @endforeach
@@ -176,7 +176,7 @@
 
             <!-- CONNECT WITH US -->
             <div class="col-span-2 lg:col-span-1 min-w-0 lg:border-l lg:border-white/10 lg:pl-7">
-                <h4 class="text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4">{{ $isFr ? 'Nous suivre' : 'Connect with us' }}</h4>
+                <h4 class="text-[14px] md:text-[13px] font-bold tracking-[0.06em] text-white uppercase mb-4">{{ $isFr ? 'Nous suivre' : 'Connect with us' }}</h4>
 
                 @if(count($socialProfileUrls))
                 <div class="flex flex-wrap items-center gap-2.5">
@@ -195,7 +195,7 @@
                 {{-- Phone and email come from config/legal.php. A blank one is
                      simply absent — the artwork's placeholder number is not a
                      number this company has. --}}
-                @php $dfContactRow = 'flex items-center md:items-start gap-2.5 min-h-[44px] md:min-h-0 text-[13px] md:text-[12px] text-[#C6D0C7] hover:text-white transition-colors'; @endphp
+                @php $dfContactRow = 'flex items-center md:items-start gap-2.5 min-h-[44px] md:min-h-0 text-[14px] md:text-[12px] text-[#C6D0C7] hover:text-white transition-colors'; @endphp
                 <div class="mt-2 md:mt-4 md:space-y-3">
                     @if($dfPhone)
                     <a href="tel:{{ preg_replace('/[^0-9+]/', '', $dfPhone) }}" class="{{ $dfContactRow }}">
@@ -219,7 +219,7 @@
                      newsletter block; removing a working subscription form from
                      every page to match a drawing would be a regression. --}}
                 @if(session('newsletter_ok'))
-                <p class="mt-4 flex items-start gap-2 text-[12px] font-semibold text-[#8FDCA8]">
+                <p class="mt-4 flex items-start gap-2 text-[14px] font-semibold text-[#8FDCA8]">
                     <i data-lucide="circle-check" class="w-4 h-4 shrink-0"></i>
                     {{ session('newsletter_ok') }}
                 </p>
@@ -229,7 +229,7 @@
                     <input type="hidden" name="lang" value="{{ $lang }}">
                     <input name="email" type="email" required placeholder="{{ $isFr ? 'Votre email' : 'Your email' }}"
                         class="ui-field ui-field--invert ui-field--sm flex-1 min-w-0">
-                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] md:min-h-0 bg-[#925104] hover:bg-[#A2700F] text-white text-[13px] md:text-[12px] font-semibold px-3.5 md:py-2 rounded-md transition-colors shrink-0">
+                    <button type="submit" class="inline-flex items-center justify-center min-h-[44px] md:min-h-0 bg-[#925104] hover:bg-[#A2700F] text-white text-[14px] md:text-[12px] font-semibold px-3.5 md:py-2 rounded-md transition-colors shrink-0">
                         {{ $isFr ? "S'abonner" : 'Subscribe' }}
                     </button>
                 </form>
@@ -242,7 +242,7 @@
                  URL — it is never a picture of a QR. --}}
             @if($dfVerifyUrl)
             <div class="col-span-2 lg:col-span-1 min-w-0 lg:justify-self-end">
-                <p class="text-[12.5px] font-bold tracking-[0.06em] text-white uppercase leading-tight text-center lg:text-right">
+                <p class="text-[14px] font-bold tracking-[0.06em] text-white uppercase leading-tight text-center lg:text-right">
                     {{ $isFr ? 'Scannez pour vérifier' : 'Scan to verify' }}<br>
                     {{ $isFr ? 'cet artisan' : 'this artisan' }}
                 </p>
@@ -252,14 +252,14 @@
                           data-verify-url="{{ $dfVerifyUrl }}"></span>
                 </a>
                 @if($dfVerifyName)
-                <p class="mt-2 text-[12px] md:text-[10.5px] text-[#93A79B] text-center lg:text-right break-words">{{ $dfVerifyName }}</p>
+                <p class="mt-2 text-[14px] md:text-[10.5px] text-[#93A79B] text-center lg:text-right break-words">{{ $dfVerifyName }}</p>
                 @endif
             </div>
             @endif
         </div>
 
         <!-- Bottom strip: copyright · language · country -->
-        <div class="mt-6 pt-4 border-t border-white/10 flex flex-col lg:flex-row items-center justify-between gap-3 text-[12px] text-[#93A79B]">
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-col lg:flex-row items-center justify-between gap-3 text-[14px] md:text-[12px] text-[#93A79B]">
             <span class="text-center lg:text-left">&copy; {{ date('Y') }} {{ $isFr ? 'Artisan Hub 237. Tous droits réservés.' : 'Artisan Hub 237. All rights reserved.' }}</span>
             <span class="text-center">{{ $isFr ? "Porté par l'artisanat africain. Protégé par la technologie." : 'Powered by African Craft. Protected by Technology.' }}</span>
             <div class="flex flex-wrap items-center justify-center gap-3">
@@ -281,7 +281,7 @@
         </div>
 
         @if($dfShowLegalLinks)
-        <div class="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1 text-[12px] md:text-[11.5px] text-[#93A79B]">
+        <div class="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-1 text-[14px] md:text-[11.5px] text-[#93A79B]">
             @foreach(config('legal.documents') as $lgSlug => $lgDoc)
             @if(! $loop->first)<span class="text-white/20" aria-hidden="true">|</span>@endif
             <a href="{{ route('legal.show', ['doc' => $lgSlug, 'lang' => $lang]) }}" class="inline-flex items-center min-h-[44px] md:min-h-0 hover:text-white transition-colors">{{ $lgDoc['title'][$lang] }}</a>
@@ -291,7 +291,7 @@
 
         {{-- Standing disclosure. Artisan Hub 237 is a private operator and is
              not a party to any sale made through the platform. --}}
-        <p class="mt-3 text-[12px] md:text-[11px] text-[#7C917F] leading-relaxed">
+        <p class="mt-3 text-[14px] md:text-[11px] text-[#7C917F] leading-relaxed">
             {{ $isFr
                ? 'Artisan Hub 237 est une plateforme privée et indépendante. Elle n\'est affiliée à aucun ministère ni organisme public, n\'est pas partie aux ventes conclues entre acheteurs et artisans et n\'en reçoit pas le prix ; seuls ses propres frais de service lui sont réglés.'
                : 'Artisan Hub 237 is a private, independent platform. It is not affiliated with any ministry or public body, is not a party to sales concluded between buyers and artisans and does not receive the price; only its own service fees are paid to it.' }}
@@ -330,11 +330,12 @@
         ];
     @endphp
     @foreach($dfBottomTabs as $tab)
-    {{-- 10px was below the contract's 12px mobile floor, and the row was under
-         44px tall. Both are fixed here; the labels still fit five across at 360. --}}
+    {{-- Bottom-nav label — a mobile menu item under docs/RESPONSIVE-CONTRACT.md
+         §2 ("mobile menu item … 16px, owner-mandated"), same tier as every
+         other hamburger/sidebar/bottom-nav link on the site. --}}
     <a href="{{ $tab['href'] }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 min-h-[52px] py-1.5 text-[#8A857A] dark:text-[#868778]">
         <i data-lucide="{{ $tab['icon'] }}" class="w-5 h-5 shrink-0"></i>
-        <span class="max-w-full truncate text-[12px] leading-none font-medium">{{ $tab['label'] }}</span>
+        <span class="max-w-full truncate text-[16px] leading-none font-medium">{{ $tab['label'] }}</span>
     </a>
     @endforeach
 </nav>

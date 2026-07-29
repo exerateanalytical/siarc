@@ -17,20 +17,20 @@
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-7 items-start">
     {{-- Article --}}
     <article>
-        <nav class="flex items-center gap-2 text-[12px] text-[#8A857A] dark:text-[#868778]">
+        <nav class="flex items-center gap-2 text-[14px] md:text-[12px] text-[#8A857A] dark:text-[#868778]">
             <a href="{{ route('home', ['lang'=>$lang]) }}" class="hover:text-[#14652F] hover:dark:text-[#339B56]">{{ $isFr?'Accueil':'Home' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
             <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="hover:text-[#14652F] hover:dark:text-[#339B56]">{{ $isFr?'Actualités':'News' }}</a>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i><span class="text-[#55524A] dark:text-[#B4B5A6]">{{ $isFr?'Détail de l\'actualité':'Article detail' }}</span>
         </nav>
 
-        <span class="mt-4 inline-block rounded-md px-3 py-1 text-[12px] md:text-[10.5px] font-bold tracking-[0.08em] uppercase text-white" style="background-color: {{ $catColors[$article->category] ?? '#157A43' }}">{{ $article->category ?? ($isFr?'Actualité':'News') }}</span>
+        <span class="mt-4 inline-block rounded-md px-3 py-1 text-[14px] md:text-[10.5px] font-bold tracking-[0.08em] uppercase text-white" style="background-color: {{ $catColors[$article->category] ?? '#157A43' }}">{{ $article->category ?? ($isFr?'Actualité':'News') }}</span>
         <h1 class="mt-3 font-serif text-[30px] sm:text-[38px] font-bold text-[#0E3D22] dark:text-[#339B56] leading-[1.1]">{{ $aTitle }}</h1>
-        <p class="mt-2 text-[#C9942E] text-[13px] tracking-[0.25em]">❈ ❈ ❈ ❈ ❈ ❈</p>
+        <p class="mt-2 text-[#C9942E] text-[14px] md:text-[13px] tracking-[0.25em]">❈ ❈ ❈ ❈ ❈ ❈</p>
 
-        <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-[#55524A] dark:text-[#B4B5A6]">
+        <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] md:text-[12px] text-[#55524A] dark:text-[#B4B5A6]">
             @if($article->author_name)
-            <span class="flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-[#14652F] text-white text-[13px] md:text-[11px] font-bold flex items-center justify-center">{{ mb_strtoupper(mb_substr($article->author_name,0,1)) }}</span>{{ $isFr?'Par':'By' }} <b class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $article->author_name }}</b></span>
+            <span class="flex items-center gap-2"><span class="w-7 h-7 rounded-full bg-[#14652F] text-white text-[14px] md:text-[11px] font-bold flex items-center justify-center">{{ mb_strtoupper(mb_substr($article->author_name,0,1)) }}</span>{{ $isFr?'Par':'By' }} <b class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $article->author_name }}</b></span>
             @endif
             <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-[#C9942E]"></i>{{ $adate($article->published_at ?? $article->created_at) }}</span>
             <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4 text-[#C9942E]"></i>{{ \Carbon\Carbon::parse($article->published_at ?? $article->created_at)->format('H:i') }}</span>
@@ -65,52 +65,52 @@
             ];
         @endphp
         <div class="mt-7 flex flex-wrap items-center gap-3 border-t border-[#EDE6D6] dark:border-[#262B21] pt-5">
-            <span class="text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr?'Partager cet article':'Share this article' }}</span>
+            <span class="text-[14px] md:text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr?'Partager cet article':'Share this article' }}</span>
             @foreach($shareIcons as [$sUrl, $sNet, $sPath])
             <a href="{{ $sUrl }}" target="_blank" rel="noopener" aria-label="{{ $sNet }}" class="w-8 h-8 rounded-full bg-[#F3F0E6] dark:bg-[#0A0C09] flex items-center justify-center text-[#14652F] dark:text-[#339B56] hover:bg-[#E2F3E8] hover:dark:bg-[#0C3D1D]"><svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">{!! $sPath !!}</svg></a>
             @endforeach
         </div>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-            <span class="text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr?'Mots-clés':'Tags' }} :</span>
-            @foreach($tags as $tag)<a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="rounded-md bg-[#F3F0E6] dark:bg-[#0A0C09] px-2.5 py-1 text-[13px] md:text-[11px] font-medium text-[#3B382F] dark:text-[#F3EFE7] hover:text-[#14652F] hover:dark:text-[#339B56]">{{ $tag }}</a>@endforeach
+            <span class="text-[14px] md:text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr?'Mots-clés':'Tags' }} :</span>
+            @foreach($tags as $tag)<a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="rounded-md bg-[#F3F0E6] dark:bg-[#0A0C09] px-2.5 py-1 text-[14px] md:text-[11px] font-medium text-[#3B382F] dark:text-[#F3EFE7] hover:text-[#14652F] hover:dark:text-[#339B56]">{{ $tag }}</a>@endforeach
         </div>
 
         {{-- Prev / next --}}
         <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
             @php $prev = $related->first(); $next = $related->skip(1)->first(); @endphp
-            @if($prev)<a href="{{ $linkFor($prev) }}" class="flex items-center gap-3 border border-[#EDE6D6] dark:border-[#262B21] rounded-xl px-4 py-3 hover:border-[#14652F] group"><i data-lucide="chevron-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i><span><span class="block text-[12px] md:text-[10px] text-[#8A857A] dark:text-[#868778] uppercase">{{ $isFr?'Article précédent':'Previous' }}</span><span class="block text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] group-hover:text-[#14652F] group-hover:dark:text-[#339B56] line-clamp-1">{{ $isFr ? $prev->title_fr : ($prev->title_en ?? $prev->title_fr) }}</span></span></a>@endif
-            @if($next)<a href="{{ $linkFor($next) }}" class="flex items-center justify-end gap-3 text-right border border-[#EDE6D6] dark:border-[#262B21] rounded-xl px-4 py-3 hover:border-[#14652F] group"><span><span class="block text-[12px] md:text-[10px] text-[#8A857A] dark:text-[#868778] uppercase">{{ $isFr?'Article suivant':'Next' }}</span><span class="block text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] group-hover:text-[#14652F] group-hover:dark:text-[#339B56] line-clamp-1">{{ $isFr ? $next->title_fr : ($next->title_en ?? $next->title_fr) }}</span></span><i data-lucide="chevron-right" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></a>@endif
+            @if($prev)<a href="{{ $linkFor($prev) }}" class="flex items-center gap-3 border border-[#EDE6D6] dark:border-[#262B21] rounded-xl px-4 py-3 hover:border-[#14652F] group"><i data-lucide="chevron-left" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i><span><span class="block text-[14px] md:text-[10px] text-[#8A857A] dark:text-[#868778] uppercase">{{ $isFr?'Article précédent':'Previous' }}</span><span class="block text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] group-hover:text-[#14652F] group-hover:dark:text-[#339B56] line-clamp-1">{{ $isFr ? $prev->title_fr : ($prev->title_en ?? $prev->title_fr) }}</span></span></a>@endif
+            @if($next)<a href="{{ $linkFor($next) }}" class="flex items-center justify-end gap-3 text-right border border-[#EDE6D6] dark:border-[#262B21] rounded-xl px-4 py-3 hover:border-[#14652F] group"><span><span class="block text-[14px] md:text-[10px] text-[#8A857A] dark:text-[#868778] uppercase">{{ $isFr?'Article suivant':'Next' }}</span><span class="block text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] group-hover:text-[#14652F] group-hover:dark:text-[#339B56] line-clamp-1">{{ $isFr ? $next->title_fr : ($next->title_en ?? $next->title_fr) }}</span></span><i data-lucide="chevron-right" class="w-4 h-4 text-[#8A857A] dark:text-[#868778]"></i></a>@endif
         </div>
     </article>
 
     {{-- Rail --}}
     <aside class="space-y-5">
         <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-5 py-5">
-            <h2 class="text-[12px] font-bold tracking-[0.06em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr?'Articles similaires':'Related articles' }}</h2>
+            <h2 class="text-[14px] md:text-[12px] font-bold tracking-[0.06em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr?'Articles similaires':'Related articles' }}</h2>
             <div class="mt-3 space-y-3">
                 @foreach($related as $rel)
                 <a href="{{ $linkFor($rel) }}" class="flex items-center gap-3 group">
                     <img src="{{ $rel->cover_image ? (str_contains($rel->cover_image,'/') ? asset('storage/'.$rel->cover_image) : asset('images/landing/'.$rel->cover_image)) : asset('images/landing/event-2.png') }}" alt="" class="w-14 h-14 rounded-lg object-cover shrink-0">
-                    <span class="min-w-0"><span class="block text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 group-hover:text-[#14652F] group-hover:dark:text-[#339B56]">{{ $isFr ? $rel->title_fr : ($rel->title_en ?? $rel->title_fr) }}</span><span class="block mt-1 text-[12px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]"><i data-lucide="calendar" class="inline w-3 h-3"></i> {{ $adate($rel->published_at ?? $rel->created_at) }}</span></span>
+                    <span class="min-w-0"><span class="block text-[14px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] leading-snug line-clamp-2 group-hover:text-[#14652F] group-hover:dark:text-[#339B56]">{{ $isFr ? $rel->title_fr : ($rel->title_en ?? $rel->title_fr) }}</span><span class="block mt-1 text-[14px] md:text-[10.5px] text-[#8A857A] dark:text-[#868778]"><i data-lucide="calendar" class="inline w-3 h-3"></i> {{ $adate($rel->published_at ?? $rel->created_at) }}</span></span>
                 </a>
                 @endforeach
             </div>
-            <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="mt-3 block text-center border border-[#E5E7E5] dark:border-[#262B21] hover:border-[#14652F] rounded-lg py-2 text-[12px] font-semibold text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr?'Voir toutes les actualités':'View all news' }}</a>
+            <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="mt-3 block text-center border border-[#E5E7E5] dark:border-[#262B21] hover:border-[#14652F] rounded-lg py-2 text-[14px] font-semibold text-[#3B382F] dark:text-[#F3EFE7]">{{ $isFr?'Voir toutes les actualités':'View all news' }}</a>
         </section>
 
         <section class="bg-white dark:bg-[#12150F] border border-[#EDE6D6] dark:border-[#262B21] rounded-2xl px-5 py-5">
-            <h2 class="text-[12px] font-bold tracking-[0.06em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr?'Catégories':'Categories' }}</h2>
+            <h2 class="text-[14px] md:text-[12px] font-bold tracking-[0.06em] text-[#1D1B16] dark:text-[#F3EFE7] uppercase">{{ $isFr?'Catégories':'Categories' }}</h2>
             <div class="mt-3 space-y-1">
-                <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="flex items-center justify-between py-1.5 text-[12.5px]"><span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr?'Tous les articles':'All articles' }}</span><span class="text-[#8A857A] dark:text-[#868778]">{{ $totalArticles }}</span></a>
+                <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang]) }}" class="flex items-center justify-between py-1.5 text-[14px] md:text-[12.5px]"><span class="font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr?'Tous les articles':'All articles' }}</span><span class="text-[#8A857A] dark:text-[#868778]">{{ $totalArticles }}</span></a>
                 @foreach($categoryCounts as $cat => $n)
-                <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang, 'categorie'=>$cat]) }}" class="flex items-center justify-between py-1.5 text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] hover:text-[#14652F] hover:dark:text-[#339B56]"><span>{{ $cat }}</span><span class="text-[#8A857A] dark:text-[#868778]">{{ $n }}</span></a>
+                <a href="{{ $publicMode ? route('news.index', ['lang'=>$lang]) : route('admin.news', ['lang'=>$lang, 'categorie'=>$cat]) }}" class="flex items-center justify-between py-1.5 text-[14px] md:text-[12.5px] text-[#3B382F] dark:text-[#F3EFE7] hover:text-[#14652F] hover:dark:text-[#339B56]"><span>{{ $cat }}</span><span class="text-[#8A857A] dark:text-[#868778]">{{ $n }}</span></a>
                 @endforeach
             </div>
         </section>
 
         <section class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#0E3D22] to-[#123D24] px-5 py-6 text-center">
             <p class="font-serif text-[15px] leading-relaxed text-white italic">{{ $isFr ? 'L\'artisanat est le miroir de notre âme collective. Préservons-le, transmettons-le, faisons-le rayonner.' : 'Craftsmanship is the mirror of our collective soul. Let us preserve it, pass it on, make it shine.' }}</p>
-            <p class="mt-3 text-[#E9C25A] text-[12px]">◇ ❈ ◇</p>
+            <p class="mt-3 text-[#E9C25A] text-[14px] md:text-[12px]">◇ ❈ ◇</p>
         </section>
     </aside>
 </div>

@@ -75,15 +75,25 @@ and its 9–10px uppercase micro-lettering (the logo strapline, the utility-row
 icon labels) stays as drawn. This is not a loophole: it is the only reading that
 is consistent with the pixel-replica mandate *and* with a legible phone.
 
+**Raised 2026-07-29: "very very visible" on mobile, no exceptions.** The 12px
+tier below was a genuine floor, and it was violated anyway — a 9.5px sidebar
+tagline and 10.5px group titles turned up in a file the earlier sweep never
+reached. The floor is now **14px, for every piece of text a phone visitor can
+see, without exception** — not a target to round toward, a hard minimum. Menu
+items specifically are **16px** (owner instruction). Hierarchy is preserved
+above the new floor — headings and body still read larger than a caption next
+to it — but nothing on mobile may render smaller than 14px, full stop.
+
 | Role | Phone (< 768) — the stated size | Desktop — the measured size | Notes |
 |---|---|---|---|
-| `h1` page title | **22–26px** | 34–44px | one per page |
-| `h2` section head | **18–20px** | 26–30px | |
-| `h3` card title | **15–16px** | 18–20px | |
-| `h4` label / eyebrow | **13–14px** | 15–16px | |
-| **body** | **15–16px** | 12–16px as drawn | the default; anything a buyer reads |
-| **secondary / meta** | **13–14px** | 11–12px | bylines, counts, timestamps |
-| caption / label / legal | **12px — absolute floor** | 10.5–11.5px | badges, chips, table headers |
+| `h1` page title | **24–26px** | 34–44px | one per page |
+| `h2` section head | **19–20px** | 26–30px | |
+| `h3` card title | **16px** | 18–20px | |
+| `h4` label / eyebrow | **14–15px** | 15–16px | |
+| **body** | **16px** | 12–16px as drawn | the default; anything a buyer reads |
+| **secondary / meta** | **14px** | 11–12px | bylines, counts, timestamps |
+| caption / label / legal | **14px — absolute floor, no exception** | 10.5–11.5px | badges, chips, table headers, tags, tiny counts |
+| **mobile menu item** (any hamburger, sidebar, or bottom-nav link) | **16px, owner-mandated** | as drawn | never smaller anywhere on mobile |
 | form field text | **16px** | 12.5–15px | below 16px iOS zooms the page on focus |
 
 **Line-height 1.5–1.6 for body copy on phones.** A 15px line set solid reads

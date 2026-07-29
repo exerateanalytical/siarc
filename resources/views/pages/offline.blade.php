@@ -54,8 +54,8 @@
            plain classes, so the kit's utility remap cannot reach them. */
         @media (max-width: 767.98px) {
             .offline-sub   { font-size: 14px; }
-            .offline-body  { font-size: 15px; }
-            .offline-brand { font-size: 12px; }
+            .offline-body  { font-size: 16px; }
+            .offline-brand { font-size: 14px; }
         }
     </style>
 </head>

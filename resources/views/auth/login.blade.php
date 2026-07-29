@@ -90,11 +90,11 @@
                 <a href="{{ route('home', ['lang' => $lang]) }}" class="flex items-center lg:items-start gap-3 lg:gap-4">
                     <img src="{{ brand_asset('mark') }}" alt="" class="w-[48px] h-[48px] lg:w-[70px] lg:h-[70px] object-contain shrink-0">
                     <span class="lg:pt-1">
-                        <span class="block text-[13.5px] lg:text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
+                        <span class="block text-[14px] lg:text-[16px] font-bold tracking-[0.05em] text-white uppercase leading-[1.35]">
                             Artisan Hub 237<span class="lg:hidden"> — {{ $isFr ? 'L\'artisanat camerounais' : 'Cameroonian craftsmanship' }}</span>
                             <span class="hidden lg:inline"><br>{{ $isFr ? 'L\'artisanat' : 'Cameroonian' }}<br>{{ $isFr ? 'camerounais' : 'craftsmanship' }}</span>
                         </span>
-                        <span class="mt-1 lg:mt-3.5 block text-[13px] md:text-[11.5px] lg:text-[14.5px] text-sage leading-[1.4] lg:leading-[1.5]">
+                        <span class="mt-1 lg:mt-3.5 block text-[14px] md:text-[11.5px] lg:text-[14.5px] text-sage leading-[1.4] lg:leading-[1.5]">
                             {{ $isFr ? "Notre héritage, notre fierté," : 'Our heritage, our pride,' }}<span class="lg:hidden"> </span><br class="hidden lg:inline">{{ $isFr ? 'notre avenir' : 'our future' }}
                         </span>
                     </span>
@@ -196,9 +196,9 @@
                 <div class="mt-4 lg:mt-5 flex items-center justify-between">
                     <label class="ui-check-row items-center cursor-pointer select-none min-h-[44px] lg:min-h-0">
                         <input type="checkbox" name="remember" value="1" class="ui-check">
-                        <span class="text-[13px] font-medium text-[#26251F] dark:text-[#F3EFE7]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
+                        <span class="text-[14px] font-medium text-[#26251F] dark:text-[#F3EFE7]">{{ $isFr ? 'Se souvenir de moi' : 'Remember me' }}</span>
                     </label>
-                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="inline-flex items-center min-h-[44px] lg:min-h-0 text-[13px] font-semibold text-gold dark:text-[#EDB33A] hover:text-goldlt transition-colors">
+                    <a href="{{ route('password.request', ['lang' => $lang]) }}" class="inline-flex items-center min-h-[44px] lg:min-h-0 text-[14px] font-semibold text-gold dark:text-[#EDB33A] hover:text-goldlt transition-colors">
                         {{ $isFr ? 'Mot de passe oublié ?' : 'Forgot password?' }}
                     </a>
                 </div>
@@ -225,13 +225,13 @@
                     @csrf
                     <button type="submit" class="w-full rounded-[12px] border border-[#E4E0D8] dark:border-[#262B21] bg-white dark:bg-[#12150F] hover:bg-[#FBF9F6] hover:dark:bg-[#0A0C09] px-3 py-3 text-center transition-colors">
                         <i data-lucide="{{ $icon }}" class="w-5 h-5 mx-auto mb-1" style="color:{{ $col }}"></i>
-                        <span class="block text-[13.5px] font-bold text-[#26251F] dark:text-[#F3EFE7]">{{ $label }}</span>
-                        <span class="block text-[12px] md:text-[10.5px] text-muted dark:text-[#868778] leading-tight mt-0.5">{{ $who }}</span>
+                        <span class="block text-[14px] font-bold text-[#26251F] dark:text-[#F3EFE7]">{{ $label }}</span>
+                        <span class="block text-[14px] md:text-[10.5px] text-muted dark:text-[#868778] leading-tight mt-0.5">{{ $who }}</span>
                     </button>
                 </form>
                 @endforeach
             </div>
-            <p class="mt-2 text-center text-[13px] md:text-[11px] text-muted dark:text-[#868778]">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
+            <p class="mt-2 text-center text-[14px] md:text-[11px] text-muted dark:text-[#868778]">{{ $isFr ? 'Un clic connecte directement le compte de test correspondant.' : 'One click signs the matching test account straight in.' }}</p>
             @endif
 
             {{-- Google and Facebook sign-in removed for launch: neither provider
@@ -243,7 +243,7 @@
                 <i data-lucide="fingerprint" class="w-5 h-5 text-gold dark:text-[#EDB33A]"></i>
                 {{ $isFr ? 'Se connecter avec une passkey' : 'Sign in with a passkey' }}
             </button>
-            <p id="passkey-login-error" class="hidden mt-2 text-[12.5px] text-red-600 dark:text-[#F0555C] text-center"></p>
+            <p id="passkey-login-error" class="hidden mt-2 text-[14px] md:text-[12.5px] text-red-600 dark:text-[#F0555C] text-center"></p>
 
             <p class="mt-7 text-center text-[14.5px] text-[#26251F] dark:text-[#F3EFE7] lg:whitespace-nowrap">
                 {{ $isFr ? 'Vous n\'avez pas encore de compte ?' : 'Don\'t have an account yet?' }}
@@ -253,7 +253,7 @@
             </p>
 
             <p class="mt-4 text-center">
-                <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center justify-center gap-1.5 min-h-[44px] lg:min-h-0 text-[12.5px] text-muted dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
+                <a href="{{ route('home', ['lang' => $lang]) }}" class="inline-flex items-center justify-center gap-1.5 min-h-[44px] lg:min-h-0 text-[14px] md:text-[12.5px] text-muted dark:text-[#868778] hover:text-[#26251F] hover:dark:text-[#F3EFE7] transition-colors">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     {{ $isFr ? 'Continuer sans compte' : 'Browse as guest' }}
                 </a>

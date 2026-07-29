@@ -108,6 +108,13 @@
     </style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
+    @php
+        $title = $isFr ? 'Annuaire des Artisans & Entreprises — Artisan Hub 237' : 'Artisans & Businesses directory — Artisan Hub 237';
+        $description = $isFr
+            ? 'Annuaire des Artisans & Entreprises — Trouvez des partenaires de confiance et soutenez l\'économie locale.'
+            : 'Artisans & Businesses directory — Find trusted partners and support the local economy.';
+    @endphp
+    @include('pages.partials.seo-head')
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 
@@ -118,7 +125,7 @@
     <div class="absolute right-0 top-0 bottom-0 w-[72px] bg-repeat-y hidden 2xl:block pointer-events-none select-none" style="background-image:url('{{ asset('images/landing/vendor-margin.png') }}')" aria-hidden="true"></div>
 
 <div class="relative max-w-[1440px] mx-auto px-4 sm:px-6 pt-4 pb-10">
-    <nav class="flex items-center gap-2 text-[12.5px]" aria-label="Breadcrumb">
+    <nav class="flex items-center gap-2 text-[14px] md:text-[12.5px]" aria-label="Breadcrumb">
         <a href="{{ route('home', ['lang' => $lang]) }}" class="text-[#6F6B60] dark:text-[#868778] hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $isFr ? 'Accueil' : 'Home' }}</a>
         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#B9B4A9]"></i>
         <span class="text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Annuaire des artisans & entreprises' : 'Artisans & businesses directory' }}</span>
@@ -223,8 +230,8 @@
             <div class="flex flex-wrap items-start justify-between gap-6">
                 <div class="max-w-[560px]">
                     <h1 class="font-serif text-[28px] sm:text-[32px] leading-tight text-[#12432A] dark:text-[#339B56] font-semibold">{{ $isFr ? 'Annuaire des Artisans & Entreprises' : 'Artisans & Businesses Directory' }}</h1>
-                    <p class="mt-1.5 text-[13.5px] font-semibold text-[#C9862B]">{{ $isFr ? 'Trouvez des partenaires de confiance et soutenez l\'économie locale' : 'Find trusted partners and support the local economy' }}</p>
-                    <p class="mt-3 text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
+                    <p class="mt-1.5 text-[14px] md:text-[13.5px] font-semibold text-[#C9862B]">{{ $isFr ? 'Trouvez des partenaires de confiance et soutenez l\'économie locale' : 'Find trusted partners and support the local economy' }}</p>
+                    <p class="mt-3 text-[14px] md:text-[13px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed">
                         {{ $isFr ? 'Parcourez notre répertoire d\'artisans et d\'entreprises authentiques du Cameroun.' : 'Browse our directory of authentic Cameroonian artisans and businesses.' }}<br>
                         {{ $isFr ? 'Entre en contact direct, collaborez et soutenez le savoir-faire local.' : 'Get in direct contact, collaborate and support local know-how.' }}
                     </p>
@@ -248,7 +255,7 @@
                         <div class="min-w-0 {{ $statIdx > 0 ? 'xl:pl-6' : '' }}">
                             <i data-lucide="{{ $statIcon }}" class="w-[22px] h-[22px] text-[#E08A21]" stroke-width="1.8"></i>
                             <p class="mt-2.5 text-[16px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] leading-none">{{ $statValue }}</p>
-                            <p class="mt-1.5 text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $statLabel }}</p>
+                            <p class="mt-1.5 text-[14px] md:text-[12px] text-[#6F6B60] dark:text-[#868778] leading-snug">{{ $statLabel }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -259,7 +266,7 @@
                 {{-- Was a hardcoded "2,548", which contradicted both the stats strip
                      above and the page of results below. This is the real total of
                      the filtered query the visitor is actually looking at. --}}
-                <p class="text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
+                <p class="text-[14px] md:text-[13px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">
                     {{ $fmtStat($businesses->total()) }}
                     {{ $isFr ? ($businesses->total() === 1 ? 'artisan ou entreprise trouvé' : 'artisans & entreprises trouvés') : ($businesses->total() === 1 ? 'artisan or business found' : 'artisans & businesses found') }}
                 </p>
@@ -275,7 +282,7 @@
                          instead of dropping the toggle group to its own line. --}}
                     <form method="GET" action="{{ route('businesses.index') }}" class="flex items-center gap-2 h-[46px] md:h-[38px] bg-white dark:bg-[#12150F] border border-[#E3E3E1] dark:border-[#262B21] rounded-lg px-3.5">
                         <input type="hidden" name="lang" value="{{ $lang }}">
-                        <label for="sort-select" class="text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
+                        <label for="sort-select" class="text-[14px] md:text-[12px] text-[#55524A] dark:text-[#B4B5A6] whitespace-nowrap">{{ $isFr ? 'Trier par :' : 'Sort by:' }}</label>
                         <select id="sort-select" name="sort" onchange="this.form.submit()"
                             class="ui-field-bare font-medium cursor-pointer w-auto">
                             <option value="recents" {{ request('sort', 'recents') === 'recents' ? 'selected' : '' }}>{{ $isFr ? 'Plus récents' : 'Most recent' }}</option>
@@ -310,7 +317,7 @@
                             class="absolute top-1 right-1 w-11 h-11 md:w-10 md:h-10 rounded-full"></a>
                     </div>
                     <div class="p-3.5">
-                        <h3 class="flex items-center gap-1.5 text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
+                        <h3 class="flex items-center gap-1.5 text-[14px] md:text-[13.5px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">
                             <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}" class="ui-tap-inset truncate hover:text-leaf hover:dark:text-[#339B56] transition-colors">{{ $vendor['name'] }}</a>
                             @if($vendor['verified'])
                             <svg viewBox="0 0 16 16" class="w-4 h-4 shrink-0" aria-label="{{ $isFr ? 'Vérifié' : 'Verified' }}">
@@ -319,19 +326,19 @@
                             </svg>
                             @endif
                         </h3>
-                        <p class="mt-1 text-[13px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $vendor['cat'] }}</p>
-                        <p class="mt-1.5 flex items-center gap-1.5 text-[13px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
+                        <p class="mt-1 text-[14px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6]">{{ $vendor['cat'] }}</p>
+                        <p class="mt-1.5 flex items-center gap-1.5 text-[14px] md:text-[11.5px] text-[#6F6B60] dark:text-[#868778]">
                             <i data-lucide="map-pin" class="w-[12px] h-[12px]"></i>
                             {{ $vendor['loc'] }}
                         </p>
-                        <p class="mt-2 text-[13px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $vendor['desc'] }}</p>
+                        <p class="mt-2 text-[14px] md:text-[11.5px] text-[#55524A] dark:text-[#B4B5A6] leading-relaxed whitespace-pre-line">{{ $vendor['desc'] }}</p>
                         <div class="mt-3 flex items-center gap-2">
                             <img src="{{ asset('images/landing/' . $vendor['av']) }}" alt="" class="h-[26px] w-auto">
-                            <span class="text-[13px] md:text-[11px] font-semibold text-[#55524A] dark:text-[#B4B5A6]">{{ $vendor['plus'] }}</span>
+                            <span class="text-[14px] md:text-[11px] font-semibold text-[#55524A] dark:text-[#B4B5A6]">{{ $vendor['plus'] }}</span>
                         </div>
                         <div class="mt-3.5 flex items-center gap-2">
                             <a href="{{ route('businesses.show', ['slug' => $vendor['slug'], 'lang' => $lang]) }}"
-                                class="flex-1 h-[44px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
+                                class="flex-1 h-[44px] md:h-[34px] border border-[#DBDFDC] dark:border-[#262B21] hover:border-leaf hover:text-leaf hover:dark:text-[#339B56] rounded-lg flex items-center justify-center text-[14px] md:text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7] transition-colors">
                                 {{ $isFr ? 'Voir le profil' : 'View profile' }}
                             </a>
                             <a href="{{ $siacUser ? route('messages.inbox') : '/login?lang=' . $lang }}" aria-label="{{ $isFr ? 'Envoyer un message' : 'Send a message' }}"
@@ -342,7 +349,7 @@
                     </div>
                 </article>
                 @empty
-                <p class="col-span-full py-10 text-center text-[13px] text-[#6F6B60] dark:text-[#868778]">
+                <p class="col-span-full py-10 text-center text-[14px] md:text-[13px] text-[#6F6B60] dark:text-[#868778]">
                     {{ $isFr ? 'Aucune entreprise ne correspond à ces critères.' : 'No business matches these criteria.' }}
                 </p>
                 @endforelse
@@ -359,9 +366,9 @@
 
                 @foreach(range(1, $businesses->lastPage()) as $pageNum)
                 @if($pageNum === $businesses->currentPage())
-                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center bg-[#0B3D28] text-white text-[14px] md:text-[12.5px] font-semibold rounded-md" aria-current="page">{{ $pageNum }}</span>
                 @else
-                <a href="{{ $businesses->url($pageNum) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
+                <a href="{{ $businesses->url($pageNum) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center text-[14px] md:text-[12.5px] text-[#3A3A35] dark:text-[#F3EFE7] hover:bg-[#F2F5F2] hover:dark:bg-[#0A0C09] rounded-md">{{ $pageNum }}</a>
                 @endif
                 @endforeach
 
@@ -386,8 +393,8 @@
                     <i data-lucide="{{ $trustIcon }}" class="w-[21px] h-[21px] text-[#04291A] dark:text-[#EDB33A]" stroke-width="1.6"></i>
                 </span>
                 <div class="leading-tight">
-                    <p class="text-[12px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
-                    <p class="mt-1 text-[13px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line leading-relaxed">{{ $trustSub }}</p>
+                    <p class="text-[14px] font-bold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $trustTitle }}</p>
+                    <p class="mt-1 text-[14px] md:text-[11px] text-[#6F6B60] dark:text-[#868778] whitespace-pre-line leading-relaxed">{{ $trustSub }}</p>
                 </div>
             </div>
             @endforeach
