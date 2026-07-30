@@ -22,6 +22,11 @@ class BusinessService
             // answer instead of everyone defaulting to `artisan`.
             'vendor_type'      => \App\Support\AccountTypes::vendorType($user->account_type) ?? 'artisan',
             'industry_id'      => $data['industry_id'],
+            // Country is denormalised onto the business so the public
+            // directory can filter on one indexed column. Derived from the
+            // region when the form did not send it, so a record can never end
+            // up in a region of one country and the directory of another.
+            'country_id'       => $data['country_id'] ?? self::countryOfRegion($data['region_id'] ?? null),
             'region_id'        => $data['region_id'] ?? null,
             'city_id'          => $data['city_id'] ?? null,
             'name_fr'          => $data['name_fr'],
@@ -60,8 +65,34 @@ class BusinessService
         return $business->fresh(['industry', 'region', 'city', 'socialLinks', 'tags']);
     }
 
+    /**
+     * The country a region belongs to, or null.
+     *
+     * Used so a business never carries a region of one country and a country
+     * column saying another — the public directory groups on the country
+     * column, so a mismatch would list an artisan under the wrong flag.
+     */
+    private static function countryOfRegion(?int $regionId): ?int
+    {
+        if (! $regionId) {
+            return null;
+        }
+
+        return \App\Modules\Taxonomy\Models\Region::whereKey($regionId)->value('country_id');
+    }
+
     public function update(Business $business, array $data): Business
     {
+        // Keep the two in step however the caller filled the form in. A region
+        // change with no country change is the ordinary case on edit, and it
+        // must move the business to the right country rather than leave it.
+        if (array_key_exists('region_id', $data)) {
+            $derived = self::countryOfRegion($data['region_id'] ?? null);
+            if ($derived !== null) {
+                $data['country_id'] = $derived;
+            }
+        }
+
         $business->update(Arr::except($data, ['logo', 'cover_image', 'social_links', 'tags']));
 
         if (! empty($data['social_links'])) {

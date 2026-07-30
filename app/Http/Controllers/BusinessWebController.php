@@ -7,6 +7,7 @@ use App\Modules\Businesses\Models\Business;
 use App\Modules\Businesses\Services\BusinessService;
 use App\Modules\Businesses\Services\ImageUploadService;
 use App\Modules\Taxonomy\Models\City;
+use App\Modules\Taxonomy\Models\Country;
 use App\Modules\Taxonomy\Models\Industry;
 use App\Modules\Taxonomy\Models\Region;
 use Illuminate\Http\RedirectResponse;
@@ -77,11 +78,16 @@ class BusinessWebController extends Controller
         }
 
         $industries = $this->tradesGroupedByCorps();
-        $regions = Region::orderBy('name_fr')->get();
+        // Regions start empty and arrive once a country is chosen. Listing all
+        // 82 at once would mix Cameroonian regions, Ivorian districts and
+        // Algerian wilayas in one dropdown.
+        $countries = Country::active()->get();
+        $regions = collect();
 
         return view('pages.dashboard.business-form', [
             'lang' => $lang, 'siacUser' => $siacUser, 'business' => null,
-            'industries' => $industries, 'regions' => $regions, 'cities' => collect(),
+            'industries' => $industries, 'countries' => $countries,
+            'regions' => $regions, 'cities' => collect(),
             // Signup already collected the member's phone and email; the create
             // form starts from them (editable) instead of asking again.
             'owner' => User::find($siacUser['id']),
@@ -155,10 +161,15 @@ class BusinessWebController extends Controller
 
         $business = Business::where('user_id', $siacUser['id'])->firstOrFail();
         $industries = $this->tradesGroupedByCorps();
-        $regions = Region::orderBy('name_fr')->get();
+        $countries = Country::active()->get();
+        // Only this business's own country's regions, so the selected one is
+        // present and the list matches what the cascade would fetch.
+        $regions = $business->country_id
+            ? Region::where('country_id', $business->country_id)->orderBy('sort_order')->orderBy('name_fr')->get()
+            : collect();
         $cities = $business->region_id ? City::where('region_id', $business->region_id)->orderBy('name_fr')->get() : collect();
 
-        return view('pages.dashboard.business-form', compact('lang', 'siacUser', 'business', 'industries', 'regions', 'cities'));
+        return view('pages.dashboard.business-form', compact('lang', 'siacUser', 'business', 'industries', 'countries', 'regions', 'cities'));
     }
 
     public function update(Request $request): RedirectResponse
@@ -182,6 +193,25 @@ class BusinessWebController extends Controller
         return response()->json($cities);
     }
 
+    /**
+     * Regions of one country, for the country -> region -> city cascade on the
+     * business form. Mirrors citiesForRegion above.
+     *
+     * Ordered by sort_order first: Algeria's 58 wilayas are universally known
+     * by their official number (it is on every licence plate), so listing them
+     * 01 Adrar ... 58 El Meniaa is the order an Algerian expects. Alphabetical
+     * would be actively confusing there.
+     */
+    public function regionsForCountry(Request $request, int $countryId)
+    {
+        $regions = Region::where('country_id', $countryId)
+            ->orderBy('sort_order')
+            ->orderBy('name_fr')
+            ->get(['id', 'name_fr', 'name_en']);
+
+        return response()->json($regions);
+    }
+
     private function handleUploads(Request $request, Business $business): void
     {
         if ($request->hasFile('logo')) {
@@ -196,6 +226,7 @@ class BusinessWebController extends Controller
     {
         $data = $request->validate([
             'industry_id'           => ['required', 'exists:industries,id'],
+            'country_id'            => ['nullable', 'exists:countries,id'],
             'region_id'             => ['nullable', 'exists:regions,id'],
             'city_id'               => ['nullable', 'exists:cities,id'],
             'business_name'         => ['required', 'string', 'max:255'],

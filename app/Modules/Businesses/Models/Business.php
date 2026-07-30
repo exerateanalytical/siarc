@@ -16,7 +16,7 @@ class Business extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'uuid', 'slug', 'user_id', 'industry_id', 'region_id', 'city_id',
+        'uuid', 'slug', 'user_id', 'industry_id', 'country_id', 'region_id', 'city_id',
         'name_fr', 'name_en', 'tagline_fr', 'tagline_en',
         'description_fr', 'description_en',
         'logo', 'cover_image',
@@ -89,6 +89,11 @@ class Business extends Model
     public function region(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Region::class);
+    }
+
+    public function country(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Taxonomy\Models\Country::class);
     }
 
     public function city(): \Illuminate\Database\Eloquent\Relations\BelongsTo

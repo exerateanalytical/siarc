@@ -20,7 +20,12 @@
             'plus'     => '+' . (int) ($b->products_count ?? 0),
             'name'     => $isFr ? $b->name_fr : ($b->name_en ?? $b->name_fr),
             'cat'      => $b->industry ? ($isFr ? $b->industry->name_fr : ($b->industry->name_en ?? $b->industry->name_fr)) : '',
-            'loc'      => trim(($b->city->name_fr ?? '') . ($b->city && $b->region ? ', ' : '') . ($b->region->name_fr ?? ''), ', ') ?: 'Cameroun',
+            // Falls back to the artisan's own country, not a hardcoded
+            // 'Cameroun'. Since Côte d'Ivoire and Algeria were opened for
+            // signup, that literal would have labelled an Abidjan workshop as
+            // Cameroonian whenever it had no city or region set.
+            'loc'      => trim(($b->city->name_fr ?? '') . ($b->city && $b->region ? ', ' : '') . ($b->region->name_fr ?? ''), ', ')
+                            ?: ($b->country ? ($isFr ? $b->country->name_fr : ($b->country->name_en ?? $b->country->name_fr)) : ''),
             'desc'     => $isFr ? ($b->tagline_fr ?? '') : ($b->tagline_en ?? $b->tagline_fr ?? ''),
             'verified' => in_array($b->verification_tier, ['verified', 'certified'], true),
         ];
@@ -155,6 +160,18 @@
                         <option value="{{ $scSlug }}" {{ request('industry') === $scSlug ? 'selected' : '' }}>{{ $scLabel }}</option>
                         @endforeach
                     </select>
+
+                    @if(($countries ?? collect())->count() > 1)
+                    {{-- Only shown once more than one country is open for
+                         signup; a filter with a single option is noise. --}}
+                    <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Pays' : 'Country' }}</p>
+                    <select name="pays" class="ui-field ui-select ui-field--sm mt-2">
+                        <option value="">{{ $isFr ? 'Tous les pays' : 'All countries' }}</option>
+                        @foreach($countries as $countryRow)
+                        <option value="{{ $countryRow->code }}" {{ request('pays') === $countryRow->code ? 'selected' : '' }}>{{ $countryRow->flag_emoji }} {{ $isFr ? $countryRow->name_fr : ($countryRow->name_en ?? $countryRow->name_fr) }}</option>
+                        @endforeach
+                    </select>
+                    @endif
 
                     <p class="mt-4 text-[12px] font-semibold text-[#1D1B16] dark:text-[#F3EFE7]">{{ $isFr ? 'Région' : 'Region' }}</p>
                     <select name="region" class="ui-field ui-select ui-field--sm mt-2">

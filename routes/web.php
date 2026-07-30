@@ -408,6 +408,7 @@ Route::post('/tableau-de-bord/entreprise/creer', [BusinessWebController::class, 
 Route::get('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class, 'edit'])->name('business.edit');
 Route::post('/tableau-de-bord/entreprise/modifier', [BusinessWebController::class, 'update'])->name('business.update')->middleware('verified.email');
 Route::get('/api-interne/villes/{regionId}', [BusinessWebController::class, 'citiesForRegion'])->name('business.cities-for-region');
+Route::get('/api-interne/regions/{countryId}', [BusinessWebController::class, 'regionsForCountry'])->name('business.regions-for-country');
 
 use App\Http\Controllers\ProductWebController;
 
@@ -4278,12 +4279,29 @@ Route::get('/llms.txt', function () {
     $products   = DB::table('products')->where('status', 'published')->count();
     $categories = DB::table('industries')->where('is_active', true)->count();
     $regions    = DB::table('businesses')->where('status', 'published')->whereNotNull('region_id')->distinct()->count('region_id');
+    // The countries actually represented by a published profile, named. An
+    // answer engine repeating "Cameroon only" after Cote d'Ivoire and Algeria
+    // opened would be repeating something this file told it.
+    // Selected from `countries` with a subquery rather than a DISTINCT join:
+    // DISTINCT plus ORDER BY on a column that is not in the SELECT list is
+    // rejected outright by MySQL and MariaDB under ONLY_FULL_GROUP_BY.
+    $countryNames = DB::table('countries')
+        ->whereIn('id', function ($q) {
+            $q->select('country_id')->from('businesses')
+              ->where('status', 'published')->whereNotNull('country_id');
+        })
+        ->orderBy('sort_order')
+        ->pluck('name_en')
+        ->all();
+    $openCountries = DB::table('countries')->where('is_active', true)
+        ->orderBy('sort_order')->pluck('name_en')->all();
 
     $lines = [
         '# Artisan Hub 237',
         '',
         '> Artisan Hub 237 is a private, independent platform based in Cameroon that connects buyers with '
-            . 'verified Cameroonian artisans, businesses and producers. It is not a government body, not a public '
+            . 'verified artisans, businesses and producers across ' . implode(', ', $openCountries) . '. '
+            . 'It is not a government body, not a public '
             . 'administration, and is not affiliated with, mandated by, or approved by any ministry or public '
             . 'authority. It is not a party to the sales it hosts and processes no sale payment directly — buyer '
             . 'and seller settle directly, by whatever means they agree.',
@@ -4294,8 +4312,9 @@ Route::get('/llms.txt', function () {
         ...($businesses > 0 ? [
             "As of today the directory lists {$businesses} published artisan/business profiles"
                 . ($products > 0 ? " and {$products} published products" : '')
-                . ", across {$regions} of Cameroon's regions, organised under {$categories} craft "
-                . 'categories of the official taxonomy.',
+                . ", across {$regions} regions"
+                . ($countryNames ? ' in ' . implode(', ', $countryNames) : '')
+                . ", organised under {$categories} craft categories of the official taxonomy.",
             '',
         ] : []),
         '## What the platform does',

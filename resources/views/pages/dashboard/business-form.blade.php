@@ -121,9 +121,18 @@ $fileCls = 'ui-file';
                     <p class="ui-hint">{{ $lang === 'fr' ? 'Nomenclature officielle des métiers de l\'artisanat.' : 'Official craft trade nomenclature.' }}</p>
                 </div>
                 <div>
+                    <label class="ui-label">{{ $lang === 'fr' ? 'Pays' : 'Country' }}</label>
+                    <select name="country_id" id="country-select" class="ui-field ui-select">
+                        <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
+                        @foreach($countries as $country)
+                        <option value="{{ $country->id }}" {{ $v('country_id') == $country->id ? 'selected' : '' }}>{{ $country->flag_emoji }} {{ $lang === 'fr' ? $country->name_fr : $country->name_en }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Région' : 'Region' }}</label>
                     <select name="region_id" id="region-select" class="ui-field ui-select">
-                        <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
+                        <option value="">{{ $v('country_id') ? ($lang === 'fr' ? 'Choisir...' : 'Choose...') : ($lang === 'fr' ? 'Choisir un pays d\'abord' : 'Choose a country first') }}</option>
                         @foreach($regions as $region)
                         <option value="{{ $region->id }}" {{ $v('region_id') == $region->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $region->name_fr : $region->name_en }}</option>
                         @endforeach
@@ -212,6 +221,40 @@ $fileCls = 'ui-file';
 </div>
 
 <script>
+/* Country -> region. Added when Côte d'Ivoire and Algeria were opened for
+   signup: the region list is no longer a single fixed set of ten, so it has to
+   be fetched for whichever country is chosen. Changing country also clears the
+   city, because a city belongs to a region that no longer applies. */
+document.getElementById('country-select').addEventListener('change', function () {
+    var countryId = this.value;
+    var regionSelect = document.getElementById('region-select');
+    var citySelect = document.getElementById('city-select');
+
+    citySelect.innerHTML = '<option value="">{{ $lang === "fr" ? "Choisir une région d\'abord" : "Choose a region first" }}</option>';
+
+    if (!countryId) {
+        regionSelect.innerHTML = '<option value="">{{ $lang === "fr" ? "Choisir un pays d\'abord" : "Choose a country first" }}</option>';
+        return;
+    }
+
+    regionSelect.innerHTML = '<option value="">{{ $lang === "fr" ? "Chargement..." : "Loading..." }}</option>';
+    fetch('/api-interne/regions/' + countryId)
+        .then(function (r) { return r.json(); })
+        .then(function (regions) {
+            regionSelect.innerHTML = '<option value="">{{ $lang === "fr" ? "Choisir..." : "Choose..." }}</option>';
+            regions.forEach(function (region) {
+                var opt = document.createElement('option');
+                opt.value = region.id;
+                opt.textContent = '{{ $lang }}' === 'fr' ? region.name_fr : (region.name_en || region.name_fr);
+                regionSelect.appendChild(opt);
+            });
+        })
+        .catch(function () {
+            /* Leave the field usable rather than stuck on "Chargement...". */
+            regionSelect.innerHTML = '<option value="">{{ $lang === "fr" ? "Erreur de chargement — réessayez" : "Could not load — try again" }}</option>';
+        });
+});
+
 document.getElementById('region-select').addEventListener('change', function () {
     var regionId = this.value;
     var citySelect = document.getElementById('city-select');

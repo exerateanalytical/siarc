@@ -174,7 +174,7 @@ class FrontendController extends Controller
         $tier     = $request->query('tier');
         $region   = $request->query('region');
 
-        $query = Business::with(['industry', 'city', 'region'])
+        $query = Business::with(['industry', 'city', 'region', 'country'])
             ->where('status', 'published');
 
         if ($q) {
@@ -200,6 +200,13 @@ class FrontendController extends Controller
             $query->whereHas('region', fn($qb) => $qb->where('code', $region));
         }
 
+        // Country filter, added when Cote d'Ivoire and Algeria were opened for
+        // signup. Matched on the ISO code rather than the id so the URL stays
+        // readable and stable: ?pays=CI, not ?pays=2.
+        if ($countryCode = $request->query('pays')) {
+            $query->whereHas('country', fn ($qb) => $qb->where('code', $countryCode));
+        }
+
         if ($request->query('featured')) {
             $query->where('is_featured', true);
         }
@@ -222,6 +229,7 @@ class FrontendController extends Controller
 
         $industries = Industry::withCount('businesses')->where('is_active', true)->orderBy('sort_order')->get();
         $regions    = DB::table('regions')->orderBy('name_fr')->get();
+        $countries  = \App\Modules\Taxonomy\Models\Country::active()->get();
 
         // Real directory stats for the hero band.
         //
@@ -244,7 +252,7 @@ class FrontendController extends Controller
         $vendorTypeCounts = $this->vendorTypeCounts();
 
         return response(
-            view('pages.businesses.index', compact('lang', 'businesses', 'industries', 'regions', 'dirStats', 'vendorTypeCounts'))
+            view('pages.businesses.index', compact('lang', 'businesses', 'industries', 'regions', 'countries', 'dirStats', 'vendorTypeCounts'))
         )->cookie('lang', $lang, 60 * 24 * 30);
     }
 
