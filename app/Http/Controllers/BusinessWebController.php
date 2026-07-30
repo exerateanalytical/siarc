@@ -66,11 +66,30 @@ class BusinessWebController extends Controller
         return $siacUser;
     }
 
+    /**
+     * A shop belongs to a seller. A buyer following a stale link here would get
+     * a business whose owner has role `buyer`, and BusinessService would fall
+     * back to vendor_type `artisan` — a shop its owner cannot administer.
+     * Letting a buyer become a seller is a real need, but it is an account
+     * upgrade with its own decisions, not a side effect of opening a form.
+     */
+    private function requireSeller(array $siacUser): ?RedirectResponse
+    {
+        $accountType = User::whereKey($siacUser['id'])->value('account_type');
+
+        return \App\Support\AccountTypes::isSeller((string) $accountType)
+            ? null
+            : redirect('/tableau-de-bord/acheteur');
+    }
+
     public function create(Request $request)
     {
         $lang = $this->lang($request);
         $siacUser = $this->requireUser($request);
         if ($siacUser instanceof RedirectResponse) return $siacUser;
+        if ($guard = $this->requireSeller($siacUser)) {
+            return $guard;
+        }
 
         $existing = Business::where('user_id', $siacUser['id'])->first();
         if ($existing) {
@@ -84,12 +103,21 @@ class BusinessWebController extends Controller
         // A shop may only be opened from a country the platform trades in, which
         // is a narrower list than the one signup offers a buyer.
         $countries = Country::forSellers()->get();
-        $regions = collect();
+
+        // Start from the country they gave at signup, with its regions already
+        // loaded, so an Ivorian artisan is not asked the same question twice.
+        // It is a default, not a constraint — a person may register in one
+        // country and trade from another, and the form still lets them change it.
+        $ownerCountryId = User::whereKey($siacUser['id'])->value('country_id');
+        $regions = $ownerCountryId
+            ? Region::where('country_id', $ownerCountryId)->orderBy('sort_order')->orderBy('name_fr')->get()
+            : collect();
 
         return view('pages.dashboard.business-form', [
             'lang' => $lang, 'siacUser' => $siacUser, 'business' => null,
             'industries' => $industries, 'countries' => $countries,
             'regions' => $regions, 'cities' => collect(),
+            'prefillCountryId' => $ownerCountryId,
             // Signup already collected the member's phone and email; the create
             // form starts from them (editable) instead of asking again.
             'owner' => User::find($siacUser['id']),
@@ -105,6 +133,9 @@ class BusinessWebController extends Controller
     {
         $siacUser = $this->requireUser($request);
         if ($siacUser instanceof RedirectResponse) return $siacUser;
+        if ($guard = $this->requireSeller($siacUser)) {
+            return $guard;
+        }
 
         if (Business::where('user_id', $siacUser['id'])->exists()) {
             return redirect()->route('business.edit');
@@ -173,7 +204,10 @@ class BusinessWebController extends Controller
             : collect();
         $cities = $business->region_id ? City::where('region_id', $business->region_id)->orderBy('name_fr')->get() : collect();
 
-        return view('pages.dashboard.business-form', compact('lang', 'siacUser', 'business', 'industries', 'countries', 'regions', 'cities'));
+        // Editing has a saved country already; the signup prefill is a
+        // create-time default only, and must not override what was chosen.
+        return view('pages.dashboard.business-form', compact('lang', 'siacUser', 'business', 'industries', 'countries', 'regions', 'cities')
+            + ['prefillCountryId' => null]);
     }
 
     public function update(Request $request): RedirectResponse

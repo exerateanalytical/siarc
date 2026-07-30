@@ -195,4 +195,57 @@ class SignupCountryAndBuyerTest extends TestCase
             'Kenya should be marked as seller-enabled.'
         );
     }
+
+    public function test_a_buyer_cannot_reach_the_shop_form(): void
+    {
+        $buyer = User::factory()->create(['account_type' => 'buyer']);
+
+        $this->withSession(['siac_user' => [
+            'id' => $buyer->id, 'name' => $buyer->name, 'email' => $buyer->email,
+            'role' => 'buyer', 'is_admin' => false,
+        ]])
+            ->get('/tableau-de-bord/entreprise/creer')
+            ->assertRedirect('/tableau-de-bord/acheteur');
+
+        $this->assertSame(0, \App\Modules\Businesses\Models\Business::where('user_id', $buyer->id)->count());
+    }
+
+    public function test_a_buyer_posting_to_the_shop_form_creates_nothing(): void
+    {
+        $buyer = User::factory()->create(['account_type' => 'buyer']);
+
+        $this->withSession(['siac_user' => [
+            'id' => $buyer->id, 'name' => $buyer->name, 'email' => $buyer->email,
+            'role' => 'buyer', 'is_admin' => false,
+        ]])
+            ->post('/tableau-de-bord/entreprise/creer', [
+                'name_fr'     => 'Boutique interdite',
+                'description' => 'Should never exist.',
+            ])
+            ->assertRedirect('/tableau-de-bord/acheteur');
+
+        $this->assertSame(0, \App\Modules\Businesses\Models\Business::where('user_id', $buyer->id)->count());
+    }
+
+    public function test_the_shop_form_is_prefilled_with_the_owners_country(): void
+    {
+        $ci = Country::where('code', 'CI')->firstOrFail();
+        $seller = User::factory()->create(['account_type' => 'artisan', 'country_id' => $ci->id]);
+
+        $html = $this->withSession(['siac_user' => [
+            'id' => $seller->id, 'name' => $seller->name, 'email' => $seller->email,
+            'role' => 'business_owner', 'is_admin' => false,
+        ]])
+            ->get('/tableau-de-bord/entreprise/creer')
+            ->assertOk()
+            ->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/<option value="' . $ci->id . '"[^>]*selected/',
+            $html,
+            "The seller's own country is not preselected on the shop form."
+        );
+        // And its regions must already be loaded, not an empty list.
+        $this->assertStringContainsString('Abidjan', $html);
+    }
 }

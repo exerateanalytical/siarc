@@ -125,14 +125,16 @@ $fileCls = 'ui-file';
                     <select name="country_id" id="country-select" class="ui-field ui-select">
                         <option value="">{{ $lang === 'fr' ? 'Choisir...' : 'Choose...' }}</option>
                         @foreach($countries as $country)
-                        <option value="{{ $country->id }}" {{ $v('country_id') == $country->id ? 'selected' : '' }}>{{ $country->flag_emoji }} {{ $lang === 'fr' ? $country->name_fr : $country->name_en }}</option>
+                        {{-- Falls back to the country given at signup, so a seller who
+                             already told us where they are is not asked a second time. --}}
+                        <option value="{{ $country->id }}" {{ ($v('country_id') ?: ($prefillCountryId ?? null)) == $country->id ? 'selected' : '' }}>{{ $country->flag_emoji }} {{ $lang === 'fr' ? $country->name_fr : $country->name_en }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
                     <label class="ui-label">{{ $lang === 'fr' ? 'Région' : 'Region' }}</label>
                     <select name="region_id" id="region-select" class="ui-field ui-select">
-                        <option value="">{{ $v('country_id') ? ($lang === 'fr' ? 'Choisir...' : 'Choose...') : ($lang === 'fr' ? 'Choisir un pays d\'abord' : 'Choose a country first') }}</option>
+                        <option value="">{{ ($v('country_id') ?: ($prefillCountryId ?? null)) ? ($lang === 'fr' ? 'Choisir...' : 'Choose...') : ($lang === 'fr' ? 'Choisir un pays d\'abord' : 'Choose a country first') }}</option>
                         @foreach($regions as $region)
                         <option value="{{ $region->id }}" {{ $v('region_id') == $region->id ? 'selected' : '' }}>{{ $lang === 'fr' ? $region->name_fr : $region->name_en }}</option>
                         @endforeach
