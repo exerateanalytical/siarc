@@ -35,6 +35,7 @@
     @include('pages.partials.favicon')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
     <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
+@include('pages.partials.seo-head')
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 

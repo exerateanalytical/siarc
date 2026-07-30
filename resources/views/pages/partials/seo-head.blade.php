@@ -37,6 +37,14 @@
     $__seoOgTitle = $seoOgTitle ?? ($title ?? null);
     $__seoOgDescription = $seoOgDescription ?? ($description ?? null);
     $__seoJsonLd = collect($seoJsonLd ?? [])->filter()->push(\App\Support\Seo::organizationSchema());
+
+    /* Share image. Until 30 July this only rendered when a page set
+       $seoOgImage, and no page ever did — so every link posted to WhatsApp or
+       Facebook showed a blank grey box. It now falls back to the site card at
+       public/images/og-cover.png (1200x630, built by scripts/build-og-image.php).
+       A page with a better image of its own still wins. */
+    $__seoOgImage = $seoOgImage ?? asset('images/og-cover.png');
+    $__seoOgImageIsDefault = ! isset($seoOgImage);
 @endphp
 <link rel="canonical" href="{{ $__seoCanonical }}">
 @if($__seoHreflang)
@@ -54,8 +62,26 @@
 @if($__seoOgDescription)
     <meta property="og:description" content="{{ $__seoOgDescription }}">
 @endif
-@if(!empty($seoOgImage))
-    <meta property="og:image" content="{{ $seoOgImage }}">
+<meta property="og:image" content="{{ $__seoOgImage }}">
+<meta property="og:image:alt" content="Artisan Hub 237 — {{ $__seoOgImageIsDefault ? 'l\'artisanat camerounais authentique' : ($__seoOgTitle ?? 'Artisan Hub 237') }}">
+@if($__seoOgImageIsDefault)
+    {{-- Only declared for the card we built and therefore know the size of.
+         Wrong dimensions are worse than none: a scraper that trusts them
+         renders a stretched or cropped preview. --}}
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+@endif
+
+{{-- Twitter reads og:* for most fields but needs its own card type, or a link
+     renders as a small thumbnail beside the text instead of a full-width
+     preview. --}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ $__seoOgImage }}">
+@if($__seoOgTitle)
+    <meta name="twitter:title" content="{{ $__seoOgTitle }}">
+@endif
+@if($__seoOgDescription)
+    <meta name="twitter:description" content="{{ $__seoOgDescription }}">
 @endif
 
 @foreach($__seoJsonLd as $__schema)

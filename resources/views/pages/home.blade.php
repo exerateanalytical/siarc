@@ -109,7 +109,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ $isFr ? 'Artisan Hub 237 — Notre héritage, notre fierté, notre avenir. Découvrez les artisans et producteurs camerounais.' : 'Artisan Hub 237 — Our heritage, our pride, our future. Discover Cameroonian artisans and producers.' }}">
-    <title>{{ $isFr ? 'Artisan Hub 237' : 'Artisan Hub 237' }}</title>
+    {{-- The brand alone told a searcher nothing, and both branches of the
+         ternary were the same string. Kept under ~60 characters so Google does
+         not truncate it, with the brand first because that is what anyone
+         searching for this platform by name types. --}}
+    <title>{{ $isFr
+        ? 'Artisan Hub 237 — Artisanat camerounais authentique'
+        : 'Artisan Hub 237 — Authentic Cameroonian craftsmanship' }}</title>
 
     <style>
         /* This page's own colour tokens. They used to be an inline
