@@ -125,7 +125,10 @@
 @include('pages.partials.directory-header', ['dirNavActive' => 'categories'])
 
 <div class="max-w-[1472px] mx-auto px-4 sm:px-6 pt-5 pb-9">
-    <div class="flex flex-col lg:flex-row gap-8 xl:gap-9 items-start">
+    {{-- `items-start` only from lg up. In the mobile `flex-col` phase it made
+         <main> size to fit-content instead of stretching, so the widest child
+         set the column width and the page ran 21px past a 320px screen. --}}
+    <div class="flex flex-col lg:flex-row gap-8 xl:gap-9 lg:items-start">
 
         <!-- Sidebar -->
         <aside class="hidden lg:block w-[273px] shrink-0 space-y-5">
@@ -297,7 +300,7 @@
             @unless($current)
             <div class="mt-4">
                 <div class="flex items-center gap-3">
-                    <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $isFr ? 'Catégories populaires' : 'Popular categories' }}</h2>
+                    <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-normal sm:whitespace-nowrap">{{ $isFr ? 'Catégories populaires' : 'Popular categories' }}</h2>
                     <span class="h-px flex-1 bg-[#EAE7DE] dark:bg-[#0A0C09]"></span>
                 </div>
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -322,7 +325,7 @@
 
 @unless($current)
             <div class="mt-9 flex items-center gap-3">
-                <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-nowrap">{{ $isFr ? 'Toutes les catégories officielles' : 'All official categories' }}</h2>
+                <h2 class="font-serif text-[22px] font-bold text-[#1D1B16] dark:text-[#F3EFE7] whitespace-normal sm:whitespace-nowrap">{{ $isFr ? 'Toutes les catégories officielles' : 'All official categories' }}</h2>
                 <span class="h-px flex-1 bg-[#EAE7DE] dark:bg-[#0A0C09]"></span>
             </div>
             @endunless

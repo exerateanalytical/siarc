@@ -42,7 +42,12 @@ $partnerTiles = [
                 ]) as [$fIcon, $fText])
                 <div class="flex items-start gap-2.5">
                     <span class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0"><i data-lucide="{{ $fIcon }}" class="w-4 h-4 text-[#E9C25A]"></i></span>
-                    <p class="text-[14px] md:text-[11.5px] text-[#C9D6CD] leading-snug">{{ $fText }}</p>
+                    {{-- In the 2-column phase each cell leaves the text ~88px and
+                         "internationales" alone is wider. break-words lets it
+                         split; min-w-0 is what makes that possible at all, since
+                         a flex item defaults to min-width:auto and would
+                         otherwise hold the cell open at the longest word. --}}
+                    <p class="min-w-0 text-[14px] md:text-[11.5px] text-[#C9D6CD] leading-snug break-words">{{ $fText }}</p>
                 </div>
                 @endforeach
             </div>
@@ -63,12 +68,12 @@ $partnerTiles = [
         ] as [$kIcon, $kColor, $kTile, $kVal, $kLabel])
         <div class="flex items-center gap-3">
             <span class="w-[46px] h-[46px] rounded-full flex items-center justify-center shrink-0" style="background-color: {{ $kTile }}"><i data-lucide="{{ $kIcon }}" class="w-5 h-5" style="color: {{ $kColor }}"></i></span>
-            <div class="min-w-0"><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $kVal }}</p><p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $kLabel }}</p></div>
+            <div class="min-w-0"><p class="text-[18px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">{{ $kVal }}</p><p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5 break-words">{{ $kLabel }}</p></div>
         </div>
         @endforeach
         <div class="flex items-center gap-3">
             <span class="w-[46px] h-[46px] rounded-full bg-[#E2F3E8] dark:bg-[#0C3D1D] flex items-center justify-center shrink-0"><i data-lucide="map" class="w-5 h-5 text-[#157A43] dark:text-[#339B56]"></i></span>
-            <div class="min-w-0"><p class="text-[15px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none">Cameroun</p><p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5">{{ $isFr ? 'Couverture' : 'Coverage' }} {{ $pubRegionsCovered }} {{ $isFr ? 'régions' : 'regions' }}</p></div>
+            <div class="min-w-0"><p class="text-[15px] font-extrabold text-[#1B1B18] dark:text-[#F3EFE7] leading-none break-words">Cameroun</p><p class="text-[14px] md:text-[11px] text-[#8A857A] dark:text-[#868778] mt-0.5 break-words">{{ $isFr ? 'Couverture' : 'Coverage' }} {{ $pubRegionsCovered }} {{ $isFr ? 'régions' : 'regions' }}</p></div>
         </div>
     </div>
 </section>
@@ -131,7 +136,9 @@ $partnerTiles = [
 
     <div class="mt-8 bg-[#EFF5F0] dark:bg-[#0A0C09] rounded-2xl px-6 py-5 flex flex-wrap items-center gap-4">
         <i data-lucide="heart-handshake" class="w-[28px] h-[28px] shrink-0 text-[#14652F] dark:text-[#339B56]" style="stroke-width:1.6"></i>
-        <p class="flex-1 min-w-[240px] text-[14px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
+        {{-- The 240px floor only from sm up: at 320px the icon, gap and this
+             floor together exceed the padded row, so let it wrap instead. --}}
+        <p class="flex-1 min-w-0 sm:min-w-[240px] text-[14px] md:text-[13px] text-[#3B382F] dark:text-[#F3EFE7]">
             <span class="font-bold">{{ $isFr ? 'Devenir partenaire ?' : 'Become a partner?' }}</span>
             {{ $isFr ? 'Rejoignez les institutions qui soutiennent l\'artisanat camerounais.' : 'Join the institutions supporting Cameroonian craftsmanship.' }}
         </p>
