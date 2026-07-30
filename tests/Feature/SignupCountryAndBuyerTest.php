@@ -64,4 +64,23 @@ class SignupCountryAndBuyerTest extends TestCase
                 "The wizard offers '{$offered}', which AccountTypes does not define.");
         }
     }
+
+    public function test_signing_up_as_a_buyer_creates_no_business(): void
+    {
+        $response = $this->post('/creer-mon-compte', [
+            'first_name'            => 'Awa',
+            'last_name'             => 'Traore',
+            'email'                 => 'awa.buyer@example.test',
+            'password'              => 'secret-password-123',
+            'password_confirmation' => 'secret-password-123',
+            'account_type'          => 'buyer',
+        ]);
+
+        $response->assertRedirect();
+
+        $user = \App\Modules\Auth\Models\User::where('email', 'awa.buyer@example.test')->firstOrFail();
+
+        $this->assertSame('buyer', $user->account_type);
+        $this->assertSame(0, \App\Modules\Businesses\Models\Business::where('user_id', $user->id)->count());
+    }
 }

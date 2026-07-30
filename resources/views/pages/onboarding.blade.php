@@ -455,8 +455,8 @@
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
                         {{ $isFr ? 'Précédent' : 'Previous' }}
                     </button>
-                    <button type="button" onclick="goToStep(3)" class="ui-btn ui-btn-primary ui-btn-lg">
-                        {{ $isFr ? 'Suivant' : 'Next' }}
+                    <button type="button" id="ob-details-next" onclick="advanceFromDetails()" class="ui-btn ui-btn-primary ui-btn-lg">
+                        <span id="ob-details-next-label">{{ $isFr ? 'Suivant' : 'Next' }}</span>
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -810,6 +810,8 @@
     const defaultTitle1 = @json($wizardSteps[0][0]);
     const doneTitle1 = @json($isFr ? 'Type de compte' : 'Account type');
     const notProvided = @json($isFr ? 'Non renseigné' : 'Not provided');
+    const nextLabel = @json($isFr ? 'Suivant' : 'Next');
+    const createAccountLabel = @json($isFr ? 'Créer mon compte' : 'Create my account');
     // Sentinel step for the post-creation confirmation screen (not a wizard step).
     const SUCCESS_STEP = 11;
 
@@ -821,8 +823,12 @@
             card.querySelector('.at-radio').style.borderColor = r.checked ? '#0F5132' : '#C9CFC9';
         });
     }
-    document.querySelectorAll('input[name="account_type"]').forEach(r => r.addEventListener('change', refreshRadios));
+    document.querySelectorAll('input[name="account_type"]').forEach(r => r.addEventListener('change', () => {
+        refreshRadios();
+        refreshDetailsNextLabel();
+    }));
     refreshRadios();
+    refreshDetailsNextLabel();
 
     // The phone-sized select drives the same radios the wizard already reads,
     // so the summary step and the submitted value need no special case.
@@ -851,6 +857,32 @@
     }
 
     let currentStep = 1;
+
+    /* A buyer has nothing to review: the summary step lists an account type they
+       are not trading under and a shop they are not creating. Step 2 already asks
+       everything a buyer needs, so for them it is the last step — the button
+       there says so, and submits through the same handler a seller uses. */
+    function chosenAccountType() {
+        var el = document.querySelector('input[name="account_type"]:checked');
+        return el ? el.value : '';
+    }
+
+    function buyerSelected() {
+        return chosenAccountType() === 'buyer';
+    }
+
+    function advanceFromDetails() {
+        if (buyerSelected()) {
+            document.getElementById('ob-submit').click();
+            return;
+        }
+        goToStep(3);
+    }
+
+    function refreshDetailsNextLabel() {
+        const label = document.getElementById('ob-details-next-label');
+        if (label) label.textContent = buyerSelected() ? createAccountLabel : nextLabel;
+    }
 
     // ── Real signup: "Créer mon compte" creates the account ──
     // The form is ALWAYS posted — even when a session already exists. This used
