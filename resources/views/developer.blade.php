@@ -32,8 +32,7 @@
         --c-forest-900: 3 19 14;
     }
 </style>
-<script src="{{ asset('vendor/lucide-subset.js') }}"></script>
-<link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
+@include('pages.partials.icons')
 <style>
         /* Nothing may scroll the page sideways on a phone; wide content
            (tables, diagrams) scrolls inside its own container instead. */
@@ -42,7 +41,7 @@ body{font-family:'Poppins',system-ui,sans-serif;}</style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#0A0C09] text-[#1B1B18] dark:text-[#F3EFE7] antialiased">
 

@@ -25,9 +25,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $isFr ? 'Certificat d\'adhésion — Artisan Hub 237' : 'Membership certificate — Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
+    @include('pages.partials.icons')
     <script src="{{ asset('vendor/qrcode.min.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
         /* Nothing may scroll the page sideways on a phone; wide content
@@ -48,7 +47,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="antialiased">
 

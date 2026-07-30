@@ -56,5 +56,18 @@
       });
     }
   }
+  /* Any createIcons() call made before this file finished loading was captured
+     by the stub in the page head (see pages/partials/icons.blade.php) and left
+     on __lucideQueue. Take the queue before overwriting g.lucide, install the
+     real API, then replay. The script tag is deferred, so it runs after the
+     document is parsed and before DOMContentLoaded: the icons in the queued
+     call are all present in the DOM by now. */
+  var queued = g.__lucideQueue;
   g.lucide = { icons: icons, createIcons: createIcons, createElement: createElement, replaceElement: replaceElement };
+  if (queued && queued.length) {
+    for (var qi = 0; qi < queued.length; qi++) {
+      try { createIcons(queued[qi] || {}); } catch (e) {}
+    }
+    g.__lucideQueue = null;
+  }
 })(typeof globalThis !== "undefined" ? globalThis : window);

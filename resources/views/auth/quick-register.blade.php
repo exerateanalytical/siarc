@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $isFr ? 'Inscription rapide' : 'Quick signup' }} — Artisan Hub 237</title>
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
+    @include('pages.partials.icons')
     <style>
         /* Nothing may scroll the page sideways on a phone; wide content
            (tables, diagrams) scrolls inside its own container instead. */
@@ -15,7 +14,7 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="min-h-screen bg-[#F3EFE7] dark:bg-[#0A0C09] flex items-center justify-center p-5">
     <main class="w-full max-w-[440px] bg-white dark:bg-[#12150F] rounded-3xl shadow-[0_24px_60px_-24px_rgba(2,48,27,.35)] p-8">

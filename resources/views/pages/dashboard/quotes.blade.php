@@ -191,8 +191,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $isFr ? 'Tableau de bord devis — Artisan Hub 237' : 'Quotes dashboard — Artisan Hub 237' }}</title>
 
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
+    @include('pages.partials.icons')
     <style>
         body { font-family: 'Poppins', system-ui, sans-serif; }
         html, body { overflow-x: clip; }
@@ -201,7 +200,7 @@
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="bg-[#F8F6F2] dark:bg-[#1A1E16] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

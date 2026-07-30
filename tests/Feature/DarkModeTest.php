@@ -85,7 +85,14 @@ class DarkModeTest extends TestCase
                 }
             }
 
-            if (! str_contains($source, "asset('vendor/app.css')")) {
+            // asset_v() is the versioned form — it stamps ?v=<mtime> so the
+            // one-year immutable cache in public/.htaccess can never pin a
+            // visitor to an old stylesheet. Plain asset() is still accepted so
+            // this guard keeps working for any view not yet converted.
+            $loadsStylesheet = str_contains($source, "asset_v('vendor/app.css')")
+                || str_contains($source, "asset('vendor/app.css')");
+
+            if (! $loadsStylesheet) {
                 continue;
             }
 

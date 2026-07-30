@@ -92,9 +92,8 @@
         }
     </style>
 
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
+    @include('pages.partials.icons')
 
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
         body { font-family: 'Poppins', system-ui, sans-serif; }
@@ -110,7 +109,7 @@
     @endphp
     @include('pages.partials.seo-head')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="bg-[#FEFEFE] dark:bg-[#12150F] text-[#1D1B16] dark:text-[#F3EFE7] antialiased">
 

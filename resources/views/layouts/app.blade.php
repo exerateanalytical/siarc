@@ -38,10 +38,9 @@
     </style>
 
     <!-- Lucide Icons (local vendor copy) -->
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
+    @include('pages.partials.icons')
 
     <!-- Fonts (local vendor copy) -->
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
 
     <style>
         /* Nothing may scroll the page sideways on a phone; wide content
@@ -56,7 +55,7 @@
     @include('pages.partials.favicon')
     @include('pages.partials.seo-head')
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="bg-[#F8F6F2] text-[#1B1B18] antialiased">
 

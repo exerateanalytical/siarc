@@ -191,8 +191,7 @@
     <meta name="description" content="{{ $title }} — {{ $w->name }}">
     <title>{{ $title }} — {{ $c->certificate_no }}</title>
 
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
+    @include('pages.partials.icons')
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
     <style>
@@ -261,7 +260,7 @@
         }
     </style>
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="bg-[#E7E9E4] text-[#14251A] antialiased">
 

@@ -292,8 +292,7 @@
     <meta name="description" content="{{ $isFr ? 'Certificat de transfert de propriété' : 'Ownership Transfer Certificate' }} — {{ $name }}">
     <title>{{ $isFr ? 'Certificat de transfert de propriété' : 'Ownership Transfer Certificate' }} — {{ $transfer->certificate_no }}</title>
 
-    <script src="{{ asset('vendor/lucide-subset.js') }}"></script>
-    <link href="{{ asset('vendor/fonts.css') }}" rel="stylesheet">
+    @include('pages.partials.icons')
     @include('pages.partials.ui-kit')
     @include('pages.partials.favicon')
     <style>
@@ -379,7 +378,7 @@
         }
     </style>
     {{-- The one stylesheet. Built by `npm run build:assets`; see tailwind.config.cjs. --}}
-    <link rel="stylesheet" href="{{ asset('vendor/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('vendor/app.css') }}">
 </head>
 <body class="bg-[#EFEADF] text-[#1D1B16] antialiased">
 

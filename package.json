@@ -5,7 +5,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "build:css": "tailwindcss -c tailwind.config.cjs -i resources/css/tailwind-static.css -o public/vendor/app.css --minify",
+        "build:css": "tailwindcss -c tailwind.config.cjs -i resources/css/tailwind-static.css -o public/vendor/app.css --minify && node scripts/merge-fonts-into-css.cjs",
         "build:icons": "node scripts/build-lucide-subset.cjs",
         "build:assets": "npm run build:css && npm run build:icons"
     },

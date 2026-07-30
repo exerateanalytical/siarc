@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Page introuvable — Artisan Hub 237</title>
-<link href="/vendor/fonts.css" rel="stylesheet">
 <style>
         /* Nothing may scroll the page sideways on a phone; wide content
            (tables, diagrams) scrolls inside its own container instead. */

@@ -261,3 +261,33 @@ if (! function_exists('brand_asset')) {
         return asset('images/landing/logo.png');
     }
 }
+
+if (! function_exists('asset_v')) {
+    /**
+     * A same-origin asset URL with a content stamp on the query string.
+     *
+     * Why this exists: the stylesheet and the icon subset are now cached by the
+     * browser for a year (see public/.htaccess). Without a stamp that changes
+     * when the file changes, an update would simply never reach anyone who had
+     * already visited — the browser would keep serving last month's CSS and
+     * there would be no way to tell it otherwise short of renaming the file.
+     *
+     * The stamp is the file's mtime, which changes on every rebuild and every
+     * upload, and is resolved once per path per request. If the file is missing
+     * we fall through to a plain asset() rather than emitting "?v=" — a broken
+     * path should look broken, not look versioned.
+     */
+    function asset_v(string $path): string
+    {
+        static $stamps = [];
+
+        if (! array_key_exists($path, $stamps)) {
+            $full = public_path($path);
+            $stamps[$path] = is_file($full) ? (string) @filemtime($full) : null;
+        }
+
+        return $stamps[$path] === null
+            ? asset($path)
+            : asset($path) . '?v=' . $stamps[$path];
+    }
+}
