@@ -81,7 +81,7 @@ existing class does not.
 - Modify: `app/Modules/Auth/Models/User.php`
 - Test: `tests/Feature/SignupCountryAndBuyerTest.php`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `tests/Feature/SignupCountryAndBuyerTest.php`:
 
@@ -121,7 +121,7 @@ class SignupCountryAndBuyerTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 ```bash
 export PATH="/c/laragon/bin/php/php-8.3.30-Win32-vs16-x64:$PATH"
@@ -135,7 +135,7 @@ has no user factory; replace `User::factory()->create([...])` with an explicit
 `User::create([...])` copying the shape used in
 `tests/Feature/MultiCountrySignupTest.php::makeOwner()`, plus `'country_id' => $cm->id`.
 
-- [ ] **Step 3: Write the migration**
+- [x] **Step 3: Write the migration**
 
 Create `database/migrations/2026_07_31_090000_add_country_to_users.php`:
 
@@ -184,7 +184,7 @@ return new class extends Migration
 };
 ```
 
-- [ ] **Step 4: Add the relation to the User model**
+- [x] **Step 4: Add the relation to the User model**
 
 In `app/Modules/Auth/Models/User.php`, add `'country_id'` to the `$fillable`
 array, and add this method alongside the other relations:
@@ -196,7 +196,7 @@ array, and add this method alongside the other relations:
     }
 ```
 
-- [ ] **Step 5: Migrate and run the test**
+- [x] **Step 5: Migrate and run the test**
 
 ```bash
 php artisan migrate --force
@@ -205,7 +205,7 @@ php artisan test --filter=test_users_can_carry_a_country
 
 Expected: PASS.
 
-- [ ] **Step 6: Confirm the backfill hit the real rows**
+- [x] **Step 6: Confirm the backfill hit the real rows**
 
 ```bash
 php -r 'require "vendor/autoload.php"; $a=require "bootstrap/app.php";
@@ -215,7 +215,7 @@ echo Illuminate\Support\Facades\DB::table("users")->whereNull("country_id")->cou
 
 Expected: `0 users without a country (expect 0)`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add database/migrations/2026_07_31_090000_add_country_to_users.php app/Modules/Auth/Models/User.php tests/Feature/SignupCountryAndBuyerTest.php
@@ -233,7 +233,7 @@ The wizard's own list is the bug. This task makes the view render whatever
 - Modify: `resources/views/pages/onboarding.blade.php:13-60` (the `$accountTypes` array)
 - Test: `tests/Feature/SignupCountryAndBuyerTest.php`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `SignupCountryAndBuyerTest`:
 
@@ -273,7 +273,7 @@ Append to `SignupCountryAndBuyerTest`:
     }
 ```
 
-- [ ] **Step 2: Run them and watch the first fail**
+- [x] **Step 2: Run them and watch the first fail**
 
 ```bash
 php artisan test --filter=SignupCountryAndBuyerTest
@@ -282,7 +282,7 @@ php artisan test --filter=SignupCountryAndBuyerTest
 Expected: `test_both_signup_doors_offer_every_account_type` FAILS with
 "The wizard does not offer the 'buyer' account type."
 
-- [ ] **Step 3: Rewrite the wizard's list as a presentation map**
+- [x] **Step 3: Rewrite the wizard's list as a presentation map**
 
 In `resources/views/pages/onboarding.blade.php`, replace the whole
 `$accountTypes = [ ... ];` array (starts line 13) with the block below. Keep every
@@ -354,7 +354,7 @@ The existing `@foreach($accountTypes as $atIdx => [$atKey, $atIcon, $atColor, $a
 loops and the `$typeNames` / `$typeDescs` maps at lines 106-107 keep working
 unchanged, because the element shape is identical.
 
-- [ ] **Step 4: Check the buyer artwork exists**
+- [x] **Step 4: Check the buyer artwork exists**
 
 ```bash
 ls public/images/landing/ob-type-*.png
@@ -364,7 +364,7 @@ Expected: `ob-type-1.png` through `ob-type-4.png` at least. **If `ob-type-5.png`
 does not exist**, change the buyer entry's icon to `ob-type-1.png` for now and
 note it — a wrong-but-present image beats a broken one. Do not invent a file.
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 ```bash
 php artisan view:clear && php artisan test --filter=SignupCountryAndBuyerTest
@@ -372,7 +372,7 @@ php artisan view:clear && php artisan test --filter=SignupCountryAndBuyerTest
 
 Expected: both account-type tests PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add resources/views/pages/onboarding.blade.php tests/Feature/SignupCountryAndBuyerTest.php
@@ -387,7 +387,7 @@ git commit -m "Let the wizard read the account types the platform actually has"
 - Modify: `resources/views/pages/onboarding.blade.php` (step-2 buttons and the step JS)
 - Test: `tests/Feature/SignupCountryAndBuyerTest.php`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```php
     public function test_signing_up_as_a_buyer_creates_no_business(): void
@@ -410,7 +410,7 @@ git commit -m "Let the wizard read the account types the platform actually has"
     }
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 ```bash
 php artisan test --filter=test_signing_up_as_a_buyer_creates_no_business
@@ -421,7 +421,7 @@ This test is a regression guard, not a driver. If it FAILS, stop and read the
 error: something in the handler assumes a seller, and that must be fixed before
 the UI offers the option.
 
-- [ ] **Step 3: Make the wizard submit at step 2 for a buyer**
+- [x] **Step 3: Make the wizard submit at step 2 for a buyer**
 
 Find the step-2 "next" control in `resources/views/pages/onboarding.blade.php`
 (the button that advances to the review step — search for `ob-step` handling in
@@ -446,7 +446,7 @@ before editing rather than pattern-matching, and keep the existing submit path
 (the hidden `account_type` input at line 936 is populated by the existing
 `form.querySelector('[name="account_type"]').value = ...` line).
 
-- [ ] **Step 4: Verify by hand in a browser**
+- [x] **Step 4: Verify by hand in a browser**
 
 ```bash
 php artisan view:clear
@@ -459,7 +459,7 @@ choosing **Artisan** and confirm the review screen still appears.
 This step is manual on purpose: the step transitions are client-side JavaScript
 and a feature test cannot exercise them.
 
-- [ ] **Step 5: Run the full suite**
+- [x] **Step 5: Run the full suite**
 
 ```bash
 php artisan test
@@ -467,7 +467,7 @@ php artisan test
 
 Expected: all green (669 + the new tests at time of writing).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add resources/views/pages/onboarding.blade.php tests/Feature/SignupCountryAndBuyerTest.php
@@ -487,7 +487,7 @@ Note the wizard's phone field currently hardcodes a Cameroon flag image and a
 - Modify: `routes/web.php:1803` (validation) and `:1855` (insert)
 - Test: `tests/Feature/SignupCountryAndBuyerTest.php`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```php
     public function test_the_country_chosen_at_signup_is_stored(): void
@@ -525,7 +525,7 @@ Note the wizard's phone field currently hardcodes a Cameroon flag image and a
     }
 ```
 
-- [ ] **Step 2: Run and watch it fail**
+- [x] **Step 2: Run and watch it fail**
 
 ```bash
 php artisan test --filter=test_the_country_chosen_at_signup_is_stored
@@ -533,7 +533,7 @@ php artisan test --filter=test_the_country_chosen_at_signup_is_stored
 
 Expected: FAIL — `null` does not match the Côte d'Ivoire id.
 
-- [ ] **Step 3: Accept and store it in the handler**
+- [x] **Step 3: Accept and store it in the handler**
 
 In `routes/web.php`, in the `$request->validate([...])` block at line 1803, add:
 
@@ -547,7 +547,7 @@ In the `DB::table('users')->insert([...])` block at line 1855, add after `'phone
             'country_id'          => $data['country_id'] ?? null,
 ```
 
-- [ ] **Step 4: Add the select to the wizard**
+- [x] **Step 4: Add the select to the wizard**
 
 In `resources/views/pages/onboarding.blade.php`, immediately **before** the
 phone field's `<div>` on step 2, insert:
@@ -592,7 +592,7 @@ and add to the page's `<script>`:
 })();
 ```
 
-- [ ] **Step 5: Add the select to the fast form**
+- [x] **Step 5: Add the select to the fast form**
 
 In `resources/views/auth/quick-register.blade.php`, after the account-type
 block (which ends around line 50), insert:
@@ -615,14 +615,14 @@ same two lines (validation rule and insert column) there too. Check with:
 grep -n 'action=' resources/views/auth/quick-register.blade.php
 ```
 
-- [ ] **Step 6: Show it on the review step**
+- [x] **Step 6: Show it on the review step**
 
 The review step lists what will be saved, so it must list the country. Find the
 review block (search for `Ce qui sera enregistré`, around line 451) and add a row
 following the existing rows' markup, populated by the existing review JavaScript
 that mirrors step-2 values.
 
-- [ ] **Step 7: Run the tests**
+- [x] **Step 7: Run the tests**
 
 ```bash
 php artisan view:clear && php artisan test --filter=SignupCountryAndBuyerTest
@@ -630,7 +630,7 @@ php artisan view:clear && php artisan test --filter=SignupCountryAndBuyerTest
 
 Expected: all PASS.
 
-- [ ] **Step 8: Check the pages still render at phone width**
+- [x] **Step 8: Check the pages still render at phone width**
 
 ```bash
 MSYS_NO_PATHCONV=1 node scripts/responsive-audit.cjs --routes /creer-mon-compte,/inscription-rapide --widths 320,390
@@ -638,7 +638,7 @@ MSYS_NO_PATHCONV=1 node scripts/responsive-audit.cjs --routes /creer-mon-compte,
 
 Expected: `0 failing page/width combinations`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add resources/views/pages/onboarding.blade.php resources/views/auth/quick-register.blade.php routes/web.php tests/Feature/SignupCountryAndBuyerTest.php
@@ -653,7 +653,7 @@ git commit -m "Ask for a country at signup, and let the dial code follow it"
 - Modify: `app/Http/Controllers/BusinessWebController.php` (`create`, `store`)
 - Test: `tests/Feature/SignupCountryAndBuyerTest.php`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```php
     public function test_a_buyer_cannot_reach_the_shop_form(): void
@@ -693,7 +693,7 @@ git commit -m "Ask for a country at signup, and let the dial code follow it"
     }
 ```
 
-- [ ] **Step 2: Run and watch both fail**
+- [x] **Step 2: Run and watch both fail**
 
 ```bash
 php artisan test --filter=SignupCountryAndBuyerTest
@@ -702,7 +702,7 @@ php artisan test --filter=SignupCountryAndBuyerTest
 Expected: the guard test FAILS (200 instead of a redirect), the prefill test
 FAILS (no `selected` on that option).
 
-- [ ] **Step 3: Add the guard**
+- [x] **Step 3: Add the guard**
 
 In `app/Http/Controllers/BusinessWebController.php`, add this private helper
 beside `requireUser`:
@@ -734,7 +734,7 @@ Then in **both** `create()` and `store()`, immediately after the existing
         }
 ```
 
-- [ ] **Step 4: Add the prefill**
+- [x] **Step 4: Add the prefill**
 
 In `create()`, replace:
 
@@ -775,7 +775,7 @@ In `resources/views/pages/dashboard/business-form.blade.php`, change the country
 to its `compact(...)` call by switching to an explicit array, or the view will
 error on an undefined variable when editing.
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 ```bash
 php artisan view:clear && php artisan test --filter=SignupCountryAndBuyerTest
@@ -783,7 +783,7 @@ php artisan view:clear && php artisan test --filter=SignupCountryAndBuyerTest
 
 Expected: all PASS.
 
-- [ ] **Step 6: Run everything**
+- [x] **Step 6: Run everything**
 
 ```bash
 php artisan test
@@ -792,7 +792,7 @@ MSYS_NO_PATHCONV=1 node scripts/responsive-audit.cjs --widths 320,390
 
 Expected: full suite green, `0 failing page/width combinations`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add app/Http/Controllers/BusinessWebController.php resources/views/pages/dashboard/business-form.blade.php tests/Feature/SignupCountryAndBuyerTest.php
