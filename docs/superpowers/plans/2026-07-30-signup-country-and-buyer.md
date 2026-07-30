@@ -809,7 +809,7 @@ The host has no SSH, so the migration cannot be run with artisan. This mirrors
 **Files:**
 - Create: `database/production/patches/2026-07-31-add-country-to-users.sql`
 
-- [ ] **Step 1: Write the patch**
+- [x] **Step 1: Write the patch**
 
 ```sql
 -- ============================================================================
@@ -850,7 +850,7 @@ SELECT
       AND `column_name` = 'country_id') - 1 AS `column_missing_MUST_BE_0`;
 ```
 
-- [ ] **Step 2: Test it against a scratch copy of production**
+- [x] **Step 2: Test it against a scratch copy of production**
 
 ```bash
 MYSQL="/c/laragon/bin/mysql/mysql-8.4.3-winx64/bin/mysql.exe"
@@ -862,7 +862,7 @@ MYSQL="/c/laragon/bin/mysql/mysql-8.4.3-winx64/bin/mysql.exe"
 
 Expected: the final SELECT prints `0` and `0`.
 
-- [ ] **Step 3: Confirm the patch produces the same schema as the migration**
+- [x] **Step 3: Confirm the patch produces the same schema as the migration**
 
 ```bash
 "$MYSQL" -u root -N -B virtualdb   -e "SELECT column_name,column_type,is_nullable FROM information_schema.columns WHERE table_schema='virtualdb' AND table_name='users' ORDER BY column_name" | md5sum
@@ -872,13 +872,13 @@ Expected: the final SELECT prints `0` and `0`.
 Expected: identical hashes. If they differ, the patch and the migration disagree
 and the patch is wrong — fix the patch, not the migration.
 
-- [ ] **Step 4: Drop the scratch database**
+- [x] **Step 4: Drop the scratch database**
 
 ```bash
 "$MYSQL" -u root -e "DROP DATABASE IF EXISTS userctest;"
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add database/production/patches/2026-07-31-add-country-to-users.sql
@@ -892,7 +892,7 @@ git commit -m "Add the phpMyAdmin patch for users.country_id"
 **Files:**
 - Modify: the deployment package under `C:\Users\PC\Desktop\artisanhub237deploy\FRESH-REUPLOAD\`
 
-- [ ] **Step 1: Sync the changed code into the package**
+- [x] **Step 1: Sync the changed code into the package**
 
 ```bash
 D="C:/Users/PC/Desktop/artisanhub237deploy/FRESH-REUPLOAD"
@@ -908,7 +908,7 @@ cp "$S/database/production/patches/2026-07-31-add-country-to-users.sql" "$D/DATA
 diff -rq "$S/app" "$A/app" && diff -rq "$S/resources/views" "$A/resources/views" && echo "package matches source"
 ```
 
-- [ ] **Step 2: Confirm no new class was introduced**
+- [x] **Step 2: Confirm no new class was introduced**
 
 ```bash
 git diff --name-only HEAD~6..HEAD -- app/ | grep -E "^app/.*\.php$"
@@ -924,7 +924,7 @@ If any file is **new**, the regenerated autoloader must ship too — see the spe
 "autoloader trap" section, and add `vendor/composer/autoload_classmap.php` and
 `autoload_static.php` to the package. If none are new, skip this.
 
-- [ ] **Step 3: Rebuild the home zip**
+- [x] **Step 3: Rebuild the home zip**
 
 ```bash
 SEVEN="/c/Users/PC/scoop/shims/7z"
@@ -932,7 +932,7 @@ rm -f "$D/UPLOAD-into-HOME-folder.zip"
 cd "$D/1-UPLOAD-to-HOME-folder" && "$SEVEN" a -tzip -mx5 "$D/UPLOAD-into-HOME-folder.zip" "artisanhub237app"
 ```
 
-- [ ] **Step 4: Verify the zip**
+- [x] **Step 4: Verify the zip**
 
 ```bash
 python -c "
@@ -946,7 +946,7 @@ print('migration shipped:', any('2026_07_31_090000_add_country_to_users' in x fo
 
 Expected: backslash paths `0`, migration shipped `True`.
 
-- [ ] **Step 5: Write the upload instructions**
+- [x] **Step 5: Write the upload instructions**
 
 Create `$D/SIGNUP-UPDATE/README.txt` stating the required order:
 
@@ -955,7 +955,7 @@ Create `$D/SIGNUP-UPDATE/README.txt` stating the required order:
 3. Upload and extract `UPLOAD-into-public_html.zip` into `public_html`
 4. Open `https://artisanhub237.com/_update-8c1bl.php`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A
