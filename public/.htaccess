@@ -65,11 +65,19 @@ Options -Indexes
 # 24 KB. On a phone on Cameroonian mobile data that difference is most of the
 # wait before the page looks like anything.
 #
-# mod_deflate is the one that is actually present on this host; mod_brotli is
-# listed first because it compresses better and Apache will use it when the
-# host eventually has it. Both blocks are guarded, so a server missing either
-# module ignores the block instead of returning 500 — an unguarded directive
-# for an absent module is a fatal config error, not a no-op.
+# mod_brotli is listed first because it compresses better where it exists;
+# mod_deflate is the one nearly every host has, including LiteSpeed, which
+# honours these directives under the mod_deflate name. Which of the two this
+# host actually has is not known here and does not need to be: both blocks are
+# guarded, so a server missing a module skips the block instead of returning
+# 500 — an unguarded directive for an absent module is a fatal config error,
+# not a no-op.
+#
+# To confirm compression is really happening once this is live:
+#   curl -sI -H 'Accept-Encoding: gzip' https://artisanhub237.com/vendor/app.css
+# A "Content-Encoding: gzip" line means yes. No such line means the host has
+# neither module and the CSS is going over the wire at ~174 KB instead of ~26,
+# which is worth raising with support.
 #
 # Images, woff2 and .gz files are deliberately absent: they are already
 # compressed, and running deflate over them costs CPU to make them very
