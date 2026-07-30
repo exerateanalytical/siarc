@@ -7,39 +7,71 @@
     $submittedAt = now();
     $submittedAtLabel = $isFr ? $submittedAt->translatedFormat('d M Y \à H:i') : $submittedAt->format('d M Y \a\t H:i');
 
-    // Keys and labels come from App\Support\AccountTypes so this wizard and the
-    // quick signup form offer the same set; the artwork, blurb and perk list
-    // below are the wizard's own richer presentation of them.
-    $accountTypes = [
-        [
-            'artisan', 'ob-type-1.png', '#157A43',
+    /*
+     | Presentation for each account type. WHICH types exist is decided by
+     | App\Support\AccountTypes and nothing else — this map only says how to
+     | draw them. The two are kept in step by SignupCountryAndBuyerTest.
+     |
+     | This used to be a standalone list of four sellers, which is why the buyer
+     | type was invisible on this door while the fast form offered it: the same
+     | question had two different answers depending on how you arrived.
+     */
+    $typeArt = [
+        'buyer' => [
+            // No ob-type-5.png ships with the design pack; the artisan artwork
+            // stands in until a buyer illustration exists.
+            'ob-type-1.png', '#3565DE',
+            $isFr ? 'Acheteur / Visiteur' : 'Buyer / Visitor',
+            $isFr ? "Vous cherchez à acheter des créations artisanales ou à contacter des artisans."
+                  : 'You are looking to buy craft creations or to contact artisans.',
+            $isFr ? ['Contacter les artisans', 'Demander des devis', 'Enregistrer vos favoris', 'Suivre vos commandes']
+                  : ['Contact artisans', 'Request quotes', 'Save your favourites', 'Track your orders'],
+        ],
+        'artisan' => [
+            'ob-type-1.png', '#157A43',
             $isFr ? 'Artisan Individuel' : 'Individual Artisan',
             $isFr ? 'Vous êtes un artisan travaillant à titre individuel et souhaitant promouvoir vos créations.' : 'You are an artisan working individually and wishing to promote your creations.',
             $isFr ? ['Vitrine personnelle', 'Gestion de vos produits', 'Accès aux demandes de devis', 'Participation aux événements']
                   : ['Personal showcase', 'Manage your products', 'Access to quote requests', 'Participation in events'],
         ],
-        [
-            'cooperative', 'ob-type-2.png', '#FEB530',
+        'cooperative' => [
+            'ob-type-2.png', '#FEB530',
             $isFr ? 'Coopérative / Groupement' : 'Cooperative / Group',
             $isFr ? "Vous représentez une coopérative ou un groupement d'artisans." : 'You represent a cooperative or a group of artisans.',
             $isFr ? ['Vitrine de la coopérative', 'Gestion des membres', 'Gestion collective des produits', "Accès aux marchés et appels d'offres"]
                   : ['Cooperative showcase', 'Member management', 'Collective product management', 'Access to markets and tenders'],
         ],
-        [
-            'pme', 'ob-type-3.png', '#9768D8',
+        'pme' => [
+            'ob-type-3.png', '#9768D8',
             $isFr ? 'PME / Entreprise' : 'SME / Business',
             $isFr ? "Vous dirigez une petite ou moyenne entreprise dans le secteur de l'artisanat." : 'You run a small or medium business in the craft sector.',
             $isFr ? ['Vitrine professionnelle', 'Catalogue illimité', 'Outils marketing avancés', 'Statistiques et analyses']
                   : ['Professional showcase', 'Unlimited catalogue', 'Advanced marketing tools', 'Statistics and analytics'],
         ],
-        [
-            'grande_entreprise', 'ob-type-4.png', '#2E7CE8',
+        'grande_entreprise' => [
+            'ob-type-4.png', '#2E7CE8',
             $isFr ? 'Grande Entreprise' : 'Large Enterprise',
             $isFr ? 'Vous représentez une grande entreprise ou industrie artisanale.' : 'You represent a large company or craft industry.',
             $isFr ? ['Solutions sur mesure', 'Intégrations API', "Gestion d'équipe avancée", 'Support dédié']
                   : ['Tailor-made solutions', 'API integrations', 'Advanced team management', 'Dedicated support'],
         ],
     ];
+
+    /*
+     | Render order: the shared list decides membership, this decides sequence.
+     | Buyer sits first because it is the shortest commitment and the largest
+     | future audience; artisan stays second because it is who signs up today.
+     */
+    $accountTypes = collect(\App\Support\AccountTypes::keys())
+        ->map(function (string $key) use ($typeArt, $isFr) {
+            // A type with no artwork is a bug, not something to render blank.
+            abort_unless(isset($typeArt[$key]), 500, "No signup artwork for account type '{$key}'.");
+            [$icon, $colour, $title, $desc, $perks] = $typeArt[$key];
+
+            return [$key, $icon, $colour, $title, $desc, $perks];
+        })
+        ->values()
+        ->all();
 
     // Only the steps that actually persist. Everything else (entreprise, catégories,
     // localisation, produits, documents) lives on its own real page in the dashboard.
