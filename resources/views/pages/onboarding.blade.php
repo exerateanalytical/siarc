@@ -412,13 +412,29 @@
                 <section class="mt-5 ui-card">
                     <h2 class="ui-card-title">{{ $isFr ? 'Téléphone & Email' : 'Phone & Email' }}</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div class="md:col-span-2">
+                            <label for="ob-country" class="{{ $labelCls }}">{{ $isFr ? 'Pays' : 'Country' }} <span class="ui-req">*</span></label>
+                            {{-- Every country is printed once; data-seller says which may open a
+                                 shop, so choosing a seller account narrows this list in place
+                                 rather than needing a second list that could drift from it. --}}
+                            <select id="ob-country" name="country_id" class="{{ $fieldCls }} !pl-3.5">
+                                @foreach($signupCountries as $c)
+                                    <option value="{{ $c->id }}"
+                                            data-seller="{{ $c->seller_enabled ? '1' : '0' }}"
+                                            data-dial="{{ $c->dial_code }}"
+                                            data-flag="{{ $c->flag_emoji }}"
+                                            @selected((int) old('country_id', $defaultCountryId) === (int) $c->id)>{{ $c->flag_emoji }} {{ $c->name($lang) }}</option>
+                                @endforeach
+                            </select>
+                            <p class="ui-hint" id="ob-country-hint"></p>
+                        </div>
                         <div>
                             <label for="ob-phone" class="{{ $labelCls }}">{{ $isFr ? 'Téléphone principal' : 'Main phone' }}</label>
                             {{-- Flag + dialling code are a prefix inside one field, which is what
                                  the kit's field-group is for — no second bordered box. --}}
                             <div class="ui-field-group ui-field--lg">
-                                <img src="{{ asset('images/landing/ob-flag.png') }}" alt="" class="w-[20px] h-[14px] shrink-0 rounded-[2px]">
-                                <span class="shrink-0 text-[14px] text-[#1B1B18] dark:text-[#F3EFE7]">+237</span>
+                                <span class="shrink-0 text-[15px] leading-none" id="ob-phone-flag">{{ $defaultCountry?->flag_emoji }}</span>
+                                <span class="shrink-0 text-[14px] text-[#1B1B18] dark:text-[#F3EFE7]" id="ob-phone-dial">+{{ $defaultCountry?->dial_code }}</span>
                                 <input type="tel" id="ob-phone" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="ui-field-bare">
                             </div>
                         </div>
@@ -518,6 +534,13 @@
                                 {{ $isFr ? 'Téléphone' : 'Phone' }}
                             </dt>
                             <dd id="sum-phone" class="ui-dd">—</dd>
+                        </div>
+                        <div>
+                            <dt class="ui-dt flex items-center gap-2.5">
+                                <i data-lucide="globe" class="w-4 h-4 shrink-0 text-[#157A43] dark:text-[#339B56]" style="stroke-width:1.9"></i>
+                                {{ $isFr ? 'Pays' : 'Country' }}
+                            </dt>
+                            <dd id="sum-country" class="ui-dd">—</dd>
                         </div>
                     </dl>
                 </section>
@@ -812,6 +835,13 @@
     const notProvided = @json($isFr ? 'Non renseigné' : 'Not provided');
     const nextLabel = @json($isFr ? 'Suivant' : 'Next');
     const createAccountLabel = @json($isFr ? 'Créer mon compte' : 'Create my account');
+    const sellerTypes = @json(\App\Support\AccountTypes::sellerKeys());
+    const buyerCountryHint = @json($isFr
+        ? 'Vous pouvez créer un compte acheteur depuis n\'importe quel pays.'
+        : 'You can create a buyer account from any country.');
+    const sellerCountryHint = @json($isFr
+        ? 'Les comptes artisan et entreprise sont ouverts aux pays africains.'
+        : 'Artisan and business accounts are open to African countries.');
     // Sentinel step for the post-creation confirmation screen (not a wizard step).
     const SUCCESS_STEP = 11;
 
@@ -826,6 +856,7 @@
     document.querySelectorAll('input[name="account_type"]').forEach(r => r.addEventListener('change', () => {
         refreshRadios();
         refreshDetailsNextLabel();
+        refreshCountryOptions();
     }));
     refreshRadios();
     refreshDetailsNextLabel();
@@ -853,7 +884,13 @@
         document.getElementById('sum-type').textContent = chosen ? (typeNames[chosen.value] || notProvided) : notProvided;
         document.getElementById('sum-name').textContent = name || notProvided;
         document.getElementById('sum-email').textContent = val('ob-email') || notProvided;
-        document.getElementById('sum-phone').textContent = phone ? ('+237 ' + phone) : notProvided;
+        const dial = (document.getElementById('ob-phone-dial')?.textContent || '').trim();
+        document.getElementById('sum-phone').textContent = phone ? ((dial ? dial + ' ' : '') + phone) : notProvided;
+        const sumCountry = document.getElementById('sum-country');
+        if (sumCountry && countrySelect) {
+            const opt = countrySelect.selectedOptions[0];
+            sumCountry.textContent = opt ? opt.textContent.trim() : notProvided;
+        }
     }
 
     let currentStep = 1;
@@ -884,6 +921,50 @@
         if (label) label.textContent = buyerSelected() ? createAccountLabel : nextLabel;
     }
 
+    /* The country list carries every country, and each option says whether a
+       shop may be opened from it. Picking a seller account type hides the rest
+       rather than swapping in a second list — one list cannot disagree with
+       itself. The server enforces the same rule; this only saves the member a
+       rejected submission. */
+    const countrySelect = document.getElementById('ob-country');
+    const countryHint   = document.getElementById('ob-country-hint');
+    const phoneDial     = document.getElementById('ob-phone-dial');
+    const phoneFlag     = document.getElementById('ob-phone-flag');
+
+    function refreshCountryOptions() {
+        if (!countrySelect) return;
+        const sellersOnly = sellerTypes.indexOf(chosenAccountType()) !== -1;
+
+        let firstAllowed = null;
+        [...countrySelect.options].forEach(opt => {
+            const allowed = !sellersOnly || opt.dataset.seller === '1';
+            opt.hidden   = !allowed;
+            opt.disabled = !allowed;
+            if (allowed && !firstAllowed) firstAllowed = opt;
+        });
+
+        // The chosen country may have just been hidden — fall back rather than
+        // leave a selection the server will reject.
+        if (countrySelect.selectedOptions[0] && countrySelect.selectedOptions[0].disabled && firstAllowed) {
+            countrySelect.value = firstAllowed.value;
+        }
+
+        if (countryHint) countryHint.textContent = sellersOnly ? sellerCountryHint : buyerCountryHint;
+        refreshPhonePrefix();
+    }
+
+    function refreshPhonePrefix() {
+        const opt = countrySelect && countrySelect.selectedOptions[0];
+        if (!opt) return;
+        if (phoneDial) phoneDial.textContent = '+' + (opt.dataset.dial || '');
+        if (phoneFlag) phoneFlag.textContent = opt.dataset.flag || '';
+    }
+
+    if (countrySelect) {
+        countrySelect.addEventListener('change', refreshPhonePrefix);
+        refreshCountryOptions();
+    }
+
     // ── Real signup: "Créer mon compte" creates the account ──
     // The form is ALWAYS posted — even when a session already exists. This used
     // to short-circuit to the success screen for any logged-in visitor, which
@@ -910,6 +991,7 @@
         form.querySelector('[name="password_confirmation"]').value = document.getElementById('ob-password-confirm').value;
         const chosen = document.querySelector('input[name="account_type"]:checked');
         form.querySelector('[name="account_type"]').value = chosen ? chosen.value : '';
+        form.querySelector('[name="country_id"]').value = countrySelect ? countrySelect.value : '';
         form.submit();
     });
 
@@ -997,7 +1079,7 @@
     <input type="hidden" name="first_name"><input type="hidden" name="last_name">
     <input type="hidden" name="email"><input type="hidden" name="phone">
     <input type="hidden" name="password"><input type="hidden" name="password_confirmation">
-    <input type="hidden" name="account_type">
+    <input type="hidden" name="account_type"><input type="hidden" name="country_id">
 </form>
 </body>
 </html>

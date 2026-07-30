@@ -21,14 +21,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Country extends Model
 {
     protected $fillable = [
-        'code', 'code3', 'name_fr', 'name_en', 'dial_code',
+        'code', 'code3', 'name_fr', 'name_en', 'continent', 'dial_code',
         'currency_code', 'currency_symbol', 'flag_emoji',
-        'default_lang', 'is_active', 'sort_order',
+        'default_lang', 'is_active', 'seller_enabled', 'sort_order',
     ];
 
     protected $casts = [
-        'is_active'  => 'boolean',
-        'sort_order' => 'integer',
+        'is_active'      => 'boolean',
+        'seller_enabled' => 'boolean',
+        'sort_order'     => 'integer',
     ];
 
     public function regions(): HasMany
@@ -39,6 +40,11 @@ class Country extends Model
     public function cities(): HasMany
     {
         return $this->hasMany(City::class);
+    }
+
+    public function businesses(): HasMany
+    {
+        return $this->hasMany(\App\Modules\Businesses\Models\Business::class);
     }
 
     /** The name in the requested language, falling back to French. */
@@ -54,5 +60,31 @@ class Country extends Model
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('name_fr');
+    }
+
+    /**
+     * Countries a shop may be opened from — Africa only.
+     *
+     * A buyer needs nothing but a country on their account, so buyers may come
+     * from anywhere. A seller is listed in a craft directory for the African
+     * craft trade, so the seller list is the narrower one.
+     */
+    public static function forSellers()
+    {
+        return static::active()->where('seller_enabled', true);
+    }
+
+    /**
+     * The list to offer someone signing up as `$accountType`.
+     *
+     * Both signup doors and the business form ask this rather than deciding for
+     * themselves, so the three cannot drift apart the way the account-type lists
+     * once did.
+     */
+    public static function forAccountType(?string $accountType)
+    {
+        return \App\Support\AccountTypes::isSeller((string) $accountType)
+            ? static::forSellers()
+            : static::active();
     }
 }

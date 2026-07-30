@@ -229,7 +229,12 @@ class FrontendController extends Controller
 
         $industries = Industry::withCount('businesses')->where('is_active', true)->orderBy('sort_order')->get();
         $regions    = DB::table('regions')->orderBy('name_fr')->get();
-        $countries  = \App\Modules\Taxonomy\Models\Country::active()->get();
+        // Only countries this directory can actually show something for. Signup
+        // accepts buyers from all 212 countries, but a filter offering 209 that
+        // return an empty page is a worse directory, not a bigger one.
+        $countries  = \App\Modules\Taxonomy\Models\Country::active()
+            ->whereHas('businesses', fn ($qb) => $qb->where('status', 'published'))
+            ->get();
 
         // Real directory stats for the hero band.
         //

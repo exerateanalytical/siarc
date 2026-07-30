@@ -1808,6 +1808,23 @@ Route::post('/creer-mon-compte', function (Request $request) {
         'password'              => ['required', 'min:8', 'confirmed'],
         'password_confirmation' => ['required'],
         'account_type'          => ['nullable', 'in:' . implode(',', \App\Support\AccountTypes::keys())],
+        // Buyers may come from anywhere; sellers only from a country the
+        // platform trades in. The rule lives here as well as in the form
+        // because a filtered <select> is decoration, not a constraint.
+        'country_id'            => [
+            'nullable',
+            'exists:countries,id',
+            function (string $attribute, $value, \Closure $fail) use ($request, $isFr) {
+                if (! $value || ! \App\Support\AccountTypes::isSeller((string) $request->input('account_type'))) {
+                    return;
+                }
+                if (! \App\Modules\Taxonomy\Models\Country::forSellers()->whereKey($value)->exists()) {
+                    $fail($isFr
+                        ? "Ce pays n'est pas encore ouvert aux artisans et entreprises. Vous pouvez créer un compte acheteur."
+                        : 'This country is not yet open to artisans and businesses. You can create a buyer account instead.');
+                }
+            },
+        ],
     ]);
 
     $email = strtolower(trim($data['email']));
@@ -1856,6 +1873,7 @@ Route::post('/creer-mon-compte', function (Request $request) {
             'name'                => $name,
             'email'               => $email,
             'phone'               => $phone,
+            'country_id'          => $data['country_id'] ?? null,
             'password'            => Hash::make($data['password']),
             'status'              => 'active',
             'account_type'        => $data['account_type'] ?? 'artisan',
@@ -4001,7 +4019,14 @@ Route::post('/tableau-de-bord/admin/certificats/{id}/revoquer', function (Reques
 Route::get('/creer-mon-compte', function (Request $request) {
     $lang = $request->query('lang', $request->cookie('lang', 'fr'));
     $lang = in_array($lang, ['fr', 'en']) ? $lang : 'fr';
-    return response(view('pages.onboarding', compact('lang')))->cookie('lang', $lang, 60 * 24 * 30);
+    // The whole world is offered; the seller-only subset is marked per option so
+    // the form can narrow itself when a seller account type is chosen.
+    $signupCountries  = \App\Modules\Taxonomy\Models\Country::active()->get();
+    $defaultCountry   = $signupCountries->firstWhere('code', 'CM') ?? $signupCountries->first();
+    $defaultCountryId = $defaultCountry?->id;
+
+    return response(view('pages.onboarding', compact('lang', 'signupCountries', 'defaultCountry', 'defaultCountryId')))
+        ->cookie('lang', $lang, 60 * 24 * 30);
 })->name('onboarding');
 
 Route::post('/contact', function (Request $request) {
@@ -4536,7 +4561,15 @@ Route::get('/inscription-rapide', function (Request $request) {
         ->groupBy(fn ($trade) => $corps[$trade->parent_id]->name_fr ?? '—')
         ->sortKeys();
 
-    return view('auth.quick-register', ['lang' => $lang, 'tradesByCorps' => $tradesByCorps]);
+    $signupCountries  = \App\Modules\Taxonomy\Models\Country::active()->get();
+    $defaultCountryId = ($signupCountries->firstWhere('code', 'CM') ?? $signupCountries->first())?->id;
+
+    return view('auth.quick-register', [
+        'lang'             => $lang,
+        'tradesByCorps'    => $tradesByCorps,
+        'signupCountries'  => $signupCountries,
+        'defaultCountryId' => $defaultCountryId,
+    ]);
 })->name('register.quick');
 
 Route::post('/inscription-rapide', function (Request $request) {
@@ -4550,6 +4583,23 @@ Route::post('/inscription-rapide', function (Request $request) {
         'industry_id'  => ['required', 'exists:industries,id'],
         'password'     => ['required', 'min:8'],
         'account_type' => ['required', 'in:' . implode(',', \App\Support\AccountTypes::keys())],
+        // Same rule as the wizard: a seller must be somewhere the platform
+        // trades in, a buyer may be anywhere. Both doors ask the model rather
+        // than restating the policy.
+        'country_id'   => [
+            'nullable',
+            'exists:countries,id',
+            function (string $attribute, $value, \Closure $fail) use ($request, $isFr) {
+                if (! $value || ! \App\Support\AccountTypes::isSeller((string) $request->input('account_type'))) {
+                    return;
+                }
+                if (! \App\Modules\Taxonomy\Models\Country::forSellers()->whereKey($value)->exists()) {
+                    $fail($isFr
+                        ? "Ce pays n'est pas encore ouvert aux artisans et entreprises. Vous pouvez créer un compte acheteur."
+                        : 'This country is not yet open to artisans and businesses. You can create a buyer account instead.');
+                }
+            },
+        ],
     ]);
 
     $email = strtolower(trim($data['email']));
@@ -4574,6 +4624,7 @@ Route::post('/inscription-rapide', function (Request $request) {
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
+            'country_id' => $data['country_id'] ?? null,
             'password' => Hash::make($data['password']),
             'status' => 'active', 'language_preference' => $lang,
             'account_type' => $data['account_type'],

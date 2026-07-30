@@ -60,6 +60,19 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
                 </div>
             </div>
             <div>
+                <label class="ui-label">{{ $isFr ? 'Pays' : 'Country' }} <span class="ui-req">*</span></label>
+                {{-- One list for everyone, with data-seller marking the countries a shop
+                     may be opened from; the seller types narrow it in place. The POST
+                     handler enforces the same rule. --}}
+                <select name="country_id" id="qr-country" required class="ui-field ui-select">
+                    @foreach($signupCountries as $c)
+                        <option value="{{ $c->id }}"
+                                data-seller="{{ $c->seller_enabled ? '1' : '0' }}"
+                                @selected((int) old('country_id', $defaultCountryId) === (int) $c->id)>{{ $c->flag_emoji }} {{ $c->name($lang) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="ui-label">{{ $isFr ? 'Téléphone' : 'Phone' }}</label>
                 <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="6 90 12 34 56" class="ui-field ui-field--lg">
             </div>
@@ -95,6 +108,40 @@ body{font-family:'Poppins',system-ui,sans-serif}</style>
             {{ $isFr ? 'Déjà inscrit ?' : 'Already registered?' }} <a href="{{ route('login', ['lang' => $lang]) }}" class="font-bold text-[#157A43] dark:text-[#339B56]">{{ $isFr ? 'Se connecter' : 'Sign in' }}</a>
         </p>
     </main>
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        /* A seller may only open a shop from a country the platform trades in.
+           The options are all printed once and narrowed in place, so this form
+           and the wizard cannot end up offering different lists. The POST
+           handler enforces the rule; this only saves a rejected submission. */
+        (function () {
+            const sellerTypes = @json(\App\Support\AccountTypes::sellerKeys());
+            const country = document.getElementById('qr-country');
+            if (!country) return;
+
+            function refresh() {
+                const picked = document.querySelector('input[name="account_type"]:checked');
+                const sellersOnly = picked && sellerTypes.indexOf(picked.value) !== -1;
+
+                let firstAllowed = null;
+                [...country.options].forEach(function (opt) {
+                    const allowed = !sellersOnly || opt.dataset.seller === '1';
+                    opt.hidden = !allowed;
+                    opt.disabled = !allowed;
+                    if (allowed && !firstAllowed) firstAllowed = opt;
+                });
+
+                if (country.selectedOptions[0] && country.selectedOptions[0].disabled && firstAllowed) {
+                    country.value = firstAllowed.value;
+                }
+            }
+
+            document.querySelectorAll('input[name="account_type"]').forEach(function (r) {
+                r.addEventListener('change', refresh);
+            });
+            refresh();
+        })();
+    </script>
 </body>
 </html>

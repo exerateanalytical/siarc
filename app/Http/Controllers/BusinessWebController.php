@@ -81,7 +81,9 @@ class BusinessWebController extends Controller
         // Regions start empty and arrive once a country is chosen. Listing all
         // 82 at once would mix Cameroonian regions, Ivorian districts and
         // Algerian wilayas in one dropdown.
-        $countries = Country::active()->get();
+        // A shop may only be opened from a country the platform trades in, which
+        // is a narrower list than the one signup offers a buyer.
+        $countries = Country::forSellers()->get();
         $regions = collect();
 
         return view('pages.dashboard.business-form', [
@@ -161,7 +163,9 @@ class BusinessWebController extends Controller
 
         $business = Business::where('user_id', $siacUser['id'])->firstOrFail();
         $industries = $this->tradesGroupedByCorps();
-        $countries = Country::active()->get();
+        // A shop may only be opened from a country the platform trades in, which
+        // is a narrower list than the one signup offers a buyer.
+        $countries = Country::forSellers()->get();
         // Only this business's own country's regions, so the selected one is
         // present and the list matches what the cascade would fetch.
         $regions = $business->country_id
