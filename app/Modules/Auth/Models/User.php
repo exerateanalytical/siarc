@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $guard_name = 'sanctum';
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password',
+        'name', 'email', 'phone', 'country_id', 'password',
         'avatar', 'language_preference', 'status', 'account_type',
         'is_email_verified', 'is_phone_verified',
         'last_login_at', 'last_login_ip', 'assigned_region_id',
@@ -40,6 +40,11 @@ class User extends Authenticatable
     public function business(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(\App\Modules\Businesses\Models\Business::class, 'user_id');
+    }
+
+    public function country(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Taxonomy\Models\Country::class);
     }
 
     public function assignedRegion(): \Illuminate\Database\Eloquent\Relations\BelongsTo
